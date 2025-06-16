@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vocs dev",
     "build": "vocs build",
-    "preview": "vocs preview"
+    "preview": "vocs preview",
+    "predeploy": "vocs build",
+    "deploy": "gh-pages -d docs/dist"
   },
   "dependencies": {
     "react": "latest",
@@ -15,6 +17,7 @@
   },
   "devDependencies": {
     "@types/react": "latest",
+    "gh-pages": "^6.3.0",
     "typescript": "latest"
   }
 }
