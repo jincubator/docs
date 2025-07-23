@@ -8,11 +8,12 @@ export default defineConfig({
       link: "/overview",
     },
     {
-      text: "Concepts",
-      collapsed: true,
+      text: "Design",
+      collapsed: false,
       items: [
-        { text: "Concept1", link: "/concepts/concept1" },
-        { text: "Concept2", link: "/concepts/concept2" },
+        { text: "Design Intro", link: "/design/intro" },
+        { text: "Architecture", link: "/design/architecture" },
+        { text: "Hook Design - WIP", link: "/design/hooks" },
       ],
     },
   ],
