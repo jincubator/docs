@@ -15,6 +15,7 @@
     "pdfjs-dist": "^5.3.93",
     "react": "latest",
     "react-dom": "latest",
+    "react-medium-image-zoom": "^5.3.0",
     "react-pdf": "^10.0.1",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
