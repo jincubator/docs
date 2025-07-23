@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vocs dev",
-    "build": "vocs build",
+    "vocsbuild": "vocs build",
     "preview": "vocs preview",
     "predeploy": "vocs build",
-    "deploy": "gh-pages -d docs/dist --nojekyll --cname jincubator.com"
+    "sitedeploy": "gh-pages -d docs/dist --nojekyll --cname jincubator.com"
   },
   "dependencies": {
     "katex": "^0.16.22",
