@@ -42,13 +42,28 @@ It aims to provide the following
 * Advanced Indexing and Simulation capabilities to enable a global view of liquidity, swap prices and arbitrage opportunities
 
 
+import { ZoomImage } from "../../public/components/ZoomImage";
+
 ## Overview
 
 This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
 
+### Goals
+
+Key Goals for this design include
+
+* Intent Based Architecture to improve execution
+* Ability for Solvers to execute fills without needing to provide upfront capital
+
+Future work includes
+
+* Capital Efficient Liquidity Provisioning including rehypothecation
+* Improved Price Discover via the use of Oracles and external services
+* Incorporating BackRunning of Transactions into Protocols such as Uniswap V4 via hooks
+
 ### Opinionated Sample Architecture from [jincubator](https://github.com/jincubator)
 
-I'm currently designing and building solutions around Solving, Arbitrage and Indexing. This work is being done in a combination of public and private repositories on [jincubator](https://github.com/jincubator). The project is drawing inspiration from and leveraging the following codebases for key components
+This work focuses on designing and building solutions around Solving, Arbitrage and Indexing. This work is being done in a combination of public and private repositories on [jincubator](https://github.com/jincubator). The project is drawing inspiration from and leveraging the following codebases for key components
 
 * Solving built in RUST leveraging [Tycho](https://docs.propellerheads.xyz/tycho/overview) from [Propellor Heads](https://www.propellerheads.xyz/) including
   * [tycho-sdk](https://github.com/propeller-heads/tycho-protocol-sdk): For integrate DEXs and other onchain liquidity protocols
@@ -70,12 +85,32 @@ I'm currently designing and building solutions around Solving, Arbitrage and Ind
     * [compactX](https://github.com/uniswap/compactx): a proof-of-concept, React-based web interface for performing cross-chain swaps.
     * [YOLO Protocol](https://yolo-demo-ui-hackathon-chainlink-ch.vercel.app/): A Demo app developed for a hackathon by [YOLO Protocol](https://linktr.ee/yolo.protocol) which includes a dashboard for Liquidity Providers to manage their positions.
 
+### Proposed Rollout Strategy
+
+The following diagram gives an overview of the components to be developed.
+
+Technology: Proposed developing $E = mc^2$
+
+* Back end services predominately in [RUST](https://www.rust-lang.org/) using [Alloy](https://alloy.rs/).
+* Off Chain Persistence and Indexing: using [Substreams](https://docs.substreams.dev/) and [Tycho](https://www.propellerheads.xyz/tycho)
+* Frontend Components leveraging [Porto](https://porto.sh/)
+
+Outstanding Design Considerations:
+
+* Intent Management: Should detail intent information be stored completely off chain, or can it be passed in callData and leveraged in events, with only the Hash on chain?
+* Source of Funds: The proposed architecture's goal is to allow Solvers to use Swappers funds through mandate validation using EIP-721.
+* Price Discovery: What is the most accurate price to be used for quoting, is it the best price we can get on-chain using Tycho Simulation or should we use feeds such as Coingecko and Uniswap API as used in [calibrator](https://github.com/Uniswap/calibrator).
+
+<ZoomImage src="/images/IntentSwapProtocolMonoChain.png" alt="IntentSwap Components" title="IntentSwap Components" />
+
 
 import { ZoomImage } from "../../public/components/ZoomImage";
 
 ## IntentSwap
 
 ### IntentSwap Components
+
+$E = mc^2$
 
 <ZoomImage src="/images/IntentSwapProtocolMonoChain.png" alt="IntentSwap Components" title="IntentSwap Components" />
 
@@ -148,38 +183,11 @@ It leverages [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents us
 
 ### Overview
 
-Here you'll find my work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). As of July 2025 I use [jincubator](https://github.com/jincubator) for research and development of prototypes.
+Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). As of July 2025 I use [jincubator](https://github.com/jincubator) for research and development of prototypes.
 
 ### Abstract
 
 Liquidity Fragmentation and Capital Efficiency are areas that can be optimized in Blockchain protocols, with the emergence of Multiple L2 Chains and a shift towards intent-based architectures. There is a greater need than ever for a settlement layer to balance provided liquidity.
 
-Project Description: Jincubator (Working Name) provides infrastructure and services for multi-chain, intent-based protocols, leveraging hooks built on Uniswap V4.
-
-It aims to provide the following
-
-**Features of the Solution**
-
-* Pool Functionality
-  * JIT Liquidity Provisioning,
-  * Dynamic Fees to reduce arbitrage,
-  * Gas Manager allows users to pay for gas using their swap token instead of the native token,
-  * Incentivization Tools for Pools to incentivize Liquidity Providers,
-* Order Flow
-  * Intent Solving infrastructure providing traders with the best value for their swap,
-  * SlowTrack and Fastrak - Settlement Options,
-* Capital Efficiency
-  * Settlement Layer with Dynamic Rebalancing of Capital Across Chains,
-  * JIT provisioning of liquidity to pools as needed which integrates with Yield Earning Protocols.,
-  * Arbitraging Liquidity across Pools, Protocols, and Chains
-
-**Solution we are implementing**
-
-* Intent Based - Cross Chain Solving
-* Dynamic Cross-Chain Capital Allocation for Liquidity Providers
-* JIT Liquidity Provisioning for Pools
-* Yield Earning Capabilities for unitilized liquidity
-* Centralized Liquidity Pool which is dynamically allocated
-* Settlement Layer used by Solvers and Liquidity Providers used to rebalance funds across chains.
-* Advanced Indexing and Simulation capabilities to enable a global view of liquidity, swap prices and arbitrage opportunities
+This is an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
 
