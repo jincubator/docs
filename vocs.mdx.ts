@@ -1,6 +1,6 @@
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import { ZoomImage } from "./docs/pages/components/ZoomImage";
+import { ZoomImage } from "./docs/public/components/ZoomImage";
 
 export default {
   remarkPlugins: [remarkMath],
