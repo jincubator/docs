@@ -21,8 +21,8 @@ export default defineConfig({
       items: [
         { text: "Design Intro", link: "/design/intro" },
         { text: "Architecture", link: "/design/architecture" },
+        { text: "IntentSwap Flow", link: "/design/flow" },
         { text: "Hook Design - WIP", link: "/design/hooks" },
-        { text: "IntentSwap", link: "/design/flow" },
       ],
     },
   ],
