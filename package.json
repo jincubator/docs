@@ -11,13 +11,12 @@
     "sitedeploy": "gh-pages -d docs/dist --nojekyll --cname jincubator.com"
   },
   "dependencies": {
-    "katex": "^0.16.22",
     "pdfjs-dist": "^5.3.93",
     "react": "latest",
     "react-dom": "latest",
     "react-medium-image-zoom": "^5.3.0",
     "react-pdf": "^10.0.1",
-    "rehype-katex": "^7.0.1",
+    "rehype-mathjax": "^7.1.0",
     "remark-math": "^6.0.0",
     "vocs": "latest"
   },
