@@ -2,16 +2,6 @@ import { ZoomImage } from "../../public/components/ZoomImage";
 
 # IntentSwap
 
-## IntentSwap Components
-
-$E = mc^2$
-
-<ZoomImage
-  src="/images/IntentSwapProtocolMonoChain.png"
-  alt="IntentSwap Components"
-  title="IntentSwap Components"
-/>
-
 ### IntentSwap Flow
 
 1. Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
@@ -37,3 +27,60 @@ $E = mc^2$
 16. Arbiter sends a signed message to the Allocator to close the compact
     a. Any unused input tokens are returned to the Sponsor.
     b. Output Tokens are returned to the Solver
+
+## Usage (Flows by Actor)
+
+The Compact V1 facilitates interactions between several key actors. Here's how typical participants might use the system.
+
+### Sponsors (Depositors)
+
+Sponsors own the underlying assets and create resource locks to make them available under specific conditions.
+
+**1. Create a Resource Lock (Deposit Tokens):** - A sponsor starts by depositing assets (native tokens or ERC20s) into The Compact. This action creates ERC6909 tokens representing ownership of the resource lock. - During deposit, the sponsor defines the lock's properties: the **allocator** (who must be registered first, see [Allocators (Infrastructure)](#allocators-infrastructure), the **scope** (single-chain or multichain), and the **reset period** (for forced withdrawals and emissary replacements). These are packed into a `bytes12 lockTag`. A resource lock's ID is a combination of its lock tag and the underlying token's address. - Deposit methods: - Native tokens: `depositNative` - ERC20 tokens (requires direct approval): `depositERC20`- Batch deposits (native + ERC20): `batchDeposit` - Via Permit2 (optionally gasless): `depositERC20ViaPermit2`, `batchDepositViaPermit2`
+
+**2. Create a Compact:** - To make locked funds available for claiming, a sponsor creates a compact, defining terms and designating an **arbiter**.
+
+- **Option A: Signing an EIP-712 Payload:** The sponsor signs a `Compact`, `BatchCompact`, or `MultichainCompact` payload. This signed payload is given to the arbiter.
+- **Option B: Registering the Compact:** The sponsor (or a third party with an existing sponsor signature) registers the _hash_ of the intended compact details using `register` or combined deposit-and-register functions. It is also possible to deposit tokens on behalf of a sponsor and register a compact using only the deposited tokens without the sponsor's signature using the `depositAndRegisterFor` (or the batch and permit2 variants).
+
+**3. (Optional) Transfer Resource Lock Ownership:** - Sponsors can transfer their ERC6909 tokens, provided they have authorization from the allocator. - Standard ERC6909 transfers require allocator `attest`. - Alternatively, use `allocatedTransfer` or `allocatedBatchTransfer` with explicit `allocatorData`.
+
+**4. (Optional) Assign an Emissary:** - Designate an `IEmissary` using `assignEmissary` as a fallback authorizer.
+
+**5. (Optional) Initiate Forced Withdrawal:** - If an allocator is unresponsive, use `enableForcedWithdrawal`, wait `resetPeriod`, then `forcedWithdrawal`.
+
+### Arbiters & Claimants (e.g. Fillers)
+
+Arbiters verify conditions and process claims. Claimants are the recipients.
+
+**1. Receive Compact Details:** - Obtain compact details (signed payload or registered compact info).
+
+**2. Fulfill Compact Conditions:** - Perform the action defined by the compact (often off-chain).
+
+**3. Obtain Allocator Authorization:** - This relies on the allocator's on-chain `authorizeClaim` logic. Note that the arbiter may submit `allocatorData` (i.e., an allocator's signature or other proof the allocator understands) which the allocator can evaluate as part of its authorization flow.
+
+**4. Submit the Claim:** - Call the appropriate claim function on `ITheCompactClaims` with the claim payload (e.g., `Claim`, `BatchClaim`). - The payload includes `allocatorData`, `sponsorSignature` (if not registered), lock details, and `claimants` array. Successful execution emits a `Claim` event and consumes the nonce.
+
+### Relayers
+
+Relayers can perform certain interactions on behalf of sponsors and/or claimants.
+
+**1. Relaying Permit2 Interactions:** - Submit user-signed Permit2 messages for deposits/registrations (e.g., `depositERC20ViaPermit2`, `depositERC20AndRegisterViaPermit2`, or the batch variants). For the register variants, this role is called the `Activator` and the registration is authorized by the sponsor as part of the Permit2 witness data.
+
+**2. Relaying Registrations-for-Sponsor:** - Submit sponsor-signed registration details using `registerFor` functions.
+
+**3. Relaying Claims:** - Submit authorized claims on behalf of a claimant using the standard `claim` functions. This would generally be performed by the arbiter of the claim being relayed.
+
+### Allocators (Infrastructure)
+
+Allocators are crucial infrastructure for ensuring resource lock integrity.
+
+**1. Registration:** - Register via `__registerAllocator` to get an `allocatorId`. This is a required step that must be performed before the allocator may be assigned to a resource lock. Anyone can register an allocator if one of three conditions is met: the caller is the allocator address being registered; the allocator address contains code; or a proof is supplied representing valid create2 deployment parameters.
+
+**Create2 Proof Format**: When registering an allocator that doesn't yet exist but will be deployed via create2, provide an 85-byte proof containing: `0xff ++ factory ++ salt ++ initcode hash`. This allows pre-registration of deterministic addresses.
+
+**2. Implement `IAllocator` Interface:** - Deploy a contract implementing `IAllocator`. - `attest`: Called during ERC6909 transfers. Must verify safety and return `IAllocator.attest.selector`. - `authorizeClaim` / `isClaimAuthorized`: Core logic to validate claims against sponsor balances and nonces. `authorizeClaim` returns `IAllocator.authorizeClaim.selector` for on-chain validation.
+
+**3. (Optional) Off-chain Logic / `allocatorData` Generation:** - Allocators may have off-chain systems that track balances, validate requests, generate `allocatorData` (e.g., signatures), and/or manage nonces. - The Compact is unopinionated about the particulars of allocator implementations. - Two basic sample implementations have been provided: [Smallocator](https://github.com/uniswap/smallocator) and [Autocator](https://github.com/uniswap/autocator).
+
+**4. (Optional) Consuming Nonces:** - Proactively invalidate compacts using `consume` on The Compact contract.
