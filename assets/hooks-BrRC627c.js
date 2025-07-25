@@ -1,8 +1,4 @@
-import{f as o,j as e}from"./index-DDRkPJbq.js";const t={title:"Uniswap V4 Hook Development - WIP",description:"undefined"};function s(i){const n={a:"a",div:"div",h1:"h1",h2:"h2",h3:"h3",header:"header",li:"li",ol:"ol",p:"p",ul:"ul",...o(),...i.components};return e.jsxs(e.Fragment,{children:[e.jsx(n.header,{children:e.jsxs(n.h1,{id:"uniswap-v4-hook-development---wip",children:["Uniswap V4 Hook Development - WIP",e.jsx(n.a,{"aria-hidden":"true",tabIndex:"-1",href:"#uniswap-v4-hook-development---wip",children:e.jsx(n.div,{"data-autolink-icon":!0})})]})}),`
-`,e.jsxs(n.ul,{children:[`
-`,e.jsx(n.li,{children:"date: 2025-06-22"}),`
-`,e.jsx(n.li,{children:"last updated: 2024-06-22"}),`
-`]}),`
+import{f as o,j as e}from"./index-BOriQ2vj.js";const t={title:"Uniswap V4 Hook Development - WIP",description:"undefined"};function s(i){const n={a:"a",div:"div",h1:"h1",h2:"h2",h3:"h3",header:"header",li:"li",ol:"ol",p:"p",...o(),...i.components};return e.jsxs(e.Fragment,{children:[e.jsx(n.header,{children:e.jsxs(n.h1,{id:"uniswap-v4-hook-development---wip",children:["Uniswap V4 Hook Development - WIP",e.jsx(n.a,{"aria-hidden":"true",tabIndex:"-1",href:"#uniswap-v4-hook-development---wip",children:e.jsx(n.div,{"data-autolink-icon":!0})})]})}),`
 `,e.jsxs(n.h2,{id:"overview",children:["Overview",e.jsx(n.a,{"aria-hidden":"true",tabIndex:"-1",href:"#overview",children:e.jsx(n.div,{"data-autolink-icon":!0})})]}),`
 `,e.jsx(n.p,{children:"This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution."}),`
 `,e.jsxs(n.p,{children:["It leverages ",e.jsx(n.a,{href:"https://docs.propellerheads.xyz/tycho/overview",children:"Tycho"}),", Intents using ",e.jsx(n.a,{href:"https://www.erc7683.org/spec",children:"ERC-7683"}),", ",e.jsx(n.a,{href:"https://eips.ethereum.org/EIPS/eip-712",children:"EIP-712"}),", ",e.jsx(n.a,{href:"https://github.com/uniswap/compactx",children:"Compactx"})," and ",e.jsx(n.a,{href:"https://docs.uniswap.org/contracts/v4/overview",children:"Uniswap V4 Hooks"}),". As of July 2025 I use ",e.jsx(n.a,{href:"https://github.com/jincubator",children:"jincubator"})," for research and development of prototypes."]}),`
@@ -40,4 +36,4 @@ import{f as o,j as e}from"./index-DDRkPJbq.js";const t={title:"Uniswap V4 Hook D
 `,e.jsx(n.li,{children:"Adds Gas Sponsorship"}),`
 `]}),`
 `]}),`
-`]})]})}function l(i={}){const{wrapper:n}={...o(),...i.components};return n?e.jsx(n,{...i,children:e.jsx(s,{...i})}):s(i)}export{l as default,t as frontmatter};
+`]})]})}function d(i={}){const{wrapper:n}={...o(),...i.components};return n?e.jsx(n,{...i,children:e.jsx(s,{...i})}):s(i)}export{d as default,t as frontmatter};
