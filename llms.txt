@@ -1,13 +1,64 @@
 # Jincubator
 
-> Jincubator is a protocol for creating and managing intent swaps.
+> Research focused on Intent BasedSolving, Arbitrage and Market Making
 
 ## Docs
 
-- [Solving and Arbitrage Research](/overview): Here you'll find my work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
-- [Overview](/design/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
-- [IntentSwap](/design/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
-- [Uniswap V4 Hook Development - WIP](/design/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
-- [Solving and Arbitrage Research](/design/intro): Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
-- [Protocol](/design/protocol): The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
-- [Resource Management](/design/resources): The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+- [Kanga Finance: Harmony Hackathon 2021](/hackathons/Harmony): [kanga.finance](https://kanga.finance/) is a Dex implementation inspired by Sushi and proof of concept integration with one-wallet. ([github](https://github.com/kangafinance)). Winner of $30,000 in prizes from [Harmony Hackathon](https://bounties.gitcoin.co/hackathon/harmony-defi/onboard).
+- [IntentSwap Hook: Uniswap Hook Incubator 5 (2025)](/hackathons/UHI5): Project in [UHI Hook Directory](https://bouncy-print-988.notion.site/hook-directory) is [here](https://bouncy-print-988.notion.site/Jincubator-21f5f0444abe81f3b186ced3c4a77ff4).
+- [Uniswap Hook Incubator 6 (2025)](/hackathons/UHI6)
+- [Jincubator Limit Order Protocol: Unite Defi (2025)](/hackathons/Unite): The protocol implements extensions to the 1inch limit-order-protocol. To enable ERC-6909 support, resource locking and enhanced price discovery. It also facilitates back running of swaps as part of Interaction Order Extensions.
+- [Hackathons](/hackathons/intro): Here are some of the Hackathons and Results submitted by those working with Jincubator.
+- [Project-X Technical White Paper](/products/2018-07-17-projectx): Blockchain ledger platform with a focus on interoperability, speed and privacy
+- [Lessons Learned from Devcon5](/products/2019-10-16-devcon5): Devcon5 key take aways on emerging blockchain technologies, new initatives and what the community is looking for.
+- [EAVE Parachain Design](/products/2021-04-01-eave-parachain): Emerging Asset Value Engine (EAVE) Polkadot Parachain
+- [Kanga Protocol Whitepaper](/products/2021-05-01-kanga): Kernel Agnositic Next Generation Assets (KANGA): A Decentralized Finance Protocol
+- [Draft EAVE Whitepaper](/products/2021-12-01-eave-defi): EAVE: a multi-chain web3 engine to support the growing adoption of emerging assets on blockchain
+- [Ethereum Bridging using Light Clients - Rainbow Costing](/products/2023-02-23-rainbow-costs): This research was done in conjunction with the Harmony team in early 2022.
+- [Overview](/research/Intents/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
+- [IntentSwap](/research/Intents/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
+- [Uniswap V4 Hook Development - WIP](/research/Intents/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
+- [Solving and Arbitrage Research](/research/Intents/intro): Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
+- [Protocol](/research/Intents/protocol): The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
+- [Resource Management](/research/Intents/resources): The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+- [Cosmos IBC](/research/bridge/cosmos-ibc): date: 2023-02-24
+- [Harmony Horizon](/research/bridge/harmony-horizon): date: 2023-02-24
+- [Crosschain Bridge Analysis - An Introduction](/research/bridge/intro): date: 2023-02-04
+- [Isomorph](/research/bridge/isomorph): date: 2023-02-24
+- [Near Rainbow Bridge](/research/bridge/near-rainbow): date: 2023-02-24
+- [Polymer Labs](/research/bridge/polymerlabs): date: 2023-02-24
+- [Snowbridge](/research/bridge/snowbridge): date: 2023-02-24
+- [Succinct Labs](/research/bridge/succinct): date: 2023-02-24
+- [Avalanche](/research/chains/avalanche): date: 2023-02-04
+- [Binance Smart Chain](/research/chains/binance): date: 2023-02-04
+- [Cosmos](/research/chains/cosmos): -date: 2023-02-04
+- [Ethereum 1.0](/research/chains/ethereum-1-0): date: 2023-02-04
+last-updated: 2023-02-04
+- [Ethereum](/research/chains/ethereum): date: 2023-02-04
+- [Harmony](/research/chains/harmony): date: 2023-02-04
+- [Chain Research](/research/chains/intro): date: 2023-02-04
+- [NEAR](/research/chains/near): date: 2023-02-04
+- [Polkadot](/research/chains/polkadot): date: 2023-02-04
+- [Polygon](/research/chains/polygon): date: 2023-02-04
+- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
+- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
+- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
+- [Code bases and reviews](/research/code/intro): date: 2023-02-04
+- [Celestia](/research/dataAvailabilty/celestia): date: 2023-06-19
+- [Fast Fourier Transforms](/research/primitives/fast-fourier-transforms): date: 2023-02-04
+- [Fraud Proofs](/research/primitives/fraud-proofs): date: 2023-02-04
+- [Cryptographic and Mathematic Primitives](/research/primitives/intro): date: 2023-02-04
+- [Light Clients](/research/primitives/light-clients): date: 2023-02-04
+- [Cryptographic Primitives](/research/primitives/primitives): date: 2023-02-04
+- [Signature Schemes in Consensus Protocols](/research/primitives/signatures): date: 2023-02-05
+- [Weak Subjectivity](/research/primitives/weak-subjectivity): date: 2023-02-04
+- [Overview](/research/solving/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
+- [IntentSwap](/research/solving/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
+- [Uniswap V4 Hook Development - WIP](/research/solving/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
+- [Solving and Arbitrage Research](/research/solving/intro): Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
+- [Protocol](/research/solving/protocol): The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
+- [Resource Management](/research/solving/resources): The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+- [Axiom](/research/zk/axiom): date: 2023-06-28
+- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
+- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
+- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
