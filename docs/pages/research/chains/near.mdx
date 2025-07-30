@@ -1,0 +1,67 @@
+# NEAR
+
+- date: 2023-02-04
+- last updated: 2023-02-04
+
+## Overview
+
+Near supports We both secp256k1 and ed25519 for account keys and ed25519 for signing transactions. They currently use the ed25519_dalek and sha2 libraries for crypto.
+
+## Consensus Mechanism
+
+Please review [NEAR Chainspec for Consensus](https://github.com/near/NEPs/blob/master/specs/ChainSpec/Consensus.md)
+
+## Light Client Support
+
+[NEAR Light Client Documentation](https://nomicon.io/ChainSpec/LightClient) gives an overview of how light clients work. At a high level the light client needs to fetch at least one block per [epoch](https://docs.near.org/concepts/basics/epoch) i.e. every 42,200 blocks or approxmiately 12 hours. Also Having the LightClientBlockView for block $B$ is sufficient to be able to verify any statement about state or outcomes in any block in the ancestry of $B$ (including $B$ itself).
+
+> The RPC returns the LightClientBlock for the block as far into the future from the last known hash as possible for the light client to still accept it. Specifically, it either returns the last final block of the next epoch, or the last final known block. If there's no newer final block than the one the light client knows about, the RPC returns an empty result.
+>
+> A standalone light client would bootstrap by requesting next blocks until it receives an empty result, and then periodically request the next light client block.
+>
+> A smart contract-based light client that enables a bridge to NEAR on a different blockchain naturally cannot request blocks itself. Instead external oracles query the next light client block from one of the full nodes, and submit it to the light client smart contract. The smart contract-based light client performs the same checks described above, so the oracle doesn't need to be trusted.
+
+Following is an exerpt from the [Near Light Client Specification](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md)
+
+**Near Light Client**
+
+> The state of the light client is defined by:
+>
+> 1. `BlockHeaderInnerLiteView` for the current head (which contains `height`, `epoch_id`, `next_epoch_id`, `prev_state_root`, `outcome_root`, `timestamp`, the hash of the block producers set for the next epoch `next_bp_hash`, and the merkle root of all the block hashes `block_merkle_root`);
+> 2. The set of block producers for the current and next epochs.
+>
+> The `epoch_id` refers to the epoch to which the block that is the current known head belongs, and `next_epoch_id` is the epoch that will follow.
+
+> Light clients operate by periodically fetching instances of `LightClientBlockView` via particular RPC end-point described [below](#rpc-end-points).
+
+> Light client doesn't need to receive `LightClientBlockView` for all the blocks. Having the `LightClientBlockView` for block `B` is sufficient to be able to verify any statement about state or outcomes in any block in the ancestry of `B` (including `B` itself). In particular, having the `LightClientBlockView` for the head is sufficient to locally verify any statement about state or outcomes in any block on the canonical chain.
+>
+> However, to verify the validity of a particular `LightClientBlockView`, the light client must have verified a `LightClientBlockView` for at least one block in the preceding epoch, thus to sync to the head the light client will have to fetch and verify a `LightClientBlockView` per epoch passed.
+
+**Near Rainbow Bridge: NEAR Light Client on Ethereum Sample Implementation**
+
+_The following is an excerpt from a blog by near on [eth-near-rainbow-bridge](https://near.org/blog/eth-near-rainbow-bridge/)_
+
+> NearOnEthClient is an implementation of the NEAR light client in Solidity as an Ethereum contract. Unlike EthOnNearClient it does not need to verify every single NEAR header and can skip most of them as long as it verifies at least one header per NEAR epoch, which is about 43k blocks and lasts about half a day. As a result, NearOnEthClient can memorize hashes of all submitted NEAR headers in history, so if you are making a transfer from NEAR to Ethereum and it gets interrupted you don’t need to worry and you can resume it any time, even months later. Another useful property of the NEAR light client is that every NEAR header contains a root of the merkle tree computed from all headers before it. As a result, if you have one NEAR header you can efficiently verify any event that happened in any header before it.
+>
+> Another useful property of the NEAR light client is that it only accepts final blocks, and final blocks cannot leave the canonical chain in NEAR. This means that NearOnEthClient does not need to worry about forks.
+>
+> However, unfortunately, NEAR uses [Ed25519](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-665.md) to sign messages of the validators who approve the blocks, and this signature is not available as an EVM precompile. It makes verification of all signatures of a single NEAR header prohibitively expensive. So technically, we cannot verify one NEAR header within one contract call to NearOnEthClient. Therefore we adopt the [optimistic approach](https://medium.com/@deaneigenmann/optimistic-contracts-fb75efa7ca84) where NearOnEthClient verifies everything in the NEAR header except the signatures. Then anyone can challenge a signature in a submitted header within a 4-hour challenge window. The challenge requires verification of a single Ed25519 signature which would cost about 500k Ethereum gas (expensive, but possible). The user submitting the NEAR header would have to post a bond in Ethereum tokens, and a successful challenge would burn half of the bond and return the other half to the challenger. The bond should be large enough to pay for the gas even if the gas price increases exponentially during the 4 hours. For instance, a 20 ETH bond would cover gas price hikes up to 20000 Gwei. This optimistic approach requires having a watchdog service that monitors submitted NEAR headers and challenges any headers with invalid signatures. For added security, independent users can run several watchdog services.
+
+## References
+
+**Consensus**
+
+- [Consensus, NEAR Nomicon](https://nomicon.io/ChainSpec/Consensus)
+- [NEAR blockchain core, (near)](https://github.com/near/nearcore)
+
+**Signing**
+
+- [Near Signing](https://docs.near.org/integrator/faq#how-are-cryptographic-functions-used): Near documentation on cryptographic functions.
+- [nearcore signature.rs (codebase)](https://github.com/near/nearcore/blob/master/core/crypto/src/signature.rs): Near signature code (rust).
+
+**Staking**
+
+**Light Client**
+
+- [Near Light Client](https://nomicon.io/ChainSpec/LightClient): Near Lithg Client Specification document.
