@@ -1,0 +1,64 @@
+import { ZoomImage } from "../../../public/components/ZoomImage";
+
+# Overview
+
+This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
+
+## Goals
+
+Key Goals for this design include
+
+- Intent Based Architecture to improve execution
+- Ability for Solvers to execute fills without needing to provide upfront capital
+
+Future work includes
+
+- Capital Efficient Liquidity Provisioning including rehypothecation
+- Improved Price Discover via the use of Oracles and external services
+- Incorporating BackRunning of Transactions into Protocols such as Uniswap V4 via hooks
+
+## Opinionated Sample Architecture from [jincubator](https://github.com/jincubator)
+
+This work focuses on designing and building solutions around Solving, Arbitrage and Indexing. This work is being done in a combination of public and private repositories on [jincubator](https://github.com/jincubator). The project is drawing inspiration from and leveraging the following codebases for key components
+
+- Solving built in RUST leveraging [Tycho](https://docs.propellerheads.xyz/tycho/overview) from [Propellor Heads](https://www.propellerheads.xyz/) including
+  - [tycho-sdk](https://github.com/propeller-heads/tycho-protocol-sdk): For integrate DEXs and other onchain liquidity protocols
+  - [tycho-indexer](https://github.com/propeller-heads/tycho-indexer): a low-latency, reorg-aware stream of all attributes you need to simulate swaps over DEX and other on-chain liquidity built on [substreams](https://github.com/streamingfast/substreams)
+  - [tycho-simulation](https://github.com/propeller-heads/tycho-simulation): a Rust crate which allows simulating a set of supported protocols off-chain
+  - [tycho-execution](https://github.com/propeller-heads/tycho-execution): a simple, ready-to-use tool that generates the necessary data to execute trades on multiple chains and DEX's
+- Intent Management platform allowing optimized trading routes optimized by solvers who do not need to provide liquidity up front
+  - [the-compact](https://github.com/Uniswap/the-compact): an ownerless ERC6909 contract that facilitates the voluntary formation (and, if necessary, eventual dissolution) of reusable resource locks.
+  - [arbiters](https://github.com/Uniswap/arbiters): selects a claim method based on the type of Compact message signed by the sponsor and allocator and on the desired settlement behavior. To finalize a claim, some actor must call into the arbiter, which will act on the input and translate it into their preferred claim method. The arbiter then must call the derived claim method on The Compact to finalize the claim process.
+  - [Tribunal](https://github.com/uniswap/tribunal): a framework for processing cross-chain swap settlements against PGA (priority gas auction) blockchains. It ensures that tokens are transferred according to the mandate specified by the originating sponsor and enforces that a single party is able to perform the settlement in the event of a dispute. _Note: currently working on enhancing the [EIP712 Signing](https://eips.ethereum.org/EIPS/eip-712) of the [mandates](https://github.com/uniswap/tribunal?tab=readme-ov-file#mandate-structure) so that the protocol can be used for solving on a single chain and multichain settlement._
+  - Services that enable Solving and Arbitrage are drawn primarily from uniswap prototypes for [compactX](https://github.com/uniswap/compactx). _Note: it would be good to develop the majority of these in Rust and leverage Tycho's indexing and execution services_
+    - [callibrator](https://github.com/Uniswap/Calibrator): An intent parameterization service, demo is [here](https://calibrat0r.com/). _Note: This will need to incorprate/integrate [mandates](https://github.com/uniswap/tribunal?tab=readme-ov-file#mandate-structure) as we build a solution for solving._
+    - [v4-router](https://github.com/jincubator/v4-router): a simple and optimized router for swapping on Uniswap V4. _Note: Currently working on integrating intents into this management into this codebase and integrating this with an optimized smart order router._
+    - [autocator](https://github.com/uniswap/autocator): A server-based allocator for The Compact that leverages protocol signatures and transactions for authentication, API reference is [here](https://autocator.org/).
+    - [smallocator](https://github.com/Uniswap/Smallocator): Similar to autocator with smart contract support via EIP-4361 session authentication and signing EIP-712 Compact messages.
+    - [Fillanthropist](https://github.com/Uniswap/Fillanthropist): receiving and filling broadcasted cross-chain swap intents, demo is [here](https://fillanthropist.org/). _Note: This infrastructure can be replaced by solver technology built on tycho as well as an update dissemination approach (see repo below) which can leverage tycho indexing._
+    - [disseminator](https://github.com/Uniswap/disseminator): A TypeScript WebSocket server implementation that broadcasts messages to both HTTP endpoints and WebSocket clients. The server validates incoming messages using Zod schemas and ensures proper message delivery to all connected clients. _Note: Design work still needs to be done as to the most efficient way to store and transmit detailed intent and mandate information_
+  - Frontend would include swapping and also liquidity provisioning and optimized Yield strategies for Liquidity Providers two inspirational repositories are
+    - [compactX](https://github.com/uniswap/compactx): a proof-of-concept, React-based web interface for performing cross-chain swaps.
+    - [YOLO Protocol](https://yolo-demo-ui-hackathon-chainlink-ch.vercel.app/): A Demo app developed for a hackathon by [YOLO Protocol](https://linktr.ee/yolo.protocol) which includes a dashboard for Liquidity Providers to manage their positions.
+
+## Proposed Rollout Strategy
+
+The following diagram gives an overview of the components to be developed.
+
+Technology: Proposed developing $E = mc^2$
+
+- Back end services predominately in [RUST](https://www.rust-lang.org/) using [Alloy](https://alloy.rs/).
+- Off Chain Persistence and Indexing: using [Substreams](https://docs.substreams.dev/) and [Tycho](https://www.propellerheads.xyz/tycho)
+- Frontend Components leveraging [Porto](https://porto.sh/)
+
+Outstanding Design Considerations:
+
+- Intent Management: Should detail intent information be stored completely off chain, or can it be passed in callData and leveraged in events, with only the Hash on chain?
+- Source of Funds: The proposed architecture's goal is to allow Solvers to use Swappers funds through mandate validation using EIP-721.
+- Price Discovery: What is the most accurate price to be used for quoting, is it the best price we can get on-chain using Tycho Simulation or should we use feeds such as Coingecko and Uniswap API as used in [calibrator](https://github.com/Uniswap/calibrator).
+
+<ZoomImage
+  src="/images/IntentSwapProtocolMonoChain.png"
+  alt="IntentSwap Components"
+  title="IntentSwap Components"
+/>
