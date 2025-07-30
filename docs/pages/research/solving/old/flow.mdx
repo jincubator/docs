@@ -1,0 +1,39 @@
+import { ZoomImage } from "../../../public/components/ZoomImage";
+
+# IntentSwap
+
+## IntentSwap Components
+
+$E = mc^2$
+
+<ZoomImage
+  src="/images/IntentSwapProtocolMonoChain.png"
+  alt="IntentSwap Components"
+  title="IntentSwap Components"
+/>
+
+### IntentSwap Flow
+
+1. Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
+2. Quoter returns Output Tokens for Swap
+3. Swapper Agrees on Swap and
+   a. Calls Disseminator which stores all Compact Information and Creates IntentSwapHash
+   b. calls Intent Manager to create SwapIntent (more callData and would use EventData to publish to Solvers)
+4. Intent Manager(Sponsor) formats Compact, Mandate data and Signature
+5. IntentManager(Sponsor) calls Allocator to create a compact
+6. Allocator creates a compact locking the funds
+7. Allocator creates a claim emitting an event that can be processed by Solvers
+8. Solver determines the optimal route (using Tycho Simulation)
+9. Solver creates a SolverPayload containing the callData for the Transactions to be executed
+10. Solver calls the Arbiter to Execute the Payload and Unlock the Funds
+11. Arbiter receives the IntentSwapSolve
+12. Aribiter request approval to use the IntentSwaps InputTokens for the-compact via the Allocator
+13. Arbiter executes the Solve on behalf of the Solver
+    a. using the SolverPayload
+    b. Executing via the dispatcher
+    c. Using the allocated input tokens
+14. Arbiter then checks if the Amount of Output Tokens satisfies the mandate
+15. If the Output Tokens are less than the mandate then reverts STOP
+16. Arbiter sends a signed message to the Allocator to close the compact
+    a. Any unused input tokens are returned to the Sponsor.
+    b. Output Tokens are returned to the Solver

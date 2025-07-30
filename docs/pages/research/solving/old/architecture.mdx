@@ -17,14 +17,6 @@ Future work includes
 - Improved Price Discover via the use of Oracles and external services
 - Incorporating BackRunning of Transactions into Protocols such as Uniswap V4 via hooks
 
-## Architecture Digrams
-
-<ZoomImage
-  src="/images/IntentSwapProtocolMonoChain.png"
-  alt="IntentSwap Components"
-  title="IntentSwap Components"
-/>
-
 ## Opinionated Sample Architecture from [jincubator](https://github.com/jincubator)
 
 This work focuses on designing and building solutions around Solving, Arbitrage and Indexing. This work is being done in a combination of public and private repositories on [jincubator](https://github.com/jincubator). The project is drawing inspiration from and leveraging the following codebases for key components
@@ -64,3 +56,9 @@ Outstanding Design Considerations:
 - Intent Management: Should detail intent information be stored completely off chain, or can it be passed in callData and leveraged in events, with only the Hash on chain?
 - Source of Funds: The proposed architecture's goal is to allow Solvers to use Swappers funds through mandate validation using EIP-721.
 - Price Discovery: What is the most accurate price to be used for quoting, is it the best price we can get on-chain using Tycho Simulation or should we use feeds such as Coingecko and Uniswap API as used in [calibrator](https://github.com/Uniswap/calibrator).
+
+<ZoomImage
+  src="/images/IntentSwapProtocolMonoChain.png"
+  alt="IntentSwap Components"
+  title="IntentSwap Components"
+/>
