@@ -1,1 +1,58 @@
-# Uniswap Hook Incubator 5 (2025)
+# IntentSwap Hook: Uniswap Hook Incubator 5 (2025)
+
+## Overview
+
+Project in [UHI Hook Directory](https://bouncy-print-988.notion.site/hook-directory) is [here](https://bouncy-print-988.notion.site/Jincubator-21f5f0444abe81f3b186ced3c4a77ff4).
+
+Jincubator IntentSwapHook allows swaps to be created with a delay period before execution, enabling solvers to find a more efficient trade and provide higher-return tokens to the swapper.
+
+## How did you integrate our partners, if any?
+
+For the UHI5 project. The focus was on the IntentSwapHook; partner integration is planned for subsequent phases, and I will reach out to each partner with detailed implementation plans. Please see https://deck.jincubator.com for high-level integration overviews with EigenLayer, Circle, Across, Ink, and Flaunch.
+
+## What are the key links to share? (Ex. demo video, GitHub, deck)
+
+Github: https://github.com/jincubator/uhi5-protocol
+
+Slides: https://uhi5-deck.jincubator.com/
+
+Project Link: https://jincubator.com/
+
+Demo Video: https://uhi5-demo.jincubator.com/
+
+## Problem / Background: What inspired the idea? What problems are you solving?
+
+Liquidity Fragmentation and Capital Efficiency are two of the largest problems as we roll out more protocols and blockchains. This is addressed by two approaches that work together in unison. Intent-based swaps using solvers and Chain Abstraction using Cross-chain Intents (ERC-7683), enabling the seamless flow of funds between chains.
+
+## Impact: What makes this project unique? What impact will this make?
+
+This project lays the foundation for any pool to provide a better return for swappers and more capital efficiency for Liquidity Providers. It achieves this by creating a hook that allows swaps to be created with a delay period before execution, enabling solvers to find a more efficient trade and provide higher-return tokens to the swapper.
+
+This is part of a broader technical landscape design to be built on 4 key components
+
+1. IntentSwap Hook - A hook allowing swaps to be created with a delay period before execution, enabling solvers to find a more efficient trade, giving higher return tokens to the swapper.
+2. Liquidity Indexing - Comprehensive liquidity indexing tooling allowing for
+   a. Indexing of all Protocols
+   b. Simulating swaps over all protocols in milliseconds to find the best trading route
+   c. Execution of swaps via a unified interface
+3. Intent execution framework that enables the trade execution across multiple protocols.
+4. Liquidity rebalancing and settlement tools enabling liquidity providers to rebalance their portfolios across both yield-earning protocols, assets, and chains.
+
+Note: Currently there is no front end but docs can be found at https://jincubator.com
+
+## Challenges: What was challenging about building this project?
+
+The solutions space is quite large, making prioritizing which components to build for this project challenging. As such, sponsor integrations were deprioritized and have only a high-level specification rather than a working proof of concept.
+
+Secondly, this space is rapidly evolving with new tooling and solutions becoming available. Specifically, Intent execution frameworks like Uniswap's the-compact and Liquidity Indexing solutions, such as Tycho’s SDK, are still under development and
+
+## Team: Who is on the team? What are their backgrounds?
+
+Development is being lead by John Whitton, below are some handy links about him.
+
+- [github](https://github.com/johnwhitton): Johns github profile
+- [johnwhitton.com](https://johnwhitton.com/): All about John, his work, writing, research etc.
+- [My Resume](https://resume.johnwhitton.com/): One-page resume in pdf format.
+- [Overview](https://overview.johnwhitton.com/): A little infographic of John's history
+- [Writing](https://johnwhitton.com/posts.html) and [Research](https://johnwhitton.com/research.html): Some writing and research John has done (a little outdated)
+- [Uniswap v4](https://github.com/johnwhitton/uhi5-exercises): Completed exercises and references for the Uniswap Hook Incubator

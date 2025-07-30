@@ -205,14 +205,13 @@ export default defineConfig({
     "/hackathons": [
       { text: "Hackathons", link: "/hackathons/intro" },
       { text: "Unite Defi (2025)", link: "/hackathons/Unite" },
-      { text: "Uniswap Hook Incubator 6 (2025)", link: "/hackathons/UHI6" },
       { text: "Uniswap Hook Incubator 5 (2025)", link: "/hackathons/UHI5" },
       { text: "Harmony Hackathon 2021", link: "/hackathons/Harmony" },
     ],
     "/products": [
       { text: "Products", link: "/products/intro" },
       {
-        text: "Ethereum Bridging using Light Clients - Rainbow Costing",
+        text: "Rainbow Bridge Research (Harmony 2022)",
         link: "/products/2023-02-23-rainbow-costs",
       },
       { text: "Draft EAVE Whitepaper", link: "/products/2021-12-01-eave-defi" },
