@@ -206,7 +206,6 @@ export default defineConfig({
       {
         text: "Hackathons",
         items: [
-          { text: "Intro", link: "/hackathons/intro" },
           { text: "Unite Defi (2025)", link: "/hackathons/Unite" },
           { text: "Uniswap Hook Incubator 5 (2025)", link: "/hackathons/UHI5" },
           { text: "Harmony Hackathon 2021", link: "/hackathons/Harmony" },
