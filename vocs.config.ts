@@ -8,6 +8,7 @@ export default defineConfig({
     "Research focused on Intent BasedSolving, Arbitrage and Market Making",
   iconUrl: "/images/jincubator.png",
   logoUrl: "/images/jincubator.png",
+  baseUrl: "/",
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
   markdown: {
