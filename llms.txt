@@ -24,10 +24,6 @@
 - [Solving and Arbitrage Research](/research/Intents/intro): Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
 - [Protocol](/research/Intents/protocol): The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
 - [Resource Management](/research/Intents/resources): The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
-- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
-- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
-- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
-- [Code bases and reviews](/research/code/intro): date: 2023-02-04
 - [Cosmos IBC](/research/bridge/cosmos-ibc): date: 2023-02-24
 - [Harmony Horizon](/research/bridge/harmony-horizon): date: 2023-02-24
 - [Crosschain Bridge Analysis - An Introduction](/research/bridge/intro): date: 2023-02-04
@@ -55,13 +51,17 @@ last-updated: 2023-02-04
 - [Cryptographic Primitives](/research/primitives/primitives): date: 2023-02-04
 - [Signature Schemes in Consensus Protocols](/research/primitives/signatures): date: 2023-02-05
 - [Weak Subjectivity](/research/primitives/weak-subjectivity): date: 2023-02-04
-- [Axiom](/research/zk/axiom): date: 2023-06-28
-- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
-- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
-- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
 - [Overview](/research/solving/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
 - [IntentSwap](/research/solving/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
 - [Uniswap V4 Hook Development - WIP](/research/solving/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
 - [Solving and Arbitrage Research](/research/solving/intro): Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
 - [Protocol](/research/solving/protocol): The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
 - [Resource Management](/research/solving/resources): The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
+- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
+- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
+- [Code bases and reviews](/research/code/intro): date: 2023-02-04
+- [Axiom](/research/zk/axiom): date: 2023-06-28
+- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
+- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
+- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
