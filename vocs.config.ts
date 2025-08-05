@@ -203,10 +203,25 @@ export default defineConfig({
     ],
 
     "/hackathons": [
-      { text: "Hackathons", link: "/hackathons/intro" },
-      { text: "Unite Defi (2025)", link: "/hackathons/Unite" },
-      { text: "Uniswap Hook Incubator 5 (2025)", link: "/hackathons/UHI5" },
-      { text: "Harmony Hackathon 2021", link: "/hackathons/Harmony" },
+      {
+        text: "Hackathons",
+        items: [
+          { text: "Intro", link: "/hackathons/intro" },
+          { text: "Unite Defi (2025)", link: "/hackathons/Unite" },
+          { text: "Uniswap Hook Incubator 5 (2025)", link: "/hackathons/UHI5" },
+          { text: "Harmony Hackathon 2021", link: "/hackathons/Harmony" },
+        ],
+      },
+      {
+        text: "Grant Proposals",
+        items: [
+          {
+            text: "Tycho Atomic Arbitrage(2025",
+            link: "/hackathons/atomic-arbitrage",
+          },
+          { text: "Sunrise Protocol (2020)", link: "/hackathons/sunrise" },
+        ],
+      },
     ],
     "/products": [
       { text: "Products", link: "/products/intro" },

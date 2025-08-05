@@ -17,7 +17,7 @@ Jincubator goals are as follows
 
 - Continue to develop research and engineering skills by researching and building on the cutting edge products and protocols.
 - Contribute research, design and technical solutions to the Crypto industry
-- Productize research into Defi protocols or infrastructure.
+- Productize research into DeFi protocols or infrastructure.
 
 ## Collaborate
 
@@ -25,7 +25,7 @@ Here are some ways to Partner with Jincubator
 
 ### Funding through Bounties or Grants
 
-Rather than seeking angel funding or raising through a Token Generation Event. We have been building and iterating to ensure product fit and are now looking for funding via grants or bounties to continue this work. Preferred grants would come from technical providers such as Tycho and Uniswap which we am building on. Also Solvers, Blockchains and Protocols looking to integrate with Tycho.
+Rather than seeking angel funding or raising through a Token Generation Event. We have been building and iterating to ensure product fit and are now looking for funding via grants or bounties to continue this work. Preferred grants would come from technical providers such as Tycho and Uniswap which we are building on. Also Solvers, Blockchains and Protocols looking to integrate with Tycho.
 
 We are currently building on Tycho and looking at continuing work on arbitrage, developing Solvers(Fillers) for CompactX, UniswapX, CowSwap and 1Inch.
 
@@ -40,13 +40,18 @@ An opinionated architecture, built on Tycho, for an intent based solving protoco
 Building out Tycho based Solvers starting with the following protocols
 
 - CompactX: An expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](https://www.jincubator.com/design/protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. _As of July 25th the [the-compact](https://github.com/jincubator/the-compact/) we are developing on has been forked from [Uniswap the-compact](https://github.com/Uniswap/the-compact/tree/v1) v1 branch which has not as yet been deployed._
-- UniswapX: I attended UniswapS Hook Incubator course and have been in touch with Alumni as I build in this area. I plan to start work on a Uniswap Solver in August.
+- UniswapX: I attended Uniswap's Hook Incubator course and have been in touch with Alumni as I build in this area. I plan to start work on a Uniswap Solver in August.
 - CowSwap: I have done some original evaluation of CowSwap Solving, building and running a CowSwap Solver locally built from the [services](https://github.com/cowprotocol/services) repository.
-- 1Inch: I am spending the week of July 28th working on the [Expanding Limit Order track](https://ethglobal.com/events/unite/prizes). With the goal of improving my knowledge of 1inch and becoming well positioned to become a Filler and potentially integrate some of the research done in Jincubator for more efficient solving.
+- 1Inch: I am spent the week of July 28th working on the [Expanding Limit Order track](https://ethglobal.com/events/unite/prizes). With the goal of improving my knowledge of 1inch and becoming well positioned to become a Filler and potentially integrate some of the research done in Jincubator for more efficient solving. Here is our project page, design, [deck](https://unite-deck.jincubator.com) and [video](https://unite-video.jincubator.com) explaining the vision of no liquidity solving.
 
 #### Arbitrage
 
 I have begun development of an Arbitrage bot. It uses Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles. It aligns with the foundational requirement for an atomic arbitrage solver as specified in [Tycho Application Proposal 4](https://github.com/propeller-heads/tycho-x/blob/main/TAP-4.md) once this foundation is in place the infrastructure can be expanded into Cross Chain Arbitrage and Market Making.
+
+#### Previous Grant applications
+
+- [Tycho Atomic Arbitrage](https://hackmd.io/@jincubator/atomic-arbitrage): An arbitrage bot built on Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles.
+- [Sunrise Protocol (Polkadot 2020)](https://hackmd.io/@jincubator/sunrise): Sunrise was building a decentralized protocol on a dedicated Polkadot parachain.
 
 ### Consulting
 

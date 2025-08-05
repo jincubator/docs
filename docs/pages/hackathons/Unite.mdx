@@ -1,198 +1,1083 @@
 # Jincubator Limit Order Protocol: Unite Defi (2025)
 
-## Overview
+# Unite Defi 2025 Jincubator 1inch Tycho NoLiquidity Swap
 
-The protocol implements extensions to the 1inch limit-order-protocol. To enable ERC-6909 support, resource locking and enhanced price discovery. It also facilitates back running of swaps as part of Interaction Order Extensions.
+## Jincubator Unite Defi Overview
 
-Stretch Goals include enhance price discovery and NEAR Fusion+ integration.
+[Jincbuator](https://jincubator.com) is a research and development lab focusing on Solving, Arbitrage and Capital Efficient
 
-Public page is [here](https://ethglobal.com/showcase/defiunite-jincubator-g1h0p) and hackmd article is [here](https://hackmd.io/@jincubator/DeFi2025JincubatorDesign)
+## No Liquidity Solving Walkthrough
 
-## Design
+<iframe
+  src="https://www.loom.com/embed/c59e1a9eb2064d4a855cabab3941a514"
+  frameborder="0"
+  allowfullscreen
+  allow="autoplay; encrypted-media"
+  style={{
+    width: "100%",
+    height: "500px",
+    borderRadius: "12px",
+  }}
+/>
 
-For Unite Defi we are working on 3 separate but compatible streams.
+The following Actions are Taken
 
-### Limit Order Protocol
+1. Mary has one ETH
+2. Chainlink Oracle has 1ETH = 2000DAI
+3. Mary creates a an order 1ETH for 2000DAI
+4. Tabatha using Tycho finds Uniswap V2 will swap 1ETH for 2018DAI
+5. Tabatha Takes the Order
+6. Order Settles
 
-Here are the Key Features Under Consideration
+**Additional Notes**
 
-- Price Discovery: Integrating Pyth Oracles such as Redstone to improve Price Discovery
-- Stop Loss Orders: Implementing a Holistic Advanced Limit Order (HALO) using a Predicate which passes price criteria for execution
-- ERC-6909 Support: We implement the ability to Lock Resources in an ERC-6909 compatible Extension
-- No Liquidity Solving (Same Chain Only): Provide the ability for Resolvers to use the Locked Resources as part of the Solve
-- Portfolio Management: We implement the ability to rebalance the maker or takers assets during the fill with an Interaction
+- \*This uses a modified version of 1inch Limit Order Protocol which allows TychoSwapExecutor to settle the Makers Funds
+- \*\*Mary approves 1ETH to be used by Limit-Order-Protocol (and Tycho Swap Router)
+- \*\*Mary’s 1ETH is used for the swap - No Liquidity is provided by Tabatha - Transaction reverts if < 2000 DAI is returned
+- \*\*\*Taking and Settling the order is an atomic transaction integrating TychoSwapExecutor.sol as a TakerInteraction in LimitOrderProtocol.sol
 
-### Near Fusion+
+| Action | Mary Maker | Limit Order Protocol | Tabatha Tycho Taker | Jincubator Protocol                                                     | Tycho Simulation                                              |
+| ------ | ---------- | -------------------- | ------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 1      | 1 ETH      |                      |                     |                                                                         |                                                               |
+| 2      | 1 ETH      |                      |                     |                                                                         |                                                               |
+| 3      | 1ETH       | _1ETH\*_             |                     | OrderCalculator.sol integrates price oracles for creating spread orders |                                                               |
+| 4      | 1ETH       | _1ETH\*_             |                     |                                                                         | Tycho Indexing and Simulation (Off Chain Price Discovery)     |
+| 5      |            | 2018DAI\*\*          |                     | TychoExecutor.sol executes the trade on UniswapV3                       | TychoRouter is called by TychoSwapRouter to execute the trade |
+| 6      | 200DAI     |                      | 18DAI               | LimitOrderProtocol.sol sends Mary 2000 DAI from Tabatha                 |
+|        |
 
-We Integrate Near and 1inch Fusion (see [near-fusion-plus](https://github.com/jincubator-united-defi-2025/near-fusion-plus))
+## Jincubator Limit Order Protocol
 
-- Near Contracts for hash lock and time lock functionality
-- Swap Functionality between Ethereum and Near via Fusion Plus
-- Demonstration of bidirectional token transfers between Ethereum and NEAR
+This protocol implements four key enhancements to the [1inch Limit Order Protocol](https://github.com/1inch/limit-order-protocol):
 
-### Near Solver Built with NEAR's Shade Agent Framework
+1. **Enhanced Swap Execution**: [TychoSwapExecutor.sol](https://github.com/jincubator-united-defi-2025/protocol/tree/main/src/TychoSwapExecutor.sol) integrates [Tycho Execution](https://github.com/propeller-heads/tycho-execution) to enable complex swaps across multiple DEXs without upfront liquidity
+2. **Stop Loss and Profit Taking Orders**: [OracleIntegration.sol](https://github.com/jincubator-united-defi-2025/protocol/tree/main/src/OracleCalculator.sol) Oracle-based (starting with chainlink) pricing calculator for advanced order strategies
+3. **Treasury Management**: [RebalancerInteraction.sol](https://github.com/jincubator-united-defi-2025/protocol/tree/main/src/RebalancerInteraction.sol) enables makers and takers to immediately balance their funds to a treasury (and moving forward more advanced asset management strategies).
+4. **Resource Management**: [CompactInteraction.sol](https://github.com/jincubator-united-defi-2025/protocol/tree/main/src/CompactInteraction.sol) integrates the [1inch Limit Order Protocol](https://github.com/1inch/limit-order-protocol) with [The Compact](https://github.com/uniswap/the-compact) for [ERC-6909](https://eips.ethereum.org/EIPS/eip-6909) support and moving forward integration with additional cross chain intent standards such as [ERC-7683](https://www.erc7683.org/) leveraging [Mandates and Solver Payloads](https://www.jincubator.com/research/solving/protocol) and [Advanced Resource Locking](https://www.jincubator.com/research/solving/resources).
 
-A decentralized solver which works with 1inch Fusion+
+### Enhanced Swap Execution
 
-1. **Smart Contracts**
-   - `solver-registry`: Support liquidity pools creation. Manage registration and verification of TEE solvers for each liquidity pool.
-   - `intents-vault`: The vault contract that manage the pool's asset within NEAR Intents.
+We integrate with Tycho's indexing, simulation and execution via a TcyhoSwapExecutor which allows Solvers to provide a payload with complex routing solutions across multiple liquidity protocols. The design for United Defi allows the taker to submit a Payload with Call Data which will be executed as part of the TakerInteraction flow. This allows, if permitted by the maker, the solver to use the takers tokens and execute the trade without providing any upfront capital.
 
-2. **Solver Management Server**
-   - A Rust based server that manages the lifecycle of TEE solvers
-   - Handles solver deployment and monitoring for each liquidity pool
+### Stop Loss and Profit Taking Orders
+
+The OracleCalculator extension is a powerful addition to the 1inch Limit Order Protocol that enables dynamic pricing based on Chainlink oracle data. This extension allows orders to be filled at prices that are calculated on-chain using real-time oracle feeds, making it possible to create orders that automatically adjust to market conditions.
+
+### Treasury Management
+
+Implemented as an IPostInteraction the RebalancerInteraction contract allows both makers and takers to instantly move their funds to their Treasury of choice.
+
+### Resource Management
+
+We Implemented integration with an ERC-6909 compliant locking mechanism enabling advanced resource management capabilities and laying the foundation to extend the 1inch Limit Order Protocol to open standards such as ERC-7683.
+
+## NEAR FUSION+ Smart Contract Development
+
+NEAR Fusion+ is a comprehensive DeFi protocol that migrates 1inch's proven Limit Order Protocol and Cross-Chain Swap functionality to the NEAR blockchain. The system provides two primary capabilities: advanced limit order trading with partial fills and extensible features, and atomic cross-chain swaps secured by time-locked escrow contracts.
+
+## Implementation Limit Order Protocol
+
+### Core Components
+
+- **Compact**: ERC-6909 enabled Chainlink calculator for price discovery
+- **ResourceManager**: Manages resource locks for ERC-6909 integration
+- **TychoSwapExecutor**: Executes complex swaps using Tycho Execution
+- **CompactInteraction**: Post-interaction handler for resource allocation
+- **RebalancerInteraction**: Treasury management and portfolio rebalancing
+- **OracleCalculator**: Price oracle integration for advanced order strategies
+
+### Key Features
+
+- **Resource Locking**: ERC-6909 compliant resource management
+- **Multi-DEX Execution**: Cross-platform swap execution via Tycho
+- **Advanced Order Types**: Stop-loss and take-profit orders
+- **Treasury Management**: Automated portfolio rebalancing
+- **Oracle Integration**: Chainlink price feeds for accurate pricing
+
+### Key Technology Enhancements
+
+- Solidity based tests including a migration from `OrderUtils.js` to solidity based [OrderUtils](https://github.com/jincubator-united-defi-2025/protocol/tree/main/test/utils/orderUtils/README_OrderUtils.md)
+- Solidity `^0.8.30` compatibility provided by creating an interface [ILimitOrderProtocol.sol](https://github.com/jincubator-united-defi-2025/protocol/tree/main/src/interfaces/1inch/ILimitOrderProtocol.sol) and introducing [LimitOrderProtocolManager](https://github.com/jincubator-united-defi-2025/protocol/tree/main/test/helpers/LimitOrderProtocolManager.sol) for testing.
+
+### Architecture
+
+![Architecture](https://hackmd.io/_uploads/ByIAaIhwel.png)
+
+### Interactions
+
+![Interactions](https://hackmd.io/_uploads/B1XQRU3wex.png)
+
+## Enhanced Swap Execution
+
+### Tycho Execution Flow
+
+![TychoFlow](https://hackmd.io/_uploads/HyRf1vnwgl.png)
+
+### Tycho Components
+
+![TychoComponents](https://hackmd.io/_uploads/HkytJP3Plg.png)
+
+### Actors
+
+1. Maker
+   1. Creates orders specifying the spread price they are looking for (currently using chainlink Oracle)
+2. Solver Service
+   1. Monitors 1inch Intents created
+   2. Monitors Liquidity Positions on Chain using Tycho-indexer
+   3. Simulates Solves for Orders (to see if profitable)
+   4. Calls Resolver Contract to execute the Swap
+      1. Solver Payload - encoded to call TychoResolver a modified version of Tycho Execution
+   5. Calls Order Fill passing
+      1. target: TychoResolver address
+      2. interaction: SolverPayload
+3. Resolver Contract (modified version combining ResolverCrossChain and Tycho Dispatcher)
+   1. Called by LimitOrderProtocol as part of Order.fill
+   2. Executes swap using Makers Tokens
+   3. Provides TakerToken to Relayer to pass back to Taker
+   4. Transfers excess maker (or taker) tokens to Treasury
+
+### Implementation Approach
+
+    1. TychoFillPredicate.sol (Predicate): copied from OracleCalculator.sol
+    2. TychoFillInteraction.sol : copied from RebalancerInteraction.sol
+    3. TychoResolver.sol: Copied from ResolverCrossChain.sol and Dispatcher.sol
+    4. Tests copied from RebalancerInteraction.t.sol and enhanced with
+       1. Creation of Swap (MakerTokens to TakerTokens) similar to
+       2. Call of Fill Contract passing
+          1. target: TychoResolver address
+          2. interaction: SolverPayload
+       3. Checking of Treasurer Balances after swap is executed
+
+### Flow
+
+#### Interactions
+
+Interactions are callbacks that enable the execution of arbitrary code, which is provided by the maker’s order or taker’s fill execution.
+
+The order execution logic includes several steps that also involve interaction calls:
+
+1. Validate the order
+2. **Call the maker's pre-interaction**
+3. Transfer the maker's asset to the taker
+4. **Call the taker's interaction**
+5. Transfer the taker's asset to the maker
+6. **Call the maker's post-interaction**
+7. Emit the OrderFilled event
+
+Calls are executed in the context of the limit order protocol. The target contract should implement the `IPreInteraction` or `IPostInteraction` interfaces for the maker's pre- and post-interactions and the `ITakerInteraction` interface for the taker's interaction. These interfaces declare the single callback function for maker and taker interactions, respectively.
+
+Here is how the maker’s pre- & post- interactions and the taker’s interaction are defined in the interfaces:
+
+```solidity
+//Maker's pre-interaction
+function preInteraction(
+        IOrderMixin.Order calldata order,
+        bytes32 orderHash,
+        address taker,
+        uint256 makingAmount,
+        uint256 takingAmount,
+        uint256 remainingMakingAmount,
+        bytes calldata extraData
+    ) external;
+
+//Maker's post-interaction
+function postInteraction(
+        IOrderMixin.Order calldata order,
+        bytes32 orderHash,
+        address taker,
+        uint256 makingAmount,
+        uint256 takingAmount,
+        uint256 remainingMakingAmount,
+        bytes calldata extraData
+    ) external;
+
+//Taker's interaction
+function takerInteraction(
+        IOrderMixin.Order calldata order,
+        bytes32 orderHash,
+        address taker,
+        uint256 makingAmount,
+        uint256 takingAmount,
+        uint256 remainingMakingAmount,
+        bytes calldata extraData
+    ) external returns(uint256 offeredTakingAmount);
+```
+
+- Resolver Contract executes calls to Tycho Dispatcher or Router
+- Three functions
+  - preInteraction: used in OracleCalculator (to ensure price before swap)
+  - takerInteraction used in SwapExecutor to Execute Swap by Taker
+  - postInteraction used in Rebalancer to Send Funds to Treasury
 
 ### Design Questions
 
-- Passing of [Extension Information](https://github.com/1inch/limit-order-protocol/blob/master/description.md#extensions-structure) when [building an order](https://github.com/1inch/limit-order-protocol/blob/master/description.md#how-to-build-an-order)
-- Custom Limit Orders should not be posted to official Limit Order API. [Answered](https://discord.com/channels/554623348622098432/1385673870941618348/1399699600515796992)
-  - Scripting is fine for the Hackathon
-  - We don't need to build out our own API
-- Resolver - Contract as part of protocol?
-- Relayer - Is relayer a contract or service?
+1. **Interface Compatibility**:
+   - How will the TychoResolver interface be defined to ensure compatibility with the LimitOrderProtocol bytecode deployment approach?
+   - Should we create a custom interface for TychoResolver or use the concrete type like the working project?
 
-## Implementation Details
+2. **Predicate Logic**:
+   - What predicate logic will TychoFill.sol use? Will it be similar to OracleCalculator.sol with price comparisons?
+   - How will the predicate determine when a solve is profitable vs. when it should execute?
 
-### Limit Order Protocol Improvements
+3. **Solver Payload Structure**:
+   - What data structure will the SolverPayload contain? Will it include target addresses, amounts, and execution parameters?
+   - How will the payload be encoded/decoded between the Solver Service and TychoResolver?
 
-- Stop Loss and Take profit
-  - Both basic and trailing SL/TP orders
-  - [ChainLink Example](https://github.com/1inch/limit-order-protocol/blob/master/test/ChainLinkExample.js)
-  - [Order Creation Logic to Populate Order Extension Information](https://github.com/1inch/limit-order-protocol/blob/master/description.md#order-extensions)
-  - [Order Extensions](https://github.com/1inch/limit-order-protocol/blob/master/description.md) : [Extensions Code](https://github.com/1inch/limit-order-protocol/tree/master/contracts/extensions)
-    - ERC-6909 extension similar to [ERC1155PROXY.sol](https://github.com/1inch/limit-order-protocol/blob/master/contracts/extensions/ERC1155Proxy.sol)
-      - Resource Locking Functionality integrating with [the-compact](https://github.com/uniswap/the-compact)
-    - Price Discovery
-      - [ChainCalculator.sol](https://github.com/1inch/limit-order-protocol/blob/master/contracts/extensions/ChainlinkCalculator.sol): Reference Implementation see Price Discovery codebases below.
-    - [Interactions](https://github.com/1inch/limit-order-protocol/blob/master/description.md#interactions): Interactions are callbacks that enable the execution of arbitrary code, which is provided by the maker’s order or taker’s fill execution.
-      - ERC-6909 Settlement (including EIP-712 Signature Verification)
-      - BackRunning Of Order
+4. **Treasury Integration**:
+   - How will excess tokens be calculated and transferred to Treasury?
+   - What mechanism will prevent MEV attacks on the treasury transfers?
 
-### Price Discovery Improvements
+5. **Error Handling**:
+   - How will failed solves be handled? Will orders be cancelled or retried?
+   - What happens if the TychoResolver execution fails during the order fill?
 
-- Tycho Indexing: For Streaming of State Changes of DeFi Protocols
-- Tycho Simulation: For Price Discovery
-- Pyth Oracle Integration: For Price Discovery
+6. **Gas Optimization**:
+   - How will the solver service optimize gas costs across multiple orders?
+   - Will batch processing be implemented for multiple orders?
 
-### Fusion+ to Near Implementations (Stretch Goal)
+7. **Oracle Integration**:
+   - Will TychoFill use the same Chainlink oracle approach as OracleCalculator ?
+   - How will price feeds be validated and updated?
 
-- Relayer
-- Resolver
+8. **Cross-Chain Considerations**:
+   - How will the ResolverCrossChain functionality be integrated with Tycho Dispatcher?
+   - What bridge mechanisms will be used for cross-chain swaps?
 
-### Near Solver Built with NEAR's Shade Agent Framework
+### Implementation Plan
 
-### Components
+1. **Phase 1: Core Contract Development**
+   - Create `TychoFill.sol` based on `OracleCalculator.sol`
+     - Implement predicate logic for profitable solve detection
+     - Add Tycho-specific price calculation methods
+     - Ensure interface compatibility with LimitOrderProtocol
 
-- [Jincubator Near Fusion+](https://github.com/jincubator-united-defi-2025/near-fusion-plus): NEAR Fusion+ Smart contracts
+   - Create `TychoFillInteraction.sol` based on `RebalancerInteraction.sol`
+     - Implement post-interaction logic for treasury transfers
+     - Add balance validation and excess token calculation
+     - Integrate with TychoResolver for swap execution
 
-### Foundational (git modules)
+2. **Phase 2: Resolver Contract Development**
+   - Create `TychoResolver.sol` combining ResolverCrossChain and Dispatcher functionality
+     - Implement swap execution using maker tokens
+     - Add taker token provision for relayer
+     - Integrate treasury transfer logic
+     - Ensure proper error handling and revert conditions
 
-- [limit-order-protocol](https://github.com/1inch/limit-order-protocol): 1inch Limit Order Protocol Smart Contract. Key features of the protocol are extreme flexibility and high gas efficiency
-- [https://github.com/1inch/cross-chain-swap](https://github.com/1inch/cross-chain-swap): 1inch Network Fusion Atomic Swaps
-- [the-compact](https://github.com/uniswap/the-compact) : The Compact 🤝 ERC-6909 Resource Locking Mechanism an ownerless ERC6909 contract that facilitates the voluntary formation (and, if necessary, eventual dissolution) of reusable resource locks.
-- [Tycho Execution](https://github.com/propeller-heads/tycho-execution): Tycho Execution makes it easy to trade on different DEXs by handling the complex encoding for you. Instead of creating custom code for each DEX, you get a simple, ready-to-use tool that generates the necessary data to execute trades. It's designed to be safe, straightforward, and quick to set up, so anyone can start trading without extra effort.
+3. **Phase 3: Testing Framework**
+   - Create comprehensive test suite based on `RebalancerInteraction.t.sol`
+     - Test order creation with Tycho-specific predicates
+     - Test solver payload encoding/decoding
+     - Test treasury balance validation
+     - Test cross-chain swap scenarios
+     - Test error conditions and edge cases
 
-## References
+4. **Phase 4: Integration Testing**
+   - Test end-to-end flow from order creation to execution
+   - Validate predicate execution with bytecode deployment
+   - Test solver service integration with Tycho-indexer
+   - Verify treasury transfers and balance calculations
 
-### Code
+5. **Phase 5: Optimization and Security**
+   - Implement gas optimization strategies
+   - Add comprehensive error handling
+   - Implement MEV protection mechanisms
+   - Add monitoring and logging capabilities
 
-- [Limit Order SDK](https://github.com/1inch/limit-order-sdk):1inch Limit Order Protocol v4 SDK
-- [Cross Chain Resolver Example](https://github.com/1inch/cross-chain-resolver-example): An example Cross Chain Resolver
-- [Cross Chain SDK](https://github.com/1inch/cross-chain-sdk): SDK for creating atomic swaps through 1inch
-- [p2p network (Relayer)](https://github.com/1inch/p2p-network): consists of several key components that work in concert to provide a decentralized service layer for Web3 applications.
-  - [Relayer Node](https://github.com/1inch/p2p-network/blob/dev/cmd/relayer/README.md): The Relayer Node enables clients to interact with the decentralized network. It utilizes HTTP for SDP signaling and WebRTC data channels on the front-facing API while communicating with Resolver nodes through gRPC requests.
-  - [Resolver](https://github.com/1inch/p2p-network/blob/dev/cmd/resolver/README.md): Resolver application serves as a lowest-level endpoint in the p2p-network architecture. It processes requests received from the relayer and forwards them to the API(s) that it wraps.
-  - [LP Hub BackRunner](https://github.com/itskillian/hookathon-hooks/blob/02cedce8376943267be9582094ec544eede78e4e/src/ArbPinHook.sol#L205)
+6. **Phase 6: Deployment and Monitoring**
+   - Deploy contracts with proper bytecode generation
+   - Set up monitoring for solver service
+   - Implement alerting for failed solves
+   - Add analytics for treasury performance
 
-Price Discovery
+## Stop Loss and Profit Taking Orders
 
-- [ChainLinkCalculator](https://github.com/1inch/limit-order-protocol/blob/master/contracts/extensions/ChainlinkCalculator.sol)
-- [Tycho Simulation TokenProxy](https://github.com/propeller-heads/tycho-simulation/blob/main/token-proxy/src/TokenProxy.sol)
-- [SkySwap Oracle Manager](https://github.com/SkyYap/SkySwap/blob/main/src/OracleManager.sol)
-- [Yolo Protocol Oracle](https://github.com/YOLO-Protocol/yolo-core-v0/tree/main/src/oracles)
-- [Euler Price Oracle](https://github.com/euler-xyz/euler-price-oracle): See adapters below
+### Oracle Example Order
 
-| Adapter                                                             | Type     | Method | Supported Pairs         | Parameters                                   |
-| ------------------------------------------------------------------- | -------- | ------ | ----------------------- | -------------------------------------------- |
-| [ChainlinkOracle](src/adapter/chainlink/ChainlinkOracle.sol)        | External | Push   | Provider feeds          | feed, max staleness                          |
-| [ChronicleOracle](src/adapter/chainlink/ChronicleOracle.sol)        | External | Push   | Provider feeds          | feed, max staleness                          |
-| [PythOracle](src/adapter/pyth/PythOracle.sol)                       | External | Pull   | Provider feeds          | feed, max staleness, max confidence interval |
-| [RedstoneCoreOracle](src/adapter/redstone/RedstoneCoreOracle.sol)   | External | Pull   | Provider feeds          | feed, max staleness, cache ttl               |
-| [LidoOracle](src/adapter/lido/LidoOracle.sol)                       | Onchain  | Rate   | wstETH/stETH            | -                                            |
-| [LidoFundamentalOracle](src/adapter/lido/LidoFundamentalOracle.sol) | Onchain  | Rate   | wstETH/ETH              | -                                            |
-| [UniswapV3Oracle](src/adapter/uniswap/UniswapV3Oracle.sol)          | Onchain  | TWAP   | UniV3 pools             | fee, twap window                             |
-| [PendleOracle](src/adapter/pendle/PendleOracle.sol)                 | Onchain  | TWAP   | Pendle markets          | pendle market, twap window                   |
-| [RateProviderOracle](src/adapter/rate/RateProviderOracle.sol)       | Onchain  | Rate   | Balancer rate providers | rate provider                                |
-| [FixedRateOracle](src/adapter/fixed/FixedRateOracle.sol)            | Onchain  | Rate   | Any                     | rate                                         |
+![OracleExampleOrder](https://hackmd.io/_uploads/ByKclv3Del.png)
 
-NEAR Integration
+### Oracle Order Integration
 
-- [Jincubator Near Fusion+](https://github.com/jincubator-united-defi-2025/near-fusion-plus)
-- [Cargo Near](https://github.com/near/cargo-near)
-- [Donation Examples](https://github.com/near-examples/donation-examples)
-- Frontend: `npx create-near-app@latest`
-- Solver manager and deployer https://github.com/jincubator-united-defi-2025/tee-solver
-- Solver https://github.com/jincubator-united-defi-2025/near-intents-tee-amm-solver
-- [Near Intents](https://docs.near.org/chain-abstraction/intents/overview)
-  - https://near-intents.org/
+![OracleIntegration](https://hackmd.io/_uploads/ry6slPnvxg.png)
 
-### Documentation
+### Overview
 
-- [Limit order protocol v4](https://github.com/1inch/limit-order-protocol/blob/master/description.md): Technical documentation for 1nch Limit Order Protocol including Order Extensions
-- [1inch OrderBook API](https://portal.1inch.dev/documentation/apis/orderbook/introduction): 1inch Orderbook API is using the 1inch Limit Order Protocol, which is a set of smart contracts that can work on any EVM-based blockchains. Key features of the protocol are extreme flexibility and high gas efficiency.
-- [1inch Fusion+ (intent-based atomic cross-chain swaps)](https://portal.1inch.dev/documentation/apis/swap/fusion-plus/introduction): built on the cross-chain-sdk
-- [1inch Cross-chain swaps - Fusion+ Tanner Moore](https://www.youtube.com/watch?v=EnHov0tCalU&t=860s)
+The OracleCalculator extension is a powerful addition to the 1inch Limit Order Protocol that enables dynamic pricing based on Chainlink oracle data. This extension allows orders to be filled at prices that are calculated on-chain using real-time oracle feeds, making it possible to create orders that automatically adjust to market conditions.
 
-NEAR Integration
+### 1. What the OracleCalculator Extension Does
 
-- [Near Smart Contracts](https://dev.near.org/documentation/smart-contracts/what-is)
-- [NEAR Rust SDK Documentation](https://docs.near.org/sdk/rust/introduction)
+The OracleCalculator extension serves as an `IAmountGetter` implementation that:
 
-### Prize Streams
+- **Calculates dynamic exchange rates** using Chainlink oracle data
+- **Supports both single and double oracle pricing** for different token pairs
+- **Applies configurable spreads** to provide maker/taker incentives
+- **Handles inverse pricing** for tokens quoted in different base currencies
+- **Validates oracle freshness** to ensure price data is current (within 4 hours)
+- **Integrates with predicates** for conditional order execution
 
-#### 🍾 Expand Limit Order Protocol ⸺ $65,000 ($10,000 x 3, $7,000 x 3, $3500 x 4 )
+#### Key Features:
 
-1inch Limit Order Protocol is an onchain orderbook that can be extended to do much more. Build advanced strategies and hooks for the 1inch Limit Order Protocol like options, concentrated liquidity, TWAP swaps, etc.
+1. **Single Oracle Pricing**: Uses one oracle to price a token relative to ETH or USD
+2. **Double Oracle Pricing**: Uses two oracles to price custom token pairs (e.g., INCH/DAI)
+3. **Spread Application**: Applies maker and taker spreads to create profitable order books
+4. **Inverse Flag Support**: Handles cases where oracle prices need to be inverted
+5. **Oracle Freshness Check**: Ensures oracle data is not stale (within 4 hours TTL)
 
-Qualification Requirements:
+### 2. Types of Orders That Can Be Created
 
-- Onchain execution of strategy should be presented during the final demo
-- Custom Limit Orders should not be posted to official Limit Order API
-- Consistent commit history should be in the GitHub project. No low or single-commit entries allowed!
+#### A. Single Oracle Orders
 
-Stretch goals (not hard requirements):
+Orders that use one Chainlink oracle to price a token relative to ETH or USD:
 
-- UI
+- **ETH → DAI**: Using DAI/ETH oracle
+- **DAI → ETH**: Using DAI/ETH oracle with inverse flag
+- **WETH → USDC**: Using USDC/ETH oracle
+- **USDC → WETH**: Using USDC/ETH oracle with inverse flag
 
-#### 🌐 Extend Fusion+ to Near ⸺ $32,000 ($12,000, $7,500, $5,000, 4,000, $3500)
+#### B. Double Oracle Orders
 
-Build a novel extension for 1inch Cross-chain Swap (Fusion+) that enables swaps between Ethereum and Near.
+Orders that use two oracles to price custom token pairs:
 
-Qualification Requirements:
+- **INCH → DAI**: Using INCH/ETH and DAI/ETH oracles
+- **DAI → INCH**: Using DAI/ETH and INCH/ETH oracles
+- **Custom Token Pairs**: Any combination of tokens with available oracles
 
-- Preserve hashlock and timelock functionality for the non-EVM implementation
-- Swap functionality should be bidirectional (swaps should be possible to and from Ethereum)
-- Onchain (mainnet or testnet) execution of token transfers should be presented during the final demo
+#### C. Conditional Orders (Predicates)
 
-Stretch goals (not hard requirements):
+Orders that only execute under specific oracle conditions:
 
-- UI
-- Enable partial fills
-- Relayer and resolver
+- **Stop-Loss Orders**: Execute only when price falls below threshold
+- **Take-Profit Orders**: Execute only when price rises above threshold
+- **Range Orders**: Execute only within specific price ranges
 
-#### 🔗 Best 1inch Fusion+ Solver Built with NEAR's Shade Agent Framework ⸺ $10,000 (2x $5000)
+### 3. Fields Passed to the Extension and How They Are Populated
 
-Build a decentralized solver that integrates with 1inch Fusion+ for cross-chain swaps using NEAR's Shade Agent Framework and Trusted Execution Environment.
+#### Extension Data Structure
 
-There is an existing decentralized NEAR Intents solver here:
+The extension data is passed as `bytes calldata extraData` to the `getMakingAmount` and `getTakingAmount` functions:
 
-- Solver manager and deployer https://github.com/Near-One/tee-solver/
-- Solver https://github.com/think-in-universe/near-intents-tee-amm-solver/tree/feat/tee-solver
+```solidity
+function getMakingAmount(
+    IOrderMixin.Order calldata order,
+    bytes calldata extension,
+    bytes32 orderHash,
+    address taker,
+    uint256 takingAmount,
+    uint256 remainingMakingAmount,
+    bytes calldata extraData  // ← Extension data here
+) external view returns (uint256)
+```
 
-It listens for intents, generates quotes, and submits them for execution on NEAR Intents. Your task is to build a similar system that works with 1inch Fusion+ and its meta-order format. Make sure the solver is created using NEAR’s Shade Agent Framework and is deployed in a Trusted Execution Environment.
+#### Single Oracle Data Format
 
-The Shade Agent Framework allows you to build decentralized solvers, enabling users to delegate and provide liquidity to solvers without requiring trust that the solver will behave correctly or having to set up their own solver.
+For single oracle pricing, the `extraData` contains:
 
-Qualification Requirements:
+```
+[1 byte flags][20 bytes oracle address][32 bytes spread]
+```
 
-Your solver must listen for quote requests (mocked or real), produce valid 1inch Fusion meta-orders using NEAR's Chain Signatures, include comprehensive documentation with setup instructions, and demonstrate end-to-end functionality. Bonus points for modular architecture that extends to other protocols.
+**Flags Byte:**
+
+- Bit 7 (0x80): Inverse flag - if set, invert the oracle price
+- Bit 6 (0x40): Double price flag - if set, use double oracle mode
+- Bits 0-5: Reserved
+
+**Example:**
+
+```solidity
+// DAI/ETH oracle at 0x1234... with 0.99 spread, no inverse
+bytes memory data = abi.encodePacked(
+    bytes1(0x00),           // flags: no inverse, no double price
+    address(daiOracle),      // oracle address
+    uint256(990000000)       // spread: 0.99 (990000000 / 1e9)
+);
+```
+
+#### Double Oracle Data Format
+
+For double oracle pricing, the `extraData` contains:
+
+```
+[1 byte flags][20 bytes oracle1][20 bytes oracle2][32 bytes decimalsScale][32 bytes spread]
+```
+
+**Example:**
+
+```solidity
+// INCH/DAI pricing using INCH/ETH and DAI/ETH oracles
+bytes memory data = abi.encodePacked(
+    bytes1(0x40),           // flags: double price mode
+    address(inchOracle),     // oracle1: INCH/ETH
+    address(daiOracle),      // oracle2: DAI/ETH
+    int256(0),              // decimalsScale: no adjustment
+    uint256(1010000000)     // spread: 1.01 (1010000000 / 1e9)
+);
+```
+
+#### How Fields Are Populated
+
+1. **Oracle Addresses**: Retrieved from Chainlink's oracle registry or deployment
+2. **Spreads**: Calculated based on desired maker/taker incentives (typically 0.99 for maker, 1.01 for taker)
+3. **Flags**: Set based on pricing requirements (inverse needed, double oracle needed)
+4. **Decimals Scale**: Used to adjust for different oracle decimal precisions
+
+### 4. Test Case Walkthrough
+
+#### Test Case 1: ETH → DAI Chainlink Order
+
+**Scenario**: Maker wants to sell 1 ETH for DAI at oracle price with spreads
+
+**Order Details:**
+
+- Maker: makerAddr
+- Taker: takerAddr
+- Maker Asset: WETH (1 ether)
+- Taker Asset: DAI (4000 ether)
+- Oracle: DAI/ETH at 0.00025 ETH per DAI (1 ETH = 4000 DAI)
+
+**Extension Data:**
+
+```solidity
+// Making amount data (maker spread: 0.99)
+bytes memory makingAmountData = abi.encodePacked(
+    chainlinkCalcAddress,    // Calculator address
+    bytes1(0x00),           // No inverse flag
+    oracleAddress,           // DAI oracle
+    uint256(990000000)       // 0.99 spread
+);
+
+// Taking amount data (taker spread: 1.01)
+bytes memory takingAmountData = abi.encodePacked(
+    chainlinkCalcAddress,    // Calculator address
+    bytes1(0x80),           // Inverse flag set
+    oracleAddress,           // DAI oracle
+    uint256(1010000000)     // 1.01 spread
+);
+```
+
+**Execution Flow:**
+
+1. Taker calls `fillOrderArgs` with 4000 DAI
+2. Protocol calls `getTakingAmount` with 4000 DAI
+3. Calculator applies 1.01 spread: 4000 \* 1.01 = 4040 DAI
+4. Protocol calls `getMakingAmount` with 4040 DAI
+5. Calculator applies 0.99 spread: 4040 \* 0.99 / 4000 = 0.99 ETH
+6. Order executes: taker receives 0.99 ETH, maker receives 4000 DAI
+
+**Result**: Taker pays 4000 DAI, receives 0.99 ETH (effective rate: 1 ETH = 4040.4 DAI)
+
+#### Test Case 2: DAI → ETH Chainlink Order
+
+**Scenario**: Maker wants to sell 4000 DAI for ETH at oracle price
+
+**Order Details:**
+
+- Maker: makerAddr
+- Taker: takerAddr
+- Maker Asset: DAI (4000 ether)
+- Taker Asset: WETH (1 ether)
+- Oracle: DAI/ETH at 0.00025 ETH per DAI
+
+**Extension Data:**
+
+```solidity
+// Making amount data (inverse + maker spread)
+bytes memory makingAmountData = abi.encodePacked(
+    chainlinkCalcAddress,
+    bytes1(0x80),           // Inverse flag
+    oracleAddress,
+    uint256(990000000)       // 0.99 spread
+);
+
+// Taking amount data (no inverse + taker spread)
+bytes memory takingAmountData = abi.encodePacked(
+    chainlinkCalcAddress,
+    bytes1(0x00),           // No inverse flag
+    oracleAddress,
+    uint256(1010000000)     // 1.01 spread
+);
+```
+
+**Execution Flow:**
+
+1. Taker calls with `makingAmount` flag set to true
+2. Protocol calls `getMakingAmount` with 4000 DAI
+3. Calculator applies inverse + 0.99 spread: 4000 \* 0.99 / 4000 = 0.99 ETH
+4. Protocol calls `getTakingAmount` with 0.99 ETH
+5. Calculator applies 1.01 spread: 0.99 \* 1.01 = 1.01 ETH
+6. Order executes: taker receives 4000 DAI, maker receives 1.01 ETH
+
+**Result**: Taker pays 1.01 ETH, receives 4000 DAI (effective rate: 1 ETH = 3960.4 DAI)
+
+#### Test Case 3: INCH → DAI Double Oracle Order
+
+**Scenario**: Maker wants to sell 100 INCH for DAI using double oracle pricing
+
+**Order Details:**
+
+- Maker: makerAddr
+- Taker: takerAddr
+- Maker Asset: INCH (100 ether)
+- Taker Asset: DAI (632 ether)
+- Oracles: INCH/ETH (0.0001577615249227853 ETH) and DAI/ETH (0.00025 ETH)
+
+**Extension Data:**
+
+```solidity
+// Making amount data (double oracle + maker spread)
+bytes memory makingAmountData = abi.encodePacked(
+    chainlinkCalcAddress,
+    bytes1(0x40),           // Double price flag
+    address(daiOracle),      // Oracle1: DAI/ETH
+    address(inchOracle),     // Oracle2: INCH/ETH
+    int256(0),              // No decimals adjustment
+    uint256(990000000)       // 0.99 spread
+);
+
+// Taking amount data (double oracle + taker spread)
+bytes memory takingAmountData = abi.encodePacked(
+    chainlinkCalcAddress,
+    bytes1(0x40),           // Double price flag
+    address(inchOracle),     // Oracle1: INCH/ETH
+    address(daiOracle),      // Oracle2: DAI/ETH
+    int256(0),              // No decimals adjustment
+    uint256(1010000000)     // 1.01 spread
+);
+```
+
+**Execution Flow:**
+
+1. Taker calls with `makingAmount` flag set to true
+2. Protocol calls `getMakingAmount` with 100 INCH
+3. Calculator applies double oracle calculation:
+   - INCH price in ETH: 0.0001577615249227853
+   - DAI price in ETH: 0.00025
+   - INCH/DAI rate: 0.0001577615249227853 / 0.00025 = 0.631046
+   - With 0.99 spread: 100 _ 0.631046 _ 0.99 = 62.47 DAI
+4. Protocol calls `getTakingAmount` with 62.47 DAI
+5. Calculator applies inverse calculation with 1.01 spread
+6. Order executes with calculated amounts
+
+**Result**: Complex pricing based on two oracle feeds with spread adjustments
+
+#### Test Case 4: Stop-Loss Order with Predicate
+
+**Scenario**: Maker wants to sell INCH for DAI only if INCH/DAI price falls below 6.32
+
+**Order Details:**
+
+- Maker: makerAddr
+- Taker: takerAddr
+- Maker Asset: INCH (100 ether)
+- Taker Asset: DAI (631 ether)
+- Predicate: INCH/DAI price < 6.32
+
+**Predicate Construction:**
+
+```solidity
+// Build price call for predicate
+bytes memory priceCall = abi.encodeWithSelector(
+    OracleCalculator .doublePrice.selector,
+    inchOracle,    // INCH/ETH oracle
+    daiOracle,     // DAI/ETH oracle
+    int256(0),     // No decimals adjustment
+    1 ether        // Base amount
+);
+
+// Build predicate call
+bytes memory predicate = abi.encodeWithSelector(
+    swap.lt.selector,        // Less than comparison
+    6.32 ether,             // Threshold: 6.32
+    abi.encodeWithSelector(
+        swap.arbitraryStaticCall.selector,
+        address(oracleCalculator ),
+        priceCall
+    )
+);
+```
+
+**Execution Flow:**
+
+1. Order fill is attempted
+2. Protocol evaluates predicate before execution
+3. Predicate calls `OracleCalculator .doublePrice()` with oracle data
+4. Calculated INCH/DAI price is compared to 6.32 threshold
+5. If price < 6.32: order executes normally
+6. If price ≥ 6.32: order reverts with predicate failure
+
+**Result**: Order only executes when INCH/DAI price is below the specified threshold
+
+#### Test Case 5: Simple Order Without Extension
+
+**Scenario**: Basic order without any Chainlink integration
+
+**Order Details:**
+
+- Maker: makerAddr
+- Taker: takerAddr
+- Maker Asset: WETH (1 ether)
+- Taker Asset: DAI (4000 ether)
+- No extensions or predicates
+
+**Execution Flow:**
+
+1. Taker calls `fillOrderArgs` with 4000 DAI
+2. No extension data provided
+3. Protocol uses default proportional calculation
+4. Order executes at fixed 1:4000 ratio
+
+**Result**: Simple fixed-rate order execution without dynamic pricing
+
+### Key Implementation Details
+
+#### Oracle Freshness Check
+
+```solidity
+if (updatedAt + _ORACLE_TTL < block.timestamp) revert StaleOraclePrice();
+```
+
+- Ensures oracle data is not older than 4 hours
+- Prevents execution with stale price data
+
+#### Spread Application
+
+```solidity
+return spread * amount * latestAnswer.toUint256() / (10 ** oracle.decimals()) / _SPREAD_DENOMINATOR;
+```
+
+- Spreads are applied as multipliers (e.g., 990000000 = 0.99)
+- `_SPREAD_DENOMINATOR = 1e9` for 9-decimal precision
+
+#### Double Oracle Calculation
+
+```solidity
+result = amount * latestAnswer1.toUint256();
+if (decimalsScale > 0) {
+    result *= 10 ** decimalsScale.toUint256();
+} else if (decimalsScale < 0) {
+    result /= 10 ** (-decimalsScale).toUint256();
+}
+result /= latestAnswer2.toUint256();
+```
+
+- Calculates cross-oracle pricing for custom token pairs
+- Handles decimal precision adjustments between oracles
+
+This extension enables sophisticated DeFi applications that can automatically adjust to market conditions while providing liquidity providers with profitable spreads.
+
+## Treasury Management
+
+### Treasury Management Flow
+
+![TreasuryInteraction](https://hackmd.io/_uploads/BkDBWwhDee.png)
+
+### Rebalancer Requirements
+
+1. Create an Interaction Contract called RebalancerInteraction.sol (in the src directory)
+2. Create a test contract called RebalancerInteraction.t.sol (in the test directory)
+3. In RebalancerInteraction.t.sol
+   1. Create test scenarios the same as in OracleCalculator .t.sol
+   2. Add to that an Interaction using RebalancerInteraction.sol which
+      1. Takes the output tokens the taker receives
+      2. Transfers them to a third wallet (addr3) which is a treasurer
+      3. If the transfer fails reject the order.
+
+### Rebalancer Implementation
+
+The Rebalancer implementation has been successfully completed with the following components:
+
+### 1. RebalancerInteraction.sol (src directory)
+
+**Purpose**: Post-interaction contract that transfers output tokens to a treasurer wallet after successful order execution.
+
+**Key Features**:
+
+- Implements `IPostInteraction` interface for Limit Order Protocol integration
+- Transfers the taker's received tokens (maker asset) to a designated treasurer address
+- Uses `SafeERC20` for secure token transfers with proper error handling
+- Reverts the entire order if transfer fails, ensuring atomic execution
+- Emits `TokensTransferredToTreasurer` events for successful transfers
+- Validates treasurer address in constructor to prevent zero address usage
+
+**Core Functionality**:
+
+```solidity
+function postInteraction(
+    IOrderMixin.Order calldata order,
+    bytes32 orderHash,
+    address taker,
+    uint256 makingAmount,
+    uint256 takingAmount,
+    uint256 remainingMakingAmount,
+    bytes calldata extraData
+) external override {
+    address outputToken = order.makerAsset;
+    uint256 outputAmount = makingAmount;
+
+    try IERC20(outputToken).safeTransferFrom(taker, treasurer, outputAmount) {
+        emit TokensTransferredToTreasurer(outputToken, taker, treasurer, outputAmount);
+    } catch {
+        revert TransferFailed();
+    }
+}
+```
+
+### 2. RebalancerInteraction.t.sol (test directory)
+
+**Purpose**: Comprehensive test suite that replicates all OracleCalculator scenarios with added treasurer functionality.
+
+**Test Coverage**:
+
+- **Single Oracle Orders**: ETH→DAI, DAI→ETH with treasurer receiving output tokens
+- **Double Oracle Orders**: INCH→DAI with complex pricing and treasurer transfer
+- **Conditional Orders**: Stop-loss orders with predicate validation and treasurer transfer
+- **Simple Orders**: Basic orders without Chainlink but with treasurer transfer
+- **Failure Scenarios**: Tests unauthorized transfers that should revert
+
+**Test Scenarios Implemented**:
+
+1. `test_eth_to_dai_chainlink_order_with_rebalancer()` - Single oracle ETH→DAI
+2. `test_dai_to_eth_chainlink_order_with_rebalancer()` - Single oracle DAI→ETH with inverse
+3. `test_dai_to_1inch_chainlink_order_takingAmountData_with_rebalancer()` - Double oracle INCH→DAI
+4. `test_dai_to_1inch_chainlink_order_makingAmountData_with_rebalancer()` - Double oracle with making amount
+5. `test_dai_to_1inch_stop_loss_order_with_rebalancer()` - Conditional order with predicate
+6. `test_dai_to_1inch_stop_loss_order_predicate_invalid_with_rebalancer()` - Invalid predicate test
+7. `test_eth_to_dai_stop_loss_order_with_rebalancer()` - ETH→DAI with stop-loss
+8. `test_simple_order_without_extension_with_rebalancer()` - Basic order with treasurer
+9. `test_simple_order_with_different_amounts_with_rebalancer()` - Partial amounts
+10. `test_rebalancer_transfer_failure()` - Failure scenario testing
+
+### 3. Key Implementation Details
+
+#### **Post-Interaction Integration**
+
+- Each test includes `buildPostInteractionCalldata(address(rebalancerInteraction))`
+- Post-interaction data is added to order extensions via `PostInteractionData`
+- Treasurer (addr3) receives the output tokens after successful order execution
+
+#### **Transfer Logic**
+
+- **Takes output tokens**: The tokens the taker receives (maker asset from the order)
+- **Transfers to treasurer**: Moves tokens to addr3 (treasurer wallet) using `safeTransferFrom`
+- **Rejects order on failure**: If transfer fails, entire order reverts with `TransferFailed` error
+
+#### **Test Verification**
+
+Each test verifies:
+
+1. **Order executes successfully** with Chainlink pricing (where applicable)
+2. **Treasurer receives tokens**: `assertEq(token.balanceOf(addr3), expectedAmount)`
+3. **All balances are correct** for maker, taker, and treasurer
+4. **Failure scenarios revert** when transfers are unauthorized
+
+#### **Error Handling**
+
+- **TransferFailed**: Reverts entire order if `safeTransferFrom` fails
+- **InvalidTreasurer**: Prevents deployment with zero address treasurer
+- **Predicate failures**: Orders with invalid predicates revert before interaction
+
+### 4. Integration with Limit Order Protocol
+
+The implementation seamlessly integrates with the existing Limit Order Protocol:
+
+- **Extension System**: Uses `PostInteractionData` extension for post-execution callbacks
+- **Order Flow**: Maintains existing order execution flow while adding treasurer transfer
+- **Atomic Execution**: Ensures either complete success (order + transfer) or complete failure
+- **Event Emission**: Provides transparency through `TokensTransferredToTreasurer` events
+
+### 5. Security Considerations
+
+- **SafeERC20**: Uses OpenZeppelin's SafeERC20 for secure token transfers
+- **Try-Catch**: Graceful error handling prevents partial state changes
+- **Address Validation**: Constructor validates treasurer address
+- **Atomic Operations**: Order reverts entirely if transfer fails
+- **Authorization**: Relies on existing token approval mechanisms
+
+### 6. Use Cases
+
+This implementation enables:
+
+- **Automated Treasury Management**: Automatic transfer of trading profits to treasury
+- **Risk Management**: Centralized control of trading outputs
+- **Compliance**: Regulatory requirements for fund segregation
+- **Portfolio Rebalancing**: Systematic reallocation of trading proceeds
+
+The Rebalancer implementation successfully meets all requirements from the specification and provides a robust, secure, and comprehensive solution for automated treasury management in limit order trading.
+
+### Test Results
+
+**10 out of 10 tests passing (100% success rate)**
+
+#### ✅ **All Tests Passing:**
+
+1. `test_eth_to_dai_chainlink_order_with_rebalancer()` - Single oracle ETH→DAI
+2. `test_dai_to_eth_chainlink_order_with_rebalancer()` - Single oracle DAI→ETH with inverse
+3. `test_eth_to_dai_stop_loss_order_with_rebalancer()` - Stop-loss with predicate
+4. `test_simple_order_without_extension_with_rebalancer()` - Basic order without extensions
+5. `test_simple_order_with_different_amounts_with_rebalancer()` - Different order amounts
+6. `test_rebalancer_transfer_failure()` - Transfer failure handling
+7. `test_dai_to_1inch_stop_loss_order_predicate_invalid_with_rebalancer()` - Invalid predicate
+8. `test_dai_to_1inch_chainlink_order_makingAmountData_with_rebalancer()` - Double oracle with making amount
+9. `test_dai_to_1inch_chainlink_order_takingAmountData_with_rebalancer()` - Double oracle with taking amount
+10. `test_dai_to_1inch_stop_loss_order_with_rebalancer()` - Complex double oracle with stop-loss predicate
+
+#### 🎯 **Core Functionality Verified:**
+
+- ✅ Post-interaction transfers tokens to treasurer
+- ✅ Proper token approvals and transfers
+- ✅ Balance verification accounting for treasurer transfers
+- ✅ Error handling with transfer failures
+- ✅ Atomic execution (orders either complete fully or revert entirely)
+- ✅ Support for multiple token types (WETH, DAI, INCH)
+- ✅ Complex oracle-based pricing scenarios
+
+## Resource Management
+
+### Resource Management Architecture
+
+![ResourceArchitecture](https://hackmd.io/_uploads/S12jGDhPge.png)
+
+### Resource Management Components
+
+![ResourceComponents](https://hackmd.io/_uploads/HJ-pzD3Peg.png)
+
+### Requirements
+
+1. Read lib\the-compact\README.md (open in editor) to understand how the compact works
+2. We are looking to create an end to end flow where
+   1. We register a new contract ResourceManager.sol as a ResourceManager
+   2. We Register ChainLinkCompactInteraction.sol as the Arbiter
+   3. The Maker (the Swapper in compact terms signs permission for their tokens (or ETH) to be stored in the-compact as ERC-6909)
+   4. ChainLinkCompact.sol checks that the we have a ResourceLock for the amount required.
+   5. ChainLinkCompact then executes the trade using the same logic that was in ChainLinkCalculator and creates a resource lock for their (tokens/ETH)
+   6. ChainLinkCompactInteraction is copied from RebalancerInteraction it takes the output tokens provided by the Taker and
+   7. If they are >= TakerAmount then it calls the ResourceManager to lock the funds
+   8. It then does the token transfer to the treasurer the same as it was done in the original RebalancerInteraction
+
+### Design Questions
+
+1. **Resource Manager Registration**: How should we register the LimitOrderProtocol as a ResourceManager in The Compact? Should it be a separate contract or integrated directly?
+   1. Answer: We are registering it as a separate contract let's call it ResourceManager.sol and this contract will be called by ChainLinkCompact to lock the resources before calling the swap on LimitOrderProtocl
+
+2. **Arbiter Implementation**: Should ChainLinkCompactInteraction.sol be a standalone arbiter or integrated with existing ChainLinkCalculator logic?
+   1. Answer: It should be Standalone ChainLinkCalculator and RebalancerInteraction remain unchanged
+
+3. **Token Locking Strategy**: Should makers lock their entire balance upfront or lock tokens dynamically when orders are matched?
+   1. Answer: Initially Lock their whole balance
+
+4. **Resource Lock Scope**: Should resource locks be chain-specific or multichain for cross-chain order execution?
+   1. Answer: Chain-specific
+
+5. **Allocator Selection**: Which allocator should we use for the resource locks? Should we create a custom allocator or use existing ones like Smallocator/Autocator?
+   1. Answer: Create a custom Allocator based on Autocator(which is used for End User signing which is the Maker in our case)
+   2. The logic for calling this should be in ChainLinkCompact.t.sol
+   3. Moving forward we will also create a custom Smallocator used when smart contract call this
+
+6. **EIP-712 Signature Structure**: How should we structure the EIP-712 signatures for the compact agreements? Should we include mandate data for additional conditions?
+   1. Answer: For Phase 1 we do not need to add mandate data or Solver Payloads we will incorporate those in a later phase
+
+7. **Fallback Mechanisms**: What should happen if the arbiter fails to process a claim? Should we implement emissary fallbacks?
+   1. If an arbiter fails to process the claim the swap should revert
+
+8. **Gas Optimization**: How can we optimize gas usage for the ERC-6909 integration, especially for batch operations?
+   1. We will optimize gas in phase 2
+
+9. **Error Handling**: How should we handle cases where resource locks are insufficient or expired?
+   1. We revert the transaction with custom errors stating the reason for the failure
+
+10. **Integration Points**: Should the ERC-6909 functionality be optional (opt-in) or mandatory for all orders?
+    1. Optional set by a boolean ERC-6909 flag for now
+    2. Later this may move to an enum with additional swap types
+
+### Implementation
+
+#### Phase 1: Core Contract Development
+
+1. **Create ResourceManager.sol** - New contract
+   - Register as ResourceManager in The Compact
+   - Handle resource lock creation and management for makers
+   - Implement allocator integration for order validation
+   - Called by ChainLinkCompact to lock resources before swap execution
+
+2. **Create ChainLinkCompact.sol** - Copy from ChainLinkCalculator.sol
+   - Add ERC-6909 flag for optional functionality
+   - Integrate with The Compact for resource lock verification
+   - Add ERC-6909 token validation before order execution
+   - Call ResourceManager.sol to lock resources before LimitOrderProtocol execution
+   - Implement custom error handling for insufficient/expired locks
+
+3. **Create ChainLinkCompactInteraction.sol** - Copy from RebalancerInteraction.sol
+   - Implement IArbiter interface for The Compact
+   - Add resource lock creation for taker's output tokens
+   - Maintain treasurer transfer functionality
+   - Add EIP-712 signature verification for compact agreements
+   - Revert entire transaction if arbiter fails to process claim
+
+4. **Create Custom Allocator** - Based on Autocator
+   - Implement IAllocator interface
+   - Handle end-user (Maker) signing authorization
+   - Add nonce management for compact claims
+   - Implement claim authorization logic
+   - Logic for calling this should be in ChainLinkCompact.t.sol
+
+#### Phase 2: Integration & Testing
+
+5. **Compact Registration System**
+   - Implement EIP-712 signature generation for makers (no mandate data for Phase 1)
+   - Create compact registration functions
+   - Add chain-specific resource lock scope
+   - Implement upfront token locking strategy
+
+6. **Testing Suite**
+   - Unit tests for each contract
+   - Integration tests for end-to-end flow
+   - Test ERC-6909 flag functionality
+   - Test custom error handling scenarios
+
+#### Phase 3: Advanced Features
+
+7. **Gas Optimization**
+   - Optimize gas usage for ERC-6909 integration
+   - Implement batch operations optimization
+   - Profile and optimize critical paths
+
+8. **Enhanced Features**
+   - Add mandate data structure for order conditions
+   - Implement multichain support
+   - Create custom Smallocator for smart contract calls
+   - Add emissary fallback mechanisms
+   - Implement enum for additional swap types beyond boolean flag
+
+### Technical Architecture
+
+**Core Flow:**
+
+1. Maker deposits tokens into The Compact (creates ERC-6909 resource lock)
+2. Maker signs EIP-712 compact agreement with arbiter (ChainLinkCompactInteraction)
+3. Order is posted to LimitOrderProtocol with ERC-6909 extension
+4. Taker fills order through ChainLinkCompact.sol
+5. ChainLinkCompactInteraction processes claim:
+   - Verifies resource lock availability
+   - Executes trade using ChainLinkCalculator logic
+   - Creates new resource lock for taker's output tokens
+   - Transfers tokens to treasurer
+   - Calls ResourceManager to lock funds
+
+**Key Interfaces:**
+
+- `ITheCompact` - For resource lock management
+- `IAllocator` - For claim authorization
+- `IArbiter` - For claim processing
+- `IEmissary` - For fallback verification
+
+**Data Structures:**
+
+- `Compact` - EIP-712 payload for single resource lock
+- `BatchCompact` - EIP-712 payload for multiple resource locks
+- `Mandate` - Witness data for order conditions
+- `Claim` - Claim payload for processing
+
+### Future Test Enhancements
+
+For ERC-6909 integration, additional test categories will be needed:
+
+1. **ERC-6909 Resource Lock Tests**
+   - Resource lock creation and validation
+   - Insufficient lock handling
+   - Lock expiration scenarios
+
+2. **Compact Integration Tests**
+   - EIP-712 signature verification
+   - Compact agreement validation
+   - Arbiter claim processing
+
+3. **Resource Manager Tests**
+   - Lock management functionality
+   - Allocator integration
+   - Error handling for resource conflicts
+
+4. **End-to-End Flow Tests**
+   - Complete maker-to-taker flow
+   - Treasurer integration
+   - Cross-contract interaction validation
+
+## NEAR FUSION+ Smart Contract Development
+
+### NEAR Smart Contract Architecture
+
+![NEARArchitecture](https://hackmd.io/_uploads/HydB7D3Pxe.png)
+
+### NEAR Limit Order Protocol Contracts
+
+![NEARLimitOrder](https://hackmd.io/_uploads/Hkg8QPnvee.png)
+
+### NEAR Escrow Smart Contracts
+
+![NEAR Escrow](https://hackmd.io/_uploads/S1tqDDhvgg.png)
+
+### Overview
+
+NEAR Fusion+ is a comprehensive DeFi protocol that migrates 1inch's Limit Order Protocol and Cross-Chain Swap functionality to the NEAR blockchain. This project implements advanced trading features including limit orders, cross-chain atomic swaps, and sophisticated escrow mechanisms.
+
+### Architecture
+
+The protocol consists of several interconnected smart contracts that work together to provide a complete DeFi trading experience:
+
+#### Core Components
+
+1. **Limit Order Protocol** - Handles limit order creation, execution, and management
+2. **Cross-Chain Swap** - Enables atomic swaps across different blockchains
+3. **Escrow System** - Manages secure fund escrow for cross-chain operations
+4. **Fee Management** - Handles fee collection and distribution
+5. **Merkle Validation** - Provides proof validation for complex order structures
+
+#### Contract Structure
+
+```
+src/
+├── limit-order-protocol/     # Main limit order functionality
+├── cross-chain-swap/         # Cross-chain atomic swap implementation
+├── base-escrow-factory/      # Advanced escrow factory with Merkle validation
+├── escrow-factory/           # Standard escrow factory
+├── escrow-src/              # Source chain escrow contract
+├── escrow-dst/              # Destination chain escrow contract
+├── fee-taker/               # Fee collection and management
+└── merkle-storage-invalidator/ # Merkle proof validation
+```
+
+### Key Features
+
+- **Limit Orders**: Advanced limit order protocol with partial fills and multiple execution strategies
+- **Cross-Chain Swaps**: Atomic swaps between different blockchains with time-locked escrows
+- **Merkle Proofs**: Efficient validation for complex order structures
+- **Fee Management**: Flexible fee collection and distribution mechanisms
+- **Security**: Comprehensive validation and timelock mechanisms
+
+### Documentation Sections
+
+- [Architecture Overview](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.architecture.md)
+- [Contract Documentation](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.contracts/)
+  - [Limit Order Protocol](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.contracts/limit-order-protocol.md)
+  - [Cross-Chain Swap](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.contracts/cross-chain-swap.md)
+  - [Escrow System](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.contracts/escrow-system.md)
+  - [Fee Taker](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.contracts/fee-taker.md)
+  - [Merkle Storage Invalidator](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.contracts/merkle-storage-invalidator.md)
+- [Integration Guide](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.integration.md)
+- [Security Considerations](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.security.md)
+- [API Reference](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.api-reference.md)
+- [Deployment Guide](https://github.com/jincubator-united-defi-2025/near-fusion-plus/protocol/tree/main/docs.deployment.md)
+
+### Quick Start
+
+1. **Build Contracts**: `cargo near build`
+2. **Run Tests**: `cargo test`
+3. **Deploy**: Use the deployment scripts in `deployment-scripts/`
+
+### Development
+
+- **Rust Version**: See `rust-toolchain.toml`
+- **NEAR SDK**: v5.15.1
+- **Testing**: Integration tests in `integration-tests/`
+
+### Contributing
+
+Please refer to the main [README.md](https://github.com/jincubator-united-defi-2025/near-fusion-plus/blob/main/README.md) for development setup and contribution guidelines.
