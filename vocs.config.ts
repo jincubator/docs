@@ -44,6 +44,10 @@ export default defineConfig({
           { text: "Protocol", link: "/research/solving/protocol" },
           { text: "Resource Management", link: "/research/solving/resources" },
           { text: "IntentSwap Flow", link: "/research/solving/flow" },
+          {
+            text: "NoLiquidity Solving (Tycho 1inch)",
+            link: "/research/solving/tycho1inchNOL",
+          },
           { text: "Hook Design - WIP", link: "/research/solving/hooks" },
         ],
       },
