@@ -250,4 +250,15 @@ export default defineConfig({
     ],
     "/partnerships": [{ text: "Partnerships", link: "/partnerships/intro" }],
   },
+  socials: [
+    {
+      icon: "github",
+      link: "https://github.com/jincubator",
+    },
+    {
+      icon: "x",
+      link: "https://twitter.com/jincubatorX",
+    },
+    { icon: "telegram", link: "https://t.me/jincubator" },
+  ],
 });
