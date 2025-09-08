@@ -21,8 +21,8 @@ export default defineConfig({
       link: "/research/intro",
     },
     {
-      text: "Hackathons",
-      link: "/hackathons/intro",
+      text: "Proposals",
+      link: "/proposals/intro",
     },
     {
       text: "Products",
@@ -207,13 +207,14 @@ export default defineConfig({
       },
     ],
 
-    "/hackathons": [
+    "/proposals": [
       {
-        text: "Hackathons",
+        text: "Research Proposals",
         items: [
-          { text: "Unite Defi (2025)", link: "/hackathons/Unite" },
-          { text: "Uniswap Hook Incubator 5 (2025)", link: "/hackathons/UHI5" },
-          { text: "Harmony Hackathon 2021", link: "/hackathons/Harmony" },
+          {
+            text: "Solving and Arbitrage",
+            link: "/proposals/solving-arbitrage",
+          },
         ],
       },
       {
@@ -221,9 +222,17 @@ export default defineConfig({
         items: [
           {
             text: "Tycho Atomic Arbitrage(2025",
-            link: "/hackathons/atomic-arbitrage",
+            link: "/proposals/atomic-arbitrage",
           },
-          { text: "Sunrise Protocol (2020)", link: "/hackathons/sunrise" },
+          { text: "Sunrise Protocol (2020)", link: "/proposals/sunrise" },
+        ],
+      },
+      {
+        text: "Coding Events",
+        items: [
+          { text: "Unite Defi (2025)", link: "/proposals/Unite" },
+          { text: "Uniswap Hook Incubator 5 (2025)", link: "/proposals/UHI5" },
+          { text: "Harmony Hackathon 2021", link: "/proposals/Harmony" },
         ],
       },
     ],
