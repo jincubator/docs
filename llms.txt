@@ -33,11 +33,6 @@
 - [Polymer Labs](/research/bridge/polymerlabs): date: 2023-02-24
 - [Snowbridge](/research/bridge/snowbridge): date: 2023-02-24
 - [Succinct Labs](/research/bridge/succinct): date: 2023-02-24
-- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
-- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
-- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
-- [Code bases and reviews](/research/code/intro): date: 2023-02-04
-- [Celestia](/research/dataAvailabilty/celestia): date: 2023-06-19
 - [Avalanche](/research/chains/avalanche): date: 2023-02-04
 - [Binance Smart Chain](/research/chains/binance): date: 2023-02-04
 - [Cosmos](/research/chains/cosmos): -date: 2023-02-04
@@ -49,6 +44,11 @@ last-updated: 2023-02-04
 - [NEAR](/research/chains/near): date: 2023-02-04
 - [Polkadot](/research/chains/polkadot): date: 2023-02-04
 - [Polygon](/research/chains/polygon): date: 2023-02-04
+- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
+- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
+- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
+- [Code bases and reviews](/research/code/intro): date: 2023-02-04
+- [Celestia](/research/dataAvailabilty/celestia): date: 2023-06-19
 - [Overview](/research/solving/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
 - [IntentSwap](/research/solving/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
 - [Uniswap V4 Hook Development - WIP](/research/solving/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
