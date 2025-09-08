@@ -8,7 +8,7 @@
     "vocsbuild": "vocs build",
     "preview": "vocs preview",
     "predeploy": "vocs build",
-    "sitedeploy": "gh-pages -d docs/dist --nojekyll --cname jincubator.com"
+    "sitedeploy": "gh-pages -d docs/dist --nojekyll --cname www.jincubator.com"
   },
   "dependencies": {
     "pdfjs-dist": "^5.3.93",
