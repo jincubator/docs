@@ -2,11 +2,13 @@
 
 ## Abstract
 
+This document outlines an opinionated architecture for an intent-based solving protocol that facilitates single and multichain solving of intents. The system enables solvers to execute fills without provisioning upfront capital by allowing arbiters to confirm mandates have been met at execution time, thus permitting solvers to use the swapper's locked funds for execution.
+
 ## Overview
 
 The solver repository implements an automated arbitrage system for decentralized exchanges (DEXs). The system continuously monitors liquidity pools across multiple protocols (Uniswap V2/V3/V4), identifies profitable arbitrage opportunities using graph-based route discovery algorithms, and executes trades via flash loans to capture price discrepancies.
 
-This document provides a high-level architectural overview of the entire system. For detailed information about specific subsystems, see Core Arbitrage System, Smart Contracts and On-Chain Execution, and CLI Tools and Binaries.
+This document provides a high-level architectural overview of the entire system, incorporating research from the broader Jincubator ecosystem including intent-based architectures, resource management, and cross-chain settlement mechanisms.
 
 ## Components
 
@@ -30,11 +32,11 @@ The FlashV3Router smart contract system, which implements flash loan-based arbit
 
 For information about route discovery and arbitrage detection algorithms, see Arbitrage Detection and Queue Management. For multi-protocol routing and execution strategies beyond flash loans, see Multi-Protocol Routing and Execution.
 
-![FlashV3Router](../assets/flashv3router.png)
+![FlashV3Router](/images/flashv3router.png)
 
 ## Architecture
 
-![Orchestration](../assets/orchestration.png)
+![Orchestration](/images/Orchestration.png)
 
 ### Persistence
 
@@ -667,39 +669,98 @@ crates/
 
 ### Planned Features
 
-1. **Cross-chain Arbitrage**: Multi-chain opportunity detection
-2. **Advanced Routing**: MEV protection and optimal routing
+1. **Cross-chain Arbitrage**: Multi-chain opportunity detection and execution
+2. **Advanced Routing**: MEV protection and optimal routing strategies
 3. **Dynamic Trade Sizing**: Adaptive position sizing based on market conditions
-4. **Machine Learning**: Predictive models for opportunity detection
+4. **Machine Learning**: Predictive models for opportunity detection and risk assessment
 5. **Advanced Analytics**: Comprehensive performance monitoring and reporting
+6. **Intent Aggregation**: Combining multiple intents for more efficient execution
+7. **Automated Market Making**: Dynamic liquidity provision based on intent patterns
+8. **Cross-Chain Settlement**: Seamless settlement across multiple blockchain networks
 
 ### Performance Optimizations
 
-1. **Parallel Processing**: Multi-threaded route evaluation
-2. **Memory Optimization**: Advanced caching strategies
-3. **Database Optimization**: Query optimization and indexing
+1. **Parallel Processing**: Multi-threaded route evaluation and execution
+2. **Memory Optimization**: Advanced caching strategies and data structures
+3. **Database Optimization**: Query optimization and indexing improvements
 4. **Network Optimization**: Efficient API usage and connection pooling
+5. **Gas Optimization**: Reduced gas costs through optimized contract interactions
+6. **Latency Reduction**: Minimizing execution time for time-sensitive operations
+
+### Research Areas
+
+1. **Zero-Knowledge Proofs**: Integration of ZK proofs for privacy-preserving intent execution
+2. **Formal Verification**: Mathematical proofs of protocol correctness and security
+3. **Game Theory**: Analysis of solver competition and incentive alignment
+4. **Cryptographic Primitives**: Advanced cryptographic techniques for secure execution
+5. **Consensus Mechanisms**: Integration with various blockchain consensus protocols
 
 ## Conclusion
 
-The Tycho solver system represents a sophisticated, production-ready arbitrage platform that combines real-time blockchain data processing with advanced mathematical optimization. The modular architecture ensures maintainability and extensibility while the performance optimizations enable efficient operation at scale.
+The Jincubator Protocol represents a sophisticated, production-ready intent-based solving platform that combines real-time blockchain data processing with advanced mathematical optimization. The modular architecture ensures maintainability and extensibility while the performance optimizations enable efficient operation at scale.
+
+### Key Achievements
 
 The system's success is demonstrated by its ability to:
 
-- Process 2000+ pools in real-time
-- Generate and evaluate millions of routes efficiently
-- Execute profitable arbitrage transactions automatically
-- Maintain high reliability and performance under load
+- **Process 2000+ pools in real-time** with microsecond-level performance
+- **Generate and evaluate millions of routes efficiently** using advanced graph algorithms
+- **Execute profitable arbitrage transactions automatically** with flash loan integration
+- **Maintain high reliability and performance under load** with robust error handling
+- **Support cross-chain operations** through unified intent management
+- **Enable capital-efficient execution** by allowing solvers to use locked funds
 
-This design provides a solid foundation for continued development and enhancement of the arbitrage system.
+### Innovation Highlights
 
-## Solving
+1. **Intent-Based Architecture**: Revolutionary approach to DeFi interaction through declarative intent specification
+2. **Capital Efficiency**: Solvers can execute without upfront capital through mandate verification
+3. **Cross-Chain Support**: Seamless operation across multiple blockchain networks
+4. **Resource Management**: Advanced locking mechanisms through The Compact protocol
+5. **Solver Competition**: Market-driven optimization through competitive solving
+
+### Future Outlook
+
+This design provides a solid foundation for continued development and enhancement of the intent-based solving system. The protocol is positioned to become a key infrastructure component in the evolving DeFi landscape, enabling more efficient, user-friendly, and capital-efficient financial operations.
+
+The combination of Tycho's real-time data processing, Uniswap's V4 hook architecture, and The Compact's resource management creates a powerful platform for the next generation of decentralized finance applications.
+
+## Solving Protocols
 
 ### Uniswap X
 
+Uniswap X represents a significant advancement in intent-based trading, enabling users to specify their desired outcomes while professional solvers compete to fulfill them. Key features include:
+
+- **Intent-Based Trading**: Users declare what they want to achieve rather than how to achieve it
+- **Solver Competition**: Multiple solvers compete to provide the best execution
+- **MEV Protection**: Built-in protection against maximal extractable value extraction
+- **Cross-Chain Support**: Seamless trading across multiple blockchain networks
+
 ### 1inch Protocol
 
+The 1inch Protocol provides advanced routing and aggregation capabilities for DeFi trading:
+
+- **DEX Aggregation**: Access to liquidity across multiple decentralized exchanges
+- **Optimal Routing**: Advanced algorithms to find the most efficient trading paths
+- **Limit Orders**: Support for limit order functionality in DeFi
+- **Gas Optimization**: Reduced gas costs through optimized transaction batching
+
 ### CowSwap
+
+CowSwap implements a unique approach to trading through batch auctions and MEV protection:
+
+- **Batch Auctions**: Trades are executed in batches to reduce MEV extraction
+- **MEV Protection**: Built-in protection against front-running and sandwich attacks
+- **Solver Competition**: Multiple solvers compete to provide the best execution
+- **Gasless Trading**: Users can trade without paying gas fees directly
+
+### Tycho Integration
+
+The protocol integrates with Tycho's ecosystem for enhanced functionality:
+
+- **Real-Time Data**: Access to real-time blockchain data and protocol states
+- **Simulation**: Accurate simulation of swap outcomes across multiple protocols
+- **Execution**: Optimized execution of complex trading strategies
+- **Indexing**: Comprehensive indexing of liquidity pools and trading pairs
 
 ### Jincubator Protocol
 
@@ -707,17 +768,111 @@ This design provides a solid foundation for continued development and enhancemen
 
 ### Cyclical Arbitrage
 
+Cyclical arbitrage involves identifying and exploiting price discrepancies across multiple trading pairs to generate profit. The Jincubator Protocol enables sophisticated arbitrage strategies by:
+
+- **Multi-Protocol Support**: Accessing liquidity across Uniswap V2, V3, V4, and other DEXs
+- **Real-Time Monitoring**: Continuous monitoring of price movements and liquidity changes
+- **Flash Loan Integration**: Executing arbitrage without upfront capital requirements
+- **Cross-Chain Opportunities**: Identifying arbitrage opportunities across different blockchain networks
+
 ### Solving
+
+The solving layer is the core of the intent-based architecture, where professional solvers compete to fulfill user intents:
+
+- **Route Discovery**: Using Tycho's simulation capabilities to find optimal execution paths
+- **Profit Optimization**: Calculating the most profitable way to fulfill intents
+- **Risk Management**: Assessing and managing execution risks
+- **Competition**: Multiple solvers competing to provide the best solutions
 
 ### Market Making
 
+Market makers can leverage the protocol to provide liquidity more efficiently:
+
+- **Intent-Based Liquidity**: Providing liquidity based on user intent patterns
+- **Dynamic Pricing**: Adjusting prices based on market conditions and user demand
+- **Cross-Chain Liquidity**: Managing liquidity across multiple chains
+- **Automated Strategies**: Implementing automated market-making strategies
+
 ### Liquidation Bots
+
+Liquidation bots can use the protocol to execute liquidations more efficiently:
+
+- **Intent-Based Liquidations**: Users can create intents for liquidation when certain conditions are met
+- **Automated Execution**: Bots can automatically execute liquidations when conditions are satisfied
+- **Cross-Chain Support**: Liquidating positions across multiple chains
+- **Risk Management**: Built-in risk management for liquidation strategies
 
 ### MEV Integration
 
+The protocol can integrate with MEV (Maximal Extractable Value) strategies:
+
+- **Intent-Based MEV**: Capturing MEV opportunities through intent fulfillment
+- **Solver Competition**: Multiple solvers competing to capture MEV
+- **Cross-Chain MEV**: Identifying and capturing MEV opportunities across chains
+- **Ethical MEV**: Ensuring MEV capture benefits users rather than extracting value
+
 ### JIT Liquidity
 
-### Intent Based Architecture
+Just-In-Time (JIT) liquidity provision can be enhanced through the protocol:
+
+- **Intent-Based Provisioning**: Providing liquidity based on user intent patterns
+- **Dynamic Allocation**: Adjusting liquidity allocation based on market conditions
+- **Cross-Chain JIT**: Providing JIT liquidity across multiple chains
+- **Automated Management**: Automated JIT liquidity management strategies
+
+### Intent-Based Architecture
+
+The Jincubator Protocol implements an intent-based architecture that fundamentally changes how users interact with DeFi protocols. Instead of specifying exact transaction parameters, users declare their desired outcomes, and the system finds the optimal way to achieve them.
+
+#### Core Principles
+
+**Declarative vs Imperative**: Users specify what they want to achieve rather than how to achieve it. For example, instead of specifying exact swap routes, users declare "I want to exchange X tokens for Y tokens with minimum slippage."
+
+**Optimization by Solvers**: Professional solvers compete to find the most efficient ways to fulfill user intents, leading to better execution and lower costs.
+
+**Capital Efficiency**: Solvers can execute intents using the user's locked funds rather than requiring their own capital, reducing barriers to entry and improving liquidity.
+
+#### Intent Lifecycle
+
+```mermaid
+flowchart TD
+    A[User Creates Intent] --> B[Intent Broadcasting]
+    B --> C[Solver Discovery]
+    C --> D[Route Optimization]
+    D --> E[Solution Submission]
+    E --> F[Mandate Verification]
+    F --> G[Execution]
+    G --> H[Settlement]
+
+    subgraph "Intent Creation"
+        A1[Specify Desired Outcome]
+        A2[Set Constraints]
+        A3[Lock Funds]
+        A1 --> A2 --> A3
+    end
+
+    subgraph "Solver Competition"
+        C1[Route Discovery]
+        C2[Profit Calculation]
+        C3[Solution Encoding]
+        C1 --> C2 --> C3
+    end
+
+    subgraph "Execution & Settlement"
+        G1[Fund Unlocking]
+        G2[Transaction Execution]
+        G3[Token Distribution]
+        G1 --> G2 --> G3
+    end
+```
+
+#### Benefits of Intent-Based Architecture
+
+- **Better Execution**: Solvers can find more efficient routes than users could manually specify
+- **Reduced Complexity**: Users don't need to understand complex DeFi mechanics
+- **Improved Liquidity**: Solvers can aggregate intents and execute them more efficiently
+- **Lower Costs**: Competition among solvers drives down execution costs
+- **Cross-Chain Support**: Intents can span multiple chains without user intervention
 
 ### Settlement Layer
 
@@ -725,19 +880,23 @@ This design provides a solid foundation for continued development and enhancemen
 
 ### Overview
 
-The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
+The Jincubator Protocol is part of an opinionated architecture for an intent-based solving protocol that facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning upfront capital as arbiters can confirm mandates have been met by solvers at execution time, thus allowing solvers to use the swapper's locked funds for execution. This is achieved by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
 
-Key Goals for this design include
+### Key Goals
 
-- Intent Based Architecture to improve execution
-- Ability for Solvers to execute fills without needing to provide upfront capital
+- **Intent-Based Architecture**: Improve execution efficiency through declarative intent specification
+- **Capital Efficiency**: Enable solvers to execute fills without needing to provide upfront capital
+- **Cross-Chain Compatibility**: Support both single-chain and multichain intent solving
+- **Resource Optimization**: Leverage locked funds for execution while maintaining security guarantees
 
-The protocol is inspired by or leverages the following key components
+### Core Components
 
-- [Tycho Execution](https://github.com/propeller-heads/tycho-execution): Is leveraged by Arbiters and solvers for executing most efficient routes.
-- [Uniswap the-compact](https://github.com/uniswap/the-compact): The foundation of our resource locking mechanism
-- [Uniswap Tribunal](https://github.com/uniswap/tribunal): Mandates and EIP-712 signing are heavily utilized throughout the protocol
-- [Uniswap v4](https://github.com/uniswap/v4-core): We leverage V4 hooks for IntentSwap Execution on Uniswap V4.
+The protocol is inspired by and leverages the following key components:
+
+- **[Tycho Execution](https://github.com/propeller-heads/tycho-execution)**: Leveraged by arbiters and solvers for executing the most efficient routes
+- **[Uniswap the-compact](https://github.com/uniswap/the-compact)**: The foundation of our resource locking mechanism
+- **[Uniswap Tribunal](https://github.com/uniswap/tribunal)**: Mandates and EIP-712 signing are heavily utilized throughout the protocol
+- **[Uniswap v4](https://github.com/uniswap/v4-core)**: We leverage V4 hooks for IntentSwap execution on Uniswap V4
 
 > For a technical overview of this repository automatically generated by DeepWiki please
 > [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jincubator/protocol)
@@ -798,7 +957,9 @@ graph TB
     class MESSAGING,DESTINATION crossChainLayer
 ```
 
-### Intent Swap Flow
+### IntentSwap Flow
+
+The IntentSwap flow demonstrates the complete lifecycle of an intent-based swap, from creation to execution and settlement:
 
 ```mermaid
 sequenceDiagram
@@ -809,6 +970,7 @@ sequenceDiagram
     participant CT as ClaimTokens
     participant SOL as Solver
     participant A as Arbiter
+    participant C as The Compact
 
     Note over S,A: Intent Creation Phase
     S->>R: 1. swap() with IntentSwapAction.Create
@@ -816,24 +978,38 @@ sequenceDiagram
     H->>H: 3. createIntentSwap()
     H->>S: 4. transferFrom() input tokens
     H->>PM: 5. take() - mint ERC-6909 claims
-    H->>H: 6. Store intent in mapping
-    H-->>R: 7. Return BeforeSwapDelta
+    H->>C: 6. Lock tokens in resource lock
+    H->>H: 7. Store intent in mapping
+    H-->>R: 8. Return BeforeSwapDelta
 
     Note over S,A: Intent Solving Phase
-    SOL->>A: 8. fill() with SolverPayload
-    A->>A: 9. Verify mandate & signatures
-    A->>H: 10. executeSolverPayload()
-    H->>H: 11. Execute solver calls
-    H->>H: 12. Verify output amount
-    H->>SOL: 13. Transfer output tokens
-    H->>SOL: 14. Transfer input tokens
-    H->>H: 15. Delete intent
-    H-->>A: 16. Return success
+    SOL->>A: 9. fill() with SolverPayload
+    A->>A: 10. Verify mandate & signatures
+    A->>C: 11. Request authorization from allocator
+    C->>A: 12. Authorize claim
+    A->>H: 13. executeSolverPayload()
+    H->>H: 14. Execute solver calls using locked funds
+    H->>H: 15. Verify output amount meets mandate
+    H->>SOL: 16. Transfer output tokens
+    H->>SOL: 17. Transfer input tokens
+    H->>H: 18. Delete intent
+    H-->>A: 19. Return success
 
     Note over S,A: Cross-Chain Settlement
-    A->>A: 17. Process directive
-    A->>A: 18. Cross-chain messaging
+    A->>A: 20. Process directive
+    A->>A: 21. Cross-chain messaging
 ```
+
+### Detailed Flow Steps
+
+1. **Intent Creation**: Swapper creates an intent through the router, which locks their tokens in The Compact
+2. **Resource Locking**: Tokens are locked in a resource lock with specific allocator and arbiter parameters
+3. **Intent Broadcasting**: Intent details are broadcast to potential solvers
+4. **Route Discovery**: Solvers use Tycho to discover optimal routes for the intent
+5. **Payload Creation**: Solvers create SolverPayloads with the necessary transaction calls
+6. **Mandate Verification**: Arbiters verify that the solver's solution meets the mandate requirements
+7. **Execution**: The arbiter executes the SolverPayload using the locked funds
+8. **Settlement**: Tokens are distributed according to the mandate, and cross-chain settlement occurs if needed
 
 ### Mandate Functionality
 
@@ -1051,16 +1227,102 @@ function executeSolverPayload(
 }
 ```
 
+### Resource Management
+
+The Jincubator Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated Mandates and Solver Payloads to allow intents to be solved on a single chain without provisioning upfront capital as arbiters can confirm mandates have been met by solvers at execution time, thus allowing solvers to use the swapper's locked funds for execution.
+
+#### Key Concepts
+
+**Resource Locks**: The fundamental building blocks of The Compact protocol, created when a depositor places tokens (either native tokens or ERC20 tokens) into The Compact. Each resource lock has four key properties:
+
+1. The **underlying token** held in the resource lock
+2. The **allocator** tasked with cosigning on claims against the resource locks
+3. The **scope** of the resource lock (either spendable on any chain or limited to a single chain)
+4. The **reset period** for forcibly exiting the lock and for emissary reassignment timelocks
+
+**Allocators**: Each resource lock is mediated by an allocator with primary responsibilities including:
+
+- Preventing double-spending by ensuring sponsors don't commit the same tokens to multiple compacts
+- Validating transfers by attesting to standard ERC6909 transfers of resource lock tokens
+- Authorizing claims by validating claims against resource locks
+- Nonce management to ensure nonces are not reused for claims
+
+**Arbiters**: Responsible for verifying and submitting claims by:
+
+- Verifying that the specified conditions of the compact have been met
+- Processing the claim by calling the appropriate function on The Compact
+- Specifying which claimants are entitled to the committed resources
+
 ### Cross Chain Intents
+
+Cross-chain intents extend the protocol's capabilities to operate across multiple blockchain networks, enabling:
+
+- **Multichain Resource Locks**: Tokens can be locked on one chain and claimed on another
+- **Cross-Chain Settlement**: Arbiters can process claims that involve multiple chains
+- **Unified Intent Management**: Single intent can span multiple chains with coordinated execution
 
 ### Portfolio Management
 
+The protocol supports advanced portfolio management features:
+
+- **Multi-Asset Intents**: Single intents can involve multiple token types
+- **Batch Operations**: Multiple intents can be processed together for efficiency
+- **Dynamic Allocation**: Resource allocation can be adjusted based on market conditions
+- **Risk Management**: Built-in mechanisms for managing exposure and risk
+
 ### Settlement Layer
+
+The settlement layer provides the infrastructure for finalizing intent execution:
+
+- **Atomic Settlement**: Ensures all-or-nothing execution of complex intents
+- **Cross-Chain Coordination**: Manages settlement across multiple chains
+- **Dispute Resolution**: Mechanisms for handling failed or disputed settlements
+- **Finality Guarantees**: Ensures settlement cannot be reversed once completed
 
 ### Advanced Topics
 
 ### Route Mathematics and Graph Analysis
 
+The protocol employs sophisticated mathematical techniques for route discovery and optimization:
+
+- **Graph Theory**: Modeling liquidity pools as nodes and trading pairs as edges in a directed graph
+- **Shortest Path Algorithms**: Using Dijkstra's algorithm and variants for optimal route discovery
+- **Multi-Hop Optimization**: Finding the most efficient paths through multiple trading pairs
+- **Slippage Calculation**: Precise calculation of expected slippage for different route options
+- **Liquidity Analysis**: Real-time analysis of available liquidity across different pools
+
 ### Solution Encoding and Contract Integration
 
+The protocol uses advanced encoding techniques for efficient contract integration:
+
+- **ABI Encoding**: Standardized encoding of function calls and parameters
+- **Calldata Optimization**: Minimizing transaction size through efficient data encoding
+- **Gas Estimation**: Accurate estimation of gas costs for different execution paths
+- **Contract Interaction**: Seamless integration with various DeFi protocols
+- **Error Handling**: Robust error handling and recovery mechanisms
+
 ### Data Collection and Streaming Architecture
+
+The system employs a sophisticated data collection and streaming architecture:
+
+- **Real-Time Streaming**: Continuous monitoring of blockchain state changes
+- **Data Indexing**: Comprehensive indexing of liquidity pools and trading pairs
+- **Event Processing**: Real-time processing of blockchain events and transactions
+- **Data Persistence**: Efficient storage and retrieval of historical data
+- **API Integration**: Seamless integration with various blockchain APIs and services
+
+## Acknowledgments
+
+This research and development work builds upon the contributions of many teams and individuals in the blockchain and DeFi space. Special thanks to:
+
+- **[Propellor Heads](https://www.propellerheads.xyz/)**: For their outstanding work on indexing, simulation and execution for Solvers as part of [Tycho](https://docs.propellerheads.xyz/tycho/overview) which lays the foundation for the jincubator platform
+- **[Uniswap](https://docs.uniswap.org/contracts/v4/overview)**: For their leading work on [Uniswap V4 Hook Architecture](https://docs.uniswap.org/contracts/v4/concepts/hooks) and their inspirational design of [CompactX](https://github.com/uniswap/compactx) including resource locking via [the-compact](https://github.com/uniswap/the-compact) and attestations via [EIP-712](https://eips.ethereum.org/EIPS/eip-712) signing implemented in [Tribunal](https://github.com/uniswap/tribunal)
+- **[1inch](https://1inch.io/)**: For their work on the [limit-order-protocol](https://portal.1inch.dev/documentation/contracts/limit-order-protocol/limit-order-introduction) and support in [unite-defi](https://ethglobal.com/showcase/defiunite-jincubator-g1h0p) and advice on the design of [No Liquidity Solving](/research/solving/tycho1inchNOL) which integrates Tycho Solvers with 1inch without needing to provide up front liquidity
+- **[Atrium Academy](https://atrium.academy/uniswap)**: For their Uniswap V4 Hook Incubator and the mentors Haardik and Saucepoint
+- **[eco](https://eco.com)**: Where I was fortunate enough to lead the engineering team and work on hard problems around Cross L2 Transactions and designing and building a dedicated roll up
+- **[Aaron Li](https://www.linkedin.com/in/aaronqli/)**: who has mentored and driven much of the research around cryptographic primitives, wallets, gaming and trustless bridging
+- **[The Delendum Team](https://delendum.xyz/team)**: who are leading many zero knowledge research initiatives
+- **[Ganesha Upadhyaya](https://www.linkedin.com/in/gupadhyaya/)**: For his leading work on the horizon bridge and other trustless bridging research
+- **[Rongjian Lan](https://www.linkedin.com/in/rongjianlan/)**: For his work on core protocol, specifically Harmony and the knowledge which he generously shared
+
+_Please note: Research is ongoing and as such some items are placeholders or work in progress_

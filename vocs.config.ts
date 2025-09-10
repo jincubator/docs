@@ -52,6 +52,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "Brainstorming",
+        items: [{ text: "Design", link: "/research/brainstorming/design" }],
+      },
+      {
         text: "Layer 1 Platforms (2022/2023)",
         collapsed: false,
         items: [
