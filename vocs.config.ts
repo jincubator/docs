@@ -1,6 +1,7 @@
 import { defineConfig } from "vocs";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
+import remarkMermaid from "remark-mermaidjs";
 
 export default defineConfig({
   title: "Jincubator",
@@ -12,7 +13,7 @@ export default defineConfig({
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, remarkMermaid],
     rehypePlugins: [rehypeMathjax],
   },
   topNav: [

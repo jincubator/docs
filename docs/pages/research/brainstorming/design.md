@@ -181,7 +181,7 @@ pub struct MinimalStreamingEngine {
 - **Graph Building**: 193µs for 37 pools, 33µs for 2 pools
 - **Route Calculation**: 2.42µs for 3-hop, 833ns for 4-hop, 791ns for 5-hop
 - **Pool Coverage**: 2000+ pools with real-time state updates
-- **Memory Efficiency**: <500MB for active streaming
+- **Memory Efficiency**: &lt;500MB for active streaming
 
 ### 2. Route Analyzer (`RouteAnalyzer`)
 
@@ -559,14 +559,14 @@ pools = [
 
 ### Current Performance Metrics
 
-| Metric                        | Value                | Notes                         |
-| ----------------------------- | -------------------- | ----------------------------- |
-| **Graph Building**            | 193µs (37 pools)     | Real-time processing          |
-| **Route Calculation**         | 2.42µs (3-hop)       | Microsecond-level performance |
-| **Database Write Throughput** | >10,000 ops/sec      | RocksDB optimization          |
-| **Memory Usage**              | <500MB (2000+ pools) | Efficient memory management   |
-| **Route Processing**          | 200 routes/batch     | Configurable batch sizes      |
-| **Execution Success Rate**    | 100% (proper config) | With balance validation       |
+| Metric                        | Value                   | Notes                         |
+| ----------------------------- | ----------------------- | ----------------------------- |
+| **Graph Building**            | 193µs (37 pools)        | Real-time processing          |
+| **Route Calculation**         | 2.42µs (3-hop)          | Microsecond-level performance |
+| **Database Write Throughput** | >10,000 ops/sec         | RocksDB optimization          |
+| **Memory Usage**              | &lt;500MB (2000+ pools) | Efficient memory management   |
+| **Route Processing**          | 200 routes/batch        | Configurable batch sizes      |
+| **Execution Success Rate**    | 100% (proper config)    | With balance validation       |
 
 ### Scalability Characteristics
 
