@@ -1,0 +1,38 @@
+# Reference Implementation
+
+## Architecture Overview
+
+The Tycho solver system implements a sophisticated arbitrage bot capable of generating profit with **no upfront capital** through flash loan-based execution.
+
+### Core Design Principles
+
+1. **Collectors → Strategies → Execution**: Modular architecture with clear separation of concerns
+2. **Real-time Processing**: Live blockchain data streaming via Tycho protocol streams
+3. **Capital Efficiency**: Flash loan integration eliminates upfront capital requirements
+4. **Multi-protocol Support**: Uniswap V2, V3, V4 with extensible protocol framework
+5. **Performance Optimization**: Microsecond-level route evaluation and execution
+
+### System Architecture
+
+```mermaid
+graph TD
+    A[Blockchain Events] --> B[Liquidity Mapping Collector]
+    B --> C[Graph Manager]
+    C --> D[Route Calculator]
+    D --> E[Arbitrage Strategy]
+    E --> F[Flash Loan Manager]
+    F --> G[Transaction Executor]
+    G --> H[Profit Distribution]
+```
+
+### Key Performance Metrics
+
+- **Route Evaluation**: ~800 routes per second
+- **Graph Building**: 193µs for 37 pools, 33µs for 2 pools
+- **Route Calculation**: 2.42µs for 3-hop, 833ns for 4-hop, 791ns for 5-hop
+- **Pool Coverage**: 2000+ pools with real-time state updates
+- **Memory Usage**: Less than 500MB for active streaming
+
+## Additional Documentation
+
+For detailed implementation information, please refer to the full technical documentation.

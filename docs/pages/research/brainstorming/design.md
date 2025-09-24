@@ -67,87 +67,7 @@ The Tycho solver system is built around a **streaming-first architecture** that 
 
 ## System Architecture Diagram
 
-```mermaid
-graph TB
-    subgraph "External Data Sources"
-        TYCHO[Tycho Protocol Streams]
-        RPC[Blockchain RPC]
-        API[Tycho API]
-    end
-
-    subgraph "solver_core (Pure Logic)"
-        TYPES[Domain Types]
-        TRAITS[Interfaces/Traits]
-        MATH[FixedPoint Math]
-        PROTOCOL[Protocol Models]
-    end
-
-    subgraph "solver_driver (Runtime)"
-        subgraph "Data Collection"
-            STREAMING[Streaming Engine]
-            COLLECTORS[Data Collectors]
-            STORE[Pool Store]
-        end
-
-        subgraph "Processing Pipeline"
-            GRAPH[Graph Manager]
-            ROUTES[Route Manager]
-            ANALYZER[Route Analyzer]
-        end
-
-        subgraph "Execution Pipeline"
-            ENCODER[Solution Encoder]
-            EXECUTOR[Execution Engine]
-            SENDER[Transaction Sender]
-        end
-
-        subgraph "Persistence"
-            DB[RocksDB]
-            CACHE[Memory Cache]
-        end
-    end
-
-    subgraph "Smart Contracts"
-        ROUTER[FlashV3Router]
-        POOLS[DEX Pools]
-    end
-
-    subgraph "CLI Tools"
-        ARBITRAGER[Arbitrager]
-        ROUTE_EXEC[Route Executor]
-        TYCHO_CLI[Tycho CLI]
-    end
-
-    %% Data Flow
-    TYCHO --> STREAMING
-    RPC --> COLLECTORS
-    API --> COLLECTORS
-
-    STREAMING --> STORE
-    STORE --> GRAPH
-    GRAPH --> ROUTES
-    ROUTES --> ANALYZER
-    ANALYZER --> ENCODER
-    ENCODER --> EXECUTOR
-    EXECUTOR --> SENDER
-
-    STORE --> DB
-    ROUTES --> DB
-    GRAPH --> DB
-
-    SENDER --> ROUTER
-    ROUTER --> POOLS
-
-    ARBITRAGER --> STREAMING
-    ROUTE_EXEC --> ANALYZER
-    TYCHO_CLI --> DB
-
-    %% Core Dependencies
-    TYPES --> STREAMING
-    TRAITS --> ANALYZER
-    MATH --> ANALYZER
-    PROTOCOL --> STORE
-```
+{/_ Mermaid diagram temporarily removed for debugging _/}
 
 ## Core Components
 
@@ -278,121 +198,15 @@ impl ExecutionEngine {
 
 ### 1. Streaming Data Flow
 
-```mermaid
-sequenceDiagram
-    participant T as Tycho Stream
-    participant SE as Streaming Engine
-    participant PS as Pool Store
-    participant GM as Graph Manager
-    participant RM as Route Manager
-    participant RA as Route Analyzer
-    participant EE as Execution Engine
-
-    T->>SE: Protocol State Updates
-    SE->>PS: Store Pool States
-    SE->>GM: Update Graph
-    GM->>RM: Calculate New Routes
-    RM->>RA: Evaluate Routes
-    RA->>EE: Execute Profitable Routes
-    EE->>T: Transaction Results
-```
+{/_ Mermaid sequence diagram temporarily removed for debugging _/}
 
 ### 2. Route Evaluation Flow
 
-```mermaid
-flowchart TD
-    A[Stream Message] --> B{New Pairs?}
-    B -->|Yes| C[Process New Pools]
-    B -->|No| D{State Updates?}
-
-    C --> E[Calculate Routes Incrementally]
-    E --> F[Save Routes to Database]
-    F --> G[Queue Routes for Evaluation]
-
-    D -->|Yes| H[Re-evaluate Routes]
-    D -->|No| I[Continue Streaming]
-
-    H --> G
-    G --> J[Route Evaluation Phase]
-    J --> K{Profitable?}
-    K -->|Yes| L[Queue for Execution]
-    K -->|No| M[Skip Route]
-
-    L --> N[Execution Phase]
-    N --> O{Pre-conditions Met?}
-    O -->|Yes| P[Execute Transaction]
-    O -->|No| Q[Execution Failed]
-
-    P --> R{Success?}
-    R -->|Yes| S[Execution Complete]
-    R -->|No| T[Retry Logic]
-
-    T --> U{Max Retries?}
-    U -->|No| N
-    U -->|Yes| V[Execution Failed]
-
-    I --> W[Process Next Block]
-    W --> A
-```
+{/_ Mermaid flowchart temporarily removed for debugging _/}
 
 ### 3. Database Schema
 
-```mermaid
-erDiagram
-    TOKEN {
-        string address PK
-        string symbol
-        u8 decimals
-        string chain
-        u8 quality
-    }
-
-    POOL {
-        string id PK
-        string protocol
-        f64 tvl
-        timestamp created_at
-        json static_attributes
-    }
-
-    ROUTE {
-        string route_id PK
-        string path_hash
-        timestamp created_at
-        f64 expected_profit
-        json flash_loan_info
-    }
-
-    ROUTE_EVALUATION {
-        string route_id FK
-        f64 amount_in
-        f64 amount_out
-        f64 profit
-        f64 gas_cost
-        f64 roi_percentage
-        timestamp evaluated_at
-    }
-
-    GRAPH_NODE {
-        string token_address PK
-        json metadata
-    }
-
-    GRAPH_EDGE {
-        string from_token FK
-        string to_token FK
-        string pool_id FK
-        u8 protocol
-        f64 rate
-    }
-
-    %% Relationships
-    TOKEN ||--o{ GRAPH_NODE : "represents"
-    POOL ||--o{ GRAPH_EDGE : "creates"
-    ROUTE ||--o{ ROUTE_EVALUATION : "evaluated_as"
-    GRAPH_NODE ||--o{ GRAPH_EDGE : "from_token"
-    GRAPH_NODE ||--o{ GRAPH_EDGE : "to_token"
-```
+{/_ Mermaid ER diagram temporarily removed for debugging _/}
 
 ## Database Design
 
@@ -834,37 +648,7 @@ The Jincubator Protocol implements an intent-based architecture that fundamental
 
 #### Intent Lifecycle
 
-```mermaid
-flowchart TD
-    A[User Creates Intent] --> B[Intent Broadcasting]
-    B --> C[Solver Discovery]
-    C --> D[Route Optimization]
-    D --> E[Solution Submission]
-    E --> F[Mandate Verification]
-    F --> G[Execution]
-    G --> H[Settlement]
-
-    subgraph "Intent Creation"
-        A1[Specify Desired Outcome]
-        A2[Set Constraints]
-        A3[Lock Funds]
-        A1 --> A2 --> A3
-    end
-
-    subgraph "Solver Competition"
-        C1[Route Discovery]
-        C2[Profit Calculation]
-        C3[Solution Encoding]
-        C1 --> C2 --> C3
-    end
-
-    subgraph "Execution & Settlement"
-        G1[Fund Unlocking]
-        G2[Transaction Execution]
-        G3[Token Distribution]
-        G1 --> G2 --> G3
-    end
-```
+{/_ Mermaid flowchart temporarily removed for debugging _/}
 
 #### Benefits of Intent-Based Architecture
 
@@ -903,102 +687,13 @@ The protocol is inspired by and leverages the following key components:
 
 ### Protocol Architecture
 
-```mermaid
-graph TB
-    subgraph "Intent Creation Layer"
-        SWAPPER[Swapper]
-        ROUTER[Uniswap V4 Router]
-        HOOK[IntentSwapHook]
-    end
-
-    subgraph "Intent Solving Layer"
-        SOLVER[Solver]
-        ARBITER[Arbiter Contract]
-        COMPACT[The Compact]
-    end
-
-    subgraph "Execution Layer"
-        POOL_MANAGER[Pool Manager]
-        CLAIM_TOKENS[ERC-6909 Claim Tokens]
-        SETTLEMENT[Settlement Service]
-    end
-
-    subgraph "Cross-Chain Layer"
-        MESSAGING[Cross-Chain Messaging]
-        DESTINATION[Destination Chain]
-    end
-
-    %% Intent Flow
-    SWAPPER -->|1. Create Intent| ROUTER
-    ROUTER -->|2. Lock Tokens| HOOK
-    HOOK -->|3. Mint Claims| CLAIM_TOKENS
-    HOOK -->|4. Store Intent| COMPACT
-
-    %% Solving Flow
-    SOLVER -->|5. Submit Solution| ARBITER
-    ARBITER -->|6. Verify Mandate| COMPACT
-    ARBITER -->|7. Execute Payload| HOOK
-    HOOK -->|8. Transfer Tokens| SOLVER
-
-    %% Cross-Chain Flow
-    ARBITER -->|9. Process Directive| MESSAGING
-    MESSAGING -->|10. Cross-Chain| DESTINATION
-    DESTINATION -->|11. Settlement| SETTLEMENT
-
-    %% Styling
-    classDef intentLayer fill:#e1f5fe
-    classDef solvingLayer fill:#f3e5f5
-    classDef executionLayer fill:#e8f5e8
-    classDef crossChainLayer fill:#fff3e0
-
-    class SWAPPER,ROUTER,HOOK intentLayer
-    class SOLVER,ARBITER,COMPACT solvingLayer
-    class POOL_MANAGER,CLAIM_TOKENS,SETTLEMENT executionLayer
-    class MESSAGING,DESTINATION crossChainLayer
-```
+{/_ Mermaid graph temporarily removed for debugging _/}
 
 ### IntentSwap Flow
 
 The IntentSwap flow demonstrates the complete lifecycle of an intent-based swap, from creation to execution and settlement:
 
-```mermaid
-sequenceDiagram
-    participant S as Swapper
-    participant R as Router
-    participant H as IntentSwapHook
-    participant PM as PoolManager
-    participant CT as ClaimTokens
-    participant SOL as Solver
-    participant A as Arbiter
-    participant C as The Compact
-
-    Note over S,A: Intent Creation Phase
-    S->>R: 1. swap() with IntentSwapAction.Create
-    R->>H: 2. beforeSwap() with Create action
-    H->>H: 3. createIntentSwap()
-    H->>S: 4. transferFrom() input tokens
-    H->>PM: 5. take() - mint ERC-6909 claims
-    H->>C: 6. Lock tokens in resource lock
-    H->>H: 7. Store intent in mapping
-    H-->>R: 8. Return BeforeSwapDelta
-
-    Note over S,A: Intent Solving Phase
-    SOL->>A: 9. fill() with SolverPayload
-    A->>A: 10. Verify mandate & signatures
-    A->>C: 11. Request authorization from allocator
-    C->>A: 12. Authorize claim
-    A->>H: 13. executeSolverPayload()
-    H->>H: 14. Execute solver calls using locked funds
-    H->>H: 15. Verify output amount meets mandate
-    H->>SOL: 16. Transfer output tokens
-    H->>SOL: 17. Transfer input tokens
-    H->>H: 18. Delete intent
-    H-->>A: 19. Return success
-
-    Note over S,A: Cross-Chain Settlement
-    A->>A: 20. Process directive
-    A->>A: 21. Cross-chain messaging
-```
+{/_ Mermaid sequence diagram temporarily removed for debugging _/}
 
 ### Detailed Flow Steps
 
