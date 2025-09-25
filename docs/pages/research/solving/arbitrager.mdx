@@ -139,14 +139,14 @@ Conceptually this was farly straight forward, create a graph with Tokens as Node
 
 ### Performance Statistics - DRAFT NUMBERS ARE NOT ACCURATE
 
-| Metric                        | Value                | Notes                         |
-| ----------------------------- | -------------------- | ----------------------------- |
-| **Graph Building**            | 193µs (37 pools)     | Real-time processing          |
-| **Route Calculation**         | 2.42µs (3-hop)       | Microsecond-level performance |
-| **Database Write Throughput** | >10,000 ops/sec      | RocksDB optimization          |
-| **Memory Usage**              | <500MB (2000+ pools) | Efficient memory management   |
-| **Route Processing**          | 200 routes/batch     | Configurable batch sizes      |
-| **Execution Success Rate**    | 100% (proper config) | With balance validation       |
+| Metric                        | Value                 | Notes                         |
+| ----------------------------- | --------------------- | ----------------------------- |
+| **Graph Building**            | 193µs (37 pools)      | Real-time processing          |
+| **Route Calculation**         | 2.42µs (3-hop)        | Microsecond-level performance |
+| **Database Write Throughput** | >10,000 ops/sec       | RocksDB optimization          |
+| **Memory Usage**              | \<500MB (2000+ pools) | Efficient memory management   |
+| **Route Processing**          | 200 routes/batch      | Configurable batch sizes      |
+| **Execution Success Rate**    | 100% (proper config)  | With balance validation       |
 
 | Statistic                                 | Result |
 | ----------------------------------------- | ------ |
@@ -483,7 +483,7 @@ graph TB
 - **Graph Building**: 193µs for 37 pools, 33µs for 2 pools
 - **Route Calculation**: 2.42µs for 3-hop, 833ns for 4-hop, 791ns for 5-hop
 - **Pool Coverage**: 2000+ pools with real-time state updates
-- **Memory Usage**: <500MB for active streaming
+- **Memory Usage**: \<500MB for active streaming
 
 ### Liquidity Mapping Collector
 
@@ -1241,16 +1241,16 @@ fn calculate_priority(&self, route: &MinimalRoute, evaluation: &RouteEvaluation)
 **Database Performance**:
 
 - **Write Throughput**: >10,000 ops/sec
-- **Read Latency**: <1ms average
-- **Storage Efficiency**: <1GB for 10,000 routes
+- **Read Latency**: \<1ms average
+- **Storage Efficiency**: \<1GB for 10,000 routes
 - **Compaction**: Automatic background compaction
 
 **Memory Usage**:
 
-- **Active Streaming**: <500MB for 2000+ pools
-- **Route Cache**: <100MB for 10,000 routes
-- **Graph Storage**: <50MB for 1000 tokens
-- **Signal Queue**: <10MB for 1000 signals
+- **Active Streaming**: \<500MB for 2000+ pools
+- **Route Cache**: \<100MB for 10,000 routes
+- **Graph Storage**: \<50MB for 1000 tokens
+- **Signal Queue**: \<10MB for 1000 signals
 
 ##### Performance Statistics
 
@@ -1259,7 +1259,7 @@ fn calculate_priority(&self, route: &MinimalRoute, evaluation: &RouteEvaluation)
 - **Route Evaluation**: ~800 routes/second
 - **Graph Building**: 193µs for 37 pools
 - **Route Calculation**: 2.42µs for 3-hop
-- **Execution Speed**: <5s average transaction time
+- **Execution Speed**: \<5s average transaction time
 
 **Scalability Metrics**:
 
