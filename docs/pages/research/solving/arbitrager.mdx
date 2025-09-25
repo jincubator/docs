@@ -203,9 +203,7 @@ The Route Manager enumerates all possible multi-hop routes through the liquidity
 
 Mathematically, for a graph $$G = (V, E)$$ with vertices $V$ representing tokens and edges $E$ representing liquidity pools, DFS can be described recursively as:
 
-$$
-\text{DFS}(v) = \text{visit all neighbors of } v \text{ recursively without revisiting nodes in the current path}
-$$
+DFS(v) = visit all neighbors of v recursively without revisiting nodes in the current path
 
 Our implementation supports two main modes:
 
@@ -250,9 +248,7 @@ In the arbitrage solver, DFS enumerates all candidate routes for evaluation by t
 
 The route evaluation process leverages the Bellman–Ford algorithm to detect negative-weight cycles that correspond to profitable arbitrage opportunities:
 
-$$
-d(v) = \min_{(u,v)\in E} \big(d(u) + w(u,v)\big)
-$$
+`d(v) = min_{(u,v) in E} [ d(u) + w(u,v) ]`
 
 Negative-weight cycles represent opportunities where the sequence of swaps results in a net gain after accounting for fees.
 
@@ -338,17 +334,22 @@ Define:
 
 #### Mathematical Summary
 
-$$
-\text{maximize} P(A) = \text{profit from route given input} A
-$$
+- **Exponential search:** Quickly find search range `[A_min, A_max]`
+- **Binary search:** Efficiently refine the optimum within that range
+- **Profit metric:** Absolute profit (`output - input`) used to select best amount
+- **Dynamic adjustments:** Optional function to tweak inputs if routes behave non-linearly or have state-dependent constraints.
 
-$$
-\text{subject to} A*\text{min} \leq A \leq A*\text{max}, \quad P(A) \geq \text{profit*threshold}
-$$
+```
+maximize P(A) = profit from route given input A
 
-$$
-\text{where } A*\text{max found via exponential doubling and } A \text{ best } \text{refined via binary search.}
-$$
+subject to:
+    A_min <= A <= A_max
+    P(A) >= profit_threshold
+
+where:
+    A_max is found via exponential doubling
+    A_best is refined via binary search
+```
 
 - **Exponential search:** Quickly find search range `[A_min, A_max]`
 - **Binary search:** Efficiently refine the optimum within that range
@@ -361,21 +362,15 @@ $$
 
 Net profit percentage for a route:
 
-$$
-\text{swap profit pct} = \frac{A_k - A_0}{A_0} \times 100
-$$
+```
+swap_profit_pct = (A_k - A_0) / A_0 * 100
 
-$$
-\text{flash fee pct} = \frac{\text{fee hundredths bip}}{10{,}000}
-$$
+flash_fee_pct = fee_hundredths_bip / 10,000
 
-$$
-\text{net profit pct} = \text{swap profit pct} - \text{flash fee pct}
-$$
+net_profit_pct = swap_profit_pct - flash_fee_pct
 
-$$
-\text{net profit token} = A_k - A_0 - \left\lfloor \frac{A_0 \times \text{fee hundredths bip}}{1{,}000{,}000} \right\rfloor
-$$
+net_profit_token = A_k - A_0 - floor( A_0 * fee_hundredths_bip / 1,000,000 )
+```
 
 ## Appendix B: Performance
 
