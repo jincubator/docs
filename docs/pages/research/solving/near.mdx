@@ -1,0 +1,35 @@
+# NEAR FUSION+ Smart Contract Development
+
+NEAR Fusion+ is a comprehensive DeFi protocol that migrates 1inch's proven Limit Order Protocol and Cross-Chain Swap functionality to the NEAR blockchain. The system provides two primary capabilities: advanced limit order trading with partial fills and extensible features, and atomic cross-chain swaps secured by time-locked escrow contracts.
+
+## Implementation Limit Order Protocol
+
+### Core Components
+
+- **Compact**: ERC-6909 enabled Chainlink calculator for price discovery
+- **ResourceManager**: Manages resource locks for ERC-6909 integration
+- **TychoSwapExecutor**: Executes complex swaps using Tycho Execution
+- **CompactInteraction**: Post-interaction handler for resource allocation
+- **RebalancerInteraction**: Treasury management and portfolio rebalancing
+- **OracleCalculator**: Price oracle integration for advanced order strategies
+
+### Key Features
+
+- **Resource Locking**: ERC-6909 compliant resource management
+- **Multi-DEX Execution**: Cross-platform swap execution via Tycho
+- **Advanced Order Types**: Stop-loss and take-profit orders
+- **Treasury Management**: Automated portfolio rebalancing
+- **Oracle Integration**: Chainlink price feeds for accurate pricing
+
+### Key Technology Enhancements
+
+- Solidity based tests including a migration from `OrderUtils.js` to solidity based [OrderUtils](https://github.com/jincubator-united-defi-2025/protocol/tree/main/test/utils/orderUtils/README_OrderUtils.md)
+- Solidity `^0.8.30` compatibility provided by creating an interface [ILimitOrderProtocol.sol](https://github.com/jincubator-united-defi-2025/protocol/tree/main/src/interfaces/1inch/ILimitOrderProtocol.sol) and introducing [LimitOrderProtocolManager](https://github.com/jincubator-united-defi-2025/protocol/tree/main/test/helpers/LimitOrderProtocolManager.sol) for testing.
+
+### Architecture
+
+![Architecture](https://hackmd.io/_uploads/ByIAaIhwel.png)
+
+### Interactions
+
+![Interactions](https://hackmd.io/_uploads/B1XQRU3wex.png)

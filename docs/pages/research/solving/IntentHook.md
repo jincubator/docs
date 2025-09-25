@@ -12,6 +12,18 @@ Result of the Project was that due to the way PoolManager enforced netting of to
 Below is the presentation submitted for Atrium Academy UHI5.
 
 <iframe
+  src="https://www.loom.com/embed/c59e1a9eb2064d4a855cabab3941a514"
+  frameborder="0"
+  allowfullscreen
+  allow="autoplay; encrypted-media"
+  style={{
+    width: "100%",
+    height: "500px",
+    borderRadius: "12px",
+  }}
+/>
+
+<iframe
   src="https://docs.google.com/presentation/d/e/2PACX-1vRI3svpe1qNrtamn2aDuSlp4_eawgY237ae49o_4P50X8vBA2dVZguio3eA5nauS3ubdOWvwwxl-7tl/embed?start=false&loop=false&delayms=3000"
   frameBorder="0"
   allowFullScreen
