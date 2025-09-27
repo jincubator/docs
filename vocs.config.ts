@@ -1,6 +1,7 @@
 import { defineConfig } from "vocs";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
+import remarkMermaid from "remark-mermaidjs";
 
 export default defineConfig({
   title: "Jincubator",
@@ -8,10 +9,11 @@ export default defineConfig({
     "Research focused on Intent BasedSolving, Arbitrage and Market Making",
   iconUrl: "/images/jincubator.png",
   logoUrl: "/images/jincubator.png",
+  baseUrl: "/",
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, remarkMermaid],
     rehypePlugins: [rehypeMathjax],
   },
   topNav: [
@@ -20,8 +22,8 @@ export default defineConfig({
       link: "/research/intro",
     },
     {
-      text: "Hackathons",
-      link: "/hackathons/intro",
+      text: "Proposals",
+      link: "/proposals/intro",
     },
     {
       text: "Products",
@@ -38,12 +40,26 @@ export default defineConfig({
       {
         text: "Solving and Arbitrage (2025)",
         items: [
-          { text: "Design Intro", link: "/research/solving/intro" },
-          { text: "Architecture", link: "/research/solving/architecture" },
-          { text: "Protocol", link: "/research/solving/protocol" },
-          { text: "Resource Management", link: "/research/solving/resources" },
-          { text: "IntentSwap Flow", link: "/research/solving/flow" },
-          { text: "Hook Design - WIP", link: "/research/solving/hooks" },
+          {
+            text: "High Performance Route Evaluation",
+            link: "/research/solving/arbitrager",
+          },
+          {
+            text: "No Liquidity Solving (Tycho 1inch)",
+            link: "/research/solving/tycho1inchNOL",
+          },
+          {
+            text: "Near Contract Development (1inch Contracts)",
+            link: "/research/solving/near",
+          },
+          {
+            text: "Intent Management with ERC-6909 Vault",
+            link: "/research/Intents/protocol",
+          },
+          {
+            text: "Uniswap V4 - Intent Management Hook",
+            link: "/research/solving/intent-management-hook",
+          },
         ],
       },
       {
@@ -202,33 +218,111 @@ export default defineConfig({
       },
     ],
 
-    "/hackathons": [
-      { text: "Hackathons", link: "/hackathons/intro" },
-      { text: "Unite Defi (2025)", link: "/hackathons/Unite" },
-      { text: "Uniswap Hook Incubator 5 (2025)", link: "/hackathons/UHI5" },
-      { text: "Harmony Hackathon 2021", link: "/hackathons/Harmony" },
+    "/proposals": [
+      {
+        text: "Tycho Implementation Partner",
+        items: [
+          {
+            text: "Tycho Implementation Partner",
+            link: "/proposals/tycho-implementation-partner",
+          },
+          {
+            text: "Tycho v4 Hook Integration",
+            link: "/proposals/tycho-v4-hook",
+          },
+        ],
+      },
+      {
+        text: "Grant Proposals",
+        items: [
+          { text: "Uniswap Retro Grant", link: "/proposals/uniswap-retro" },
+          { text: "UniswapX Integration Partner", link: "/proposals/uniswapx" },
+          {
+            text: "Gauntlett - Research Collaboration",
+            link: "/proposals/gauntlett",
+          },
+          {
+            text: "CowSwap Solver Infrastructure Proposal",
+            link: "/proposals/cowswap",
+          },
+          {
+            text: "1-inch LimitOrderProtocol Solving",
+            link: "/proposals/1inch",
+          },
+          {
+            text: "Tycho Atomic Arbitrage (2025)",
+            link: "/proposals/atomic-arbitrage",
+          },
+          { text: "Sunrise Protocol (2020)", link: "/proposals/sunrise" },
+        ],
+      },
+      {
+        text: "Coding Events",
+        items: [
+          { text: "Unite Defi (2025)", link: "/proposals/Unite" },
+          { text: "Uniswap Hook Incubator 5 (2025)", link: "/proposals/UHI5" },
+          { text: "Uniswap Hook Incubator 6 (2025)", link: "/proposals/UHI6" },
+          { text: "Harmony Hackathon 2021", link: "/proposals/Harmony" },
+        ],
+      },
     ],
     "/products": [
       { text: "Products", link: "/products/intro" },
       {
-        text: "Rainbow Bridge Research (Harmony 2022)",
-        link: "/products/2023-02-23-rainbow-costs",
+        text: "High Performance Solving",
+        items: [
+          { text: "Overview", link: "/products/solving/overview" },
+          {
+            text: "FlashHook - Uniswap v4 Design",
+            link: "/products/solving/flash-hook",
+          },
+          {
+            text: "Resource Management - Compact Design",
+            link: "/products/solving/liquidity-management",
+          },
+        ],
       },
-      { text: "Draft EAVE Whitepaper", link: "/products/2021-12-01-eave-defi" },
-      { text: "Kanga Protocol Whitepaper", link: "/products/2021-05-01-kanga" },
       {
-        text: "EAVE Parachain Design",
-        link: "/products/2021-04-01-eave-parachain",
-      },
-      {
-        text: "Lessons Learned from Devcon5",
-        link: "/products/2019-10-16-devcon5",
-      },
-      {
-        text: "Project-X Technical White Paper",
-        link: "/products/2018-07-17-projectx",
+        text: "Previous Work",
+        items: [
+          {
+            text: "Rainbow Bridge Research (Harmony 2022)",
+            link: "/products/previous/2023-02-23-rainbow-costs",
+          },
+          {
+            text: "Draft EAVE Whitepaper",
+            link: "/products/previous/2021-12-01-eave-defi",
+          },
+          {
+            text: "Kanga Protocol Whitepaper",
+            link: "/products/previous/2021-05-01-kanga",
+          },
+          {
+            text: "EAVE Parachain Design",
+            link: "/products/previous/2021-04-01-eave-parachain",
+          },
+          {
+            text: "Lessons Learned from Devcon5",
+            link: "/products/previous/2019-10-16-devcon5",
+          },
+          {
+            text: "Project-X Technical White Paper",
+            link: "/products/previous/2018-07-17-projectx",
+          },
+        ],
       },
     ],
     "/partnerships": [{ text: "Partnerships", link: "/partnerships/intro" }],
   },
+  socials: [
+    {
+      icon: "github",
+      link: "https://github.com/jincubator",
+    },
+    {
+      icon: "x",
+      link: "https://twitter.com/jincubatorX",
+    },
+    { icon: "telegram", link: "https://t.me/jincubator" },
+  ],
 });

@@ -1,0 +1,207 @@
+# Uniswap V4 Intent Hook
+
+## Overview
+
+This project was an exploration into the use of hooks for intent based solving.
+The goal was to implement an intent based hook, that would allow a pool to receive swaps, publish them to a solver network to find the best price for the swap. If a solver returned a more profitable swap (for the swapper) the intent would be executed, the swapper would receive a better return than the pool could offer and the solver would claim the funds. If after the deadline (usually 1 to 2 blocks) no solution with a better return has been provided. Then the swap would be executed as normal upon the pool.
+
+Result of the Project was that due to the way PoolManager enforced netting of token balances, it was difficult to hold the funds for a multi-cycle swap.
+
+## Presentation
+
+Below is the presentation submitted for Atrium Academy UHI5.
+
+<iframe
+  src="https://docs.google.com/presentation/d/e/2PACX-1vRI3svpe1qNrtamn2aDuSlp4_eawgY237ae49o_4P50X8vBA2dVZguio3eA5nauS3ubdOWvwwxl-7tl/embed?start=false&loop=false&delayms=3000"
+  frameBorder="0"
+  allowFullScreen
+  allow="autoplay; encrypted-media"
+  style={{
+    width: "100%",
+    height: "500px",
+    borderRadius: "12px",
+  }}
+/>
+
+## UHI5 Submission
+
+Email: john@johnwhitton.com
+
+Description: Jincubator IntentSwapHook allows swaps to be created with a delay period before execution, enabling solvers to find a more efficient trade and provide higher-return tokens to the swapper.
+
+Tags: CoW, Cross-Chain, Custom hooks, DEX, LP Liquidity, Unichain
+
+Integrations: Across, Circle, EigenLayer, Flaunch, Ink
+
+Submission Type: Hook Incubator (UHI)
+
+Cohort: UHI5
+
+Created by: John Whitton
+
+### How did you integrate our partners, if any?
+
+For the UHI5 project. The focus was on the IntentSwapHook; partner integration is planned for subsequent phases, and I will reach out to each partner with detailed implementation plans. Please see [https://deck.jincubator.com](https://deck.jincubator.com) for high-level integration overviews with EigenLayer, Circle, Across, Ink, and Flaunch.
+
+### What are the key links to share? (Ex. demo video, GitHub, deck)
+
+Github: [https://github.com/jincubator/uhi5-protocol](https://github.com/jincubator/uhi5-protocol)
+
+Slides: [https://uhi5-deck.jincubator.com/](https://uhi5-deck.jincubator.com/)
+
+Project Link: [https://jincubator.com/](https://jincubator.com/)
+
+Demo Video: [https://uhi5-demo.jincubator.com/](https://uhi5-demo.jincubator.com/)
+
+### Problem / Background: What inspired the idea? What problems are you solving?
+
+Liquidity Fragmentation and Capital Efficiency are two of the largest problems as we roll out more protocols and blockchains. This is addressed by two approaches that work together in unison. Intent-based swaps using solvers and Chain Abstraction using Cross-chain Intents (ERC-7683), enabling the seamless flow of funds between chains.
+
+### Impact: What makes this project unique? What impact will this make?
+
+This project lays the foundation for any pool to provide a better return for swappers and more capital efficiency for Liquidity Providers. It achieves this by creating a hook that allows swaps to be created with a delay period before execution, enabling solvers to find a more efficient trade and provide higher-return tokens to the swapper.
+
+This is part of a broader technical landscape design to be built on 4 key components
+
+1. IntentSwap Hook - A hook allowing swaps to be created with a delay period before execution, enabling solvers to find a more efficient trade, giving higher return tokens to the swapper.
+2. Liquidity Indexing - Comprehensive liquidity indexing tooling allowing for
+   a. Indexing of all Protocols
+   b. Simulating swaps over all protocols in milliseconds to find the best trading route
+   c. Execution of swaps via a unified interface
+3. Intent execution framework that enables the trade execution across multiple protocols.
+4. Liquidity rebalancing and settlement tools enabling liquidity providers to rebalance their portfolios across both yield-earning protocols, assets, and chains.
+
+Note: Currently there is no front end but docs can be found at [https://jincubator.com](https://jincubator.com)
+
+### Challenges: What was challenging about building this project?
+
+The solutions space is quite large, making prioritizing which components to build for this project challenging. As such, sponsor integrations were deprioritized and have only a high-level specification rather than a working proof of concept.
+
+Secondly, this space is rapidly evolving with new tooling and solutions becoming available. Specifically, Intent execution frameworks like Uniswap's the-compact and Liquidity Indexing solutions, such as Tycho’s SDK, are still under development and
+
+### Team: Who is on the team? What are their backgrounds?
+
+Development is being lead by John Whitton, below are some handy links about him.
+
+- [github](https://github.com/johnwhitton): Johns github profile
+- [johnwhitton.com](https://johnwhitton.com/): All about John, his work, writing, research etc.
+- [My Resume](https://resume.johnwhitton.com/): One-page resume in pdf format.
+- [Overview](https://overview.johnwhitton.com/): A little infographic of John's history
+- [Writing](https://johnwhitton.com/posts.html) and [Research](https://johnwhitton.com/research.html): Some writing and research John has done (a little outdated)
+- [Uniswap v4](https://github.com/johnwhitton/uhi5-exercises): Completed exercises and references for the Uniswap Hook Incubator
+
+## Repository
+
+The repository resides at [uhi5-protocol](https://github.com/jincubator/uhi5-Protocol/blob/main/notes/SCENARIOS.md)
+Below are some sample scenarios
+
+### Scenarios
+
+Gives an Overview of the Actors, Contracts and Scenarios for Jincubator.
+
+#### Actors
+
+- Liquidity Provider: Provides Liquidity
+- Swapper: Performs Swaps
+- Solver: Finds Most Efficient Swaps
+- Jincubator: Deploys UniswapHook and Liquidity Pools - may have privileged owner functions for prototyping.
+
+#### Contracts
+
+- UniswapHook
+- Pools
+  - ETH/USD - Reference Pool
+  - ETH/USD - Intent Pool using Uniswap Hook
+
+#### [The-compact](https://deepwiki.com/jincubator/the-compact)
+
+- [Sponsors(depositors)](https://github.com/jincubator/the-compact?tab=readme-ov-file#sponsors-depositors): Sponsors own the underlying assets and create resource locks to make them available under specific conditions.
+  - Swapper
+  - Liquidity Provider
+- [Arbiters](https://github.com/jincubator/the-compact?tab=readme-ov-file#arbiters--claimants-eg-fillers): Arbiters verify conditions and process claims.
+- [Claimants(e.g. Fillers)](https://github.com/jincubator/the-compact?tab=readme-ov-file#arbiters--claimants-eg-fillers): Claimants are the recipients.
+- [Relayers](https://github.com/jincubator/the-compact?tab=readme-ov-file#relayers): Relayers can perform certain interactions on behalf of sponsors and/or claimants.
+- [Allocators (Infrastructure)](https://github.com/jincubator/the-compact?tab=readme-ov-file#allocators-infrastructure): Allocators are crucial infrastructure for ensuring resource lock integrity.
+- [Emmisaries](https://github.com/jincubator/the-compact?tab=readme-ov-file#summary): Sponsors can also optionally assign an emissary to act as a fallback signer for authorizing claims against their compacts. This is particularly helpful for smart contract accounts or other scenarios where signing keys might change.
+
+### Protocol Deployment
+
+### Liquidity Provisioning
+
+1. Pool (providing tokens to a pool)
+2. Pool Manager (providing tokens to the pool manager to be used dynamically)
+3. Compact (to be used by Solvers for Swaps using Pools)
+4. Compact (to be used by Solvers for Direct Swaps based on Price Oracle and Profit)
+
+#### Pool
+
+#### Yield Earning Vaults (ERC-4626)
+
+#### Assets for Solving Intents
+
+### Intent Swap - No LP Funds
+
+1. Swapper creates Swap which creates a compact for the output tokens required (locks funds)
+   1. Pricing comes from ....
+2. Solver listens to the event calls simulate and finds the best price (a swap on a pool using Swappers Funds)
+3. Solver gets exclusivity
+4. Solver executes the swap using swappers funds and returning output tokens to swapper
+
+### Intent Swap - LP funds
+
+1. LP Provides funds for Solving to the-compact and permissions solver
+2. Swapper creates Swap which creates a compact for the output tokens required (locks funds)
+   1. Pricing comes from ....
+3. Solver listens to the event calls simulate and finds the best price
+   1. Option 1 - a swap on a pool using Swappers Funds
+   2. Option 2 - a direct swap using LP's funds
+4. Solver gets exclusivity
+5. Solver executes the swap
+   1. Option 1 - Using Swappers funds and returning tokens to swapper
+   2. Option 2 - Using LP's funds and returning funds to the-compact
+6. Settlement
+   1. FastTrak
+   2. Batch
+7. Rebalancing
+   1. Rebalancing Job
+
+### Swap Vanilla
+
+### Swap Booster
+
+### Async Swap and then Solve (double spend)
+
+1. Swapper creates a swap on Uniswap v4 Pool (Booster Pool or Vanilla Pool)
+2. Input tokens are held based on Time Delay (say 10 blocks)
+3. Intent is created by Solver locking LP funds for Input Token and Output Token Amount above - gas fees and profit %
+   4a. Intent is executed (note this is outside of Pool, other option is to pass solve calldata to Pool and execute solve in Pool)
+   1. LP deposits liquidity in the form of Output Token with intentId (CompactId)
+   2. Deposited Output Tokens are given to the original swapper and Locked Input Tokens are given to the Solver
+      4b. Intent is not executed and swap is attempted at time of deadline.
+
+### Swap then Solve (lock funds and then double spend)
+
+### Async Swap then Solve
+
+### Swap and Solve (Pass Payload Data In)
+
+### Compact Introduction.
+
+### Swap Intent Based
+
+Swap 1 ETH for max USDC on Unichain
+
+1. Swap is created
+   1. Locks ETH on PoolManager
+   2. Create compact for Solver to use 1 ETH if they can provide $2470 USDC or more
+   3. Emits event for Intent Creation
+2. Solver provides Solution
+   1. Accesses Funds (provide our own initially)
+   2. Does Swap
+   3. Proves have satisfied condition
+
+### Cross Chain Swap
+
+### ReHypothecation
+
+### Liquidity Settlement

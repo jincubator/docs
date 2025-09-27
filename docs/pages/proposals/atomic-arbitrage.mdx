@@ -1,0 +1,269 @@
+# TAP-4 Atomic Arbitrage : Application Proposal
+
+Submitted by: [John Whitton](https://johnwhitton.com) and [Jincbator](https://jincubator.com): john@johnwhitton.com
+
+## Overview
+
+An arbitrage bot built on Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles.
+
+I spent a weekend doing initial design and coding up a prototype which can be found [here](https://github.com/jincubator/atomic-arbitrage) this was rapid prototyping and as such was done using a CLI as an example rather than a productionn ready service. It is currently a private repository please reach out if you'd like to review.
+
+## Implementation Plan
+
+Following is a full implementation plan, open for discussion
+
+### Phase 1 (this bounty) - Essential Requirements
+
+- **Pre-calculate cycles**: Build a cycle file of the most relevant arbitrage cycles for a given set of start tokens.
+  - **Market Graph**: Turn all pools and tokens into a graph, with pools as edges and nodes as tokens.
+  - **Graph search for cycles:** Given a set of start tokens, enumerate all possible cycles of up to length N through the graph, from one of the start tokens. A cycle is a trade path that starts and ends in the same token. Use each pool at max once in a cycle.
+    - **Limiting the search (Optional)**: Find good heuristics to limit the number of possible cycles in case there are too many. E.g. limit the set of possible bridge tokens to the most liquid N tokens.
+- **Find optimal trades**: Given a cycle, find the trade amount that optimises the amount out (e.g. with binary search over the range (0, pool trade limit)).
+- **Check Cycles every block**: For all cycles that have a spot price better than 1 (i.e. all cycles where the spot price indicates that you get more than 1 token out for token in at the margin) – calculate the optimal trade.
+- **Profitable net gas**: Calculate gas in terms of out-token and consider a trade only as profitable if it is profitable net gas.
+- **Profitability threshold**: Only execute trades that are profitable by at least X % (in BPS). (useful also for testing, you set it to slightly negative to find and test trade execution.)
+- **Execute**: Execute the most profitable trade you found.
+
+#### Future Phases
+
+#### Important Requirements
+
+- **CLI Dashboard**: Implement a command line UI (or other UI component) to follow the searchers progress. Track at least: Number of cycles we monitor, current block, real-time counter for checked cycles this block, list of found arbitrage opportunities in current block, list of pending trades, list of succeeded arbitrage trades, profit in current run, user settings (start tokens, slippage setting (in BPS), bribe % (in BPS), chain, tracked protocols ("Uniswap v4, Balancer v2, etc."))
+- **Recheck cycles only when a pool updates**: Calculate the cycle spot prices and optimal trade amounts once at the beginning. Then only recalculate a cycle spot price and optimal trade amount if one of the pools in the cycle had an update in the last block update.
+- **Add slippage**: Add a slippage parameter (in basis points): Reduce the expected amount from both trades by the slippage when encoding the swaps. Only send trades that are also profitable _after_ slippage.
+- **Monitor trade execution**: Record and monitor pending trades. Block the pools involved in a trade from further trading until the previous trade either succeeded or failed. Record trade outcome (failed/succeeded, sell amount, buy amount, expected buy amount, gas cost, expected gas cost, token in, token out, profit net gas in out token).
+- **Execution Options**: Give the user the option to pick one of several default execution options: Public mempool, [BuilderNet](https://buildernet.org/docs/api) through [Flashbots Protect](https://docs.flashbots.net/flashbots-protect/overview) via TEE builder, [MEVBlocker](https://cow.fi/mev-blocker). Pick a protected option by default.
+- **Dynamic Bribe**: Bid a % of expected profit in gas (on chains where it's applicable).
+- **Gas Safeguard**: Limit the amount of gas the searcher is allowed to use per e.g. hour – so that in case it bugs and sends non-profitable transactions you don't burn through your gas all at once.
+
+#### Nice-to-have requirements
+
+- **Target Block**: Make trades only valid for a particular target block – so that you can consider trades that don't settle in the next block as failed.
+- **Gas warning**: Notify when you're running out of gas.
+
+#### NOT included
+
+- **Inventory Management**: Sell tokens automatically for gas to refill gas. Sell tokens automatically to treasure token (e.g. ETH or USDC).
+
+### Core Logic
+
+#### ClI Implementation
+
+#### `fn extract_all_tokens_from_pools` leverages tycho-simulation `utils::load_all_tokens`
+
+```rust
+async fn load_tokens_for_chain(
+    chain: &Chain,
+    tycho_url: &str,
+    tycho_api_key: &str,
+) -> HashMap<Bytes,
+```
+
+#### Collect all pool data
+
+```rust
+async fn collect_pool_data(
+    chain: &Chain,
+    tycho_url: &str,
+    tycho_api_key: &str,
+    all_tokens: &HashMap<Bytes, Token>,
+    tvl_threshold: f64,
+    real_time: bool,
+    collect_all_pairs: bool,
+    max_blocks: usize,
+    start_tokens: &[String],
+    max_hops: usize,
+    min_profit_bps: u64,
+    evaluation_callback: Option<
+        Box<
+            dyn Fn(
+                &HashMap<String, ProtocolComponent>,
+                &[(String, String, f64, String, String)],
+                &HashMap<String, Box<dyn ProtocolSim>>,
+            ) -> (),
+        >,
+    >,
+    warm_up_blocks: usize,
+) -> (
+    HashMap<String, ProtocolComponent>,
+    Vec<(String, String, f64, String, String)>,
+    HashMap<String, Box<dyn ProtocolSim>>,
+    (usize, usize, usize), // (pools_read, pools_ignored_tvl, token_pools_skipped)
+) {
+```
+
+#### fn build_arbitrage_graph
+
+```rust
+  fn build_arbitrage_graph(
+    pairs: &[(String, String, f64, String, String)],
+    pool_states: &HashMap<String, ProtocolComponent>,
+) -> Graph {
+```
+
+#### find_arbitrage_cycles: /// Runs Bellman-Ford to find negative cycles (profitable arbitrage)
+
+```rust
+fn find_arbitrage_cycles(
+    graph: &Graph,
+    start_token: &str,
+    max_hops: usize,
+    pool_states: &HashMap<String, ProtocolComponent>,
+    pool_states_with_state: &HashMap<String, Box<dyn ProtocolSim>>,
+    start_token_info: &Token,
+) -> Vec<ArbitrageCycle> {
+```
+
+#### Execute Swap Transaction
+
+```rust
+async fn execute_swap_transaction(
+    provider: FillProvider<
+        JoinFill<Identity, WalletFiller<EthereumWallet>>,
+        RootProvider<Ethereum>,
+    >,
+    amount_in: &BigUint,
+    wallet_address: Address,
+    sell_token_address: &Bytes,
+    tx: tycho_execution::encoding::models::Transaction,
+    chain_id: u64,
+) -> Result<(), Box<dyn std::error::Error>> {
+```
+
+### Tycho Integrations
+
+- [Tycho Indexer](https://github.com/propeller-heads/tycho-execution) via [The Tycho Indexer RPC](https://tycho-beta.propellerheads.xyz/docs/)
+- [Tycho Execution](https://docs.propellerheads.xyz/tycho/for-solvers/execution)
+
+### Weekly Milestones
+
+The following assumes 1 Engineer working 20 hours per week on this Bounty.
+Timelines can be reduced by allocating additional resources and is open for discussion when agreeing on the bounty.
+Ideally the Bounty would be payable weekly as milestones are met.
+
+This Bounty
+
+- Week 1: Working CLI identifying arbitrage opportunities
+  - CLI Implemented
+  - Loading of All Tokens and Pool Information
+  - Creation of Hash Graphs
+  - Evaluation of Arbitrage Cycles
+- Week 2: Working CLI Swap Execution for Positive Arbitrage Opportunities
+  - Introduce Swap Execution
+  - End to End Tests of Flow
+- Week 3 Service Development
+  - Migrate from CLI to background service monitoring each block for arbitrage opportunities
+- Week 4 Documentation and Gas Analysis
+  - Creation of a documentation website using [vocs](https://vocs.dev/)
+  - Publishing a [deepwik](http://deepwiki.com/) for the repository
+  - Gas analysis approach
+- Week 5 TroubleShooting and Testing
+  - Increase testing coverage
+  - Troubleshoot any oustanding issues
+
+### Technical Architecture
+
+Following are some diagrams generated from the codebase protoyped over the weekend using [devin.ai](https://app.devin.ai/)
+
+#### System Capabilities
+
+![SystemCapabilities](https://hackmd.io/_uploads/BJGsMEVDxg.png)
+
+#### Architecture Components
+
+![ArchitectureComponents](https://hackmd.io/_uploads/SyGiGVNDgl.png)
+
+#### Graph Overview
+
+![GraphOverview](https://hackmd.io/_uploads/HJzjzN4Dxl.png)
+
+#### Arbitrage Opportunities (Bellman Ford Algorithm)
+
+![BellmanFord](https://hackmd.io/_uploads/r1GsM44vxl.png)
+
+#### Process Flow
+
+![ProcessFlow](https://hackmd.io/_uploads/HkMofEVvel.png)
+
+### UI/UX Approach
+
+Initial version will be cli based here is the help for the cli
+
+```bash
+cargo run --release --example arbitrage -- --help
+
+Usage: arbitrage [OPTIONS]
+
+Options:
+      --start-tokens <START_TOKENS>
+      --max-hops <MAX_HOPS>                            [default: 3]
+      --min-profit-bps <MIN_PROFIT_BPS>                [default: 50]
+      --tvl-threshold <TVL_THRESHOLD>                  [default: 380000]
+      --swapper-pk <SWAPPER_PK>                        [default: 0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef1234]
+      --chain <CHAIN>                                  [default: ethereum]
+      --test-all-chains
+      --real-time
+      --collect-all-pairs
+      --max-blocks <MAX_BLOCKS>                        [default: 1]
+      --continuous
+      --verbose
+      --all-tokens
+      --warm-up-blocks <WARM_UP_BLOCKS>                [default: 10]
+      --pool-loading-strategy <POOL_LOADING_STRATEGY>  [default: warmup]
+  -h, --help                                           Print help
+
+```
+
+Below is sample output
+
+```bash
+Run for uniswap only (before adding vm:ambient, vm:balancer, sushiswap_v2)
+cargo run --release --example arbitrage -- --chain ethereum --max-blocks 1 --max-hops 2 --tvl-threshold 100.0 --all-tokens
+
+============================================================
+📊 ARBITRAGE ANALYSIS SUMMARY
+============================================================
+Number of Tokens Read: 34883
+Number of Pools(Edges) Read: 872
+Number of Pools(Edges) Evaluated: 872
+Number of Pools Ignored due to TVL: 0
+Number of Token Pools(Edges) Skipped: 14
+Number of Edges (Trading Pairs): 1716
+Number of Tokens Evaluated (Nodes): 654
+Building graph from 654 Nodes and 1716 Edges
+Number of Arbitrage Cycles Found: 0
+Verification: 654 Nodes connected by 1716 Edges
+============================================================
+
+Fuller run for ethereum (after adding vm:ambient, vm:balancer, sushiswap_v2)
+cargo run --release --example arbitrage -- --chain ethereum --max-blocks 10 --max-hops 5 --tvl-threshold 100.0 --all-tokens
+```
+
+### About Me
+
+### TAP Relevant Experience
+
+What makes you succeed in this TAP (+relevant experience).
+
+I work on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
+
+### John Overview
+
+I'm a Research/engineer, technical leader, and entrepreneur working at the intersection of blockchain infrastructure (Solving, Market Making, Arbitrage) and Decentralized protocols (Intents, Liquidity Management, Settlement). I have a track record of driving projects from conception to completion, identifying research gaps, and providing solutions. Finally, I love leading engineering teams and have the ability to drive collaboration across the organization and the entire ecosystem. For more see [https://johnwhitton.com](https://johnwhitton.com)
+
+### Socials
+
+- email: john@johnwhitton.com
+- telegram: @john_whitton
+- x: @john_a_whitton
+- github: https://github.com/johnwhitton
+- website: [johnwhitton.com](https://johnwhitton.com)
+
+### Research
+
+- github: https://github.com/jincubator
+- website: [jincubator.com](https://joincubator.com)
+
+```
+
+```

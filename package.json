@@ -8,7 +8,7 @@
     "vocsbuild": "vocs build",
     "preview": "vocs preview",
     "predeploy": "vocs build",
-    "sitedeploy": "gh-pages -d docs/dist --nojekyll --cname jincubator.com"
+    "sitedeploy": "cp docs/dist/index.html docs/dist/404.html && gh-pages -d docs/dist --nojekyll --cname www.jincubator.com"
   },
   "dependencies": {
     "pdfjs-dist": "^5.3.93",
@@ -29,7 +29,10 @@
     "eslint-plugin-mdx": "^3.6.2",
     "eslint-plugin-react": "^7.37.5",
     "gh-pages": "^6.3.0",
+    "mermaid": "^11.12.0",
     "prettier": "^3.6.2",
-    "typescript": "latest"
+    "remark-mermaidjs": "^7.0.0",
+    "typescript": "latest",
+    "vitepress-plugin-mermaid": "^2.0.17"
   }
 }
