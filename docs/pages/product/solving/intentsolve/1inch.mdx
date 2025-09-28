@@ -1,0 +1,253 @@
+# 1inch
+
+## Overview
+
+1inch is a DEX aggregator that sources liquidity from various exchanges to offer users better token swap rates. Our solver infrastructure provides comprehensive support for 1inch's intent-based protocols, including limit order solving and liquidity aggregation integration.
+
+## Using our Solution
+
+Our 1inch solver integration enables:
+
+- **Limit Order Solving**: Participate in 1inch's limit order protocol for competitive order filling
+- **Liquidity Aggregation**: Integrate with 1inch's aggregation routing for optimal execution
+- **Cross-protocol Optimization**: Combine 1inch routes with our multi-protocol infrastructure
+- **Real-time Monitoring**: Monitor and solve 1inch limit orders with microsecond-level evaluation
+- **Capital Efficiency**: Execute orders using flash loans without inventory requirements
+
+## Solution Overview
+
+The 1inch solver integration leverages our high-performance solving infrastructure to participate in 1inch's ecosystem as both a limit order solver and liquidity provider. The system can process 1inch limit orders and integrate 1inch's aggregation routes into our broader routing optimization.
+
+### 1inch Protocol Integration
+
+#### Limit Order Protocol
+1inch's Limit Order Protocol enables gasless limit orders with flexible execution conditions:
+
+1. **Order Creation**: Users create limit orders with specific price and time constraints
+2. **Solver Competition**: Solvers compete to fill orders at favorable prices
+3. **Partial Fills**: Support for partial order execution over time
+4. **Advanced Conditions**: Complex conditional logic for order execution
+
+#### Aggregation Protocol
+1inch's aggregation protocol finds optimal routes across multiple DEXs:
+
+1. **Route Discovery**: Find best prices across supported protocols
+2. **Split Routing**: Split large orders across multiple protocols
+3. **Gas Optimization**: Minimize total execution costs including gas
+4. **Slippage Protection**: Built-in protection against unfavorable price movements
+
+### Architecture Integration
+
+Our solver infrastructure integrates with 1inch through several key components:
+
+#### Order Monitoring
+- **Limit Order Streaming**: Real-time monitoring of new 1inch limit orders
+- **Order Filtering**: Filter orders based on profitability and execution constraints
+- **Market Monitoring**: Track market conditions for optimal filling opportunities
+
+#### Route Integration
+- **1inch Route Inclusion**: Include 1inch aggregation routes in our routing optimization
+- **Comparative Analysis**: Compare 1inch routes against our native route discovery
+- **Hybrid Execution**: Combine 1inch routes with direct protocol access
+
+#### Solution Generation
+- **Order Filling Strategies**: Develop optimal strategies for limit order execution
+- **Price Improvement**: Provide better execution than quoted limit prices
+- **Batch Optimization**: Fill multiple orders efficiently in single transactions
+
+## Technical Reference
+
+### Solver Architecture
+
+#### 1inch Solver Interface
+```rust
+pub struct OneInchSolver {
+    pub route_analyzer: RouteAnalyzer,
+    pub order_monitor: OrderMonitor,
+    pub aggregation_client: OneInchClient,
+    pub limit_order_handler: LimitOrderHandler,
+}
+
+impl OneInchSolver {
+    pub async fn solve_limit_order(&self, order: LimitOrder) -> Result<Solution> {
+        // Evaluate order profitability
+        let profitability = self.evaluate_order_profitability(&order).await?;
+
+        if profitability.is_profitable() {
+            // Generate execution route
+            let route = self.find_optimal_route(&order).await?;
+
+            // Create solution
+            let solution = self.create_solution(&order, &route).await?;
+
+            Ok(solution)
+        } else {
+            Err(anyhow::anyhow!("Order not profitable"))
+        }
+    }
+
+    pub async fn integrate_aggregation_route(
+        &self,
+        from_token: Address,
+        to_token: Address,
+        amount: U256,
+    ) -> Result<Route> {
+        // Get 1inch aggregation quote
+        let inch_quote = self.aggregation_client.get_quote(
+            from_token,
+            to_token,
+            amount,
+        ).await?;
+
+        // Compare with our native routes
+        let native_route = self.route_analyzer.find_best_route(
+            from_token,
+            to_token,
+            amount,
+        ).await?;
+
+        // Return best option
+        if inch_quote.output_amount > native_route.output_amount {
+            Ok(inch_quote.to_route())
+        } else {
+            Ok(native_route)
+        }
+    }
+}
+```
+
+#### Limit Order Evaluation
+1. **Order Validation**: Verify order parameters and execution conditions
+2. **Market Analysis**: Analyze current market conditions for filling opportunity
+3. **Route Discovery**: Find optimal execution paths for order filling
+4. **Profitability Check**: Ensure positive profit after fees and gas costs
+5. **Execution Planning**: Plan optimal execution timing and strategy
+
+### Integration with Our Infrastructure
+
+#### Collectors Integration
+- **Order Event Monitoring**: Real-time monitoring of limit order creation and cancellation
+- **Price Feed Integration**: Integrate 1inch price feeds with our market data
+- **Cross-protocol Synchronization**: Ensure consistent state across all protocols
+
+#### Route Evaluation
+- **1inch Route Inclusion**: Include 1inch aggregation routes in route evaluation
+- **Competitive Analysis**: Compare execution quality across different routing methods
+- **Hybrid Optimization**: Optimize between native routes and 1inch aggregation
+
+#### Strategy Framework
+- **Limit Order Strategy**: Specialized strategy for limit order filling
+- **Arbitrage Integration**: Combine limit order filling with arbitrage opportunities
+- **Market Making**: Provide liquidity through strategic limit order placement
+
+### Limit Order Mechanics
+
+#### Order Filling Process
+```rust
+pub async fn fill_limit_order(
+    &self,
+    order: &LimitOrder,
+    fill_amount: U256,
+) -> Result<Transaction> {
+    // Validate order can be filled
+    self.validate_order_fillable(order, fill_amount).await?;
+
+    // Find optimal execution route
+    let route = self.find_execution_route(order, fill_amount).await?;
+
+    // Execute with flash loan if needed
+    let tx = if route.requires_capital {
+        self.execute_with_flash_loan(order, &route).await?
+    } else {
+        self.execute_direct(order, &route).await?
+    };
+
+    Ok(tx)
+}
+```
+
+#### Flash Loan Integration
+- **Capital Efficiency**: Use flash loans for order filling without inventory
+- **Risk Management**: Minimize capital requirements and exposure
+- **Fee Optimization**: Account for flash loan fees in profitability calculations
+
+### Performance Characteristics
+
+#### Order Processing Performance
+- **Order Monitoring**: Real-time processing of new limit orders
+- **Evaluation Speed**: Microsecond-level order evaluation and profitability analysis
+- **Execution Efficiency**: Optimal gas usage and execution timing
+
+#### Competitive Advantages
+- **Multi-protocol Access**: Broader liquidity access than single-protocol solutions
+- **Advanced Analytics**: Sophisticated profitability and timing analysis
+- **Real-time Optimization**: Live market data for optimal execution timing
+- **Capital Efficiency**: Flash loan integration for inventory-free operation
+
+### Best Practices
+
+#### Solver Operation
+- **Competitive Pricing**: Provide better execution than market rates
+- **Reliable Execution**: Maintain high success rate for order filling
+- **Gas Optimization**: Minimize transaction costs for users
+- **Market Monitoring**: Continuous monitoring for optimal filling opportunities
+
+#### Risk Management
+- **Market Risk**: Manage exposure to price movements during execution
+- **Execution Risk**: Handle failed transactions and reverts appropriately
+- **Liquidity Risk**: Ensure sufficient liquidity for order execution
+- **Competition Risk**: Maintain competitive position among solvers
+
+### Integration Examples
+
+#### Limit Order Solving
+```rust
+// Monitor for new profitable limit orders
+let profitable_orders = order_monitor
+    .stream_orders()
+    .filter(|order| self.evaluate_profitability(order).is_profitable())
+    .collect::<Vec<_>>()
+    .await;
+
+// Process orders in batch for efficiency
+for order in profitable_orders {
+    match self.solve_limit_order(order).await {
+        Ok(solution) => {
+            self.execute_solution(solution).await?;
+        }
+        Err(e) => {
+            tracing::warn!("Failed to solve order: {}", e);
+        }
+    }
+}
+```
+
+#### Route Integration
+```rust
+// Compare 1inch aggregation with native routing
+let inch_route = self.get_inch_quote(token_in, token_out, amount).await?;
+let native_route = self.get_native_route(token_in, token_out, amount).await?;
+
+let best_route = if inch_route.output_amount > native_route.output_amount {
+    inch_route
+} else {
+    native_route
+};
+
+// Execute using best available route
+self.execute_route(best_route).await?;
+```
+
+### Future Enhancements
+
+#### Planned Improvements
+- **Advanced Order Types**: Support for complex conditional orders
+- **Cross-chain Integration**: Support for 1inch cross-chain protocols
+- **MEV Protection**: Enhanced MEV protection for order execution
+- **Machine Learning**: ML-based optimal timing for order filling
+
+#### Integration Roadmap
+- **API Enhancement**: Enhanced integration with 1inch APIs and protocols
+- **Real-time Analytics**: Advanced analytics for order profitability
+- **Automated Market Making**: Automated liquidity provision strategies
+- **Protocol Extensions**: Integration with new 1inch protocol features

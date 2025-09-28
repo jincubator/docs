@@ -3,7 +3,8 @@
     "allow": [
       "Bash(bun:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

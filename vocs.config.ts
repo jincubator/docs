@@ -2,6 +2,7 @@ import { defineConfig } from "vocs";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
 import remarkMermaid from "remark-mermaidjs";
+import { rehypeInjectZoom } from "./rehype-inject-zoom.js";
 
 export default defineConfig({
   title: "Jincubator",
@@ -14,7 +15,7 @@ export default defineConfig({
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
   markdown: {
     remarkPlugins: [remarkMath, remarkMermaid],
-    rehypePlugins: [rehypeMathjax],
+    rehypePlugins: [rehypeMathjax, rehypeInjectZoom],
   },
   topNav: [
     {
@@ -244,12 +245,27 @@ export default defineConfig({
         text: "High Performance Solving",
         items: [
           { text: "Overview", link: "/product/solving/overview" },
+          { text: "Collectors", link: "/product/solving/collectors" },
+          { text: "Route Evaluation", link: "/product/solving/routes" },
+          { text: "Strategies", link: "/product/solving/strategies" },
+          { text: "Protocol Onboarding", link: "/product/solving/protocols" },
           {
-            text: "FlashHook - Uniswap v4 Design",
+            text: "Solver Support",
+            items: [
+              { text: "CowSwap", link: "/product/solving/intentsolve/cowswap" },
+              { text: "1inch", link: "/product/solving/intentsolve/1inch" },
+              {
+                text: "Uniswap X",
+                link: "/product/solving/intentsolve/uniswapx",
+              },
+            ],
+          },
+          {
+            text: "FlashHook (Uniswap v4)",
             link: "/product/solving/flash-hook",
           },
           {
-            text: "Resource Management - Compact Design",
+            text: "Liquidity Management",
             link: "/product/solving/liquidity-management",
           },
         ],

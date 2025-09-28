@@ -1,0 +1,35 @@
+# High Performance Solving and Market Making Infrastructure
+
+Following are the key components that combined enable solvers and market makers to leverage highly performant infrastructure to solve intent based protocols and implement advanced trading strategies.
+
+The architecture follows the principle: **Collectors → Strategies → Execution** and layers on route evaluation and liquidity mapping.
+
+## Liquidity Mapping
+
+Conceptually this was fairly straight forward, create a graph with Tokens as Nodes, Pools as edges and then create routes for that graph. With the protocol abstraction offered by Tycho's component and state model. A pool is a pool is a pool regardless of what the underlying protocol is. This simplified the implementation considerably
+
+## Route Evaluation
+
+## Collectors: Continuously stream on-chain data
+
+The bedrock of the collection architecture is the [Tycho Indexer](https://docs.propellerheads.xyz/tycho/for-solvers/indexer) built on [substreams](https://docs.substreams.dev/). It provides real time state updates for multiple protocols filtered by TVL values for those protocols.
+
+On top of this we build a graph manager and a route manager using Depth First Search of the graph to create the routes with a little flash_loan_manager to determine the optimal flash loan available. This includes choosing the flash loan with the lowest fee which does not have any locking conflicts with the route.
+
+The key point for collection, once again enabled by Tycho streaming technology, is that on a state change to any of the protocols which I am monitoring. I trigger route evaluations for all routes that contain that pool. Evaluating whether a positive arbitrage cycle exists or not. I must admit its tireless work for the route evaluate and its queue manager, evaluating hundreds or even thousands of routes per block, but occasionally, just occasionally an opportunity will be found, which makes it all worthwhile.
+
+## Strategies: Analyze and simulate opportunities
+
+This architecture supports multiple strategies.
+
+The first (and only thus far) strategy implemented thus far is a cyclical arbitrage. Starting and ending with the same token traversing through routes we simulate each input and output amount for the route and evaluate if a positive arbitrage exists. If so a Solution for the route with an input amount is Signalled. This will be received by the execution layer.
+
+Below is the profitability calculation
+
+## Execution: Executing the transactions
+
+The execution layer receives a Solution including input amount and the route to execute. It performs additional augmentation and encoding.
+
+For example in the reference cyclical arbitrage the executor maps both the flash loan parameters and swap parameters. It encodes the solution and using alloy binding for `flashExecutor` creates the `calldata` for the transaction.
+
+The executor itself has pre-flight validation which will capture any identified routes which may no longer be profitable or error because of other upstream analysis issues. This saves wasting gas on transactions that will revert.

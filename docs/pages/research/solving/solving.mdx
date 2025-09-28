@@ -1,5 +1,19 @@
 # Solving, Arbitrage & Market Making
 
+<script
+  dangerouslySetInnerHTML={{
+    __html: `
+      // Load zoom script
+      if (!document.querySelector('script[src="/zoom-mermaid.js"]')) {
+        const script = document.createElement('script');
+        script.src = '/zoom-mermaid.js';
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    `
+  }}
+/>
+
 ## Evaluating over 1000 Routes Per Second and arbitraging them with no upfront capital.
 
 In this article I discuss my personal Journey for 2025. Give an example of a cyclical arbitrage built on the latest high performant solving and market making infrastructure. Discuss how this infrastructure can be applied to Intent Based Solving Sytems (think UniswapX, CowSwap, 1inch) and give a full breakdown of the mathematics and technical implementation of a generic solving infrastructure service that I have been developing.
