@@ -24,7 +24,28 @@ The strategy architecture follows the principle: **Collectors → Strategies →
 The first and primary strategy implemented is cyclical arbitrage - starting and ending with the same token, traversing through routes to simulate each input and output amount, evaluating if a positive arbitrage exists.
 
 #### Token-based Arbitrage (TOKEN)
-A strategy under development that groups all routes for an input token and selects the route with the highest profitability for optimal capital utilization.
+An advanced strategy that addresses execution efficiency and risk management by grouping routes by input token:
+
+**Key Features:**
+- **Route Grouping**: All routes sharing the same input token are grouped together
+- **Best Route Selection**: Only the highest profit route per token group is executed
+- **Duplicate Prevention**: Eliminates multiple executions for the same underlying opportunity
+- **Forced Execution Mode**: Supports execution of even negative profit routes for testing/validation
+
+**Implementation Logic:**
+```rust
+// Filter routes containing target token anywhere in path
+routes.into_iter()
+    .filter(|route| route.path.contains(&target_token_bytes))
+    .collect()
+```
+
+**Execution Flow:**
+1. Retrieve affected routes for pool's tokens
+2. Group routes by input token
+3. Evaluate all routes in each group
+4. Select highest profit route per group
+5. Execute only selected routes (with optional forced execution)
 
 ### Architecture Components
 

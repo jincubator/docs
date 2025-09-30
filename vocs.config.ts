@@ -268,6 +268,12 @@ export default defineConfig({
             text: "Liquidity Management",
             link: "/product/solving/liquidity-management",
           },
+          { text: "Roadmap", link: "/product/solving/roadmap" },
+          { text: "System Design", link: "/product/solving/design" },
+          { text: "Design 0.2", link: "/product/solving/design-0-2" },
+          { text: "Design 1.0", link: "/product/solving/design-1-0" },
+          { text: "Design 2.0", link: "/product/solving/design-2-0" },
+          { text: "Implementation", link: "/product/solving/implementation" },
         ],
       },
       {

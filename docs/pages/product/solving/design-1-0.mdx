@@ -1,0 +1,390 @@
+# Solver System Design Document - Phase 1.0
+
+## Abstract
+
+Phase 1.0 represents the evolution to production-grade intent solving across major DeFi protocols, introducing comprehensive portfolio management capabilities and sophisticated institutional-grade infrastructure. This release completes the multi-protocol solver ecosystem with 1inch and CowSwap integration while establishing advanced portfolio-level operations and risk management systems.
+
+## Overview
+
+Building on the intent-solving foundation established in Phase 0.2, Phase 1.0 introduces three major feature implementations that transform the system into a comprehensive DeFi solving platform:
+
+1. **[1inch Support](#TODO)**: Limit Order Protocol integration with resolver participation and cross-DEX optimization
+2. **[CowSwap Support](#TODO)**: Batch auction participation with CoW detection and MEV protection
+3. **[Portfolio Management](#TODO)**: Institution-grade portfolio operations with advanced risk management and performance attribution
+
+## Key Design Changes from 0.2
+
+### Multi-Protocol Production Integration
+
+**From Foundation to Production**:
+- **0.2 Design**: UniswapX intent solving with SOLO optimization foundation
+- **1.0 Design**: Complete multi-protocol ecosystem with 1inch, CowSwap, and UniswapX
+- **Impact**: Comprehensive coverage of major DeFi intent protocols with unified optimization
+
+**Advanced Protocol Strategies**:
+- **1inch (INCH)**: Limit order resolution with resolver competition participation
+- **CowSwap (COW)**: Batch auction optimization with coincidence of wants detection
+- **Unified Optimization**: SOLO engine serving all protocol types with protocol-specific adaptations
+
+### Portfolio-Level Architecture
+
+**From Individual Transactions to Portfolio Operations**:
+- **0.2 Design**: Transaction-level optimization with external signal coordination
+- **1.0 Design**: Portfolio-level strategy management with internal signal solutions
+- **Impact**: Institutional-grade operations with comprehensive risk management and performance attribution
+
+**Internal Signal Processing**:
+- **Portfolio Coordination**: Cross-strategy signal coordination and optimization
+- **Risk-Adjusted Signals**: Signal processing with comprehensive portfolio risk assessment
+- **Performance Attribution**: Detailed attribution of signal performance to portfolio results
+
+### Advanced Execution Framework
+
+**Enhanced Execution Capabilities**:
+- **FLASH Mapping**: Comprehensive flash loan optimization across all protocols
+- **PreFlight Check**: Advanced validation with portfolio risk assessment
+- **Vault Support**: Centralized vault operations with multi-strategy support
+- **Institutional Infrastructure**: Enterprise-grade execution with compliance frameworks
+
+**Risk Management Evolution**:
+- **Portfolio-Level Risk**: VaR calculation and stress testing across entire portfolio
+- **Dynamic Risk Controls**: Real-time risk adjustment based on market conditions
+- **Regulatory Compliance**: Institutional compliance frameworks and reporting
+
+## Component Architecture Enhancements
+
+### New Protocol Components
+
+#### Collectors - 1inch (INCH)
+**Implementation Focus**:
+- **Order Monitoring**: Real-time 1inch limit order and fusion order collection
+- **Resolver Participation**: Active participation in resolver competition ecosystem
+- **Order Lifecycle**: Complete tracking from submission to settlement
+- **Fee Optimization**: Dynamic fee optimization and capture strategies
+
+**Technical Architecture**:
+```rust
+pub struct InchCollector {
+    order_book_client: OrderBookClient,
+    fusion_monitor: FusionOrderMonitor,
+    resolver_engine: ResolverEngine,
+    order_tracker: OrderLifecycleTracker,
+}
+
+impl InchCollector {
+    pub async fn collect_limit_orders(&self) -> Result<Vec<LimitOrder>, CollectorError> {
+        // Real-time limit order collection and analysis
+        // Fusion order monitoring and evaluation
+        // Resolver competition participation
+    }
+}
+```
+
+#### Collectors - CowSwap (COW)
+**Implementation Focus**:
+- **Batch Monitoring**: Real-time batch auction monitoring and participation
+- **CoW Detection**: Advanced coincidence of wants identification algorithms
+- **MEV Protection**: Integrated MEV protection through batch auction mechanics
+- **Surplus Optimization**: Multi-order surplus capture and distribution
+
+**Technical Architecture**:
+```rust
+pub struct CowSwapCollector {
+    batch_monitor: BatchAuctionMonitor,
+    cow_detector: CoWDetectionEngine,
+    mev_protector: MEVProtectionFramework,
+    surplus_optimizer: SurplusOptimizer,
+}
+
+impl CowSwapCollector {
+    pub async fn participate_in_batch(&self, batch: &BatchAuction) -> Result<BatchSolution, CollectorError> {
+        // Batch auction participation and optimization
+        // CoW detection and surplus calculation
+        // MEV-protected settlement coordination
+    }
+}
+```
+
+### Enhanced Strategy Components
+
+#### Strategies - 1inch (INCH)
+**Strategy Implementation**:
+- **Limit Order Analysis**: Comprehensive limit order evaluation and optimization
+- **Resolver Competition**: Competitive bidding strategies for optimal execution
+- **Cross-DEX Routing**: Multi-protocol routing optimization
+- **Fee Capture**: Advanced fee optimization and capture mechanisms
+
+#### Strategies - CowSwap (COW)
+**Strategy Implementation**:
+- **Batch Optimization**: Multi-order optimization within batch auctions
+- **CoW Maximization**: Coincidence of wants detection and surplus maximization
+- **MEV Protection**: Advanced MEV protection strategies within batch context
+- **Settlement Coordination**: Optimal settlement execution across multiple orders
+
+### Portfolio Management Infrastructure
+
+#### Signals - Internal Solution
+**Advanced Signal Processing**:
+```rust
+pub struct InternalSignalSolution {
+    portfolio_coordinator: PortfolioCoordinator,
+    risk_manager: AdvancedRiskManager,
+    performance_analyzer: PerformanceAnalyzer,
+    signal_optimizer: SignalOptimizer,
+}
+
+impl InternalSignalSolution {
+    pub async fn process_portfolio_signals(&self, signals: Vec<Signal>) -> Result<PortfolioAction, SignalError> {
+        // Portfolio-level signal coordination
+        // Risk-adjusted signal processing
+        // Performance attribution and optimization
+    }
+}
+```
+
+**Key Features**:
+- Portfolio-level signal generation considering all positions and strategies
+- Cross-strategy coordination preventing conflicts and optimizing synergies
+- Risk-adjusted signal processing with comprehensive portfolio risk assessment
+- Real-time performance attribution across all trading activities
+
+#### Execution - Advanced Framework
+**FLASH Mapping**:
+- **Provider Optimization**: Comprehensive mapping and optimization across all flash loan providers
+- **Cost Analysis**: Real-time cost analysis and provider selection optimization
+- **Risk Assessment**: Advanced risk assessment across different funding sources
+- **Performance Tracking**: Detailed performance tracking and optimization
+
+**PreFlight Check**:
+- **Portfolio Risk Assessment**: Comprehensive portfolio risk validation before execution
+- **Regulatory Compliance**: Automated compliance checking for institutional requirements
+- **Performance Impact**: Analysis of execution impact on overall portfolio performance
+- **Conflict Detection**: Detection and resolution of potential position conflicts
+
+**Vault Support (Centralized)**:
+- **Multi-Strategy Support**: Support for multiple strategies within single vault infrastructure
+- **Risk Management**: Portfolio-level risk management across all vault activities
+- **Performance Attribution**: Detailed performance attribution across strategies
+- **Capital Allocation**: Intelligent capital allocation optimization
+
+## Technical Implementation
+
+### Multi-Protocol Optimization Engine
+
+**Enhanced SOLO Architecture**:
+```rust
+pub struct EnhancedSOLOEngine {
+    protocol_adapters: HashMap<Protocol, ProtocolAdapter>,
+    cross_protocol_optimizer: CrossProtocolOptimizer,
+    portfolio_coordinator: PortfolioCoordinator,
+    risk_engine: RiskEngine,
+}
+
+impl EnhancedSOLOEngine {
+    pub async fn optimize_cross_protocol(&self, portfolio: &Portfolio) -> Result<OptimalExecutionPlan, SOLOError> {
+        // Cross-protocol optimization considering all available protocols
+        // Portfolio-level optimization with risk constraints
+        // Multi-objective optimization across protocols
+    }
+}
+```
+
+**Protocol-Specific Adaptations**:
+- **UniswapX**: Intent optimization with auction participation
+- **1inch**: Limit order resolution with resolver competition
+- **CowSwap**: Batch auction optimization with CoW detection
+- **Cross-Protocol**: Unified optimization across all protocols
+
+### Advanced Risk Management System
+
+**Portfolio Risk Engine**:
+```rust
+pub struct PortfolioRiskEngine {
+    var_calculator: VaRCalculator,
+    stress_tester: StressTester,
+    scenario_analyzer: ScenarioAnalyzer,
+    risk_attribution: RiskAttributionEngine,
+}
+
+impl PortfolioRiskEngine {
+    pub fn calculate_portfolio_var(&self, portfolio: &Portfolio, confidence: f64, horizon: Duration) -> VaR {
+        // Comprehensive VaR calculation across entire portfolio
+        // Factor-based risk decomposition
+        // Stress testing under various market scenarios
+    }
+}
+```
+
+**Risk Management Features**:
+- **Value at Risk (VaR)**: Portfolio-level VaR calculation with factor decomposition
+- **Stress Testing**: Scenario-based stress testing with market shock simulation
+- **Dynamic Hedging**: Real-time hedging strategies for portfolio protection
+- **Risk Attribution**: Detailed risk attribution across positions and strategies
+
+### Institutional Infrastructure
+
+**Compliance Framework**:
+```rust
+pub struct ComplianceFramework {
+    regulatory_engine: RegulatoryEngine,
+    reporting_system: ReportingSystem,
+    audit_trail: AuditTrail,
+    risk_limits: RiskLimitEngine,
+}
+
+impl ComplianceFramework {
+    pub async fn validate_execution(&self, execution: &ExecutionPlan) -> Result<ComplianceValidation, ComplianceError> {
+        // Regulatory compliance validation
+        // Risk limit enforcement
+        // Audit trail generation
+        // Automated reporting
+    }
+}
+```
+
+**Enterprise Features**:
+- **Automated Reporting**: Comprehensive regulatory reporting and compliance
+- **Best Execution**: Best execution analysis and validation
+- **Risk Limits**: Automated risk limit monitoring and enforcement
+- **Audit Trail**: Complete audit trail for all trading activities
+
+## Performance Characteristics
+
+### Multi-Protocol Performance
+
+**Protocol-Specific Metrics**:
+- **1inch Integration**: 60%+ successful resolver wins in competitive environments
+- **CowSwap Integration**: 95%+ CoW detection accuracy with 0.1-0.5% price improvement
+- **Cross-Protocol**: 15%+ performance improvement through unified optimization
+
+**Execution Performance**:
+- **FLASH Mapping**: 5-10% cost savings through optimal provider selection
+- **PreFlight Check**: Less than 10ms for comprehensive portfolio risk validation
+- **Vault Operations**: 97%+ capital utilization with multi-strategy support
+
+### Portfolio Management Performance
+
+**Signal Processing**:
+- **Internal Solution**: Less than 15ms for portfolio-level signal coordination
+- **Risk Assessment**: Less than 5ms for real-time portfolio risk calculations
+- **Performance Attribution**: Real-time attribution across all strategies
+
+**Risk Management**:
+- **VaR Calculation**: Less than 100ms for comprehensive portfolio VaR
+- **Stress Testing**: Less than 1s for scenario-based stress testing
+- **Dynamic Hedging**: Less than 50ms for hedging strategy calculation
+
+### Institutional Performance
+
+**Compliance and Reporting**:
+- **Regulatory Validation**: Less than 10ms for compliance checking
+- **Automated Reporting**: Real-time report generation and distribution
+- **Audit Trail**: Complete audit trail with microsecond timestamps
+
+**Enterprise Integration**:
+- **API Performance**: Less than 25ms for enterprise API responses
+- **Data Quality**: 99.9% data accuracy with real-time validation
+- **System Availability**: 99.95% uptime with enterprise SLA
+
+## Integration Architecture
+
+### Protocol Integration Matrix
+
+| Protocol | Integration Type | Key Features | Performance Target |
+|----------|-----------------|--------------|-------------------|
+| 1inch | Limit Order Resolver | Order resolution, Fee optimization | 60%+ resolver wins |
+| CowSwap | Batch Auction Solver | CoW detection, MEV protection | 95%+ CoW accuracy |
+| UniswapX | Intent Solver | Auction participation, Settlement | 20-30% win rate |
+| Portfolio | Internal Coordination | Risk management, Attribution | 15%+ performance gain |
+
+### Institutional Integration
+
+**Prime Brokerage Integration**:
+- **Custody Solutions**: Integration with institutional custody providers
+- **Risk Management**: Enterprise risk management platform integration
+- **Reporting**: Automated reporting to prime brokerage systems
+- **Compliance**: Regulatory compliance framework integration
+
+**Data Provider Integration**:
+- **Market Data**: Institutional market data provider integration
+- **Risk Data**: Risk analytics and attribution data providers
+- **Performance Benchmarks**: Benchmark provider integration for performance analysis
+- **Research Platforms**: Integration with institutional research platforms
+
+## Risk Management Evolution
+
+### Advanced Risk Categories
+
+**Multi-Protocol Risks**:
+- **Cross-Protocol Correlation**: Risk from correlated failures across protocols
+- **Liquidity Fragmentation**: Risk from liquidity fragmentation across protocols
+- **Protocol Upgrade Risk**: Risk from protocol upgrades affecting integration
+- **Competition Intensification**: Risk from increased solver competition
+
+**Portfolio-Level Risks**:
+- **Concentration Risk**: Risk from portfolio concentration in particular strategies
+- **Model Risk**: Risk from reliance on portfolio optimization models
+- **Performance Drag**: Risk from sub-optimal portfolio coordination
+- **Regulatory Risk**: Risk from changing regulatory requirements
+
+**Institutional Risks**:
+- **Operational Risk**: Risk from complex institutional integration requirements
+- **Compliance Risk**: Risk from regulatory compliance failures
+- **Counterparty Risk**: Risk from institutional counterparty relationships
+- **Reputation Risk**: Risk from institutional client relationship management
+
+### Enhanced Mitigation Strategies
+
+**Technical Mitigation**:
+- **Cross-Protocol Monitoring**: Real-time monitoring across all integrated protocols
+- **Portfolio Optimization**: Advanced portfolio optimization with risk constraints
+- **Compliance Automation**: Automated compliance checking and reporting
+- **Redundancy Systems**: Comprehensive redundancy across all critical systems
+
+**Operational Mitigation**:
+- **Risk Governance**: Comprehensive risk governance framework
+- **Performance Monitoring**: Real-time performance monitoring and alerting
+- **Incident Response**: Advanced incident response procedures
+- **Client Communication**: Proactive client communication and reporting
+
+## Future Architecture Preparation
+
+### Phase 2.0 Readiness
+
+**Decentralization Foundation**:
+- **Governance Infrastructure**: Portfolio management ready for community governance
+- **Protocol Expansion**: Multi-protocol architecture ready for ecosystem expansion
+- **Risk Framework**: Risk management ready for decentralized operations
+
+**Ecosystem Integration**:
+- **Developer Tools**: Portfolio management tools ready for ecosystem distribution
+- **Analytics Platform**: Performance analytics ready for ecosystem-wide insights
+- **SDK Enhancement**: SDK ready for advanced portfolio management features
+
+### Scalability Architecture
+
+**Global Operations**:
+- **Multi-Region Support**: Architecture ready for global deployment
+- **Cross-Chain Expansion**: Portfolio management ready for additional chains
+- **Protocol Expansion**: Framework ready for additional protocol integrations
+- **Institutional Scaling**: Infrastructure ready for large-scale institutional adoption
+
+## Conclusion
+
+Phase 1.0 represents the maturation of the solver system into a comprehensive, production-grade intent-solving platform with institutional-grade portfolio management capabilities. The integration of 1inch and CowSwap completes the major protocol coverage while the portfolio management infrastructure establishes the foundation for sophisticated institutional operations.
+
+The design maintains the high-performance characteristics established in previous phases while adding the sophistication and risk management required for institutional adoption. This combination positions the system for successful deployment in production environments with institutional-grade requirements.
+
+The architecture also establishes the foundation for the decentralized ecosystem expansion planned in Phase 2.0, ensuring a smooth transition to community governance while maintaining the performance and risk management standards required for institutional operations.
+
+## References
+
+- [1inch Support Feature](#TODO)
+- [CowSwap Support Feature](#TODO)
+- [Portfolio Management Feature](#TODO)
+- [Phase 0.2 Design Document](design-0.2.md)
+- [Phase 0.1 Design Document](design.md)
+- [Component Architecture Documentation](#TODO)
+- [1inch Documentation](https://docs.1inch.io/)
+- [CowSwap Documentation](https://docs.cow.fi/)
+- [Modern Portfolio Theory](https://en.wikipedia.org/wiki/Modern_portfolio_theory)

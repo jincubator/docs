@@ -4,7 +4,9 @@
       "Bash(bun:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(mv:*)",
+      "Read(///**)"
     ],
     "deny": [],
     "ask": []

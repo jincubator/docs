@@ -1,6 +1,15 @@
 # High Performance Solving and Market Making Infrastructure
 
-Following are the key components that combined enable solvers and market makers to leverage highly performant infrastructure to solve intent based protocols and implement advanced trading strategies.
+The DeFi Arbitrage Solver is a Rust-based system designed to detect and execute arbitrage opportunities across multiple blockchain networks. The system follows a modular collector-strategy-executor architecture with real-time streaming capabilities.
+
+## Key Features
+
+- **Multi-chain Support**: Base, Ethereum, Unichain networks
+- **Real-time Processing**: WebSocket connections to Tycho APIs for live data
+- **Strategy-Based Execution**: CARB (Cyclical Arbitrage) and TOKEN (Token-Based Arbitrage) strategies
+- **Flash Loan Integration**: Automated flash loan execution for arbitrage
+- **Route Blacklisting**: Intelligent route management to prevent repeated failures
+- **Performance Optimization**: Sub-millisecond route calculations with in-memory caching
 
 The architecture follows the principle: **Collectors → Strategies → Execution** and layers on route evaluation and liquidity mapping.
 
@@ -20,16 +29,62 @@ The key point for collection, once again enabled by Tycho streaming technology, 
 
 ## Strategies: Analyze and simulate opportunities
 
-This architecture supports multiple strategies.
+The system implements two primary strategies for arbitrage execution:
 
-The first (and only thus far) strategy implemented thus far is a cyclical arbitrage. Starting and ending with the same token traversing through routes we simulate each input and output amount for the route and evaluate if a positive arbitrage exists. If so a Solution for the route with an input amount is Signalled. This will be received by the execution layer.
+### CARB Strategy (Cyclical Arbitrage)
+- **Traditional Approach**: Evaluates all profitable routes independently
+- **Execution Model**: Multiple routes can be executed per arbitrage cycle
+- **Use Case**: General-purpose arbitrage detection with profit optimization
+- **Algorithm**: Bellman-Ford cycle detection for negative cycles
 
-Below is the profitability calculation
+### TOKEN Strategy (Token-Based Arbitrage)
+- **Grouped Execution**: Routes are grouped by input token
+- **Selection Logic**: Only the best route per token group is executed
+- **Risk Management**: Prevents duplicate execution of similar opportunities
+- **Testing Mode**: Supports forced execution of even negative profit routes for validation
+
+The TOKEN strategy addresses two critical issues:
+1. **Duplicate Execution Risk**: Multiple routes executing for the same opportunity
+2. **Repeated Failing Transactions**: Same failed routes being retried continuously
+
+### Profitability Calculation
+
+Each route evaluation includes:
+- **Base Profit**: Output amount minus input amount
+- **Flash Loan Fees**: Calculated based on flash loan provider (typically 30 bps for Uniswap V3)
+- **Gas Costs**: Dynamic gas estimation with current network conditions
+- **Net Profit**: Base profit minus all fees and costs
 
 ## Execution: Executing the transactions
 
-The execution layer receives a Solution including input amount and the route to execute. It performs additional augmentation and encoding.
+The execution layer provides robust transaction execution with comprehensive validation and error handling.
 
-For example in the reference cyclical arbitrage the executor maps both the flash loan parameters and swap parameters. It encodes the solution and using alloy binding for `flashExecutor` creates the `calldata` for the transaction.
+### Execution Pipeline
+1. **Route Validation**: Structural validation of route components
+2. **Pre-flight Simulation**: On-chain simulation to verify profitability
+3. **Transaction Building**: EIP-1559 compliant transaction construction
+4. **Gas Optimization**: Dynamic gas parameter adjustment
+5. **Transaction Submission**: Retry logic with nonce synchronization
+6. **Result Monitoring**: Transaction confirmation and result logging
 
-The executor itself has pre-flight validation which will capture any identified routes which may no longer be profitable or error because of other upstream analysis issues. This saves wasting gas on transactions that will revert.
+### Flash Loan Integration
+
+The system supports multiple flash loan providers:
+- **Uniswap V3**: Primary provider (30 bps fee)
+- **Uniswap V4**: With overflow protection
+- **Balancer V2**: 0 bps fee option
+- **Aave V3**: Variable fee structure
+
+Flash loan selection criteria:
+- Must contain the starting token for the route
+- Flash token must NOT be in the route path
+- Lowest fee provider is automatically selected
+
+### Error Handling & Blacklisting
+
+Failed routes are automatically blacklisted based on:
+- **Pre-flight Failures**: Invalid route structure, missing components
+- **Simulation Failures**: Routes that would revert on-chain
+- **Validation Errors**: Protocol compatibility issues
+
+**Note**: Post-flight transaction reverts are logged but NOT automatically blacklisted to avoid removing routes that fail due to temporary conditions (MEV, slippage, etc.).
