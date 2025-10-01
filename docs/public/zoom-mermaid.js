@@ -37,11 +37,11 @@
   }
 
   function processMermaidElement(svg) {
-    // Skip if already processed
-    if (svg.dataset.zoomable) return;
+    // Skip if already processed by this script
+    if (svg.dataset.zoomProcessed) return;
 
-    // Mark as processed
-    svg.dataset.zoomable = 'true';
+    // Mark as processed by this script
+    svg.dataset.zoomProcessed = 'true';
 
     // Style the SVG for better UX
     svg.style.cursor = 'zoom-in';

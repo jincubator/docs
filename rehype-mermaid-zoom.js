@@ -14,7 +14,7 @@ export function rehypeMermaidZoom() {
           node.properties?.ariaRoledescription === 'flowchart-v2')
       ) {
         // Add data attribute to mark as zoomable
-        node.properties.dataZoomable = 'true';
+        node.properties['data-zoomable'] = 'true';
 
         // Add classes for styling
         const currentClass = node.properties.className || [];
