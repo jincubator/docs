@@ -37,41 +37,41 @@ Building on the foundation of the 0.1 Release, this roadmap charts the path towa
 
 | Feature                                                     | Component                                                             | Sub Component                | 0.1 (Complete) | 0.2 (Planned) | 1.0 (Future)  | 2.0 (Future)  |
 | ----------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------- | -------------- | ------------- | ------------- | ------------- |
-| [**Cyclical Arbitrage**](features/CyclicalArbitrage.md)     | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Token                        | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Graph                        | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Route                        | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Multi-hop route discovery    | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Collectors**](components/Collectors.md)                            | Streaming (STREAM)           | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | SWAP get_amount              | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Route optimal amount         | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | Cyclical Arbitrage (CARB)    | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | Token Arbitrage (TOKEN)      | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | Signal Execution             | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | TOKEN Mapping                | ✅             | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | No Liquidity FlashRouter     | ✅             | ✅            | ✅            | ✅            |
-| [**Ethereum Support**](features/Ethereum.md)                | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Price Oracle                 |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Gas Calculator (Advanced)    | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Execution**](components/Execution.md)                              | MEV Bundling                 |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | Provided Liquidity Permit2   | ⚠️ Partial     | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | No Liquidity FlashRouterHook |                | ⏳            | ⏳            | ⏳            |
-| [**UniswapX Support**](features/UniswapX.md)                | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | SOLO Support                 |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Collectors**](components/Collectors.md)                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Signals**](components/Signals.md)                                  | External Solving Solution    |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Execution**](components/Execution.md)                              | Permit2 (Full)               | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
-| [**MultiSolver Support**](features/MultiSolver.md)          | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | API Hosted                   |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Crate                        |                | ⏳            | ⏳            | ⏳            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | Liquidity Manager Vault      |                | ⏳            | ⏳            | ⏳            |
-| [**1inch Support**](features/1Inch.md)                      | [**Collectors**](components/Collectors.md)                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
-| [**CowSwap Support**](features/CowSwap.md)                  | [**Collectors**](components/Collectors.md)                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
-| [**Portfolio Management**](features/PortFolioManagement.md) | [**Signals**](components/Signals.md)                                  | Internal Solution            |                |               | ⏳            | ⏳            |
-|                                                             | [**Execution**](components/Execution.md)                              | FLASH Mapping                |                |               | ⏳            | ⏳            |
-|                                                             | [**Execution**](components/Execution.md)                              | PreFlight Check (Enhanced)   | ⚠️ Basic       |               | ⏳            | ⏳            |
-|                                                             | [**Execution**](components/Execution.md)                              | Vault Support (Centralized)  |                |               | ⏳            | ⏳            |
-|                                                             | [**Execution**](components/Execution.md)                              | Vault Support                |                |               | ⏳            | ⏳            |
-| [**Protocol Launch**](features/ProtocolLaunch.md)           | [**Liquidity Manager**](components/LiquidityManager.md)               | (Vault Decentralized)        |                |               |               | ⏳            |
+| **Cyclical Arbitrage**     | **Liquidity Mapper**                 | Token                        | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Mapper**                 | Graph                        | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Mapper**                 | Route                        | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Mapper**                 | Multi-hop route discovery    | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Collectors**                            | Streaming (STREAM)           | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Profitability Calculator** | SWAP get_amount              | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Profitability Calculator** | Route optimal amount         | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Strategies**                            | Cyclical Arbitrage (CARB)    | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Strategies**                            | Token Arbitrage (TOKEN)      | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Execution**                              | Signal Execution             | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Execution**                              | TOKEN Mapping                | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Manager**               | No Liquidity FlashRouter     | ✅             | ✅            | ✅            | ✅            |
+| **Ethereum Support**                | **Profitability Calculator** | Price Oracle                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Profitability Calculator** | Gas Calculator (Advanced)    | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
+|                                                             | **Execution**                              | MEV Bundling                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Manager**               | Provided Liquidity Permit2   | ⚠️ Partial     | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Manager**               | No Liquidity FlashRouterHook |                | ⏳            | ⏳            | ⏳            |
+| **UniswapX Support**                | **Liquidity Mapper**                 | SOLO Support                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Collectors**                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Strategies**                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Signals**                                  | External Solving Solution    |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Execution**                              | Permit2 (Full)               | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
+| **MultiSolver Support**          | **Liquidity Mapper**                 | API Hosted                   |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Mapper**                 | Crate                        |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Manager**               | Liquidity Manager Vault      |                | ⏳            | ⏳            | ⏳            |
+| **1inch Support**                      | **Collectors**                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
+|                                                             | **Strategies**                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
+| **CowSwap Support**                  | **Collectors**                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
+|                                                             | **Strategies**                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
+| **Portfolio Management** | **Signals**                                  | Internal Solution            |                |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | FLASH Mapping                |                |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | PreFlight Check (Enhanced)   | ⚠️ Basic       |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | Vault Support (Centralized)  |                |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | Vault Support                |                |               | ⏳            | ⏳            |
+| **Protocol Launch**           | **Liquidity Manager**               | (Vault Decentralized)        |                |               |               | ⏳            |
 
 ## Releases
 

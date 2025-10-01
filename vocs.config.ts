@@ -13,9 +13,10 @@ export default defineConfig({
   baseUrl: "/",
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
+  head: '<script src="/zoom-mermaid.js"></script>',
   markdown: {
     remarkPlugins: [remarkMath, remarkMermaid],
-    rehypePlugins: [rehypeMathjax, rehypeInjectZoom],
+    rehypePlugins: [rehypeMathjax],
   },
   topNav: [
     {
@@ -268,12 +269,16 @@ export default defineConfig({
             text: "Liquidity Management",
             link: "/product/solving/liquidity-management",
           },
-          { text: "Roadmap", link: "/product/solving/roadmap" },
-          { text: "System Design", link: "/product/solving/design" },
-          { text: "Design 0.2", link: "/product/solving/design-0-2" },
-          { text: "Design 1.0", link: "/product/solving/design-1-0" },
-          { text: "Design 2.0", link: "/product/solving/design-2-0" },
-          { text: "Implementation", link: "/product/solving/implementation" },
+          {
+            text: "Roadmap",
+            items: [
+              { text: "Roadmap", link: "/product/solving/roadmap" },
+              { text: "Design", link: "/product/solving/design" },
+              { text: "Design 0.2", link: "/product/solving/design-0-2" },
+              { text: "Design 1.0", link: "/product/solving/design-1-0" },
+              { text: "Design 2.0", link: "/product/solving/design-2-0" },
+            ],
+          },
         ],
       },
       {

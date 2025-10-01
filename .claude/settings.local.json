@@ -30,7 +30,9 @@
       "Bash(docs/pages/product/solving/design-1-0.mdx )",
       "Bash(docs/pages/product/solving/design-2-0.mdx )",
       "Bash(docs/pages/product/solving/roadmap.mdx )",
-      "Bash(docs/pages/product/solving/implementation.mdx)"
+      "Bash(docs/pages/product/solving/implementation.mdx)",
+      "Bash(perl:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
