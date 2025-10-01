@@ -2,7 +2,6 @@ import { defineConfig } from "vocs";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
 import remarkMermaid from "remark-mermaidjs";
-import { rehypeInjectZoom } from "./rehype-inject-zoom.js";
 
 export default defineConfig({
   title: "Jincubator",
@@ -13,7 +12,9 @@ export default defineConfig({
   baseUrl: "/",
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
-  head: '<script src="/zoom-mermaid.js"></script>',
+  head() {
+    return `<script src="/zoom-mermaid.js" type="text/javascript"></script>`;
+  },
   markdown: {
     remarkPlugins: [remarkMath, remarkMermaid],
     rehypePlugins: [rehypeMathjax],
@@ -269,16 +270,16 @@ export default defineConfig({
             text: "Liquidity Management",
             link: "/product/solving/liquidity-management",
           },
-          {
-            text: "Roadmap",
-            items: [
-              { text: "Roadmap", link: "/product/solving/roadmap" },
-              { text: "Design", link: "/product/solving/design" },
-              { text: "Design 0.2", link: "/product/solving/design-0-2" },
-              { text: "Design 1.0", link: "/product/solving/design-1-0" },
-              { text: "Design 2.0", link: "/product/solving/design-2-0" },
-            ],
-          },
+        ],
+      },
+      {
+        text: "Roadmap",
+        items: [
+          { text: "Roadmap", link: "/product/solving/roadmap" },
+          { text: "Design", link: "/product/solving/design" },
+          { text: "Design 0.2", link: "/product/solving/design-0-2" },
+          { text: "Design 1.0", link: "/product/solving/design-1-0" },
+          { text: "Design 2.0", link: "/product/solving/design-2-0" },
         ],
       },
       {

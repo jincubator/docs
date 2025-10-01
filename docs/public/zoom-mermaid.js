@@ -6,41 +6,31 @@
   function initMermaidZoom() {
     console.log('Initializing Mermaid zoom...');
 
-    // Find all SVG elements and code blocks that might contain Mermaid
-    const svgElements = document.querySelectorAll('svg');
-    const preElements = document.querySelectorAll('pre');
+    // Find all SVG elements in the main content area
+    const contentArea = document.querySelector('#vocs-content, .vocs_Content, article, main') || document.body;
+    const svgElements = contentArea.querySelectorAll('svg');
 
-    console.log(`Found ${svgElements.length} SVG elements and ${preElements.length} pre elements`);
+    console.log(`Found ${svgElements.length} SVG elements in content area`);
 
-    // Check all SVG elements
+    // Process all SVGs in the content area (they're likely diagrams)
     svgElements.forEach((svg, index) => {
       console.log(`Checking SVG ${index}:`, {
         id: svg.id,
-        classes: svg.className,
-        parent: svg.parentElement?.tagName,
-        parentClasses: svg.parentElement?.className
+        classes: svg.className.baseVal || svg.className,
+        role: svg.getAttribute('role'),
+        ariaRole: svg.getAttribute('aria-roledescription')
       });
 
-      // More comprehensive check for Mermaid SVGs
-      const isMermaidSvg =
-        svg.id && svg.id.startsWith('mermaid') ||
+      // More comprehensive check for diagram SVGs
+      const isDiagramSvg =
+        (svg.id && svg.id.startsWith('mermaid')) ||
         svg.closest('.mermaid') ||
-        svg.closest('pre') ||
-        svg.querySelector('[class*="mermaid"]') ||
-        svg.getAttribute('aria-labelledby')?.includes('mermaid') ||
-        svg.parentElement?.tagName === 'PRE';
+        svg.classList.contains('flowchart') ||
+        svg.getAttribute('aria-roledescription') ||
+        (svg.getAttribute('role') && svg.getAttribute('role').includes('graphics'));
 
-      if (isMermaidSvg) {
-        console.log(`Processing Mermaid SVG ${index}`);
-        processMermaidElement(svg);
-      }
-    });
-
-    // Also check pre elements that might contain SVG
-    preElements.forEach((pre, index) => {
-      const svg = pre.querySelector('svg');
-      if (svg && !svg.dataset.zoomable) {
-        console.log(`Processing SVG in pre element ${index}`);
+      if (isDiagramSvg) {
+        console.log(`Processing diagram SVG ${index}`);
         processMermaidElement(svg);
       }
     });
