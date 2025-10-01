@@ -4,6 +4,191 @@
 
 
 
+<div align="center">
+  <h1 align="center">Jincubator Partnerships</h1>
+  <p align="center">How to Collaborate with Jincubator</p>
+</div>
+
+### Overview
+
+Jincubator is a research incubator.
+
+At of August 2025 the research is lead by [John Whitton](https://johnwhitton.com) with collaboration from organizations such as Uniswap and Harmony. This work has been self funded with limited funds being received from Hackathon prizes.
+
+If you are interested in collaborating with Jincubator, please reach out to [team@jincubator.com](mailto\:team@jincubator.com) or directly to [john@johnwhitton.com](mailto\:john@johnwhitton.com)
+
+### Goals
+
+Jincubator goals are as follows
+
+* Continue to develop research and engineering skills by researching and building on the cutting edge products and protocols.
+* Contribute research, design and technical solutions to the Crypto industry
+* Productize research into DeFi protocols or infrastructure.
+
+### Collaborate
+
+Here are some ways to Partner with Jincubator
+
+#### Funding through Bounties or Grants
+
+Rather than seeking angel funding or raising through a Token Generation Event. We have been building and iterating to ensure product fit and are now looking for funding via grants or bounties to continue this work. Preferred grants would come from technical providers such as Tycho and Uniswap, 1inch which we are building on. Solvers, Blockchains and Protocols looking to integrate with Tycho would be ideal partners.
+
+We are currently building on Tycho and looking at continuing work on arbitrage, developing Solvers(Fillers) for CompactX, UniswapX, CowSwap and 1Inch.
+
+The potential areas which we are looking to incorporate into a revenue positive platform include
+
+##### No Liquidity Solving
+
+An opinionated architecture, built on Tycho, for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the Swapper's locked funds for execution. For a demo of this please see [No Liquidity Solving (Tycho 1inch)](/research/solving/tycho1inchNOL).
+
+##### Solver
+
+Building out Tycho based Solvers starting with the following protocols
+
+* CompactX: An expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated Mandates and Solver Payloads to allow Intents to be solved on a single chain without provisioning up front capital as arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. *As of July 25th the [the-compact](https://github.com/jincubator/the-compact/) we are developing on has been forked from [Uniswap the-compact](https://github.com/Uniswap/the-compact/tree/v1) v1 branch which has not as yet been deployed.*
+* UniswapX: John attended Uniswap's Hook Incubator course and has been in touch with Alumni as he build in this area. He plans to start work on a UniswapX Solver in August.
+* COWswap: John hasdone some original evaluation of COWswap Solving, building and running a COWSwap Solver locally built from the [services](https://github.com/cowprotocol/services) repository.
+* 1Inch: John spent the week of July 28th working on the [Expanding Limit Order track](https://ethglobal.com/events/unite/prizes). With the goal and improving knowledge of 1inch limit order protocol. For a demo of this please see [No Liquidity Solving (Tycho 1inch)](/research/solving/tycho1inchNOL).
+
+##### Arbitrage
+
+John has begun development of an Arbitrage bot. It uses Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles. It aligns with the foundational requirement for an atomic arbitrage solver as specified in [Tycho Application Proposal 4](https://github.com/propeller-heads/tycho-x/blob/main/TAP-4.md) once this foundation is in place the infrastructure can be expanded into Cross Chain Arbitrage and Market Making. You can see the design proposal [here](#TODO).
+
+##### Previous Grant applications
+
+* [Tycho Atomic Arbitrage](https://hackmd.io/@jincubator/atomic-arbitrage): An arbitrage bot built on Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles.
+* [Sunrise Protocol (Polkadot 2020)](https://hackmd.io/@jincubator/sunrise): Sunrise was building a decentralized protocol on a dedicated Polkadot parachain.
+
+#### Consulting
+
+Currently, [John Whitton](https://johnwhitton.com) is interested in consulting in the following areas.
+
+##### DEX Integrations
+
+John is familiar with the key Tycho Repositories (Indexing, Simulation, Execution and the SDK) and am experienced in Protocol Design (Soldity) and Service Development(Rust). John also run consulting firms and managed teams of engineers. He would enjoy partnering with Protocols and Platforms which want to integrate with Tycho.
+
+##### Chain Integrations and Rollup Providers
+
+Similar to above John has done extensive research on [Chains, consensus designs and building Rollouts](/research/chains/intro). He would enjoy partnering with Tycho to help bring on additional chains. Also building out Proof of Concepts for Protocls thinking about launching their own chain with RollUp providers such as [Caldera](https://caldera.xyz/)
+
+##### Infrastructure Partnerships
+
+John has lead teams building out Layer 1 platforms and DeFi protocols and worked as an Ecosystem Architect. He is also familiar with researching partner technologies. John did some initial work with EigenLayers [dev-kit-cli](https://github.com/Layr-Labs/devkit-cli) and [rust integration](https://github.com/Layr-Labs/hello-world-avs?tab=readme-ov-file#quick-start-rust).
+
+
+## Product
+
+### Overview
+
+This section contains information about productizing research with the current focuse being high performance solving Infrastructure.
+🚧 ⛏️ Under Construction
+
+> Previous work relates to the research done and products built with varying degrees of success.
+> Some won prizes in hackathons, others had seed funding commitments but did not launch.
+> The majority of the research and design here lead to permanent roles with organizations building in the same space.
+> For deeper research on solving, arbitrage, bridging, zero knowledge and chain consensus and signing see [research](/research/intro.mdx).
+> This section is where that research was brought together to form an idea of a platform.
+
+### Solving Architecture
+
+The solver system implements a liqudity mapping layer, coupled with high performance route evaluation (over 1000 routes per second).
+The reference implementation implements a sophisticated arbitrage bot capable of generating profit with **no upfront capital** through flash loan-based execution.
+
+The architecture follows a **streaming-first approach** that processes real-time blockchain data to identify and execute profitable arbitrage opportunities.
+
+##### Core Design Principles
+
+1. **Collectors → Strategies → Execution**: Modular architecture with clear separation of concerns
+2. **Real-time Processing**: Live blockchain data streaming via Tycho protocol streams
+3. **Capital Efficiency**: Flash loan integration eliminates upfront capital requirements
+4. **Multi-protocol Support**: Uniswap V2, V3, V4 with extensible protocol framework
+5. **Performance Optimization**: Microsecond-level route evaluation and execution
+
+##### System Architecture
+
+```mermaid
+graph TB
+    subgraph "External Data Sources"
+        TYCHO[Tycho Protocol Streams]
+        RPC[Blockchain RPC]
+        API[Tycho API]
+    end
+
+    subgraph "solver_core (Pure Logic)"
+        TYPES[Domain Types]
+        TRAITS[Interfaces/Traits]
+        MATH[FixedPoint Math]
+        PROTOCOL[Protocol Models]
+    end
+
+    subgraph "solver_driver (Runtime)"
+        subgraph "Data Collection"
+            STREAMING[Streaming Engine]
+            COLLECTORS[Data Collectors]
+            STORE[Pool Store]
+        end
+
+        subgraph "Processing Pipeline"
+            GRAPH[Graph Manager]
+            ROUTES[Route Manager]
+            ANALYZER[Route Analyzer]
+        end
+
+        subgraph "Execution Pipeline"
+            ENCODER[Solution Encoder]
+            EXECUTOR[Execution Engine]
+            SENDER[Transaction Sender]
+        end
+
+        subgraph "Persistence"
+            DB[RocksDB]
+            CACHE[Memory Cache]
+        end
+    end
+
+    subgraph "Smart Contracts"
+        ROUTER[FlashV3Router]
+        POOLS[DEX Pools]
+    end
+
+    subgraph "CLI Tools"
+        ARBITRAGER[Arbitrager]
+        ROUTE_EXEC[Route Executor]
+        TYCHO_CLI[Tycho CLI]
+    end
+
+    %% Data Flow
+    TYCHO --> STREAMING
+    RPC --> COLLECTORS
+    API --> COLLECTORS
+
+    STREAMING --> STORE
+    STORE --> GRAPH
+    GRAPH --> ROUTES
+    ROUTES --> ANALYZER
+    ANALYZER --> ENCODER
+    ENCODER --> EXECUTOR
+    EXECUTOR --> SENDER
+
+    STORE --> DB
+    ROUTES --> DB
+    GRAPH --> DB
+
+    SENDER --> ROUTER
+    ROUTER --> POOLS
+
+    ARBITRAGER --> STREAMING
+    ROUTE_EXEC --> ANALYZER
+    TYCHO_CLI --> DB
+
+    %% Core Dependencies
+    TYPES --> STREAMING
+    TRAITS --> ANALYZER
+    MATH --> ANALYZER
+    PROTOCOL --> STORE
+```
+
+
 ## Kanga Finance: Harmony Hackathon 2021
 
 ### Overview
@@ -1772,191 +1957,6 @@ For a more comprehensive Sunrise Protocol Vision please read the following
 **Here is an overview of the Sunrise Order Book design**
 
 ![Sunrise Reference Protocols](https://raw.githubusercontent.com/sunriseprotocol/wiki/main/assets/Sunrise%20Limit%20Orders%20Detailed.png "Sunrise Order Book Design")
-
-
-<div align="center">
-  <h1 align="center">Jincubator Partnerships</h1>
-  <p align="center">How to Collaborate with Jincubator</p>
-</div>
-
-### Overview
-
-Jincubator is a research incubator.
-
-At of August 2025 the research is lead by [John Whitton](https://johnwhitton.com) with collaboration from organizations such as Uniswap and Harmony. This work has been self funded with limited funds being received from Hackathon prizes.
-
-If you are interested in collaborating with Jincubator, please reach out to [team@jincubator.com](mailto\:team@jincubator.com) or directly to [john@johnwhitton.com](mailto\:john@johnwhitton.com)
-
-### Goals
-
-Jincubator goals are as follows
-
-* Continue to develop research and engineering skills by researching and building on the cutting edge products and protocols.
-* Contribute research, design and technical solutions to the Crypto industry
-* Productize research into DeFi protocols or infrastructure.
-
-### Collaborate
-
-Here are some ways to Partner with Jincubator
-
-#### Funding through Bounties or Grants
-
-Rather than seeking angel funding or raising through a Token Generation Event. We have been building and iterating to ensure product fit and are now looking for funding via grants or bounties to continue this work. Preferred grants would come from technical providers such as Tycho and Uniswap, 1inch which we are building on. Solvers, Blockchains and Protocols looking to integrate with Tycho would be ideal partners.
-
-We are currently building on Tycho and looking at continuing work on arbitrage, developing Solvers(Fillers) for CompactX, UniswapX, CowSwap and 1Inch.
-
-The potential areas which we are looking to incorporate into a revenue positive platform include
-
-##### No Liquidity Solving
-
-An opinionated architecture, built on Tycho, for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the Swapper's locked funds for execution. For a demo of this please see [No Liquidity Solving (Tycho 1inch)](/research/solving/tycho1inchNOL).
-
-##### Solver
-
-Building out Tycho based Solvers starting with the following protocols
-
-* CompactX: An expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated Mandates and Solver Payloads to allow Intents to be solved on a single chain without provisioning up front capital as arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. *As of July 25th the [the-compact](https://github.com/jincubator/the-compact/) we are developing on has been forked from [Uniswap the-compact](https://github.com/Uniswap/the-compact/tree/v1) v1 branch which has not as yet been deployed.*
-* UniswapX: John attended Uniswap's Hook Incubator course and has been in touch with Alumni as he build in this area. He plans to start work on a UniswapX Solver in August.
-* COWswap: John hasdone some original evaluation of COWswap Solving, building and running a COWSwap Solver locally built from the [services](https://github.com/cowprotocol/services) repository.
-* 1Inch: John spent the week of July 28th working on the [Expanding Limit Order track](https://ethglobal.com/events/unite/prizes). With the goal and improving knowledge of 1inch limit order protocol. For a demo of this please see [No Liquidity Solving (Tycho 1inch)](/research/solving/tycho1inchNOL).
-
-##### Arbitrage
-
-John has begun development of an Arbitrage bot. It uses Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles. It aligns with the foundational requirement for an atomic arbitrage solver as specified in [Tycho Application Proposal 4](https://github.com/propeller-heads/tycho-x/blob/main/TAP-4.md) once this foundation is in place the infrastructure can be expanded into Cross Chain Arbitrage and Market Making. You can see the design proposal [here](#TODO).
-
-##### Previous Grant applications
-
-* [Tycho Atomic Arbitrage](https://hackmd.io/@jincubator/atomic-arbitrage): An arbitrage bot built on Tycho's indexing simulation and execution modules. It uses a variation of the [Bellman Ford Algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm) to find revenue positive arbitrage cycles.
-* [Sunrise Protocol (Polkadot 2020)](https://hackmd.io/@jincubator/sunrise): Sunrise was building a decentralized protocol on a dedicated Polkadot parachain.
-
-#### Consulting
-
-Currently, [John Whitton](https://johnwhitton.com) is interested in consulting in the following areas.
-
-##### DEX Integrations
-
-John is familiar with the key Tycho Repositories (Indexing, Simulation, Execution and the SDK) and am experienced in Protocol Design (Soldity) and Service Development(Rust). John also run consulting firms and managed teams of engineers. He would enjoy partnering with Protocols and Platforms which want to integrate with Tycho.
-
-##### Chain Integrations and Rollup Providers
-
-Similar to above John has done extensive research on [Chains, consensus designs and building Rollouts](/research/chains/intro). He would enjoy partnering with Tycho to help bring on additional chains. Also building out Proof of Concepts for Protocls thinking about launching their own chain with RollUp providers such as [Caldera](https://caldera.xyz/)
-
-##### Infrastructure Partnerships
-
-John has lead teams building out Layer 1 platforms and DeFi protocols and worked as an Ecosystem Architect. He is also familiar with researching partner technologies. John did some initial work with EigenLayers [dev-kit-cli](https://github.com/Layr-Labs/devkit-cli) and [rust integration](https://github.com/Layr-Labs/hello-world-avs?tab=readme-ov-file#quick-start-rust).
-
-
-## Product
-
-### Overview
-
-This section contains information about productizing research with the current focuse being high performance solving Infrastructure.
-🚧 ⛏️ Under Construction
-
-> Previous work relates to the research done and products built with varying degrees of success.
-> Some won prizes in hackathons, others had seed funding commitments but did not launch.
-> The majority of the research and design here lead to permanent roles with organizations building in the same space.
-> For deeper research on solving, arbitrage, bridging, zero knowledge and chain consensus and signing see [research](/research/intro.mdx).
-> This section is where that research was brought together to form an idea of a platform.
-
-### Solving Architecture
-
-The solver system implements a liqudity mapping layer, coupled with high performance route evaluation (over 1000 routes per second).
-The reference implementation implements a sophisticated arbitrage bot capable of generating profit with **no upfront capital** through flash loan-based execution.
-
-The architecture follows a **streaming-first approach** that processes real-time blockchain data to identify and execute profitable arbitrage opportunities.
-
-##### Core Design Principles
-
-1. **Collectors → Strategies → Execution**: Modular architecture with clear separation of concerns
-2. **Real-time Processing**: Live blockchain data streaming via Tycho protocol streams
-3. **Capital Efficiency**: Flash loan integration eliminates upfront capital requirements
-4. **Multi-protocol Support**: Uniswap V2, V3, V4 with extensible protocol framework
-5. **Performance Optimization**: Microsecond-level route evaluation and execution
-
-##### System Architecture
-
-```mermaid
-graph TB
-    subgraph "External Data Sources"
-        TYCHO[Tycho Protocol Streams]
-        RPC[Blockchain RPC]
-        API[Tycho API]
-    end
-
-    subgraph "solver_core (Pure Logic)"
-        TYPES[Domain Types]
-        TRAITS[Interfaces/Traits]
-        MATH[FixedPoint Math]
-        PROTOCOL[Protocol Models]
-    end
-
-    subgraph "solver_driver (Runtime)"
-        subgraph "Data Collection"
-            STREAMING[Streaming Engine]
-            COLLECTORS[Data Collectors]
-            STORE[Pool Store]
-        end
-
-        subgraph "Processing Pipeline"
-            GRAPH[Graph Manager]
-            ROUTES[Route Manager]
-            ANALYZER[Route Analyzer]
-        end
-
-        subgraph "Execution Pipeline"
-            ENCODER[Solution Encoder]
-            EXECUTOR[Execution Engine]
-            SENDER[Transaction Sender]
-        end
-
-        subgraph "Persistence"
-            DB[RocksDB]
-            CACHE[Memory Cache]
-        end
-    end
-
-    subgraph "Smart Contracts"
-        ROUTER[FlashV3Router]
-        POOLS[DEX Pools]
-    end
-
-    subgraph "CLI Tools"
-        ARBITRAGER[Arbitrager]
-        ROUTE_EXEC[Route Executor]
-        TYCHO_CLI[Tycho CLI]
-    end
-
-    %% Data Flow
-    TYCHO --> STREAMING
-    RPC --> COLLECTORS
-    API --> COLLECTORS
-
-    STREAMING --> STORE
-    STORE --> GRAPH
-    GRAPH --> ROUTES
-    ROUTES --> ANALYZER
-    ANALYZER --> ENCODER
-    ENCODER --> EXECUTOR
-    EXECUTOR --> SENDER
-
-    STORE --> DB
-    ROUTES --> DB
-    GRAPH --> DB
-
-    SENDER --> ROUTER
-    ROUTER --> POOLS
-
-    ARBITRAGER --> STREAMING
-    ROUTE_EXEC --> ANALYZER
-    TYCHO_CLI --> DB
-
-    %% Core Dependencies
-    TYPES --> STREAMING
-    TRAITS --> ANALYZER
-    MATH --> ANALYZER
-    PROTOCOL --> STORE
-```
 
 
 ## Solving, Arbitrage and Market Making
@@ -22446,6 +22446,235 @@ Many functions in The Compact use custom structs for their calldata. Here are so
   * `DepositDetails`: Helper for batch Permit2 deposits.
 
 
+## Axiom
+
+* date: 2023-06-28
+* last updated: 2023-02-04
+
+### Overview
+
+Axiom[^ov-1] is a ZK coprocessor for Ethereum which provides smart contracts trustless access to all on-chain data and arbitrary expressive compute over it.
+
+### References
+
+* [Website](https://www.axiom.xyz/)
+* [Documentation](https://docs.axiom.xyz/)
+* [Company Profile LinkedIn](https://www.linkedin.com/company/axiom-xyz/about/)
+* [Uniswap Grant](https://hackmd.io/@yisun/H1e6U42Ps) [tweet](https://twitter.com/UniswapFND/status/1617895640415207424?lang=en)
+* [Intrinsic technologies builder](https://gen.xyz/blog/axiomxyz)
+* [Github Repos](https://github.com/axiom-crypto)
+  * [https://github.com/axiom-crypto/axiom-v1-contracts](https://github.com/axiom-crypto/axiom-v1-contracts) (uses [foundry](https://book.getfoundry.sh/), solidity and [yul](https://medium.com/@jtriley15/yul-vs-solidity-contract-comparison-2b6d9e9dc833))
+  * [https://github.com/axiom-crypto/axiom-eth](https://github.com/axiom-crypto/axiom-eth) (written in rust)
+  * [https://github.com/axiom-crypto/axiom-apps](https://github.com/axiom-crypto/axiom-apps) (uniswap)
+  * [https://github.com/axiom-crypto/halo2-lib](https://github.com/axiom-crypto/halo2-lib) (rust zk)
+* [@axiomhq npm packages](https://www.npmjs.com/search?q=%40axiomhq)
+* Yi is part of the Delendum Telegram Group @yisun and Presented at [Eth Denver](https://twitter.com/axiom_xyz/status/1630960864479027200)
+* [Yi Sun, Reflection and Introspection in Blockchains](https://www.youtube.com/watch?v=05uv3hsH6oA)
+* [Delendum Research Workshop Slides](https://drive.google.com/drive/folders/15Ih1B4Pjr-oorAa33qlAgVH5klCHwSG3)
+
+### Footnotes
+
+Overview
+
+[^ov-1]: [Axiom](https://www.axiom.xyz/): The ZK Coprocessor for Ethereum
+
+
+## Zero Knowledge Research
+
+* date: 2023-02-04
+* last updated: 2023-02-04
+
+### Overview
+
+Here we do a deep dive on Zero Knowledge
+
+* Approach
+* Emerging Use Cases
+* Proof Systems
+* Efficient Signatures
+* Proof Aggregation
+* Tokenomics
+
+### Learning Material
+
+#### Foundational
+
+* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics/dp/1493917102)
+* [Introduction to Applied Linear Algebra](https://www.amazon.com/Introduction-Applied-Linear-Algebra-Matrices/dp/1316518965)
+* [Calculus I - Differentiation and Integration](https://www.amazon.com/Calculus-Differentiation-Integration-Hamilton-Education-ebook/dp/B07BPHW4VL)
+* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics-ebook/dp/B00PULZOCI/): the mathematics behind the theory of public key cryptosystems and digital signature schemes.
+* [Cryptography Algorithms](https://www.amazon.com/Next-generation-Cryptography-Algorithms-Explained-implementation/dp/1789617138)
+* [Number Theory](https://crypto.stanford.edu/pbc/notes/numbertheory/)
+* [zkSNARKs in a nutshell](https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell)
+* [Quadratic Arithmetic Programs: from Zero to Hero](https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649)
+* [Exploring Elliptic Curve Pairings](https://medium.com/@VitalikButerin/exploring-elliptic-curve-pairings-c73c1864e627)
+* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
+* [The MoonMath Manual to zk-SNARKs](https://leastauthority.com/static/publications/MoonMath080822.pdf)
+* [Elliptic Curve Cryptography: a gentle introduction](https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/)
+* [Exploring Elliptic Curve Pairings](https://vitalik.ca/general/2017/01/14/exploring_ecp.html)
+* [KZG polynomial commitments](https://dankradfeist.de/ethereum/2020/06/16/kate-polynomial-commitments.html)
+* [plookup](https://eprint.iacr.org/2020/315.pdf): A simplified polynomial protocol for
+  lookup tables.
+* [Casting out Primes](https://blog.polygon.technology/wp-content/uploads/2022/10/casting-3.pdf): a nondeterministic method for bignum arithmetic. It is inspired by the “casting out nines” technique, where some identity is checked modulo 9, providing a probabilistic result.
+
+#### Zero Knowledge
+
+Research Articles
+
+* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities. *Light clients, also known as Simple Payment Verification (SPV) clients, are nodes which only download a small portion of the data in a blockchain, and use indirect means to verify that a given chain is valid.* \* Research Papers (Zero Knowledge Related)
+* [zkBridge: Trustless Cross-chain Bridges Made Practical](https://rdi.berkeley.edu/zkp/zkBridge/uploads/paper.pdf)
+* [Caulk: Lookup Arguments in Sublinear Time](https://eprint.iacr.org/2022/621.pdf): position-hiding linkability for vector commitment schemes: one can prove in zero knowledge that one or m values that comprise commitment cm all belong to the vector of size N committed to in C.
+* [HyperPlonk: Plonk with Linear-Time Prover and High-Degree Custom Gates](https://eprint.iacr.org/2022/1355.pdf)
+* [SLONK—a simple universal SNARK](https://ethresear.ch/t/slonk-a-simple-universal-snark/6420): a simplification to PLONK called SLONK. We replace the permutation argument (the “P” in PLONK) in favour of a shift argument (the “S” in SLONK). We get a universal SNARK with the smallest known proof size and verification time.
+* [Kate commitments from the Lagrange basis without FFTs](https://notes.ethereum.org/T0ZVaaywQAqP4jegqO3asg?view): how to commit, evaluate and open polynomials in the Lagrange basis without FFTs. This is the first part in a series (see part 1, part 2, part 3) showing how to do PLONK-style universal SNARKs without FFTs
+* [Hadamard checks from the Lagrange basis without FFTs](https://notes.ethereum.org/Il4z42lmQtaUYFigsjsk2Q?view): how to prove Hadamard relations between polynomials in the Lagrange basis without FFTs. This is the second part (see part 1, part 2, part 3) in a series showing how to do PLONK-style universal SNARKs without FFTs.
+* [PLONK-style SNARKs without FFTs](https://notes.ethereum.org/DLRqK9V7RIOsTZkab8Hm_Q?view): how to do PLONK-style universal SNARKs without FFTs. This is part 3 in a series (part 1, part 2, part 3).
+* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
+* [Plonky2: Fast Recursive Arguments with PLONK and FRI](https://github.com/mir-protocol/plonky2/blob/main/plonky2/plonky2.pdf)
+
+articles and learning resources
+
+* [Bridging the Multichain Universe with Zero Knowledge Proofs](https://medium.com/@ingonyama/bridging-the-multichain-universe-with-zero-knowledge-proofs-6157464fbc86)
+* [awesome-zkml](https://github.com/worldcoin/awesome-zkml)
+* [https://learn.0xparc.org/](https://learn.0xparc.org/): ZK Learning Resources
+* [Delendum ZKP Knowledge base](https://kb.delendum.xyz/)
+* [https://appliedzkp.org](https://appliedzkp.org/): Privacy and Scaling Exploration
+* [https://zkp.science/](https://zkp.science/): Zero-Knowledge Proofs
+* [https://starkware.co/stark-101/](https://starkware.co/stark-101/): Stark 101: write a STARK prover from scratch
+* [https://docs.starkware.co/starkex/index.html](https://docs.starkware.co/starkex/index.html): - Starkware StarkeEx
+* [Noir](https://docs.aztec.network/developers/noir) Noir is a Domain Specific Language for developing ZK-provable programs. (Rust based)
+  * [article](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9)
+  * [tweet](https://twitter.com/aztecnetwork/status/1578082456212643840)
+  * [Grants](https://aztec.network/grants/)
+* [Arkworks](https://github.com/arkworks-rs)
+* [zkrepl.dev](https://zkrepl.dev/)
+* [succinct](https://blog.succinct.xyz/)
+* [ZK BATCH ECDSA](https://blog.succinct.xyz/post/2022/10/03/batch-ecdsa/)
+* [Batch ECDSA Verification](https://github.com/puma314/batch-ecdsa)
+* [Bringing IBC to Ethereum using ZK-Snarks](https://ethresear.ch/t/bringing-ibc-to-ethereum-using-zk-snarks/13634)
+* [MINA docs](https://docs.minaprotocol.com/)
+
+implementation articles
+
+* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
+* [Succinct Towards the endgame of blockchain interoperability with proof of consensus](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus)
+
+#### Codebases
+
+* [Circom](https://github.com/iden3/circom) a novel domain-specific language for defining arithmetic circuits that can be used to generate zero-knowledge proofs
+
+* [DarkForest](https://github.com/darkforest-eth) zkSNARK space warfare
+  * [Awesome List](https://github.com/snowtigersoft/awesome-darkforest)
+  * [Our front end code (the game is open source!)](https://github.com/darkforest-eth/client/tree/master/src/Frontend)
+  * [Twitter](https://twitter.com/darkforest_eth)
+
+* [Discord](https://discord.gg/2u2TN6v8r6)
+  * [Team Blog](http://blog.zkga.me/)
+    * [Dark Forest v0.6](https://blog.zkga.me/announcing-v6)
+    * [Exploiting DF v0.5 Artifact Minting](https://blog.zkga.me/artifact-minting-exploit)
+    * [v0.5 Plugins Contest Winners](https://blog.zkga.me/v5-plugins-contest-winners)
+    * [Zero-Knowledge Proofs for Engineers](https://blog.zkga.me/intro-to-zksnarks)
+    * [Announcing Dark Forest](https://blog.zkga.me/announcing-darkforest)
+    * [The Strongest Crypto Gaming Thesis: Why we're building Dark Forest](https://gubsheep.mirror.xyz/nsteOfjATPSKH0J8lRD0j2iynmvv_C8i8eb483UzcTM)
+  * [Community plugins](http://plugins.zkga.me/)
+  * [Community-run wiki](http://dfwiki.net/)
+  * Player-made content
+    * [Dark Forest GPU universe explorer](https://www.longrocklabs.com/articles/the-exploration-era-begins/)
+    * [Getting started with Dark Forest](https://www.youtube.com/watch?v=keY4a9cKmgg)
+    * [Setting up a remote miner](https://www.youtube.com/watch?v=Kus4fWNg3zo)
+    * [Dark Forest battle timelapse](https://www.youtube.com/watch?v=o9A-cfDanTY)
+
+* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s): Re-implement an ecc circuits with halo2
+
+* [plonky2](https://github.com/mir-protocol/plonky2): a SNARK implementation based on techniques from PLONK and FRI. It has since expanded to include tools such as Starky, a highly performant STARK implementation.
+  * [plonky2-solidity-verifier](https://github.com/polymerdao/plonky2-solidity-verifier)
+  * [plonky2-circom](https://github.com/polymerdao/plonky2-circom): Plonky2 verifier in Circom
+  * [plonky2-ed25519](https://github.com/polymerdao/plonky2-ed25519): SNARK verification circuits of a digital signature scheme Ed25519 implemented with Plonky2.
+  * [plonky2-sha256](https://github.com/polymerdao/plonky2-sha256): SNARK circuits of a cryptographic hash function SHA-256 implemented with Plonky2.
+  * [plonky2-sha512](https://github.com/polymerdao/plonky2-sha512): SNARK circuits of a cryptographic hash function SHA-512 implemented with Plonky2.
+  * [plonky2-pairing](https://github.com/polymerdao/plonky2-pairing)
+
+#### Presentations
+
+* [Devcon VI](https://archive.devcon.org/archive/playlists/devcon-6/)
+* [Light Client After the Merge](https://archive.devcon.org/archive/watch/6/light-clients-after-the-merge/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=ZHNrAXf3RDE)
+* [What to Know about Zero Knowledge](https://archive.devcon.org/archive/watch/6/what-to-know-about-zero-knowledge/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Application ShowCase](https://archive.devcon.org/archive/watch/6/zk-application-showcase/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Badges: How to prove that you donated to Gitcoin grants](https://archive.devcon.org/archive/watch/6/zk-badges/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Security Self Led Session](https://archive.devcon.org/archive/watch/6/zk-security-self-led-session/?playlist=Devcon%206\&tab=YouTube)
+* [zkEVM Vs EVM: Full Equivalence?](https://archive.devcon.org/archive/watch/6/zkevm-vs-evm-full-equivalence/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Application Design Patterns](https://archive.devcon.org/archive/watch/6/zk-application-design-patterns/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=-PUKinjbLR8)
+* [Applied ZK SLS presentations](https://www.notion.so/360fcd3f2a824759b1373ddeef5bf564)
+
+#### Additional Information
+
+* Review [ENS Bridging Strategy](https://medium.com/the-ethereum-name-service/mvp-of-ens-on-l2-with-optimism-demo-video-how-to-try-it-yourself-b44c390cbd67) and [repo](https://github.com/ensdomains/l2gateway-demo/)
+
+* [Succinct](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus) [$600K](https://forum.gnosis.io/t/gip-57-should-gnosis-dao-support-research-of-a-zksnark-enabled-light-client-and-bridge/5421) [tweet](https://twitter.com/succinctlabs/status/1572299292177481729) [Demo](https://www.zkbridge.wtf/) [github](https://github.com/succinctlabs) [video](https://youtu.be/Ct6H5GcnA0A?t=15554) built using [circom](https://docs.circom.io/)
+
+* [circom](https://docs.circom.io/)
+
+* [Arkworks](https://github.com/arkworks-rs/), [tutorial](https://github.com/arkworks-rs/r1cs-tutorial/), [twitter](https://twitter.com/arkworks_rs), [video](https://youtu.be/Ct6H5GcnA0A?t=7429)
+
+* [Aztec.network](http://Aztec.network) [Noir](https://aztec.network/noir) [intro](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9), [github](https://github.com/noir-lang/noir), [twitter](https://twitter.com/aztecnetwork), [docs](https://noir-lang.github.io/book/index.html)
+
+* [GNark](https://github.com/ConsenSys/gnark)
+
+* [ElectronLabs](https://electronlabs.org/)
+
+* [ZKU](https://zku.one/) [Learning](https://www.notion.so/Learning-50b5a6ecc45b46248323f0e552b6885f)
+
+* Review [matter-labs knowledge base](https://github.com/matter-labs/awesome-zero-knowledge-proofs#learn)
+
+* [zkSNARKS explained like you're someone who knows some math and some coding](https://www.reddit.com/r/zkTech/comments/tfjvrj/zksnarks_explained_like_youre_someone_who_knows/)
+
+* [The Halo2 Book](https://zcash.github.io/halo2/concepts/proofs.html)
+
+* [A survey of elliptic curves for proof systems](https://eprint.iacr.org/2022/586.pdf)
+
+* zkEVM
+  * [zkSync Era](https://era.zksync.io/docs/dev/)
+  * [Polygon zkEVM](https://wiki.polygon.technology/docs/zkEVM/develop/)
+  * [zkSync zkEVM](https://docs.zksync.io/zkevm/)
+  * [ConsenSys zkEVM](https://docs.zkevm.consensys.net/overview)
+
+
+## ZK Proof of Stake
+
+* date: 2023-02-04
+* last updated: 2023-02-04
+
+### Overview
+
+Here we review how zero knowledge primitives can be applied to confirm Proof of Stake Consensus.
+
+### References
+
+* [Paths toward single-slot finality](https://notes.ethereum.org/@vbuterin/single_slot_finality): A look at how to improve Ethereum’s LMD GHOST + Casper FFG consensus.
+* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
+* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s/tree/pairing): Re-implement an ecc circuits with halo2
+* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
+
+
+## zk-SNARKs
+
+* date: 2023-02-04
+* last updated: 2023-02-04
+
+### Overview
+
+Zero-Knowledge Succinct Non-Interactive Argument of Knowledge
+
+A proof construction where one can prove possession of certain information, e.g. a secret key, without revealing that information, and without any interaction between the prover and verifier.
+
+### References
+
+* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
+* [What are zk-SNARKs](https://z.cash/technology/zksnarks/)
+* [Introduction to zk-SNARKs](https://consensys.net/blog/developers/introduction-to-zk-snarks/)
+* [zk-STARKs vs. zk-SNARKs explained](https://cointelegraph.com/explained/zk-starks-vs-zk-snarks-explained)
+
+
 ## Uniswap V4 Intent Hook
 
 ### Overview
@@ -25092,235 +25321,6 @@ src/
 #### Contributing
 
 Please refer to the main [README.md](https://github.com/jincubator-united-defi-2025/near-fusion-plus/blob/main/README.md) for development setup and contribution guidelines.
-
-
-## Axiom
-
-* date: 2023-06-28
-* last updated: 2023-02-04
-
-### Overview
-
-Axiom[^ov-1] is a ZK coprocessor for Ethereum which provides smart contracts trustless access to all on-chain data and arbitrary expressive compute over it.
-
-### References
-
-* [Website](https://www.axiom.xyz/)
-* [Documentation](https://docs.axiom.xyz/)
-* [Company Profile LinkedIn](https://www.linkedin.com/company/axiom-xyz/about/)
-* [Uniswap Grant](https://hackmd.io/@yisun/H1e6U42Ps) [tweet](https://twitter.com/UniswapFND/status/1617895640415207424?lang=en)
-* [Intrinsic technologies builder](https://gen.xyz/blog/axiomxyz)
-* [Github Repos](https://github.com/axiom-crypto)
-  * [https://github.com/axiom-crypto/axiom-v1-contracts](https://github.com/axiom-crypto/axiom-v1-contracts) (uses [foundry](https://book.getfoundry.sh/), solidity and [yul](https://medium.com/@jtriley15/yul-vs-solidity-contract-comparison-2b6d9e9dc833))
-  * [https://github.com/axiom-crypto/axiom-eth](https://github.com/axiom-crypto/axiom-eth) (written in rust)
-  * [https://github.com/axiom-crypto/axiom-apps](https://github.com/axiom-crypto/axiom-apps) (uniswap)
-  * [https://github.com/axiom-crypto/halo2-lib](https://github.com/axiom-crypto/halo2-lib) (rust zk)
-* [@axiomhq npm packages](https://www.npmjs.com/search?q=%40axiomhq)
-* Yi is part of the Delendum Telegram Group @yisun and Presented at [Eth Denver](https://twitter.com/axiom_xyz/status/1630960864479027200)
-* [Yi Sun, Reflection and Introspection in Blockchains](https://www.youtube.com/watch?v=05uv3hsH6oA)
-* [Delendum Research Workshop Slides](https://drive.google.com/drive/folders/15Ih1B4Pjr-oorAa33qlAgVH5klCHwSG3)
-
-### Footnotes
-
-Overview
-
-[^ov-1]: [Axiom](https://www.axiom.xyz/): The ZK Coprocessor for Ethereum
-
-
-## Zero Knowledge Research
-
-* date: 2023-02-04
-* last updated: 2023-02-04
-
-### Overview
-
-Here we do a deep dive on Zero Knowledge
-
-* Approach
-* Emerging Use Cases
-* Proof Systems
-* Efficient Signatures
-* Proof Aggregation
-* Tokenomics
-
-### Learning Material
-
-#### Foundational
-
-* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics/dp/1493917102)
-* [Introduction to Applied Linear Algebra](https://www.amazon.com/Introduction-Applied-Linear-Algebra-Matrices/dp/1316518965)
-* [Calculus I - Differentiation and Integration](https://www.amazon.com/Calculus-Differentiation-Integration-Hamilton-Education-ebook/dp/B07BPHW4VL)
-* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics-ebook/dp/B00PULZOCI/): the mathematics behind the theory of public key cryptosystems and digital signature schemes.
-* [Cryptography Algorithms](https://www.amazon.com/Next-generation-Cryptography-Algorithms-Explained-implementation/dp/1789617138)
-* [Number Theory](https://crypto.stanford.edu/pbc/notes/numbertheory/)
-* [zkSNARKs in a nutshell](https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell)
-* [Quadratic Arithmetic Programs: from Zero to Hero](https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649)
-* [Exploring Elliptic Curve Pairings](https://medium.com/@VitalikButerin/exploring-elliptic-curve-pairings-c73c1864e627)
-* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
-* [The MoonMath Manual to zk-SNARKs](https://leastauthority.com/static/publications/MoonMath080822.pdf)
-* [Elliptic Curve Cryptography: a gentle introduction](https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/)
-* [Exploring Elliptic Curve Pairings](https://vitalik.ca/general/2017/01/14/exploring_ecp.html)
-* [KZG polynomial commitments](https://dankradfeist.de/ethereum/2020/06/16/kate-polynomial-commitments.html)
-* [plookup](https://eprint.iacr.org/2020/315.pdf): A simplified polynomial protocol for
-  lookup tables.
-* [Casting out Primes](https://blog.polygon.technology/wp-content/uploads/2022/10/casting-3.pdf): a nondeterministic method for bignum arithmetic. It is inspired by the “casting out nines” technique, where some identity is checked modulo 9, providing a probabilistic result.
-
-#### Zero Knowledge
-
-Research Articles
-
-* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities. *Light clients, also known as Simple Payment Verification (SPV) clients, are nodes which only download a small portion of the data in a blockchain, and use indirect means to verify that a given chain is valid.* \* Research Papers (Zero Knowledge Related)
-* [zkBridge: Trustless Cross-chain Bridges Made Practical](https://rdi.berkeley.edu/zkp/zkBridge/uploads/paper.pdf)
-* [Caulk: Lookup Arguments in Sublinear Time](https://eprint.iacr.org/2022/621.pdf): position-hiding linkability for vector commitment schemes: one can prove in zero knowledge that one or m values that comprise commitment cm all belong to the vector of size N committed to in C.
-* [HyperPlonk: Plonk with Linear-Time Prover and High-Degree Custom Gates](https://eprint.iacr.org/2022/1355.pdf)
-* [SLONK—a simple universal SNARK](https://ethresear.ch/t/slonk-a-simple-universal-snark/6420): a simplification to PLONK called SLONK. We replace the permutation argument (the “P” in PLONK) in favour of a shift argument (the “S” in SLONK). We get a universal SNARK with the smallest known proof size and verification time.
-* [Kate commitments from the Lagrange basis without FFTs](https://notes.ethereum.org/T0ZVaaywQAqP4jegqO3asg?view): how to commit, evaluate and open polynomials in the Lagrange basis without FFTs. This is the first part in a series (see part 1, part 2, part 3) showing how to do PLONK-style universal SNARKs without FFTs
-* [Hadamard checks from the Lagrange basis without FFTs](https://notes.ethereum.org/Il4z42lmQtaUYFigsjsk2Q?view): how to prove Hadamard relations between polynomials in the Lagrange basis without FFTs. This is the second part (see part 1, part 2, part 3) in a series showing how to do PLONK-style universal SNARKs without FFTs.
-* [PLONK-style SNARKs without FFTs](https://notes.ethereum.org/DLRqK9V7RIOsTZkab8Hm_Q?view): how to do PLONK-style universal SNARKs without FFTs. This is part 3 in a series (part 1, part 2, part 3).
-* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
-* [Plonky2: Fast Recursive Arguments with PLONK and FRI](https://github.com/mir-protocol/plonky2/blob/main/plonky2/plonky2.pdf)
-
-articles and learning resources
-
-* [Bridging the Multichain Universe with Zero Knowledge Proofs](https://medium.com/@ingonyama/bridging-the-multichain-universe-with-zero-knowledge-proofs-6157464fbc86)
-* [awesome-zkml](https://github.com/worldcoin/awesome-zkml)
-* [https://learn.0xparc.org/](https://learn.0xparc.org/): ZK Learning Resources
-* [Delendum ZKP Knowledge base](https://kb.delendum.xyz/)
-* [https://appliedzkp.org](https://appliedzkp.org/): Privacy and Scaling Exploration
-* [https://zkp.science/](https://zkp.science/): Zero-Knowledge Proofs
-* [https://starkware.co/stark-101/](https://starkware.co/stark-101/): Stark 101: write a STARK prover from scratch
-* [https://docs.starkware.co/starkex/index.html](https://docs.starkware.co/starkex/index.html): - Starkware StarkeEx
-* [Noir](https://docs.aztec.network/developers/noir) Noir is a Domain Specific Language for developing ZK-provable programs. (Rust based)
-  * [article](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9)
-  * [tweet](https://twitter.com/aztecnetwork/status/1578082456212643840)
-  * [Grants](https://aztec.network/grants/)
-* [Arkworks](https://github.com/arkworks-rs)
-* [zkrepl.dev](https://zkrepl.dev/)
-* [succinct](https://blog.succinct.xyz/)
-* [ZK BATCH ECDSA](https://blog.succinct.xyz/post/2022/10/03/batch-ecdsa/)
-* [Batch ECDSA Verification](https://github.com/puma314/batch-ecdsa)
-* [Bringing IBC to Ethereum using ZK-Snarks](https://ethresear.ch/t/bringing-ibc-to-ethereum-using-zk-snarks/13634)
-* [MINA docs](https://docs.minaprotocol.com/)
-
-implementation articles
-
-* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
-* [Succinct Towards the endgame of blockchain interoperability with proof of consensus](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus)
-
-#### Codebases
-
-* [Circom](https://github.com/iden3/circom) a novel domain-specific language for defining arithmetic circuits that can be used to generate zero-knowledge proofs
-
-* [DarkForest](https://github.com/darkforest-eth) zkSNARK space warfare
-  * [Awesome List](https://github.com/snowtigersoft/awesome-darkforest)
-  * [Our front end code (the game is open source!)](https://github.com/darkforest-eth/client/tree/master/src/Frontend)
-  * [Twitter](https://twitter.com/darkforest_eth)
-
-* [Discord](https://discord.gg/2u2TN6v8r6)
-  * [Team Blog](http://blog.zkga.me/)
-    * [Dark Forest v0.6](https://blog.zkga.me/announcing-v6)
-    * [Exploiting DF v0.5 Artifact Minting](https://blog.zkga.me/artifact-minting-exploit)
-    * [v0.5 Plugins Contest Winners](https://blog.zkga.me/v5-plugins-contest-winners)
-    * [Zero-Knowledge Proofs for Engineers](https://blog.zkga.me/intro-to-zksnarks)
-    * [Announcing Dark Forest](https://blog.zkga.me/announcing-darkforest)
-    * [The Strongest Crypto Gaming Thesis: Why we're building Dark Forest](https://gubsheep.mirror.xyz/nsteOfjATPSKH0J8lRD0j2iynmvv_C8i8eb483UzcTM)
-  * [Community plugins](http://plugins.zkga.me/)
-  * [Community-run wiki](http://dfwiki.net/)
-  * Player-made content
-    * [Dark Forest GPU universe explorer](https://www.longrocklabs.com/articles/the-exploration-era-begins/)
-    * [Getting started with Dark Forest](https://www.youtube.com/watch?v=keY4a9cKmgg)
-    * [Setting up a remote miner](https://www.youtube.com/watch?v=Kus4fWNg3zo)
-    * [Dark Forest battle timelapse](https://www.youtube.com/watch?v=o9A-cfDanTY)
-
-* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s): Re-implement an ecc circuits with halo2
-
-* [plonky2](https://github.com/mir-protocol/plonky2): a SNARK implementation based on techniques from PLONK and FRI. It has since expanded to include tools such as Starky, a highly performant STARK implementation.
-  * [plonky2-solidity-verifier](https://github.com/polymerdao/plonky2-solidity-verifier)
-  * [plonky2-circom](https://github.com/polymerdao/plonky2-circom): Plonky2 verifier in Circom
-  * [plonky2-ed25519](https://github.com/polymerdao/plonky2-ed25519): SNARK verification circuits of a digital signature scheme Ed25519 implemented with Plonky2.
-  * [plonky2-sha256](https://github.com/polymerdao/plonky2-sha256): SNARK circuits of a cryptographic hash function SHA-256 implemented with Plonky2.
-  * [plonky2-sha512](https://github.com/polymerdao/plonky2-sha512): SNARK circuits of a cryptographic hash function SHA-512 implemented with Plonky2.
-  * [plonky2-pairing](https://github.com/polymerdao/plonky2-pairing)
-
-#### Presentations
-
-* [Devcon VI](https://archive.devcon.org/archive/playlists/devcon-6/)
-* [Light Client After the Merge](https://archive.devcon.org/archive/watch/6/light-clients-after-the-merge/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=ZHNrAXf3RDE)
-* [What to Know about Zero Knowledge](https://archive.devcon.org/archive/watch/6/what-to-know-about-zero-knowledge/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Application ShowCase](https://archive.devcon.org/archive/watch/6/zk-application-showcase/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Badges: How to prove that you donated to Gitcoin grants](https://archive.devcon.org/archive/watch/6/zk-badges/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Security Self Led Session](https://archive.devcon.org/archive/watch/6/zk-security-self-led-session/?playlist=Devcon%206\&tab=YouTube)
-* [zkEVM Vs EVM: Full Equivalence?](https://archive.devcon.org/archive/watch/6/zkevm-vs-evm-full-equivalence/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Application Design Patterns](https://archive.devcon.org/archive/watch/6/zk-application-design-patterns/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=-PUKinjbLR8)
-* [Applied ZK SLS presentations](https://www.notion.so/360fcd3f2a824759b1373ddeef5bf564)
-
-#### Additional Information
-
-* Review [ENS Bridging Strategy](https://medium.com/the-ethereum-name-service/mvp-of-ens-on-l2-with-optimism-demo-video-how-to-try-it-yourself-b44c390cbd67) and [repo](https://github.com/ensdomains/l2gateway-demo/)
-
-* [Succinct](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus) [$600K](https://forum.gnosis.io/t/gip-57-should-gnosis-dao-support-research-of-a-zksnark-enabled-light-client-and-bridge/5421) [tweet](https://twitter.com/succinctlabs/status/1572299292177481729) [Demo](https://www.zkbridge.wtf/) [github](https://github.com/succinctlabs) [video](https://youtu.be/Ct6H5GcnA0A?t=15554) built using [circom](https://docs.circom.io/)
-
-* [circom](https://docs.circom.io/)
-
-* [Arkworks](https://github.com/arkworks-rs/), [tutorial](https://github.com/arkworks-rs/r1cs-tutorial/), [twitter](https://twitter.com/arkworks_rs), [video](https://youtu.be/Ct6H5GcnA0A?t=7429)
-
-* [Aztec.network](http://Aztec.network) [Noir](https://aztec.network/noir) [intro](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9), [github](https://github.com/noir-lang/noir), [twitter](https://twitter.com/aztecnetwork), [docs](https://noir-lang.github.io/book/index.html)
-
-* [GNark](https://github.com/ConsenSys/gnark)
-
-* [ElectronLabs](https://electronlabs.org/)
-
-* [ZKU](https://zku.one/) [Learning](https://www.notion.so/Learning-50b5a6ecc45b46248323f0e552b6885f)
-
-* Review [matter-labs knowledge base](https://github.com/matter-labs/awesome-zero-knowledge-proofs#learn)
-
-* [zkSNARKS explained like you're someone who knows some math and some coding](https://www.reddit.com/r/zkTech/comments/tfjvrj/zksnarks_explained_like_youre_someone_who_knows/)
-
-* [The Halo2 Book](https://zcash.github.io/halo2/concepts/proofs.html)
-
-* [A survey of elliptic curves for proof systems](https://eprint.iacr.org/2022/586.pdf)
-
-* zkEVM
-  * [zkSync Era](https://era.zksync.io/docs/dev/)
-  * [Polygon zkEVM](https://wiki.polygon.technology/docs/zkEVM/develop/)
-  * [zkSync zkEVM](https://docs.zksync.io/zkevm/)
-  * [ConsenSys zkEVM](https://docs.zkevm.consensys.net/overview)
-
-
-## ZK Proof of Stake
-
-* date: 2023-02-04
-* last updated: 2023-02-04
-
-### Overview
-
-Here we review how zero knowledge primitives can be applied to confirm Proof of Stake Consensus.
-
-### References
-
-* [Paths toward single-slot finality](https://notes.ethereum.org/@vbuterin/single_slot_finality): A look at how to improve Ethereum’s LMD GHOST + Casper FFG consensus.
-* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
-* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s/tree/pairing): Re-implement an ecc circuits with halo2
-* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
-
-
-## zk-SNARKs
-
-* date: 2023-02-04
-* last updated: 2023-02-04
-
-### Overview
-
-Zero-Knowledge Succinct Non-Interactive Argument of Knowledge
-
-A proof construction where one can prove possession of certain information, e.g. a secret key, without revealing that information, and without any interaction between the prover and verifier.
-
-### References
-
-* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
-* [What are zk-SNARKs](https://z.cash/technology/zksnarks/)
-* [Introduction to zk-SNARKs](https://consensys.net/blog/developers/introduction-to-zk-snarks/)
-* [zk-STARKs vs. zk-SNARKs explained](https://cointelegraph.com/explained/zk-starks-vs-zk-snarks-explained)
 
 
 ## Fast Fourier Transforms
