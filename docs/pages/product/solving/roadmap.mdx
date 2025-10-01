@@ -1,8 +1,14 @@
-# Solver Evolution Roadmap: 0.2 to 2.0
+# Solver Evolution Roadmap: 0.1 to 2.0
 
 ## Abstract
 
 This roadmap outlines the evolution of the solver system from the current 0.1 arbitrage-focused implementation to a comprehensive intent-based solving platform. The roadmap spans from Q4 2024 through Q2 2025, transitioning from single-purpose arbitrage to multi-protocol intent solving across chains.
+
+## Current Status (September 2024)
+
+**Production Release**: v0.1.0 - Cyclical Arbitrage Foundation
+**Active Development**: Architecture stabilization and bug fixes
+**Next Planned**: Release 0.2 features (Q4-2024/Q1-2025)
 
 ## Overview
 
@@ -12,20 +18,24 @@ Building on the foundation of the 0.1 Release, this roadmap charts the path towa
 
 ### Feature Implementation Summary
 
-| Feature                  | 0.1 (Complete) | 0.2 (Q4-2024) | 1.0 (Q1-2025) | 2.0 (Q2-2025) |
+**Legend**: ✅ Complete | ⏳ Planned
+
+| Feature                  | 0.1 (Complete) | 0.2 (Planned) | 1.0 (Future)  | 2.0 (Future)  |
 | ------------------------ | -------------- | ------------- | ------------- | ------------- |
 | **Cyclical Arbitrage**   | ✅             | ✅            | ✅            | ✅            |
-| **Ethereum Support**     |                | ✅            | ✅            | ✅            |
-| **UniswapX Support**     |                | ✅            | ✅            | ✅            |
-| **MultiSolver Support**  |                | ✅            | ✅            | ✅            |
-| **1inch Support**        |                |               | ✅            | ✅            |
-| **CowSwap Support**      |                |               | ✅            | ✅            |
-| **Portfolio Management** |                |               | ✅            | ✅            |
-| **Protocol Launch**      |                |               |               | ✅            |
+| **Ethereum Support**     | ⚠️ Basic       | ⏳ Advanced   | ⏳            | ⏳            |
+| **UniswapX Support**     |                | ⏳            | ⏳            | ⏳            |
+| **MultiSolver Support**  |                | ⏳            | ⏳            | ⏳            |
+| **1inch Support**        |                |               | ⏳            | ⏳            |
+| **CowSwap Support**      |                |               | ⏳            | ⏳            |
+| **Portfolio Management** |                |               | ⏳            | ⏳            |
+| **Protocol Launch**      |                |               |               | ⏳            |
 
 ## Components by Phase
 
-| Feature                                                     | Component                                                             | Sub Component                | 0.1 (Complete) | 0.2 (Q4-2024) | 1.0 (Q1-2025) | 2.0 (Q2-2025) |
+**Legend**: ✅ Complete | ⚠️ Partial | ⏳ Planned
+
+| Feature                                                     | Component                                                             | Sub Component                | 0.1 (Complete) | 0.2 (Planned) | 1.0 (Future)  | 2.0 (Future)  |
 | ----------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------- | -------------- | ------------- | ------------- | ------------- |
 | [**Cyclical Arbitrage**](features/CyclicalArbitrage.md)     | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Token                        | ✅             | ✅            | ✅            | ✅            |
 |                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Graph                        | ✅             | ✅            | ✅            | ✅            |
@@ -39,33 +49,35 @@ Building on the foundation of the 0.1 Release, this roadmap charts the path towa
 |                                                             | [**Execution**](components/Execution.md)                              | Signal Execution             | ✅             | ✅            | ✅            | ✅            |
 |                                                             | [**Execution**](components/Execution.md)                              | TOKEN Mapping                | ✅             | ✅            | ✅            | ✅            |
 |                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | No Liquidity FlashRouter     | ✅             | ✅            | ✅            | ✅            |
-| [**Ethereum Support**](features/Ethereum.md)                | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Price Oracle                 |                | ✅            | ✅            | ✅            |
-|                                                             | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Gas Calculator               |                | ✅            | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | MEV Bundling                 |                | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | Provided Liquidity Permit2   |                | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | No Liquidity FlashRouterHook |                | ✅            | ✅            | ✅            |
-| [**UniswapX Support**](features/UniswapX.md)                | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | SOLO Support                 |                | ✅            | ✅            | ✅            |
-|                                                             | [**Collectors**](components/Collectors.md)                            | UniswapX (UNIX)              |                | ✅            | ✅            | ✅            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | UniswapX (UNIX)              |                | ✅            | ✅            | ✅            |
-|                                                             | [**Signals**](components/Signals.md)                                  | External Solving Solution    |                | ✅            | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | Permit2                      |                | ✅            | ✅            | ✅            |
-| [**MultiSolver Support**](features/MultiSolver.md)          | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | API Hosted                   |                | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Crate                        |                | ✅            | ✅            | ✅            |
-|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | Liquidity Manager Vault      |                | ✅            | ✅            | ✅            |
-| [**1inch Support**](features/1Inch.md)                      | [**Collectors**](components/Collectors.md)                            | 1inch (INCH)                 |                |               | ✅            | ✅            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | 1inch (INCH)                 |                |               | ✅            | ✅            |
-| [**CowSwap Support**](features/CowSwap.md)                  | [**Collectors**](components/Collectors.md)                            | CowSwap (COW)                |                |               | ✅            | ✅            |
-|                                                             | [**Strategies**](components/Strategies.md)                            | CowSwap (COW)                |                |               | ✅            | ✅            |
-| [**Portfolio Management**](features/PortFolioManagement.md) | [**Signals**](components/Signals.md)                                  | Internal Solution            |                |               | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | FLASH Mapping                |                |               | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | PreFlight Check              |                |               | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | Vault Support (Centralized)  |                |               | ✅            | ✅            |
-|                                                             | [**Execution**](components/Execution.md)                              | Vault Support                |                |               | ✅            | ✅            |
-| [**Protocol Launch**](features/ProtocolLaunch.md)           | [**Liquidity Manager**](components/LiquidityManager.md)               | (Vault Decentralized)        |                |               |               | ✅            |
+| [**Ethereum Support**](features/Ethereum.md)                | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Price Oracle                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Profitability Calculator**](components/ProfitabilityCalculator.md) | Gas Calculator (Advanced)    | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Execution**](components/Execution.md)                              | MEV Bundling                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | Provided Liquidity Permit2   | ⚠️ Partial     | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | No Liquidity FlashRouterHook |                | ⏳            | ⏳            | ⏳            |
+| [**UniswapX Support**](features/UniswapX.md)                | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | SOLO Support                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Collectors**](components/Collectors.md)                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Strategies**](components/Strategies.md)                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Signals**](components/Signals.md)                                  | External Solving Solution    |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Execution**](components/Execution.md)                              | Permit2 (Full)               | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
+| [**MultiSolver Support**](features/MultiSolver.md)          | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | API Hosted                   |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Liquidity Mapper**](components/LiquidityMapper.md)                 | Crate                        |                | ⏳            | ⏳            | ⏳            |
+|                                                             | [**Liquidity Manager**](components/LiquidityManager.md)               | Liquidity Manager Vault      |                | ⏳            | ⏳            | ⏳            |
+| [**1inch Support**](features/1Inch.md)                      | [**Collectors**](components/Collectors.md)                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
+|                                                             | [**Strategies**](components/Strategies.md)                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
+| [**CowSwap Support**](features/CowSwap.md)                  | [**Collectors**](components/Collectors.md)                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
+|                                                             | [**Strategies**](components/Strategies.md)                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
+| [**Portfolio Management**](features/PortFolioManagement.md) | [**Signals**](components/Signals.md)                                  | Internal Solution            |                |               | ⏳            | ⏳            |
+|                                                             | [**Execution**](components/Execution.md)                              | FLASH Mapping                |                |               | ⏳            | ⏳            |
+|                                                             | [**Execution**](components/Execution.md)                              | PreFlight Check (Enhanced)   | ⚠️ Basic       |               | ⏳            | ⏳            |
+|                                                             | [**Execution**](components/Execution.md)                              | Vault Support (Centralized)  |                |               | ⏳            | ⏳            |
+|                                                             | [**Execution**](components/Execution.md)                              | Vault Support                |                |               | ⏳            | ⏳            |
+| [**Protocol Launch**](features/ProtocolLaunch.md)           | [**Liquidity Manager**](components/LiquidityManager.md)               | (Vault Decentralized)        |                |               |               | ⏳            |
 
 ## Releases
 
-### Release 0.2 - Intent Protocol Foundation (Q4-2024)
+### Release 0.2 - Intent Protocol Foundation (Planned: Q4-2024/Q1-2025)
+
+> ⚠️ **STATUS**: PLANNED - Not yet started as of September 2024.
 
 **Objectives**: Transition from pure arbitrage to intent-based solving framework with multi-protocol support.
 
@@ -95,7 +107,9 @@ Building on the foundation of the 0.1 Release, this roadmap charts the path towa
 - **FlashRouterHook**: Uniswap V4 Hook implementation for embedded execution
 - **Centralized Vault System**: The Compact-based vault with ERC6909 resource locks
 
-### Release 1.0 - Multi-Protocol Production Solving (Q1-2025)
+### Release 1.0 - Multi-Protocol Production Solving (Planned: Q1-2025)
+
+> ⚠️ **STATUS**: PLANNED - Depends on completion of Release 0.2.
 
 **Target**: Production-grade intent solving across major protocols with advanced portfolio management.
 
@@ -122,7 +136,9 @@ Building on the foundation of the 0.1 Release, this roadmap charts the path towa
 - **MEV Protection**: Built-in protection against extractive practices across all protocols
 - **Reputation System**: Solver performance tracking and incentive alignment across ecosystems
 
-### Release 2.0 - Ecosystem Expansion (Q2-2025)
+### Release 2.0 - Ecosystem Expansion (Planned: Q2-2025)
+
+> ⚠️ **STATUS**: PLANNED - Long-term vision for decentralized ecosystem.
 
 **Target**: Comprehensive solver ecosystem with full decentralization and third-party integration.
 

@@ -17,11 +17,13 @@ Building on the proven 0.1 arbitrage foundation, Phase 0.2 introduces three majo
 ### Intent-Based Architecture Evolution
 
 **From Arbitrage-Only to Intent Solving**:
+
 - **0.1 Design**: Pure arbitrage cycle detection with fixed execution patterns
 - **0.2 Design**: Flexible intent resolution with dynamic route generation through SOLO engine
 - **Impact**: Enables participation in UniswapX auctions and solver competition ecosystems
 
 **Enhanced Strategy Framework**:
+
 - **New Strategy Types**: UNIX (UniswapX) strategy alongside existing CARB and TOKEN strategies
 - **SOLO Integration**: Universal optimization engine serving all strategy types
 - **External Coordination**: Signals component enhanced for external solver network participation
@@ -29,11 +31,13 @@ Building on the proven 0.1 arbitrage foundation, Phase 0.2 introduces three majo
 ### Ethereum-Specific Optimizations
 
 **Advanced Profitability Calculation**:
+
 - **Price Oracle Integration**: External price validation with Chainlink, Pyth, and TWAP sources
 - **Gas Calculator Enhancement**: EIP-1559 optimization with network congestion awareness
 - **MEV-Aware Pricing**: Gas strategies accounting for MEV competition
 
 **MEV Protection Framework**:
+
 - **Bundle-Based Execution**: Transaction bundling through Flashbots integration
 - **Private Mempool Access**: Alternative private mempool providers for MEV protection
 - **Enhanced Execution**: MEV bundling capabilities in Execution component
@@ -41,16 +45,19 @@ Building on the proven 0.1 arbitrage foundation, Phase 0.2 introduces three majo
 ### Liquidity Management Revolution
 
 **Permit2 Integration**:
+
 - **Signature-Based Access**: Reduced flash loan dependency through pre-authorized funds
 - **Hybrid Funding**: Intelligent combination of Permit2 funds and flash loans
 - **Gas Optimization**: Streamlined execution paths with reduced transaction complexity
 
 **FlashRouterHook Implementation**:
+
 - **Embedded Execution**: Flash loan logic embedded directly in Uniswap V4 hooks
 - **Lock Optimization**: Leverages existing V4 lock context for efficiency
 - **Performance Gains**: 20-30% gas savings through hook-based execution
 
 **Centralized Vault System**:
+
 - **The Compact Integration**: ERC6909 compliant vault using The Compact protocol
 - **Single Entity Control**: Solver acts as allocator, arbiter, and resource manager
 - **Capital Efficiency**: Instant spend capability across arbitrary environments
@@ -58,84 +65,107 @@ Building on the proven 0.1 arbitrage foundation, Phase 0.2 introduces three majo
 ### Multi-Solver Ecosystem Foundation
 
 **API Infrastructure**:
+
 - **REST and WebSocket APIs**: Real-time liquidity data and route optimization services
 - **SDK Distribution**: Rust crate for embedded solver functionality
 - **Developer Tooling**: Comprehensive tools for ecosystem development
 
 **Service Architecture**:
+
 - **Microservices Design**: Scalable API gateway with specialized services
 - **Authentication Framework**: Secure access control with usage tracking
-- **Performance Optimization**: Less than 50ms request latency with 10,000+ requests/second capacity
+- **Performance Optimization**: less than 50ms request latency with 10,000+ requests/second capacity
 
 ## Component Architecture Changes
 
 ### Enhanced Components
 
 #### Profitability Calculator
+
 **New Sub-Components**:
+
 - **Price Oracle**: Multi-source price validation with deviation analysis
 - **Gas Calculator**: EIP-1559 optimization with MEV-aware pricing
 
 **Design Changes**:
+
 - External price validation pipeline with anomaly detection
 - Dynamic gas price prediction with congestion awareness
 - MEV cost consideration in profit calculations
 
 #### Liquidity Mapper
+
 **New Sub-Components**:
+
 - **SOLO Support**: Dynamic route generation from liquidity graphs
 - **API Hosted**: REST and WebSocket services for data distribution
 - **Crate SDK**: Embedded solver functionality distribution
 
 **Design Changes**:
+
 - Universal optimization engine serving all strategy types
 - Real-time route optimization for intent-based solving
 - External API infrastructure for ecosystem expansion
 
 #### Collectors
+
 **New Sub-Components**:
+
 - **UniswapX (UNIX)**: Intent monitoring and settlement coordination
 
 **Design Changes**:
+
 - Intent lifecycle tracking and auction participation
 - Real-time order book updates with settlement status monitoring
 - Cross-chain intent support architecture
 
 #### Strategies
+
 **New Sub-Components**:
+
 - **UniswapX (UNIX)**: Intent-based solving strategy leveraging SOLO
 
 **Design Changes**:
+
 - Intent analysis and optimal route calculation
 - Bid optimization for solver competition
 - Settlement coordination and execution
 
 #### Signals
+
 **New Sub-Components**:
+
 - **External Solving Solution**: Bid management and solver network coordination
 
 **Design Changes**:
+
 - External solver network integration
 - Competition participation and bid management
 - Cross-solver coordination and communication protocols
 
 #### Execution
+
 **New Sub-Components**:
+
 - **MEV Bundling**: Transaction bundling for MEV protection
 - **Permit2**: Signature-based fund access integration
 
 **Design Changes**:
+
 - Bundle construction and submission to private mempools
 - Hybrid funding strategies combining multiple sources
 - Enhanced execution paths with MEV protection
 
 #### Liquidity Manager
+
 **New Sub-Components**:
+
 - **Provided Liquidity Permit2**: Pre-authorized fund access
 - **No Liquidity FlashRouterHook**: Embedded V4 hook execution
 - **Liquidity Manager Vault**: Centralized vault with The Compact integration
 
 **Design Changes**:
+
 - Multi-source funding optimization
 - Hook-based execution for V4 pools
 - ERC6909 resource lock management through The Compact
@@ -145,6 +175,7 @@ Building on the proven 0.1 arbitrage foundation, Phase 0.2 introduces three majo
 ### SOLO (Solve Optimal) Engine
 
 **Architecture**:
+
 ```rust
 pub struct SOLOEngine {
     liquidity_graph: Arc<LiquidityGraph>,
@@ -163,6 +194,7 @@ impl SOLOEngine {
 ```
 
 **Key Features**:
+
 - Sub-millisecond route generation for competitive bidding
 - Multi-objective optimization across amount, gas cost, and slippage
 - Intent-specific solution encoding for different protocols
@@ -171,6 +203,7 @@ impl SOLOEngine {
 ### Ethereum MEV Protection
 
 **MEV Protection Framework**:
+
 ```rust
 pub struct MEVProtector {
     flashbots_client: FlashbotsClient,
@@ -188,6 +221,7 @@ impl MEVProtector {
 ```
 
 **Protection Strategies**:
+
 - Bundle-based execution through Flashbots Protect
 - Private mempool providers for front-running protection
 - MEV-aware gas pricing strategies
@@ -196,6 +230,7 @@ impl MEVProtector {
 ### The Compact Vault Integration
 
 **Centralized Vault Architecture**:
+
 ```rust
 pub struct CompactVaultCentralized {
     compact: TheCompact,
@@ -214,6 +249,7 @@ impl CompactVaultCentralized {
 ```
 
 **Key Benefits**:
+
 - ERC6909 compliance through The Compact protocol
 - Instant spend capability across arbitrary environments
 - 99%+ capital utilization with centralized control
@@ -222,6 +258,7 @@ impl CompactVaultCentralized {
 ### API and SDK Infrastructure
 
 **API Gateway Architecture**:
+
 ```rust
 pub struct APIGateway {
     auth_service: AuthenticationService,
@@ -240,8 +277,9 @@ impl APIGateway {
 ```
 
 **Performance Characteristics**:
-- Less than 50ms request latency for standard data requests
-- Less than 100ms for complex multi-hop route calculations
+
+- less than 50ms request latency for standard data requests
+- less than 100ms for complex multi-hop route calculations
 - 10,000+ requests per second capacity
 - 99.9% uptime with redundant infrastructure
 
@@ -250,32 +288,37 @@ impl APIGateway {
 ### Optimization Metrics
 
 **Intent Processing Performance**:
-- **Route Generation**: Less than 1ms for typical intents via SOLO engine
-- **Auction Participation**: Less than 10ms from intent detection to bid submission
-- **Settlement Speed**: Less than 5s average settlement time
+
+- **Route Generation**: less than 1ms for typical intents via SOLO engine
+- **Auction Participation**: less than 10ms from intent detection to bid submission
+- **Settlement Speed**: less than 5s average settlement time
 - **Win Rate Target**: 15-25% in competitive solver auctions
 
 **Ethereum-Specific Performance**:
+
 - **Gas Optimization**: 15-30% cost reduction through advanced strategies
 - **MEV Protection**: 99% protection rate with less than 5% execution latency impact
-- **Oracle Integration**: Less than 100ms for multi-source price validation
+- **Oracle Integration**: less than 100ms for multi-source price validation
 - **Bundle Success**: 85% successful bundle inclusion rate
 
 **Vault Operations**:
+
 - **Capital Utilization**: 99%+ utilization rate with centralized control
-- **Compact Processing**: Less than 10ms for compact creation and verification
-- **Resource Lock Management**: Less than 2s for deposit and lock creation
+- **Compact Processing**: less than 10ms for compact creation and verification
+- **Resource Lock Management**: less than 2s for deposit and lock creation
 - **Yield Generation**: Competitive yields through optimized strategies
 
 ### Scalability Improvements
 
 **Multi-Chain Coordination**:
+
 - Support for Base, Ethereum, and Unichain networks
 - Chain-specific optimization parameters
 - Cross-chain intent resolution capabilities
 - Network health monitoring and automatic failover
 
 **Ecosystem Scaling**:
+
 - API infrastructure supporting 1000+ concurrent solver instances
 - SDK distribution enabling embedded functionality
 - Centralized vault supporting multiple participant strategies
@@ -285,23 +328,25 @@ impl APIGateway {
 
 ### Protocol Integration Matrix
 
-| Protocol | Integration Type | Component | Performance Target |
-|----------|-----------------|-----------|-------------------|
-| UniswapX | Intent Solving | UNIX Strategy + SOLO | 15-25% win rate |
-| Ethereum Mainnet | Network Support | Enhanced Profitability | 15-30% gas savings |
-| The Compact | Vault Infrastructure | Liquidity Manager | 99% capital utilization |
-| Flashbots | MEV Protection | Execution Enhancement | 99% protection rate |
-| Permit2 | Fund Access | Liquidity Manager | 20-30% gas savings |
+| Protocol         | Integration Type     | Component              | Performance Target      |
+| ---------------- | -------------------- | ---------------------- | ----------------------- |
+| UniswapX         | Intent Solving       | UNIX Strategy + SOLO   | 15-25% win rate         |
+| Ethereum Mainnet | Network Support      | Enhanced Profitability | 15-30% gas savings      |
+| The Compact      | Vault Infrastructure | Liquidity Manager      | 99% capital utilization |
+| Flashbots        | MEV Protection       | Execution Enhancement  | 99% protection rate     |
+| Permit2          | Fund Access          | Liquidity Manager      | 20-30% gas savings      |
 
 ### External System Dependencies
 
 **Oracle Networks**:
+
 - Chainlink: Primary price feed source
 - Pyth Network: High-frequency updates
 - Uniswap V3 TWAP: On-chain validation
 - 99.9% availability with automatic failover
 
 **MEV Infrastructure**:
+
 - Flashbots Protect: Primary bundle submission
 - Private mempools: Alternative protection
 - MEV-Boost integration ready for future
@@ -312,18 +357,21 @@ impl APIGateway {
 ### New Risk Categories
 
 **Intent Solving Risks**:
+
 - Competition risk from other sophisticated solvers
 - Intent validation and execution failures
 - Auction mechanism changes and adaptation lag
 - Cross-chain coordination and settlement failures
 
 **MEV Protection Risks**:
+
 - Bundle inclusion failures in high-competition environments
 - Private mempool reliability and performance
 - MEV attack surface expansion with new protocols
 - Gas optimization vs. MEV protection trade-offs
 
 **Vault Operation Risks**:
+
 - The Compact protocol dependencies and upgrade risks
 - ERC6909 standard adoption and compatibility
 - Resource lock security and forced withdrawal scenarios
@@ -332,12 +380,14 @@ impl APIGateway {
 ### Mitigation Strategies
 
 **Technical Mitigation**:
+
 - Comprehensive testing of all new components
 - Gradual rollout with performance monitoring
 - Fallback mechanisms for all external dependencies
 - Real-time alerting and automated response systems
 
 **Operational Mitigation**:
+
 - Multi-layer redundancy for critical infrastructure
 - Regular security audits of new components
 - Performance benchmarking and optimization
@@ -348,11 +398,13 @@ impl APIGateway {
 ### Phase 1.0 Preparation
 
 **Portfolio Management Foundation**:
+
 - Enhanced signal processing infrastructure ready for internal solutions
 - Execution framework prepared for FLASH mapping and PreFlight checks
 - Vault architecture ready for advanced institutional features
 
 **Additional Protocol Support**:
+
 - Collector framework extensible to CowSwap and 1inch protocols
 - Strategy framework ready for batch auction and limit order participation
 - Signal processing ready for internal portfolio coordination
@@ -360,11 +412,13 @@ impl APIGateway {
 ### Phase 2.0 Architecture
 
 **Decentralization Readiness**:
+
 - Centralized vault architecture designed for community transition
 - API and SDK infrastructure ready for ecosystem expansion
 - Governance framework preparation for protocol launch
 
 **Ecosystem Foundation**:
+
 - Developer tools and SDK ready for third-party integration
 - Analytics infrastructure ready for ecosystem-wide insights
 - Performance monitoring ready for decentralized operations
