@@ -12,6 +12,9 @@ export default defineConfig({
   baseUrl: "/",
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
+  head() {
+    return `<script src="/zoom-mermaid.js" type="text/javascript"></script>`;
+  },
   markdown: {
     remarkPlugins: [remarkMath, remarkMermaid],
     rehypePlugins: [rehypeMathjax],
@@ -26,8 +29,8 @@ export default defineConfig({
       link: "/proposals/intro",
     },
     {
-      text: "Products",
-      link: "/products/intro",
+      text: "Product",
+      link: "/product/intro",
     },
     {
       text: "Partnerships",
@@ -42,7 +45,7 @@ export default defineConfig({
         items: [
           {
             text: "High Performance Route Evaluation",
-            link: "/research/solving/arbitrager",
+            link: "/research/solving/solving",
           },
           {
             text: "No Liquidity Solving (Tycho 1inch)",
@@ -53,7 +56,7 @@ export default defineConfig({
             link: "/research/solving/near",
           },
           {
-            text: "Intent Management with ERC-6909 Vault",
+            text: "Liquidity Management with ERC-6909 Vault",
             link: "/research/Intents/protocol",
           },
           {
@@ -220,35 +223,8 @@ export default defineConfig({
 
     "/proposals": [
       {
-        text: "Tycho Implementation Partner",
-        items: [
-          {
-            text: "Tycho Implementation Partner",
-            link: "/proposals/tycho-implementation-partner",
-          },
-          {
-            text: "Tycho v4 Hook Integration",
-            link: "/proposals/tycho-v4-hook",
-          },
-        ],
-      },
-      {
         text: "Grant Proposals",
         items: [
-          { text: "Uniswap Retro Grant", link: "/proposals/uniswap-retro" },
-          { text: "UniswapX Integration Partner", link: "/proposals/uniswapx" },
-          {
-            text: "Gauntlett - Research Collaboration",
-            link: "/proposals/gauntlett",
-          },
-          {
-            text: "CowSwap Solver Infrastructure Proposal",
-            link: "/proposals/cowswap",
-          },
-          {
-            text: "1-inch LimitOrderProtocol Solving",
-            link: "/proposals/1inch",
-          },
           {
             text: "Tycho Atomic Arbitrage (2025)",
             link: "/proposals/atomic-arbitrage",
@@ -261,25 +237,49 @@ export default defineConfig({
         items: [
           { text: "Unite Defi (2025)", link: "/proposals/Unite" },
           { text: "Uniswap Hook Incubator 5 (2025)", link: "/proposals/UHI5" },
-          { text: "Uniswap Hook Incubator 6 (2025)", link: "/proposals/UHI6" },
           { text: "Harmony Hackathon 2021", link: "/proposals/Harmony" },
         ],
       },
     ],
-    "/products": [
-      { text: "Products", link: "/products/intro" },
+    "/product": [
+      { text: "Product", link: "/product/intro" },
       {
         text: "High Performance Solving",
         items: [
-          { text: "Overview", link: "/products/solving/overview" },
+          { text: "Overview", link: "/product/solving/overview" },
+          { text: "Collectors", link: "/product/solving/collectors" },
+          { text: "Route Evaluation", link: "/product/solving/routes" },
+          { text: "Strategies", link: "/product/solving/strategies" },
+          { text: "Protocol Onboarding", link: "/product/solving/protocols" },
           {
-            text: "FlashHook - Uniswap v4 Design",
-            link: "/products/solving/flash-hook",
+            text: "Solver Support",
+            items: [
+              { text: "CowSwap", link: "/product/solving/intentsolve/cowswap" },
+              { text: "1inch", link: "/product/solving/intentsolve/1inch" },
+              {
+                text: "Uniswap X",
+                link: "/product/solving/intentsolve/uniswapx",
+              },
+            ],
           },
           {
-            text: "Resource Management - Compact Design",
-            link: "/products/solving/liquidity-management",
+            text: "FlashHook (Uniswap v4)",
+            link: "/product/solving/flash-hook",
           },
+          {
+            text: "Liquidity Management",
+            link: "/product/solving/liquidity-management",
+          },
+        ],
+      },
+      {
+        text: "Roadmap",
+        items: [
+          { text: "Roadmap", link: "/product/solving/roadmap" },
+          { text: "Design", link: "/product/solving/design" },
+          { text: "Design 0.2", link: "/product/solving/design-0-2" },
+          { text: "Design 1.0", link: "/product/solving/design-1-0" },
+          { text: "Design 2.0", link: "/product/solving/design-2-0" },
         ],
       },
       {
@@ -287,27 +287,27 @@ export default defineConfig({
         items: [
           {
             text: "Rainbow Bridge Research (Harmony 2022)",
-            link: "/products/previous/2023-02-23-rainbow-costs",
+            link: "/product/previous/2023-02-23-rainbow-costs",
           },
           {
             text: "Draft EAVE Whitepaper",
-            link: "/products/previous/2021-12-01-eave-defi",
+            link: "/product/previous/2021-12-01-eave-defi",
           },
           {
             text: "Kanga Protocol Whitepaper",
-            link: "/products/previous/2021-05-01-kanga",
+            link: "/product/previous/2021-05-01-kanga",
           },
           {
             text: "EAVE Parachain Design",
-            link: "/products/previous/2021-04-01-eave-parachain",
+            link: "/product/previous/2021-04-01-eave-parachain",
           },
           {
             text: "Lessons Learned from Devcon5",
-            link: "/products/previous/2019-10-16-devcon5",
+            link: "/product/previous/2019-10-16-devcon5",
           },
           {
             text: "Project-X Technical White Paper",
-            link: "/products/previous/2018-07-17-projectx",
+            link: "/product/previous/2018-07-17-projectx",
           },
         ],
       },

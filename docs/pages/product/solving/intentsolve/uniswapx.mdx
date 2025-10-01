@@ -1,0 +1,309 @@
+# Uniswap X
+
+## Overview
+
+Uniswap X is a new permissionless, open-source, auction-based protocol for trading across AMMs and other liquidity sources. Our solver infrastructure provides comprehensive support for Uniswap X's intent-based architecture, enabling efficient order filling through sophisticated routing and execution strategies.
+
+## Using our Solution
+
+Our Uniswap X solver integration enables:
+
+- **Dutch Auction Filling**: Participate in Uniswap X's Dutch auction mechanism for competitive order execution
+- **Cross-chain Intent Solving**: Handle cross-chain intents with optimal routing across different networks
+- **Multi-source Liquidity**: Aggregate liquidity from AMMs, order books, and other sources for best execution
+- **Real-time Optimization**: Process and evaluate intents with microsecond-level precision
+- **Capital Efficiency**: Execute intents using flash loans and advanced routing without inventory requirements
+
+## Solution Overview
+
+The Uniswap X solver integration leverages our high-performance solving infrastructure to participate in Uniswap X's filler network. The system can evaluate and fill intents across multiple chains while optimizing for both user outcomes and filler profitability.
+
+### Uniswap X Protocol Integration
+
+#### Dutch Auction Mechanics
+Uniswap X uses Dutch auctions where order prices improve over time until filled:
+
+1. **Intent Creation**: Users create intents with starting and ending prices
+2. **Price Decay**: Order becomes more favorable to fillers over time
+3. **Filler Competition**: Fillers compete to execute at optimal timing
+4. **Cross-chain Settlement**: Support for cross-chain intent execution
+
+#### Intent Types Supported
+- **Exact Input Swaps**: Specify exact input amount, variable output
+- **Exact Output Swaps**: Specify exact output amount, variable input
+- **Cross-chain Swaps**: Intents spanning multiple blockchain networks
+- **Limit Orders**: Traditional limit order functionality via Dutch auctions
+
+### Architecture Integration
+
+Our solver infrastructure integrates with Uniswap X through several key components:
+
+#### Intent Monitoring
+- **Real-time Intent Streaming**: Monitor new intents as they're created
+- **Price Tracking**: Track Dutch auction price decay in real-time
+- **Profitability Analysis**: Continuous evaluation of intent filling profitability
+
+#### Cross-chain Coordination
+- **Multi-chain Route Discovery**: Find optimal execution paths across chains
+- **Bridge Integration**: Coordinate with cross-chain bridges for settlement
+- **Gas Optimization**: Optimize gas costs across multiple transactions
+
+#### Settlement Optimization
+- **Batch Execution**: Combine multiple intents for efficient execution
+- **MEV Protection**: Protect users from MEV while maintaining filler profitability
+- **Slippage Minimization**: Minimize execution slippage through advanced routing
+
+## Technical Reference
+
+### Solver Architecture
+
+#### Uniswap X Filler Interface
+```rust
+pub struct UniswapXFiller {
+    pub route_analyzer: RouteAnalyzer,
+    pub intent_monitor: IntentMonitor,
+    pub cross_chain_coordinator: CrossChainCoordinator,
+    pub dutch_auction_evaluator: DutchAuctionEvaluator,
+}
+
+impl UniswapXFiller {
+    pub async fn fill_intent(&self, intent: Intent) -> Result<FillResult> {
+        // Evaluate current auction price
+        let current_price = self.dutch_auction_evaluator
+            .get_current_price(&intent)
+            .await?;
+
+        // Check if intent is profitable at current price
+        let profitability = self.evaluate_intent_profitability(
+            &intent,
+            current_price,
+        ).await?;
+
+        if profitability.is_profitable() {
+            // Find optimal execution route
+            let route = self.find_optimal_route(&intent).await?;
+
+            // Execute intent filling
+            let fill_result = self.execute_fill(&intent, &route).await?;
+
+            Ok(fill_result)
+        } else {
+            Err(anyhow::anyhow!("Intent not profitable at current price"))
+        }
+    }
+
+    pub async fn handle_cross_chain_intent(
+        &self,
+        intent: CrossChainIntent,
+    ) -> Result<CrossChainFillResult> {
+        // Coordinate execution across chains
+        let execution_plan = self.cross_chain_coordinator
+            .plan_execution(&intent)
+            .await?;
+
+        // Execute on origin chain
+        let origin_tx = self.execute_origin_chain(&execution_plan).await?;
+
+        // Execute on destination chain
+        let dest_tx = self.execute_destination_chain(&execution_plan).await?;
+
+        Ok(CrossChainFillResult {
+            origin_transaction: origin_tx,
+            destination_transaction: dest_tx,
+            bridge_proof: execution_plan.bridge_proof,
+        })
+    }
+}
+```
+
+#### Dutch Auction Evaluation
+The system continuously evaluates Dutch auction prices for optimal filling timing:
+
+1. **Price Calculation**: Calculate current auction price based on time decay
+2. **Profitability Assessment**: Evaluate expected profit at current price
+3. **Timing Optimization**: Determine optimal filling time balancing profit and competition risk
+4. **Risk Management**: Account for price movement and execution risks
+
+### Integration with Our Infrastructure
+
+#### Collectors Integration
+- **Intent Event Monitoring**: Real-time monitoring of new intent creation
+- **Price Feed Integration**: Track market prices for accurate profitability calculation
+- **Cross-chain State Sync**: Maintain consistent state across multiple chains
+
+#### Route Evaluation
+- **Cross-chain Route Discovery**: Find optimal routes spanning multiple chains
+- **Bridge Optimization**: Select optimal bridges for cross-chain execution
+- **Gas Cost Analysis**: Comprehensive gas cost analysis across all chains
+
+#### Strategy Framework
+- **Dutch Auction Strategy**: Specialized strategy for Dutch auction participation
+- **Cross-chain Strategy**: Coordination strategy for multi-chain execution
+- **Competition Strategy**: Competitive positioning against other fillers
+
+### Intent Execution Mechanics
+
+#### Single-chain Intent Filling
+```rust
+pub async fn fill_single_chain_intent(
+    &self,
+    intent: &Intent,
+) -> Result<Transaction> {
+    // Get current auction price
+    let current_price = self.get_current_auction_price(intent).await?;
+
+    // Find optimal execution route
+    let route = self.route_analyzer.find_best_route(
+        intent.input_token,
+        intent.output_token,
+        intent.input_amount,
+    ).await?;
+
+    // Calculate expected output
+    let expected_output = route.calculate_output(intent.input_amount)?;
+
+    // Check if profitable
+    if expected_output >= current_price.min_output {
+        // Execute with flash loan if needed
+        if route.requires_capital {
+            self.execute_with_flash_loan(intent, &route).await
+        } else {
+            self.execute_direct(intent, &route).await
+        }
+    } else {
+        Err(anyhow::anyhow!("Intent not profitable"))
+    }
+}
+```
+
+#### Cross-chain Intent Execution
+```rust
+pub async fn execute_cross_chain_intent(
+    &self,
+    intent: &CrossChainIntent,
+) -> Result<CrossChainExecution> {
+    // Plan execution across chains
+    let execution_plan = CrossChainExecutionPlan {
+        origin_chain: intent.origin_chain,
+        destination_chain: intent.destination_chain,
+        bridge: self.select_optimal_bridge(&intent).await?,
+        origin_route: self.find_origin_route(&intent).await?,
+        destination_route: self.find_destination_route(&intent).await?,
+    };
+
+    // Execute on origin chain
+    let origin_result = self.execute_on_origin_chain(&execution_plan).await?;
+
+    // Wait for bridge confirmation
+    let bridge_proof = self.wait_for_bridge_proof(&origin_result).await?;
+
+    // Execute on destination chain
+    let destination_result = self.execute_on_destination_chain(
+        &execution_plan,
+        &bridge_proof,
+    ).await?;
+
+    Ok(CrossChainExecution {
+        origin_result,
+        destination_result,
+        bridge_proof,
+    })
+}
+```
+
+### Performance Characteristics
+
+#### Auction Participation Performance
+- **Price Monitoring**: Real-time tracking of Dutch auction price decay
+- **Execution Speed**: Microsecond-level intent evaluation and execution
+- **Competition Response**: Rapid response to competitive pressure
+
+#### Cross-chain Coordination
+- **Multi-chain Monitoring**: Simultaneous monitoring across multiple chains
+- **Bridge Optimization**: Optimal bridge selection for cost and speed
+- **State Synchronization**: Consistent state management across chains
+
+### Best Practices
+
+#### Filler Operation
+- **Optimal Timing**: Balance profitability with competition risk in Dutch auctions
+- **Risk Management**: Manage execution and market risks across multiple chains
+- **Gas Optimization**: Minimize total gas costs across all transactions
+- **Competitive Strategy**: Maintain competitive position against other fillers
+
+#### Cross-chain Execution
+- **Bridge Selection**: Choose optimal bridges based on cost, speed, and reliability
+- **State Management**: Maintain consistent state across multiple chains
+- **Error Handling**: Robust error handling for cross-chain execution failures
+- **Recovery Mechanisms**: Implement recovery mechanisms for failed cross-chain executions
+
+### Integration Examples
+
+#### Dutch Auction Participation
+```rust
+// Monitor Dutch auction price decay
+let intent_stream = intent_monitor.stream_intents();
+
+for intent in intent_stream {
+    let current_price = dutch_auction_evaluator
+        .get_current_price(&intent)
+        .await?;
+
+    let profitability = evaluate_profitability(&intent, current_price).await?;
+
+    if profitability.should_fill() {
+        match self.fill_intent(intent).await {
+            Ok(fill_result) => {
+                tracing::info!("Successfully filled intent: {:?}", fill_result);
+            }
+            Err(e) => {
+                tracing::warn!("Failed to fill intent: {}", e);
+            }
+        }
+    }
+}
+```
+
+#### Cross-chain Intent Handling
+```rust
+// Handle cross-chain intent execution
+let cross_chain_intents = intent_monitor
+    .stream_cross_chain_intents()
+    .collect::<Vec<_>>()
+    .await;
+
+for intent in cross_chain_intents {
+    let execution_plan = cross_chain_coordinator
+        .plan_execution(&intent)
+        .await?;
+
+    // Execute asynchronously across chains
+    let execution_future = self.execute_cross_chain_intent(intent);
+
+    // Monitor execution progress
+    tokio::spawn(async move {
+        match execution_future.await {
+            Ok(result) => {
+                tracing::info!("Cross-chain execution completed: {:?}", result);
+            }
+            Err(e) => {
+                tracing::error!("Cross-chain execution failed: {}", e);
+            }
+        }
+    });
+}
+```
+
+### Future Enhancements
+
+#### Planned Improvements
+- **Advanced Auction Strategies**: ML-based optimal timing for Dutch auction participation
+- **Enhanced Cross-chain Support**: Support for more bridges and destination chains
+- **Intent Batching**: Batch multiple compatible intents for efficiency
+- **MEV Protection**: Enhanced MEV protection mechanisms
+
+#### Integration Roadmap
+- **Intent Abstraction**: Support for more complex intent types beyond simple swaps
+- **Real-time Analytics**: Advanced analytics for intent profitability and timing
+- **Automated Strategy**: Fully automated strategy optimization
+- **Protocol Extensions**: Integration with Uniswap X protocol upgrades and new features

@@ -1,8 +1,113 @@
-# High Performance Route Evaluation
+# Solving, Arbitrage & Market Making
 
-Below is a reference architecture for a highly performant route evaluation system which can be leveraged to execute advanced solving, arbitrage and market making strategies.
+<script
+  dangerouslySetInnerHTML={{
+    __html: `
+      // Load zoom script
+      if (!document.querySelector('script[src="/zoom-mermaid.js"]')) {
+        const script = document.createElement('script');
+        script.src = '/zoom-mermaid.js';
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    `
+  }}
+/>
 
-> Note: At the time of writing the performance numbers are still a WIP. We have executed over 800 route evaluations per second and are currently implementing a metrics capturing system to provide more granular performance breakdown.
+## Evaluating over 1000 Routes Per Second and arbitraging them with no upfront capital.
+
+In this article I discuss my personal Journey for 2025. Give an example of a cyclical arbitrage built on the latest high performant solving and market making infrastructure. Discuss how this infrastructure can be applied to Intent Based Solving Sytems (think UniswapX, CowSwap, 1inch) and give a full breakdown of the mathematics and technical implementation of a generic solving infrastructure service that I have been developing.
+
+If you are an **investor**, **protocol**, or **market maker**, let’s connect to:
+
+- **Investors**: Please help with introductions to portfolio companies and liquidity providers in the space. Also reach out if this technology can be utilized in startups you are currently evaluating.
+- **Protocols**: Please reach out if this technology (or I personally) can help you drive more order flow to your protocol.
+- **Market Makers (and liquidity providers)** please reach out if you want to develop advanced trading strategies and liquicity management functionality using this infrastructure.
+
+This reserach is also availabe on [hackmd.io](https://hackmd.io/@jincubator/arbitrage)
+
+> **Disclaimer:** This blog post covers an overview of a high performant solving, arbitrage and market making infrastructure. The example of a cyclical arbitrage is a simple one but useful for demonstration purposes. I really wanted to show the foundation for how to build and think about the foundational layers of collectors, strategies and execution. The codebase is private and at the time of writing has already been enhanced, but the concepts remain solid.
+
+---
+
+## 2025 – A Year of Research and Growth
+
+### Personal Journey
+
+This year I decided to spend my time coming up to speed on the latest innovations and technologies in crypto. My focus area is real-time market making and solving for intent-based protocols such as UniswapX, 1inch, and Cowswap. I’ve explored breakthroughs in real-time indexing, simulation, and execution pioneered by Tycho.
+
+This journey included:
+
+- Attending the **[Atrium Uniswap V4 Hook Academy](https://atrium.academy/)**
+- Hacking on **1inch Limit Order Protocol** [article here](https://hackmd.io/@jincubator/1nchTychoNoLiquiditySwap)
+- Prototyping [UniswapX](https://docs.uniswap.org/contracts/uniswapx/overviews) Fillers and [CowSwap](https://docs.cow.fi/cow-protocol/tutorials/solvers) Solvers
+- Researching cross-chain intents and advanced resource locking using the **[the-compact](https://docs.uniswap.org/contracts/the-compact/overview)** (an ERC6909 vault with a robust ecosystem of sponsors, allocators, fillers, arbiters, and relayers)
+
+I continually refined my understanding of high-performance solving and market-making using **[Alloy](https://alloy.rs/)**, **Rust**, and **[Tycho’s architecture](https://docs.propellerheads.xyz/tycho/overview)**, which leverages **[substreams](https://substreams.dev/)**, advanced **router**, **dispatcher**, and **executor technologies**. These abstractions allow seamless interaction with protocols such as Uniswap, Balancer, SushiSwap, and more.
+
+There's no better way to come up to speed with the technology used in high performance, market making, solving and arbitrage then to build it. So this is what I set out to do and start with a simple goal.
+
+**Goal:** Build an arbitrage bot capable of generating profit with **no upfront capital**.
+
+### Result
+
+Below are the details of the first positive (albeit for dust) cyclical arbitrage execeuted on Base [View on BaseScan](https://basescan.org/tx/0xde470c186d89aa02e6be2c066b99e7f4e39faebbca9ded80be766f64e28eacfa).
+
+```bash
+🌐 BASE  2025-09-13 09:51:39
+💰 Profitable route found: 0x452c93c6f3cc3a10e11571e96bc7c88de3a33ea91a3c28a0d703a04b3bcd309c with profit: 959 (0.1568333333333405%)
+🏆 Route: Profit 0.000941 USDC (0.156833%) Input Amount: 0.6 [USDC -> WETH -> MOJO -> USDC]
+🔄 Route: [USDC -> WETH -> MOJO -> USDC] Route ID: 0x452c93c6f3cc3a10e11571e96bc7c88de3a33ea91a3c28a0d703a04b3bcd309c
+⚙️ Protocols: [uniswap_v3 -> uniswap_v2 -> uniswap_v2]
+⛓️ Tokens: 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913:0x4200000000000000000000000000000000000006:0x6dba065721435cfca05caa508f3316b637861373:0x833589fcd6edb6e08f4c7c32d4f71b54bda02913
+🪙 Start token: USDC 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913 decimals:6
+💎 Input amounts: 0.600000 -> 0.000129 -> 30728417.014588
+⭐ Eval Raw amounts: 600000 -> 129458828870424 -> 30728417014587798013457008 = 600959
+🔁 Pools: 0xd0b53d9277642d899df5c87a3966a349a798f224 : 0x7ef7a6e5b577a1c630e42291c25bca791d402493 : 0xfc49208c1222c8037d4be05890b841ad25ceec60
+🔁 Flash pool: pool:0x021235b92a4f52c789f43a1b01453c237c265861 token: 2c8c89c442436cc6c0a77943e09c8daf49da3161 borrowToken0:false fee:0.01%
+```
+
+### Some Statistics
+
+#### Performance Statistics
+
+Below show route evaluation (and execution) capabilities of over 1000 routes per second, run on small relatively slow mini pc. This is a summary of several runs executed on mulitple chains over a total of 51 and a half minutes.
+
+| 📊 Statistic                  | Value   |
+| ----------------------------- | ------- |
+| Total Routes Evaluated        | 182,746 |
+| Peak Routes/sec               | 1,146   |
+| Current Routes/sec (last run) | 1,069   |
+| Average Route Eval Time (µs)  | 424     |
+| DB Throughput (ops/sec)       | 0       |
+| Memory Usage (MB)             | 657     |
+| Batch Size (last run)         | 1       |
+| Execution Success Rate (%)    | 100     |
+| Metrics Capture Duration (s)  | 3,090   |
+
+#### Chain Stats
+
+Following are the chains we used for our evaluation, testing multiple chains, hop sizes and protocols to give a well balanced analysis.
+
+| 📊 Statistic         | Base   | Ethereum | Unichain |
+| -------------------- | ------ | -------- | -------- |
+| Routes Total         | 85,986 | 33,226   | 24,600   |
+| Graph Edges (Pools)  | 5,338  | 4,276    | 114      |
+| Graph Nodes (Tokens) | 2,477  | 1,593    | 33       |
+| Total Tokens         | 26,061 | 11,824   | 15,300   |
+| TVL                  | 1      | 50       | 1        |
+| Hops                 | 4      | 3        | 5        |
+| Protocols            | 2      | 7        | 3        |
+
+> Note run on Sep 26th 2025
+> **Routes**: Represent how many cyclical routes we created (e.g. A -> B -> C -> A)
+> **Graph Edges (Pools)** the number of pools we are selecting based on TVL and protocol filtering
+> **Graph Nodes (Tokens)** the number of tokens associated with the selected pools
+> **TVL** is in ETH and indicates the minimum TVL for the pools we selected
+> **Hops** how many hops in the route we create, currently we support 2 to 5 hop routes. For prototyping we used different hops for experimentation all chains support up to 5 hops.
+> **Protocols** the number of protocols we extracted see [Tycho Supported Protocols](https://docs.propellerheads.xyz/tycho/for-solvers/supported-protocols)
+
+> Note this was run on a Small Computer Linux, AMD Ryzen 7 5700u (8C/16T,up to 4.3 GHz), Mini PC Gamer 64GB DDR4 RAM 2TB PCIe SSD, Mini Desktop Supports 4K@60Hz/Triple Display/WiFi/BT5.0/HDMI+DP+Type C/Home/Office
 
 ## An Overview of Intent-Based Protocols and Solving
 
@@ -14,13 +119,13 @@ I started out with a goal of building an intent based hook, which would record t
 
 ### Streaming, Simulation, and Execution
 
-My architecture follows the principle: **Collectors → Strategies → Execution**
+The architecture follows the principle: **Collectors → Strategies → Execution**
 
 #### Collectors: Continuously stream on-chain data
 
-The bedrock of my collection architecture is the Tycho indexer built on substreams. It provides real time state updates for multiple protocols filtered by TVL values for those protocols.
+The bedrock of the collection architecture is the [Tycho Indexer](https://docs.propellerheads.xyz/tycho/for-solvers/indexer) built on [substreams](https://docs.substreams.dev/). It provides real time state updates for multiple protocols filtered by TVL values for those protocols.
 
-On top of this I build a graph manager and a route manager using Depth First Search of the graph to create the routes with a little flash_loan_manager to determine the optimal flash loan available. This includes choosing the flash loan with the lowest fee which does not have any locking conflicts with the route.
+On top of this we build a graph manager and a route manager using Depth First Search of the graph to create the routes with a little flash_loan_manager to determine the optimal flash loan available. This includes choosing the flash loan with the lowest fee which does not have any locking conflicts with the route.
 
 The key point for collection, once again enabled by Tycho streaming technology, is that on a state change to any of the protocols which I am monitoring. I trigger route evaluations for all routes that contain that pool. Evaluating whether a positive arbitrage cycle exists or not. I must admit its tireless work for the route evaluate and its queue manager, evaluating hundreds or even thousands of routes per block, but occasionally, just occasionally an opportunity will be found, which makes it all worthwhile.
 
@@ -56,19 +161,21 @@ This is done using a binary doubling and halving algorithm until the optimal amo
 
 ---
 
-## Building My Own Liquidity Mapping Layer
+## Building a Liquidity Mapping Layer
 
 Conceptually this was farly straight forward, create a graph with Tokens as Nodes, Pools as edges and then create routes for that graph. With the protocol abstraction offered by tycho's component and state model. A pool is a pool is a pool regardles of what the underlying protocol is. This simplified the implementation considerably
 
 ---
 
-## My First Strategy: Cyclical Arbitrage (Hello Bellman-Ford)
+## My First Strategy: Cyclical Arbitrage
+
+### (Hello Bellman-Ford)
 
 - Analytical optimization for multi-hop routes
 - Supports **2–5 hop cycles**
-- Prioritizes **profitability and performance** (~800 routes/sec)
+- Prioritizes **profitability and performance** (~1000 routes/sec)
 
-> Token Evaluation is in progress this groups all the routes for the input token and selects the route with the highest profitability
+> An open strategy framework is under development with the Cyclica Arbitrage (CARB) implemented and a TOKEN (token based arbitrage which groups all the routes for the input token and selects the route with the highest profitability) currently being tested in production.
 
 ---
 
@@ -85,22 +192,6 @@ Conceptually this was farly straight forward, create a graph with Tokens as Node
 - **Optimistic Recursive Execution**: Capture secondary opportunities generated by large trades
 
 ---
-
-## The Result
-
-```bash
-🌐 BASE  2025-09-13 09:51:39
-💰 Profitable route found: 0x452c93c6f3cc3a10e11571e96bc7c88de3a33ea91a3c28a0d703a04b3bcd309c with profit: 959 (0.1568333333333405%)
-🏆 Route: Profit 0.000941 USDC (0.156833%) Input Amount: 0.6 [USDC -> WETH -> MOJO -> USDC]
-🔄 Route: [USDC -> WETH -> MOJO -> USDC] Route ID: 0x452c93c6f3cc3a10e11571e96bc7c88de3a33ea91a3c28a0d703a04b3bcd309c
-⚙️ Protocols: [uniswap_v3 -> uniswap_v2 -> uniswap_v2]
-⛓️ Tokens: 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913:0x4200000000000000000000000000000000000006:0x6dba065721435cfca05caa508f3316b637861373:0x833589fcd6edb6e08f4c7c32d4f71b54bda02913
-🪙 Start token: USDC 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913 decimals:6
-💎 Input amounts: 0.600000 -> 0.000129 -> 30728417.014588
-⭐ Eval Raw amounts: 600000 -> 129458828870424 -> 30728417014587798013457008 = 600959
-🔁 Pools: 0xd0b53d9277642d899df5c87a3966a349a798f224 : 0x7ef7a6e5b577a1c630e42291c25bca791d402493 : 0xfc49208c1222c8037d4be05890b841ad25ceec60
-🔁 Flash pool: pool:0x021235b92a4f52c789f43a1b01453c237c265861 token: 2c8c89c442436cc6c0a77943e09c8daf49da3161 borrowToken0:false fee:0.01%
-```
 
 ### Summary of Features
 
@@ -122,40 +213,8 @@ Conceptually this was farly straight forward, create a graph with Tokens as Node
   - Base: Uniswap v2/v3
   - Unichain Uniswap v2/v3/v4
 - SingleSwap Support takes advantage of complex routes using Uniswap V4 advanced Execution
-- **Performance**: ~800 route evaluations per second
+- **Performance**: ~1000 route evaluations per second
 - Prototype **v4 Flash Loans** (near-zero fees)
-
----
-
-### Chain Stats (Example)
-
-| Chain    | Hops | TVL | Tokens | Routes | Nodes | Pools |
-| -------- | ---- | --- | ------ | ------ | ----- | ----- |
-| Unichain | 5    | 1   | 49,426 | 14,435 | 35    | 114   |
-| Base     | 4    | 1   | 37,835 | 12,063 | 2,864 | 6,222 |
-| Ethereum | 3    | 50  | TBD    | TBD    | TBD   | TBD   |
-
-> Note run on Sep 24th 2025, TVL is in ETH, Hops are how many hops in the route we create, currently we support 2 to 5 hop routes. For prototyping we used different hops for experimentation all chains support up to 5 hops.
-
-### Performance Statistics - DRAFT NUMBERS ARE NOT ACCURATE
-
-| Metric                        | Value                 | Notes                         |
-| ----------------------------- | --------------------- | ----------------------------- |
-| **Graph Building**            | 193µs (37 pools)      | Real-time processing          |
-| **Route Calculation**         | 2.42µs (3-hop)        | Microsecond-level performance |
-| **Database Write Throughput** | >10,000 ops/sec       | RocksDB optimization          |
-| **Memory Usage**              | \<500MB (2000+ pools) | Efficient memory management   |
-| **Route Processing**          | 200 routes/batch      | Configurable batch sizes      |
-| **Execution Success Rate**    | 100% (proper config)  | With balance validation       |
-
-| Statistic                                 | Result |
-| ----------------------------------------- | ------ |
-| Route Evaluation Time (microseconds)      | 1      |
-| Routes Evaluated Per Second               | 800    |
-| Average Routes Evaluated per State Change | 50     |
-| Average State Changes per block           | 5      |
-
-> Note this was run on a Small Computer Linux, AMD Ryzen 7 5700u (8C/16T,up to 4.3 GHz), Mini PC Gamer 64GB DDR4 RAM 2TB PCIe SSD, Mini Desktop Supports 4K@60Hz/Triple Display/WiFi/BT5.0/HDMI+DP+Type C/Home/Office
 
 ---
 
@@ -175,23 +234,31 @@ At time of writing these features are being evaluated and/or implemented
 
 ## What’s Next – Opportunities & Integrations
 
+### Filling Strategies
+
+Multi protocol solver integrations including
+
 - **UniswapX Solving**
-- **Uniswap / Tycho Limit Order Hook Integration**
-- **Tycho V4 Launch Partner**
 - **1inch Limit Order Solver Integration**
 - **Cowswap Solving**
-- **Liquidation Bots**
-- **Harmony Vault Burner**
-- **Multi-protocol solver integrations**
-- **Liquidity Bots**
 
-If you are an **investor**, **protocol**, or **market maker**, let’s connect:
+### Flash Liquidity
 
-- Fund or collaborate with advanced MEV / DeFi projects
-- Integrate your protocol to bring more flow
-- Explore solver and intent-based protocol integrations
+- **Uniswap / Tycho Limit Order Hook Integration**
 
-More details at [jincubator.com](https://jincubator.com) or find me on telegram @john_whitton
+### Protocol Order Flow
+
+Adding additional protocols to the simulation and execution framework to drive order flow.
+
+### Liquidity Management
+
+Introducing an advanced liquidity management infrastructure with real time settlement, JIT liqidity provioning and support for advanced trading strategies. (ERC-6909 based liquidity manageer build on [the-compact](https://docs.uniswap.org/contracts/the-compact/overview) from Uniswap)
+
+### Miscellaneous
+
+- Hosted services for Market Makers and Solvers
+- Collaboration and Consulting for Protocols looking to attract more order flow.
+- Strategy development for Solving, Market Making and Liquidation Engines.
 
 # Appendices
 
@@ -374,6 +441,54 @@ net_profit_token = A_k - A_0 - floor( A_0 * fee_hundredths_bip / 1,000,000 )
 
 ## Appendix B: Performance
 
+### Chain Breakdown
+
+| 📊 Statistic                | Base   | Ethereum | Unichain |
+| --------------------------- | ------ | -------- | -------- |
+| Total Tokens                | 26,061 | 11,824   | 15,300   |
+| Graph Nodes (Tokens)        | 2,477  | 1,593    | 33       |
+| Graph Nodes (V4 Eligible)   | 838    | 826      | 33       |
+| Graph Nodes (V4 Ineligible) | 1,639  | 767      | 0        |
+| Graph Edges (Pools)         | 5,338  | 4,276    | 114      |
+| Routes Total                | 85,986 | 33,226   | 24,600   |
+| Routes Flash V4             | 85,616 | 19,284   | 68       |
+| Routes Flash Other          | 2      | 11,762   | 19,162   |
+| Routes Flash Error          | 368    | 2,180    | 5,370    |
+| **TVL**                     | 1      | 50       | 1        |
+| **HOPS**                    | 4      | 3        | 5        |
+
+### Performance Summary
+
+| 📊 Statistic                  | Value   |
+| ----------------------------- | ------- |
+| Total Routes Evaluated        | 182,746 |
+| Peak Routes/sec               | 1,146   |
+| Current Routes/sec (last run) | 1,069   |
+| Average Route Eval Time (µs)  | 424     |
+| DB Throughput (ops/sec)       | 0       |
+| Memory Usage (MB)             | 657     |
+| Batch Size (last run)         | 1       |
+| Execution Success Rate (%)    | 100     |
+| Metrics Capture Duration (s)  | 3,090   |
+
+### Performance Detail
+
+| Timestamp           | Total Routes | Avg Eval Time (µs) | Peak Routes/sec | Current Routes/sec | DB Throughput (ops/sec) | Memory (MB) | Batch Size | Success Rate (%) | Metrics Capture Duration (s) |
+| ------------------- | ------------ | ------------------ | --------------- | ------------------ | ----------------------- | ----------- | ---------- | ---------------- | ---------------------------- |
+| 2025-09-26T18:02:16 | 9,248        | 57,020             | 0               | 0                  | 0                       | 190         | 3,122      | 0                | 0.10                         |
+| 2025-09-27T01:27:13 | 33,042       | 1,159              | 576             | 507                | 0                       | 279         | 1          | 0                | 31.60                        |
+| 2025-09-27T01:28:31 | 0            | 0                  | 0               | 0                  | 0                       | 142         | 0          | 0                | 0.10                         |
+| 2025-09-27T01:29:52 | 13,896       | 4,799              | 464             | 10                 | 0                       | 247         | 1          | 100              | 36.82                        |
+| 2025-09-27T02:28:52 | 8,508        | 3,188              | 483             | 334                | 0                       | 243         | 1          | 100              | 36.02                        |
+| 2025-09-27T05:26:44 | 24,262       | 1,160              | 641             | 90                 | 0                       | 248         | 1          | 40               | 38.74                        |
+| 2025-09-27T06:10:32 | 57           | 1,456,807          | 0               | 0                  | 0                       | 207         | 57         | 0                | 0.24                         |
+| 2025-09-27T06:25:54 | 928          | 185,317            | 0               | 0                  | 0                       | 302         | 928        | 0                | 0.16                         |
+| 2025-09-27T06:39:39 | 2,138        | 289,502            | 0               | 0                  | 0                       | 418         | 2,138      | 0                | 0.25                         |
+| 2025-09-27T07:51:53 | 38,810       | 605                | 1,023           | 674                | 0                       | 412         | 1          | 100              | 226.02                       |
+| 2025-09-27T10:36:00 | 3,135        | 2,514,005          | 0               | 0                  | 0                       | 450         | 3,135      | 0                | 7,885.70                     |
+| 2025-09-27T16:51:53 | 182,746      | 354                | 1,146           | 1,069              | 0                       | 657         | 1          | 100              | 3,090.32                     |
+| 2025-09-27T17:08:56 | 60,618       | 424                | 1,033           | 968                | 0                       | 494         | 1          | 87               | 416.48                       |
+
 ## Appendix C: Reference Implementation
 
 ### Architecture Overview
@@ -471,14 +586,6 @@ graph TB
     MATH --> ANALYZER
     PROTOCOL --> STORE
 ```
-
-#### Key Performance Metrics
-
-- **Route Evaluation**: ~800 routes per second
-- **Graph Building**: 193µs for 37 pools, 33µs for 2 pools
-- **Route Calculation**: 2.42µs for 3-hop, 833ns for 4-hop, 791ns for 5-hop
-- **Pool Coverage**: 2000+ pools with real-time state updates
-- **Memory Usage**: \<500MB for active streaming
 
 ### Liquidity Mapping Collector
 
@@ -736,13 +843,6 @@ async fn evaluate_routes_continuously(&mut self) -> Result<()> {
     }
 }
 ```
-
-**Evaluation Performance**:
-
-- **~800 route evaluations per second**
-- **Microsecond-level processing**
-- **Real-time profitability assessment**
-- **Automatic execution queuing**
 
 ### Cyclical Arbitrage Strategy
 
@@ -1155,27 +1255,7 @@ net_profit_percentage = swap_profit_percentage - flash_fee_pct - gas_cost_pct
 net_profit_token = amount_out - amount_in - flash_loan_fee - gas_cost_token
 ```
 
-#### Sample Execution Results
-
-**Successful Arbitrage Example**:
-
-```bash
-🌐 BASE  2025-09-13 09:51:39
-💰 Profitable route found: 0x452c93c6f3cc3a10e11571e96bc7c88de3a33ea91a3c28a0d703a04b3bcd309c with profit: 959 (0.1568333333333405%)
-🏆 Route: Profit 0.000941 USDC (0.156833%) Input Amount: 0.6 [USDC -> WETH -> MOJO -> USDC]
-🔄 Route: [USDC -> WETH -> MOJO -> USDC] Route ID: 0x452c93c6f3cc3a10e11571e96bc7c88de3a33ea91a3c28a0d703a04b3bcd309c
-⚙️ Protocols: [uniswap_v3 -> uniswap_v2 -> uniswap_v2]
-⛓️ Tokens: 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913:0x4200000000000000000000000000000000000006:0x6dba065721435cfca05caa508f3316b637861373:0x833589fcd6edb6e08f4c7c32d4f71b54bda02913
-🪙 Start token: USDC 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913 decimals:6
-💎 Input amounts: 0.600000 -> 0.000129 -> 30728417.014588
-⭐ Eval Raw amounts: 600000 -> 129458828870424 -> 30728417014587798013457008 = 600959
-🔁 Pools: 0xd0b53d9277642d899df5c87a3966a349a798f224 : 0x7ef7a6e5b577a1c630e42291c25bca791d402493 : 0xfc49208c1222c8037d4be05890b841ad25ceec60
-🔁 Flash pool: pool:0x021235b92a4f52c789f43a1b01453c237c265861 token: 2c8c89c442436cc6c0a77943e09c8daf49da3161 borrowToken0:false fee:0.01%
-```
-
-### Appendices
-
-#### Persistence Mechanism
+### Persistence Mechanism
 
 The persistence system uses RocksDB with optimized column families for different data types:
 
@@ -1193,7 +1273,7 @@ let db = Arc::new(DB::open_cf(&opts, db_path, &cf_names)?);
 - **Memory Buffering**: In-memory caching before persistence
 - **Incremental Updates**: Only persist changed data
 
-#### Queuing Configuration
+### Queuing Configuration
 
 The system uses multiple queues for different processing stages:
 
@@ -1228,47 +1308,6 @@ fn calculate_priority(&self, route: &MinimalRoute, evaluation: &RouteEvaluation)
     profit_score * 0.7 + gas_score * 0.3
 }
 ```
-
-#### Performance Statistics DRAFT ONLY
-
-##### Persistence Statistics
-
-**Database Performance**:
-
-- **Write Throughput**: >10,000 ops/sec
-- **Read Latency**: \<1ms average
-- **Storage Efficiency**: \<1GB for 10,000 routes
-- **Compaction**: Automatic background compaction
-
-**Memory Usage**:
-
-- **Active Streaming**: \<500MB for 2000+ pools
-- **Route Cache**: \<100MB for 10,000 routes
-- **Graph Storage**: \<50MB for 1000 tokens
-- **Signal Queue**: \<10MB for 1000 signals
-
-##### Performance Statistics
-
-**Processing Performance**:
-
-- **Route Evaluation**: ~800 routes/second
-- **Graph Building**: 193µs for 37 pools
-- **Route Calculation**: 2.42µs for 3-hop
-- **Execution Speed**: \<5s average transaction time
-
-**Scalability Metrics**:
-
-- **Pool Coverage**: 2000+ pools with real-time updates
-- **Route Generation**: 1,983,160 routes (3-hop) in ~222 seconds
-- **Memory Efficiency**: Optimized for streaming with in-memory caching
-- **Database Performance**: Sub-millisecond read latency, high write throughput
-
-**Success Metrics**:
-
-- **Execution Success Rate**: 100% (with proper configuration)
-- **Profit Capture**: 0.1% - 0.5% average profit per trade
-- **Gas Efficiency**: Optimized gas usage with EIP-1559
-- **Flash Loan Success**: 99.9% successful flash loan execution
 
 ## References
 

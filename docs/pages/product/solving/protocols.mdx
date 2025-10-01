@@ -1,0 +1,201 @@
+# Protocol Onboarding
+
+## Overview
+
+Protocol onboarding involves integrating new DeFi protocols, exchanges, and liquidity sources into the solving infrastructure. The system provides a unified abstraction layer that enables seamless integration of diverse protocols while maintaining high performance and consistent behavior across different implementations.
+
+## Using our Solution
+
+Our protocol onboarding system enables:
+
+- **Multi-protocol Support**: Seamless integration of Uniswap V2/V3/V4, Balancer, Curve, SushiSwap, Pancakeswap, and more
+- **Unified Interface**: Protocol-agnostic pool representation through Tycho's component and state model
+- **Performance Optimization**: Efficient routing and execution across all integrated protocols
+- **Flexible Configuration**: TVL-based filtering and protocol-specific optimizations
+- **Extensible Framework**: Easy addition of new protocols without architectural changes
+
+## Solution Overview
+
+The protocol onboarding system leverages Tycho's protocol abstraction where "a pool is a pool is a pool" regardless of the underlying protocol implementation. This abstraction dramatically simplifies the integration of new protocols while maintaining consistent performance characteristics.
+
+### Supported Protocols
+
+#### Current Integrations
+
+**Ethereum Mainnet:**
+- Uniswap V2/V3/V4
+- Balancer V2
+- Curve
+- Sushiswap V2
+- Pancakeswap V2/V3
+- Ekubo V2
+
+**Base:**
+- Uniswap V2/V3
+
+**Unichain:**
+- Uniswap V2/V3/V4
+
+### Protocol Abstraction Layer
+
+The system uses Tycho's component and state model to provide uniform protocol representation:
+
+```rust
+#[derive(Debug, Clone)]
+pub struct CompactEdge {
+    pub pool_id: u32,
+    pub token_out: u32,
+    pub protocol: u8, // 0=UniV2, 1=UniV3, 2=UniV4, etc.
+    pub fee_bps: u32,
+}
+```
+
+This abstraction enables:
+- **Consistent Routing**: Same algorithms work across all protocols
+- **Unified State Management**: Standardized pool state representation
+- **Protocol-agnostic Optimization**: Route optimization independent of underlying protocol
+
+## Technical Reference
+
+### Onboarding Process
+
+#### Step 1: Protocol Integration Assessment
+- **Technical Requirements**: API compatibility, state management, fee structures
+- **Liquidity Analysis**: TVL requirements, pool distribution, trading volumes
+- **Performance Impact**: Gas costs, execution complexity, optimization potential
+
+#### Step 2: Tycho Integration
+- **Substream Development**: Create protocol-specific substreams for real-time indexing
+- **State Model Definition**: Define pool state structure and update mechanisms
+- **Component Mapping**: Map protocol-specific concepts to Tycho's unified model
+
+#### Step 3: Protocol Configuration
+```rust
+pub struct ProtocolConfig {
+    pub protocol_id: u8,
+    pub name: String,
+    pub min_tvl_eth: f64,
+    pub supported_chains: Vec<Chain>,
+    pub fee_structure: FeeStructure,
+    pub gas_overhead: u64,
+}
+```
+
+#### Step 4: Route Integration
+- **Graph Building**: Add protocol pools to the unified liquidity graph
+- **Flash Loan Compatibility**: Assess compatibility with existing flash loan providers
+- **Route Optimization**: Protocol-specific optimizations and constraints
+
+#### Step 5: Testing and Validation
+- **Simulation Testing**: Comprehensive route simulation across test scenarios
+- **Performance Benchmarking**: Measure impact on system performance
+- **Production Validation**: Gradual rollout with monitoring and validation
+
+### Protocol-Specific Considerations
+
+#### Uniswap V4 Integration
+Special considerations for V4 integration:
+
+- **Hook Compatibility**: Custom hook development for intent-based solving
+- **Pool Manager Integration**: Leverage singleton architecture for efficiency
+- **Flash Loan Optimization**: Near-zero fee flash loans (0 bps vs 30 bps for V3)
+
+#### Balancer V2 Integration
+- **Weighted Pool Support**: Handle various pool weights and compositions
+- **Stable Pool Optimization**: Optimized AMM curves for stablecoin pairs
+- **Multi-token Pools**: Support for pools with more than 2 tokens
+
+#### Curve Integration
+- **Stable Pool Math**: Specialized algorithms for stable swap calculations
+- **Metapool Support**: Handle complex metapool structures
+- **Administrative Fees**: Account for protocol-specific fee structures
+
+### Performance Optimization
+
+#### Protocol Selection Strategy
+The system automatically selects optimal protocols based on:
+
+1. **Liquidity Depth**: Prefer protocols with higher liquidity for given pairs
+2. **Fee Structure**: Optimize for total cost including protocol fees and gas
+3. **Execution Efficiency**: Consider gas costs and execution complexity
+4. **Flash Loan Compatibility**: Prioritize protocols compatible with chosen flash loan provider
+
+#### TVL-Based Filtering
+Each protocol is configured with minimum TVL requirements:
+
+| Chain    | Protocols | Min TVL (ETH) | Pools Selected |
+|----------|-----------|---------------|----------------|
+| Ethereum | 7         | 50            | 4,276          |
+| Base     | 2         | 1             | 5,338          |
+| Unichain | 3         | 1             | 114            |
+
+### Multi-Chain Support
+
+#### Chain-Specific Optimizations
+- **Gas Price Optimization**: Chain-specific gas price strategies
+- **Block Time Adaptation**: Adjust timing for different block intervals
+- **Bridge Integration**: Support for cross-chain route discovery
+
+#### Deployment Strategy
+1. **Single Chain Validation**: Thorough testing on individual chains
+2. **Multi-Chain Rollout**: Gradual expansion across supported chains
+3. **Performance Monitoring**: Continuous monitoring of cross-chain performance
+
+### Integration Examples
+
+#### Example: Adding a New AMM Protocol
+
+1. **Substream Development**:
+```rust
+// Protocol-specific state extraction
+pub fn extract_pool_state(log: &Log) -> Result<PoolState> {
+    // Parse protocol-specific events
+    // Convert to unified state representation
+}
+```
+
+2. **Protocol Registration**:
+```rust
+let new_protocol = ProtocolConfig {
+    protocol_id: 8,
+    name: "NewAMM".to_string(),
+    min_tvl_eth: 5.0,
+    supported_chains: vec![Chain::Ethereum, Chain::Base],
+    fee_structure: FeeStructure::Fixed(30), // 0.3%
+    gas_overhead: 150_000,
+};
+```
+
+3. **Route Integration**:
+```rust
+// Automatic integration into existing route discovery
+// No changes needed to core routing algorithms
+```
+
+### Best Practices
+
+#### Integration Guidelines
+- **Start Small**: Begin with single chain, limited TVL requirements
+- **Monitor Performance**: Track impact on system-wide performance metrics
+- **Gradual Scaling**: Increase TVL requirements and chain coverage progressively
+- **Documentation**: Maintain comprehensive integration documentation
+
+#### Performance Considerations
+- **Gas Efficiency**: Prioritize protocols with efficient execution
+- **State Synchronization**: Ensure real-time state updates for accurate routing
+- **Error Handling**: Robust error handling for protocol-specific edge cases
+- **Fallback Mechanisms**: Implement fallbacks for protocol downtime or issues
+
+### Protocol Roadmap
+
+#### Planned Integrations
+- **Layer 2 Expansion**: Arbitrum, Optimism, Polygon zkEVM
+- **Alternative AMMs**: Solidly, Aerodrome, Velodrome
+- **Concentrated Liquidity**: Additional concentrated liquidity protocols
+- **Order Book DEXs**: Integration with hybrid AMM/order book protocols
+
+#### Future Enhancements
+- **Cross-Chain Routing**: Native cross-chain route discovery and execution
+- **Intent Networks**: Integration with emerging intent-based protocols
+- **Advanced Hooks**: Custom Uniswap V4 hooks for specialized use cases
+- **Yield Optimization**: Integration with yield-bearing protocols

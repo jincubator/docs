@@ -1,0 +1,186 @@
+# Solver Evolution Roadmap: 0.1 to 2.0
+
+## Abstract
+
+This roadmap outlines the evolution of the solver system from the current 0.1 arbitrage-focused implementation to a comprehensive intent-based solving platform. The roadmap spans from Q4 2024 through Q2 2025, transitioning from single-purpose arbitrage to multi-protocol intent solving across chains.
+
+## Current Status (September 2024)
+
+**Production Release**: v0.1.0 - Cyclical Arbitrage Foundation
+**Active Development**: Architecture stabilization and bug fixes
+**Next Planned**: Release 0.2 features (Q4-2024/Q1-2025)
+
+## Overview
+
+Building on the foundation of the 0.1 Release, this roadmap charts the path toward a mature intent-based solving ecosystem. The evolution focuses on expanding from cyclical arbitrage to comprehensive intent solving across major protocols including UniswapX, CowSwap, and 1inch.
+
+## Features by Phase
+
+### Feature Implementation Summary
+
+**Legend**: ✅ Complete | ⏳ Planned
+
+| Feature                  | 0.1 (Complete) | 0.2 (Planned) | 1.0 (Future)  | 2.0 (Future)  |
+| ------------------------ | -------------- | ------------- | ------------- | ------------- |
+| **Cyclical Arbitrage**   | ✅             | ✅            | ✅            | ✅            |
+| **Ethereum Support**     | ⚠️ Basic       | ⏳ Advanced   | ⏳            | ⏳            |
+| **UniswapX Support**     |                | ⏳            | ⏳            | ⏳            |
+| **MultiSolver Support**  |                | ⏳            | ⏳            | ⏳            |
+| **1inch Support**        |                |               | ⏳            | ⏳            |
+| **CowSwap Support**      |                |               | ⏳            | ⏳            |
+| **Portfolio Management** |                |               | ⏳            | ⏳            |
+| **Protocol Launch**      |                |               |               | ⏳            |
+
+## Components by Phase
+
+**Legend**: ✅ Complete | ⚠️ Partial | ⏳ Planned
+
+| Feature                                                     | Component                                                             | Sub Component                | 0.1 (Complete) | 0.2 (Planned) | 1.0 (Future)  | 2.0 (Future)  |
+| ----------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------- | -------------- | ------------- | ------------- | ------------- |
+| **Cyclical Arbitrage**     | **Liquidity Mapper**                 | Token                        | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Mapper**                 | Graph                        | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Mapper**                 | Route                        | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Mapper**                 | Multi-hop route discovery    | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Collectors**                            | Streaming (STREAM)           | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Profitability Calculator** | SWAP get_amount              | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Profitability Calculator** | Route optimal amount         | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Strategies**                            | Cyclical Arbitrage (CARB)    | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Strategies**                            | Token Arbitrage (TOKEN)      | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Execution**                              | Signal Execution             | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Execution**                              | TOKEN Mapping                | ✅             | ✅            | ✅            | ✅            |
+|                                                             | **Liquidity Manager**               | No Liquidity FlashRouter     | ✅             | ✅            | ✅            | ✅            |
+| **Ethereum Support**                | **Profitability Calculator** | Price Oracle                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Profitability Calculator** | Gas Calculator (Advanced)    | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
+|                                                             | **Execution**                              | MEV Bundling                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Manager**               | Provided Liquidity Permit2   | ⚠️ Partial     | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Manager**               | No Liquidity FlashRouterHook |                | ⏳            | ⏳            | ⏳            |
+| **UniswapX Support**                | **Liquidity Mapper**                 | SOLO Support                 |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Collectors**                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Strategies**                            | UniswapX (UNIX)              |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Signals**                                  | External Solving Solution    |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Execution**                              | Permit2 (Full)               | ⚠️ Basic       | ⏳            | ⏳            | ⏳            |
+| **MultiSolver Support**          | **Liquidity Mapper**                 | API Hosted                   |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Mapper**                 | Crate                        |                | ⏳            | ⏳            | ⏳            |
+|                                                             | **Liquidity Manager**               | Liquidity Manager Vault      |                | ⏳            | ⏳            | ⏳            |
+| **1inch Support**                      | **Collectors**                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
+|                                                             | **Strategies**                            | 1inch (INCH)                 |                |               | ⏳            | ⏳            |
+| **CowSwap Support**                  | **Collectors**                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
+|                                                             | **Strategies**                            | CowSwap (COW)                |                |               | ⏳            | ⏳            |
+| **Portfolio Management** | **Signals**                                  | Internal Solution            |                |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | FLASH Mapping                |                |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | PreFlight Check (Enhanced)   | ⚠️ Basic       |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | Vault Support (Centralized)  |                |               | ⏳            | ⏳            |
+|                                                             | **Execution**                              | Vault Support                |                |               | ⏳            | ⏳            |
+| **Protocol Launch**           | **Liquidity Manager**               | (Vault Decentralized)        |                |               |               | ⏳            |
+
+## Releases
+
+### Release 0.2 - Intent Protocol Foundation (Planned: Q4-2024/Q1-2025)
+
+> ⚠️ **STATUS**: PLANNED - Not yet started as of September 2024.
+
+**Objectives**: Transition from pure arbitrage to intent-based solving framework with multi-protocol support.
+
+#### Feature Implementations
+- **[Ethereum Support](features/Ethereum.md)**: Price Oracle integration, Advanced Gas Calculator, MEV Bundling, Permit2 liquidity
+- **[UniswapX Support](features/UniswapX.md)**: SOLO optimization engine, UniswapX collector, External solving solution, Permit2 execution
+- **[MultiSolver Support](features/MultiSolver.md)**: API hosted services, Crate SDK distribution, Centralized vault system
+
+#### Core Architecture Evolution
+
+**Enhanced Components**:
+- **[Profitability Calculator](components/ProfitabilityCalculator.md)**: Price Oracle and Gas Calculator for Ethereum optimization
+- **[Liquidity Mapper](components/LiquidityMapper.md)**: SOLO Support for dynamic route generation and API hosting
+- **[Collectors](components/Collectors.md)**: UniswapX (UNIX) collector for intent monitoring
+- **[Strategies](components/Strategies.md)**: UniswapX (UNIX) strategy leveraging SOLO optimization
+- **[Signals](components/Signals.md)**: External Solving Solution for bid management
+- **[Execution](components/Execution.md)**: MEV Bundling and Permit2 integration
+- **[Liquidity Manager](components/LiquidityManager.md)**: Permit2 liquidity, FlashRouterHook, and Centralized Vault
+
+**Intent Solving Framework**:
+- **SOLO (Solve Optimal)**: Core optimization engine for intent resolution with dynamic route generation
+- **Protocol-Specific Strategies**: UNIX adapters leveraging SOLO core optimization
+- **Enhanced Signaling**: External solving solution for protocol competition and bid management
+
+**Liquidity Management Evolution**:
+- **Permit2 Integration**: Signature-based fund access reducing flash loan dependency
+- **FlashRouterHook**: Uniswap V4 Hook implementation for embedded execution
+- **Centralized Vault System**: The Compact-based vault with ERC6909 resource locks
+
+### Release 1.0 - Multi-Protocol Production Solving (Planned: Q1-2025)
+
+> ⚠️ **STATUS**: PLANNED - Depends on completion of Release 0.2.
+
+**Target**: Production-grade intent solving across major protocols with advanced portfolio management.
+
+#### Feature Implementations
+- **[1inch Support](features/1Inch.md)**: Limit Order Protocol integration with resolver participation
+- **[CowSwap Support](features/CowSwap.md)**: Batch auction participation with CoW detection and MEV protection
+- **[Portfolio Management](features/PortFolioManagement.md)**: Internal signal solution, FLASH mapping, PreFlight checks, Centralized vault support
+
+#### Production Intent Infrastructure
+
+**Advanced Protocol Integration**:
+- **[Collectors](components/Collectors.md)**: 1inch (INCH) and CowSwap (COW) collectors for comprehensive protocol coverage
+- **[Strategies](components/Strategies.md)**: 1inch (INCH) and CowSwap (COW) strategies for optimal order execution
+- **[Signals](components/Signals.md)**: Internal Solution for sophisticated signal processing and portfolio coordination
+
+**Portfolio-Level Operations**:
+- **[Execution](components/Execution.md)**: FLASH Mapping, PreFlight Check, and Vault Support for institutional operations
+- **Intent Orchestration**: Production-ready intent lifecycle management across protocols
+- **Cross-Chain Coordination**: Seamless multi-chain intent resolution with portfolio optimization
+- **Advanced Analytics**: Real-time performance monitoring and portfolio attribution
+
+#### Solver Competition Platform
+- **Auction Mechanisms**: Sophisticated bidding across UniswapX, CowSwap, and 1inch protocols
+- **MEV Protection**: Built-in protection against extractive practices across all protocols
+- **Reputation System**: Solver performance tracking and incentive alignment across ecosystems
+
+### Release 2.0 - Ecosystem Expansion (Planned: Q2-2025)
+
+> ⚠️ **STATUS**: PLANNED - Long-term vision for decentralized ecosystem.
+
+**Target**: Comprehensive solver ecosystem with full decentralization and third-party integration.
+
+#### Feature Implementations
+- **[Protocol Launch](features/ProtocolLaunch.md)**: Fully decentralized protocol with community governance and tokenized incentives
+
+#### Decentralized Infrastructure
+
+**Community Governance**:
+- **[Liquidity Manager](components/LiquidityManager.md)**: Vault Decentralized with community governance and autonomous operations
+- **Governance Token**: Native governance token with voting rights and fee distribution
+- **DAO Structure**: Decentralized Autonomous Organization for protocol governance
+- **Community Tools**: Tools and infrastructure for ecosystem participant onboarding
+
+**Developer Ecosystem**:
+- **Solver SDK**: Tools and libraries for building custom solvers leveraging the ecosystem
+- **Plugin Architecture**: Extensible system for protocol and strategy additions
+- **Analytics Platform**: Advanced metrics, reporting, and optimization insights
+
+#### Advanced Features
+- **Machine Learning**: Predictive models for intent optimization across protocols
+- **Institutional Tools**: Advanced risk management and portfolio optimization
+- **Cross-Protocol Coordination**: Seamless coordination across the entire DeFi ecosystem
+- **Decentralized Governance**: Full transition to community-driven development and operations
+
+### Release 0.1 - Cyclical Arbitrage Foundation (Complete)
+
+**Current Implementation**: Production-ready arbitrage system with real-time monitoring and flash loan execution.
+
+#### Established Architecture
+- **[Cyclical Arbitrage](features/CyclicalArbitrage.md)**: Complete implementation with all core components
+- **Streaming Engine**: Real-time Tycho protocol integration with WebSocket connections
+- **Graph Manager**: Multi-hop route discovery across Uniswap V2/V3/V4 protocols
+- **Route Analyzer**: Profit optimization with binary search and gas cost accounting
+- **Execution Engine**: Flash loan-based transaction execution with EIP-1559 support
+- **Persistence Layer**: RocksDB storage with column family optimization
+
+#### Proven Capabilities
+- **Performance**: Sub-microsecond route evaluation, 2000+ pool monitoring
+- **Multi-Chain**: Base, Ethereum, Unichain support with chain-specific configurations
+- **Risk Management**: V4 overflow protection, balance validation, profit thresholds
+
+## Appendix: 0.1 Foundation Architecture
+
+_For detailed technical specifications of the current 0.1 implementation, see the complete [Design Document](design.md) which outlines the production arbitrage system architecture, performance characteristics, and integration patterns that serve as the foundation for this roadmap._

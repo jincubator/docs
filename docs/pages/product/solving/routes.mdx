@@ -1,0 +1,151 @@
+# Route Evaluation
+
+## Overview
+
+Route evaluation is the process of analyzing and scoring different possible paths for executing trades or solving intents. The system uses sophisticated algorithms to discover profitable arbitrage opportunities and optimize capital efficiency across multiple DEX protocols.
+
+## Using our Solution
+
+Our route evaluation system enables:
+
+- **Multi-hop Route Discovery**: Supports 2-5 hop cycles for comprehensive arbitrage detection
+- **Real-time Profitability Analysis**: Evaluates routes for positive arbitrage cycles in real-time
+- **Capital Efficiency**: Uses flash loans to eliminate upfront capital requirements
+- **Performance Optimization**: Processes over 1,000 routes per second with microsecond evaluation times
+- **Cross-protocol Support**: Works across Uniswap V2/V3/V4, Balancer, Curve, SushiSwap, and more
+
+## Solution Overview
+
+The route evaluation system creates a liquidity mapping layer where tokens serve as nodes and pools serve as edges in a graph structure. With Tycho's protocol abstraction, a pool is uniformly treated regardless of the underlying protocol, simplifying implementation considerably.
+
+### Architecture Components
+
+#### Graph Manager
+The Graph Manager constructs and maintains trading graphs using tokens as nodes and pools as edges in a multi-graph structure:
+
+```rust
+pub struct GraphManager {
+    token_to_id: HashMap<Bytes, u32>,
+    id_to_token: HashMap<u32, Bytes>,
+    pool_to_id: HashMap<String, u32>,
+    id_to_pool: HashMap<u32, String>,
+    next_token_id: u32,
+    next_pool_id: u32,
+}
+```
+
+#### Route Manager
+The Route Manager discovers and manages arbitrage routes using sophisticated algorithms with BFS-based discovery and incremental updates.
+
+#### Flash Loan Manager
+Selects optimal flash loan pools based on fee structure and compatibility rules, supporting both Uniswap V3 (30 bps fee) and V4 (0 bps fee) flash loans.
+
+### Route Discovery Process
+
+1. **Graph Construction**: Build liquidity graph with tokens as nodes and pools as edges
+2. **Route Generation**: Use Depth-First Search to enumerate possible multi-hop routes
+3. **Flash Loan Selection**: Choose optimal flash loan provider based on compatibility and fees
+4. **Profitability Evaluation**: Calculate expected profit using real-time pool states
+5. **Optimization**: Find optimal input amounts using binary search algorithms
+
+## Technical Reference
+
+### Liquidity Mapping
+
+The system creates a graph with tokens as nodes and pools as edges. With Tycho's protocol abstraction, pools are treated uniformly regardless of underlying protocol:
+
+- **Nodes**: Tokens with metadata and properties
+- **Edges**: Pool connections with protocol, fee, and liquidity data
+- **Multi-graph**: Multiple pools can exist between the same token pair
+
+### Route Manager Mathematics
+
+The Route Manager enumerates all possible multi-hop routes through the liquidity graph using a modified Depth-First Search (DFS) traversal:
+
+For a graph $$G = (V, E)$$ with vertices $V$ representing tokens and edges $E$ representing liquidity pools:
+
+```
+DFS(v) = visit all neighbors of v recursively without revisiting nodes in the current path
+```
+
+Edges are bidirectional between token pairs:
+$$A \leftrightarrow B$$
+
+#### Modified DFS Traversal
+
+The route manager iteratively explores each node while accounting for:
+
+- Pool and token blacklists to prevent invalid routes
+- Multi-protocol support (Uniswap V2/V3/V4, SushiSwap, Pancakeswap, Ekubo, Balancer, Curve)
+- Flash loan constraints to avoid locking conflicts
+- Real-time V4 eligibility of tokens
+
+### Route Evaluation Algorithm
+
+The route evaluation process leverages the Bellman-Ford algorithm to detect negative-weight cycles that correspond to profitable arbitrage opportunities:
+
+```
+d(v) = min_{(u,v) in E} [ d(u) + w(u,v) ]
+```
+
+Negative-weight cycles represent opportunities where the sequence of swaps results in a net gain after accounting for fees.
+
+### Optimal Amount Calculator
+
+The system uses a sophisticated **exponential search + binary search** algorithm to find the optimal input amount:
+
+#### Phase 1: Doubling Search (Exponential Growth)
+1. Set `A = A_min`
+2. Repeat for maximum iterations:
+   - Evaluate profit: `P = profit(A)`
+   - If `P > P_best`, update best values
+   - If profit drops below threshold, stop doubling
+   - Else, double the input: `A = 2 * A`
+
+#### Phase 2: Binary Search (Refinement)
+1. While `A_max - A_min > ε` and iterations < max:
+   - Compute midpoint: `A_mid = (A_min + A_max) / 2`
+   - Evaluate profit at midpoint
+   - Update best if midpoint is better
+   - Update bounds based on profit comparison
+
+### Profitability Calculation
+
+Let `A0` be amount_in (start token), `Ak` be amount_out (end token), `fee_hundredths_bip` the flash fee in 1e-6 units:
+
+- `swap_profit_percentage = ((Ak − A0) / A0) × 100`
+- `flash_fee_pct = fee_hundredths_bip / 10_000` (as percent)
+- `net_profit_percentage = swap_profit_percentage − flash_fee_pct`
+- `net_profit_token = Ak − A0 − floor(A0 × fee_hundredths_bip / 1_000_000)`
+
+Threshold gating uses `net_profit_percentage >= profit_threshold` (default 0.0%).
+
+### Performance Metrics
+
+#### Route Generation Performance
+- **2.42µs** for 3-hop routes
+- **833ns** for 4-hop routes
+- **791ns** for 5-hop routes
+- **1,983,160 routes** (3-hop) generated in ~222 seconds
+
+#### Graph Building Performance
+- **193µs** for 37 pools
+- **33µs** for 2 pools
+- **O(deg)** updates for efficient streaming
+
+#### Evaluation Performance
+- **Over 1,000 routes/second** evaluation capability
+- **424µs** average route evaluation time
+- **100%** execution success rate in production testing
+
+### Route Compatibility Rules
+
+#### Flash Loan Compatibility
+- ✅ Route [USDC → WETH → WBTC] (V2/V3 only) → V4 flash loans allowed
+- ❌ Route [USDC → WETH (V4) → DAI] → V4 flash loans blocked, fallback to V3
+
+#### Pruning Heuristics
+- Avoid cycles (unless for cycle arbitrage)
+- Check for duplicate pools in route
+- Limit routes per token to prevent explosion
+- Protocol-specific pruning (V4 overflow protection)

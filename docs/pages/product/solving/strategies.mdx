@@ -1,0 +1,230 @@
+# Strategies
+
+## Overview
+
+Strategies define the approach and methodology used to solve different types of intents and trading problems. The system implements a flexible strategy framework that enables market makers and solvers to deploy sophisticated trading algorithms with real-time profitability analysis and execution.
+
+## Using our Solution
+
+Our strategy framework enables:
+
+- **Cyclical Arbitrage**: Capital-efficient arbitrage using flash loans with no upfront capital
+- **Multi-hop Optimization**: 2-5 hop routes with analytical optimization for maximum profitability
+- **Real-time Execution**: Strategies that can process over 1,000 routes per second
+- **Intent-based Solving**: Support for UniswapX, CowSwap, and 1inch intent-based protocols
+- **Performance Monitoring**: Comprehensive metrics and success rate tracking
+
+## Solution Overview
+
+The strategy architecture follows the principle: **Collectors → Strategies → Execution** with modular components that can be combined for different trading approaches.
+
+### Strategy Types
+
+#### Cyclical Arbitrage (CARB)
+The first and primary strategy implemented is cyclical arbitrage - starting and ending with the same token, traversing through routes to simulate each input and output amount, evaluating if a positive arbitrage exists.
+
+#### Token-based Arbitrage (TOKEN)
+An advanced strategy that addresses execution efficiency and risk management by grouping routes by input token:
+
+**Key Features:**
+- **Route Grouping**: All routes sharing the same input token are grouped together
+- **Best Route Selection**: Only the highest profit route per token group is executed
+- **Duplicate Prevention**: Eliminates multiple executions for the same underlying opportunity
+- **Forced Execution Mode**: Supports execution of even negative profit routes for testing/validation
+
+**Implementation Logic:**
+```rust
+// Filter routes containing target token anywhere in path
+routes.into_iter()
+    .filter(|route| route.path.contains(&target_token_bytes))
+    .collect()
+```
+
+**Execution Flow:**
+1. Retrieve affected routes for pool's tokens
+2. Group routes by input token
+3. Evaluate all routes in each group
+4. Select highest profit route per group
+5. Execute only selected routes (with optional forced execution)
+
+### Architecture Components
+
+#### Route Evaluation for Profitability
+The RouteAnalyzer component uses real-time protocol states to calculate accurate swap amounts and profitability metrics:
+
+```rust
+impl RouteAnalyzer {
+    pub async fn evaluate_route(
+        &self,
+        route: &Route,
+        pool_store: &dyn PoolStore,
+    ) -> Result<RouteEvaluation> {
+        // Get current pool states
+        let pool_states = pool_store.get_pool_states(&route.pools).await?;
+
+        // Calculate optimal input amount
+        let optimal_amount = self.find_optimal_input_amount(route, &pool_states).await?;
+
+        // Calculate profitability
+        let profit = self.calculate_profitability(route, &protected_amounts).await?;
+
+        Ok(RouteEvaluation {
+            execution_viable: profit.net_profit > 0.0,
+            // ... other fields
+        })
+    }
+}
+```
+
+#### Signal Generation
+The system generates execution signals for profitable routes with comprehensive tracking:
+
+```rust
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RouteSignal {
+    pub route_id: String,
+    pub route: MinimalRoute,
+    pub evaluation: RouteEvaluation,
+    pub timestamp: SystemTime,
+    pub execution_attempts: u32,
+    pub priority_score: f64,
+    pub status: SignalStatus,
+}
+```
+
+## Technical Reference
+
+### Cyclical Arbitrage Strategy
+
+The cyclical arbitrage strategy implements sophisticated route evaluation algorithms that analyze potential arbitrage opportunities across multiple DEX protocols.
+
+#### Bellman-Ford Algorithm Application
+
+The route evaluation process leverages the Bellman-Ford algorithm to detect negative-weight cycles that correspond to profitable arbitrage opportunities:
+
+```
+d(v) = min_{(u,v) in E} [ d(u) + w(u,v) ]
+```
+
+Negative-weight cycles represent opportunities where the sequence of swaps results in a net gain after accounting for fees.
+
+#### Optimal Amount Calculation
+
+The system uses a sophisticated **exponential search + binary search** algorithm:
+
+##### Phase 1: Doubling Search (Exponential Growth)
+**Goal**: Quickly find an upper bound for profitable input.
+
+1. Set `A = A_min`
+2. Repeat for maximum iterations:
+   - Evaluate profit: `P = profit(A)`
+   - If `P > P_best`, update best values
+   - If profit drops below threshold, stop doubling
+   - Else, double the input: `A = 2 * A`
+
+##### Phase 2: Binary Search (Refinement)
+**Goal**: Refine the optimal input within `[A_min, A_max]`.
+
+1. While `A_max - A_min > ε` and iterations < max:
+   - Compute midpoint: `A_mid = (A_min + A_max) / 2`
+   - Evaluate profit at midpoint
+   - Update best if midpoint is better
+   - Update bounds based on profit comparison
+
+**Mathematical Summary**:
+```
+maximize P(A) = profit from route given input A
+subject to A_min ≤ A ≤ A_max, P(A) ≥ profit_threshold
+where A_max found via exponential doubling and A_best refined via binary search.
+```
+
+### Flash Loan Integration
+
+Strategies leverage flash loan integration for capital-efficient execution:
+
+#### Flash Loan Selection Logic
+1. **V3 Flash Loans**: Always compatible with any route (30 bps fee)
+2. **V4 Flash Loans**: Only compatible with routes that do NOT contain V4 pools (0 bps fee)
+3. **Priority Order**: V3 (priority 1), V4 (priority 2)
+4. **Liquidity Requirements**: Minimum liquidity thresholds based on strategy requirements
+
+#### Sequential Swap Execution
+Multi-hop swaps are executed atomically through flash loans:
+
+1. **Flash Loan Borrow**: Borrow required tokens from selected pool
+2. **Sequential Swaps**: Execute swaps in sequence through route
+3. **Flash Loan Repay**: Repay borrowed tokens with profit
+4. **Profit Capture**: Keep remaining profit after repayment
+
+### Profitability Metrics
+
+#### Mathematical Formulas
+
+##### Swap Profit Percentage
+```
+swap_profit_percentage = ((amount_out - amount_in) / amount_in) * 100
+```
+
+##### Flash Fee Percentage
+```
+flash_fee_pct = (flash_loan_fee / amount_in) * 100
+```
+
+##### Net Profit Percentage
+```
+net_profit_percentage = swap_profit_percentage - flash_fee_pct - gas_cost_pct
+```
+
+##### Net Profit in Token Units
+```
+net_profit_token = amount_out - amount_in - flash_loan_fee - gas_cost_token
+```
+
+### Performance Characteristics
+
+#### Strategy Execution Performance
+- **Route Evaluation**: Over 1,000 routes per second
+- **Average Processing Time**: 424 microseconds per route
+- **Success Rate**: 100% execution success rate in production testing
+- **Memory Efficiency**: ~657 MB for full operation across multiple chains
+
+#### Real-world Results
+First positive cyclical arbitrage executed on Base:
+```bash
+🌐 BASE  2025-09-13 09:51:39
+💰 Profitable route found with profit: 959 (0.1568333333333405%)
+🏆 Route: Profit 0.000941 USDC (0.156833%) Input Amount: 0.6 [USDC -> WETH -> MOJO -> USDC]
+⚙️ Protocols: [uniswap_v3 -> uniswap_v2 -> uniswap_v2]
+```
+
+### Strategy Framework
+
+#### Queue Management
+The system uses priority-based queue management for strategy execution:
+
+```rust
+fn calculate_priority(&self, route: &MinimalRoute, evaluation: &RouteEvaluation) -> f64 {
+    // Higher profit = higher priority
+    let profit_score = evaluation.net_profit_percentage;
+
+    // Shorter routes = higher priority (less gas)
+    let gas_score = 1.0 / (route.hops as f64 + 1.0);
+
+    // Combine scores
+    profit_score * 0.7 + gas_score * 0.3
+}
+```
+
+#### Signal Status Flow
+1. **Route Discovery** → Create RouteSignal
+2. **Evaluation Phase** → Check profitability
+3. **Execution Phase** → Execute if profitable
+4. **Result Processing** → Update signal status
+
+### Strategy Configuration
+
+#### Configurable Parameters
+- **Profit Thresholds**: Minimum profitability requirements
+- **Route Constraints**: Maximum hops, protocol preferences
+- **Risk Management**: Position sizing and exposure limits
+- **Performance Tuning**: Batch sizes, queue configurations
