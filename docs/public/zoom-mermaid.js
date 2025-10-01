@@ -203,4 +203,18 @@
     childList: true,
     subtree: true
   });
+
+  // Also listen for Vocs navigation events
+  if (typeof window !== 'undefined') {
+    window.addEventListener('vocs:route-update', function() {
+      console.log('Vocs route updated, reinitializing zoom...');
+      setTimeout(initMermaidZoom, 200);
+    });
+
+    // Fallback for popstate (browser back/forward)
+    window.addEventListener('popstate', function() {
+      console.log('Popstate detected, reinitializing zoom...');
+      setTimeout(initMermaidZoom, 200);
+    });
+  }
 })();
