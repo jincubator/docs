@@ -13,8 +13,18 @@ export default defineConfig({
   baseUrl: "/",
   ogImageUrl:
     "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
-  head() {
-    return `<script src="/zoom-mermaid.js" type="text/javascript"></script>`;
+  vite: {
+    plugins: [
+      {
+        name: 'inject-mermaid-zoom',
+        transformIndexHtml(html) {
+          return html.replace(
+            '</head>',
+            '<script src="/zoom-mermaid.js" defer></script></head>'
+          );
+        },
+      },
+    ],
   },
   markdown: {
     remarkPlugins: [remarkMath, remarkMermaid],

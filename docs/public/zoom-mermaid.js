@@ -1,77 +1,79 @@
-// Universal Mermaid Zoom Script
+// Universal Mermaid Zoom Script - Robust SPA Friendly
 (function() {
   'use strict';
 
-  // Wait for page to be fully loaded
-  function initMermaidZoom() {
-    console.log('Initializing Mermaid zoom...');
+  if (window.__mermaidZoomLoaded) return;
+  window.__mermaidZoomLoaded = true;
 
-    // Find all SVG elements in the main content area
-    const contentArea = document.querySelector('#vocs-content, .vocs_Content, article, main') || document.body;
-    const svgElements = contentArea.querySelectorAll('svg');
-
-    console.log(`Found ${svgElements.length} SVG elements in content area`);
-
-    // Process all SVGs in the content area (they're likely diagrams)
-    svgElements.forEach((svg, index) => {
-      console.log(`Checking SVG ${index}:`, {
-        id: svg.id,
-        classes: svg.className.baseVal || svg.className,
-        role: svg.getAttribute('role'),
-        ariaRole: svg.getAttribute('aria-roledescription')
-      });
-
-      // More comprehensive check for diagram SVGs
-      const isDiagramSvg =
-        (svg.id && svg.id.startsWith('mermaid')) ||
-        svg.closest('.mermaid') ||
-        svg.classList.contains('flowchart') ||
-        svg.getAttribute('aria-roledescription') ||
-        (svg.getAttribute('role') && svg.getAttribute('role').includes('graphics'));
-
-      if (isDiagramSvg) {
-        console.log(`Processing diagram SVG ${index}`);
-        processMermaidElement(svg);
-      }
-    });
+  // Utility: check if an SVG is a Mermaid diagram
+  function isMermaidSvg(svg) {
+    return !!(
+      (svg.id && svg.id.startsWith('mermaid')) ||
+      svg.classList.contains('mermaid') ||
+      svg.classList.contains('flowchart') ||
+      svg.getAttribute('aria-roledescription')?.includes('flowchart') ||
+      svg.getAttribute('role')?.includes('graphics')
+    );
   }
 
-  function processMermaidElement(svg) {
-    // Skip if already processed by this script
-    if (svg.dataset.zoomProcessed) return;
+  // Wait for SVG to be fully rendered
+  function waitForSvgReady(svg, callback) {
+    if (svg.querySelectorAll('g, path').length > 0) {
+      callback(svg);
+      return;
+    }
+    const observer = new MutationObserver(() => {
+      if (svg.querySelectorAll('g, path').length > 0) {
+        observer.disconnect();
+        callback(svg);
+      }
+    });
+    observer.observe(svg, { childList: true, subtree: true });
+  }
 
-    // Mark as processed by this script
+  // Attach zoom behavior to a single SVG
+  function processMermaidElement(svg) {
+    if (svg.dataset.zoomProcessed === 'true') return;
     svg.dataset.zoomProcessed = 'true';
 
-    // Style the SVG for better UX
     svg.style.cursor = 'zoom-in';
     svg.style.maxWidth = '100%';
     svg.style.height = 'auto';
     svg.title = 'Click to zoom diagram';
 
-    // Add click handler
-    svg.addEventListener('click', function(e) {
+    const handleClick = function(e) {
+      console.log('SVG clicked:', svg.id || svg.className);
       e.preventDefault();
       e.stopPropagation();
-      console.log('SVG clicked for zoom');
+      e.stopImmediatePropagation();
       openZoom(svg);
-    });
+      return false;
+    };
 
-    // Add hover effect
-    svg.addEventListener('mouseenter', function() {
+    // Remove old listener if exists
+    if (svg._zoomClickHandler) {
+      svg.removeEventListener('click', svg._zoomClickHandler, true);
+    }
+
+    svg.addEventListener('click', handleClick, true);
+    svg._zoomClickHandler = handleClick;
+
+    // Hover effect
+    svg.addEventListener('mouseenter', () => {
       svg.style.transform = 'scale(1.02)';
       svg.style.transition = 'transform 0.2s ease';
     });
-
-    svg.addEventListener('mouseleave', function() {
+    svg.addEventListener('mouseleave', () => {
       svg.style.transform = 'scale(1)';
     });
 
-    console.log('Mermaid SVG processed for zoom');
+    console.log('Zoom handler attached to:', svg.id || svg.className);
   }
 
+  // Open overlay with zoomed SVG
   function openZoom(originalSvg) {
-    // Create overlay
+    console.log('openZoom called for:', originalSvg);
+
     const overlay = document.createElement('div');
     overlay.style.cssText = `
       position: fixed;
@@ -79,17 +81,16 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0,0,0,0.85);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 10000;
+      z-index: 99999;
       cursor: zoom-out;
       opacity: 0;
       transition: opacity 0.3s ease;
     `;
 
-    // Clone the SVG
     const zoomedSvg = originalSvg.cloneNode(true);
     zoomedSvg.style.cssText = `
       max-width: 95vw;
@@ -97,20 +98,19 @@
       background: white;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
       cursor: zoom-out;
       transform: scale(0.8);
       transition: transform 0.3s ease;
     `;
 
-    // Add close button
     const closeButton = document.createElement('button');
     closeButton.innerHTML = '×';
     closeButton.style.cssText = `
       position: absolute;
       top: 20px;
       right: 20px;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0,0,0,0.7);
       color: white;
       border: none;
       border-radius: 50%;
@@ -121,100 +121,70 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 10001;
+      z-index: 100000;
       transition: background 0.2s ease;
     `;
-
-    closeButton.addEventListener('mouseenter', function() {
-      closeButton.style.background = 'rgba(0, 0, 0, 0.9)';
-    });
-
-    closeButton.addEventListener('mouseleave', function() {
-      closeButton.style.background = 'rgba(0, 0, 0, 0.7)';
-    });
+    closeButton.addEventListener('mouseenter', () => closeButton.style.background = 'rgba(0,0,0,0.9)');
+    closeButton.addEventListener('mouseleave', () => closeButton.style.background = 'rgba(0,0,0,0.7)');
 
     overlay.appendChild(zoomedSvg);
     overlay.appendChild(closeButton);
     document.body.appendChild(overlay);
-
-    // Prevent body scroll
     document.body.style.overflow = 'hidden';
 
-    // Animate in
     requestAnimationFrame(() => {
       overlay.style.opacity = '1';
       zoomedSvg.style.transform = 'scale(1)';
     });
 
-    // Close handlers
-    function closeZoom() {
+    const closeZoom = () => {
       overlay.style.opacity = '0';
       zoomedSvg.style.transform = 'scale(0.8)';
-
       setTimeout(() => {
-        document.body.removeChild(overlay);
+        if (document.body.contains(overlay)) document.body.removeChild(overlay);
         document.body.style.overflow = '';
       }, 300);
-
       document.removeEventListener('keydown', handleEscape);
-    }
+    };
 
-    function handleEscape(e) {
-      if (e.key === 'Escape') closeZoom();
-    }
-
-    overlay.addEventListener('click', function(e) {
-      if (e.target === overlay || e.target === closeButton) {
-        closeZoom();
-      }
-    });
-
+    const handleEscape = (e) => { if (e.key === 'Escape') closeZoom(); };
+    overlay.addEventListener('click', e => { if (e.target === overlay || e.target === closeButton) closeZoom(); });
     closeButton.addEventListener('click', closeZoom);
     document.addEventListener('keydown', handleEscape);
   }
 
-  // Initialize when DOM is ready
+  // Scan and process all Mermaid SVGs in content area
+  function initMermaidZoom() {
+    const contentArea = document.querySelector('#vocs-content, .vocs_Content, article, main') || document.body;
+    const svgElements = contentArea.querySelectorAll('svg');
+    console.log('Scanning for Mermaid SVGs, found:', svgElements.length);
+
+    svgElements.forEach(svg => {
+      if (isMermaidSvg(svg)) {
+        console.log('Found Mermaid SVG:', svg.id || svg.className);
+        waitForSvgReady(svg, processMermaidElement);
+      }
+    });
+  }
+
+  // DOM ready init
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMermaidZoom);
   } else {
     initMermaidZoom();
   }
 
-  // Re-run when new content is loaded (for SPA navigation)
-  const observer = new MutationObserver(function(mutations) {
-    let shouldReinit = false;
-    mutations.forEach(function(mutation) {
-      if (mutation.addedNodes.length > 0) {
-        mutation.addedNodes.forEach(function(node) {
-          if (node.nodeType === Node.ELEMENT_NODE &&
-              (node.tagName === 'SVG' || node.querySelector('svg'))) {
-            shouldReinit = true;
-          }
-        });
-      }
+  // Observe SPA DOM mutations
+  const observer = new MutationObserver(mutations => {
+    let added = false;
+    mutations.forEach(m => {
+      if (m.addedNodes.length > 0) added = true;
     });
-
-    if (shouldReinit) {
-      setTimeout(initMermaidZoom, 100);
-    }
+    if (added) setTimeout(initMermaidZoom, 200);
   });
+  observer.observe(document.body, { childList: true, subtree: true });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  // Also listen for Vocs navigation events
-  if (typeof window !== 'undefined') {
-    window.addEventListener('vocs:route-update', function() {
-      console.log('Vocs route updated, reinitializing zoom...');
-      setTimeout(initMermaidZoom, 200);
-    });
-
-    // Fallback for popstate (browser back/forward)
-    window.addEventListener('popstate', function() {
-      console.log('Popstate detected, reinitializing zoom...');
-      setTimeout(initMermaidZoom, 200);
-    });
-  }
+  // Vocs SPA navigation
+  window.addEventListener('vocs:route-update', () => setTimeout(initMermaidZoom, 200));
+  window.addEventListener('popstate', () => setTimeout(initMermaidZoom, 200));
 })();
