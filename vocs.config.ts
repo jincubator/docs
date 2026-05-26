@@ -16,11 +16,11 @@ export default defineConfig({
   vite: {
     plugins: [
       {
-        name: 'inject-mermaid-zoom',
+        name: "inject-mermaid-zoom",
         transformIndexHtml(html) {
           return html.replace(
-            '</head>',
-            '<script src="/zoom-mermaid.js" defer></script></head>'
+            "</head>",
+            '<script src="/zoom-mermaid.js" defer></script></head>',
           );
         },
       },
@@ -51,6 +51,20 @@ export default defineConfig({
   sidebar: {
     "/research": [
       { text: "Research", link: "/research/intro" },
+      {
+        text: "Architectural Designs (2026)",
+        items: [
+          { text: "John's Architectures", link: "/research/architecture/john" },
+          {
+            text: "Payment Architecture(Circle)",
+            link: "/research/architecture/circle",
+          },
+          {
+            text: "Trading Archichitecture (FalconX)",
+            link: "/research/architecture/falconx",
+          },
+        ],
+      },
       {
         text: "Solving and Arbitrage (2025)",
         items: [
