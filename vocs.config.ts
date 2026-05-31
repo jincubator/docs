@@ -1,8 +1,18 @@
+import { createElement, Fragment } from "react";
 import { defineConfig } from "vocs";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
 import remarkMermaid from "remark-mermaidjs";
 import { rehypeMermaidZoom } from "./rehype-mermaid-zoom.js";
+
+const siteUrl = "https://www.jincubator.com";
+const architecturePath = "/research/architecture/john";
+const architectureUrl = `${siteUrl}${architecturePath}/`;
+const architectureImageUrl = `${siteUrl}/images/research/solver-enterprise-infographic.png`;
+const architectureTitle = "System Design & Architecture Portfolio";
+const architectureDescription =
+  "Selected architecture, system design, and engineering leadership work spanning enterprise integration, payments, distributed systems, blockchain infrastructure, DeFi protocols, and trading systems.";
+const defaultOgImageUrl = `https://vocs.dev/api/og?logo=${siteUrl}/images/jincubator.png&title=%title&description=%description`;
 
 export default defineConfig({
   title: "Jincubator",
@@ -10,9 +20,36 @@ export default defineConfig({
     "Research focused on Intent BasedSolving, Arbitrage and Market Making",
   iconUrl: "/images/jincubator.png",
   logoUrl: "/images/jincubator.png",
-  baseUrl: "/",
-  ogImageUrl:
-    "https://vocs.dev/api/og?logo=%logo&title=%title&description=%description",
+  ogImageUrl: {
+    "/": defaultOgImageUrl,
+    [architecturePath]: architectureImageUrl,
+  },
+  head: {
+    [architecturePath]: createElement(
+      Fragment,
+      null,
+      createElement("link", {
+        rel: "canonical",
+        href: architectureUrl,
+      }),
+      createElement("meta", {
+        property: "og:url",
+        content: architectureUrl,
+      }),
+      createElement("meta", {
+        name: "twitter:title",
+        content: architectureTitle,
+      }),
+      createElement("meta", {
+        name: "twitter:description",
+        content: architectureDescription,
+      }),
+      createElement("meta", {
+        name: "twitter:image",
+        content: architectureImageUrl,
+      }),
+    ),
+  },
   vite: {
     plugins: [
       {
