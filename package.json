@@ -11,8 +11,8 @@
     "sitedeploy": "cp docs/dist/index.html docs/dist/404.html && gh-pages -d docs/dist --nojekyll --cname www.jincubator.com"
   },
   "dependencies": {
-    "baseline-browser-mapping": "^2.10.33",
-    "caniuse-lite": "^1.0.30001793",
+    "baseline-browser-mapping": "^2.10.34",
+    "caniuse-lite": "^1.0.30001797",
     "pdfjs-dist": "^5.3.93",
     "react": "latest",
     "react-dom": "latest",
