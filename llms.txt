@@ -1,9 +1,12 @@
 # Jincubator
 
-> Research focused on Intent BasedSolving, Arbitrage and Market Making
+> Research and innovation studio exploring technical systems through research, architecture, prototypes, and product development.
 
 ## Docs
 
+- [Architecture](/architecture/intro): Architecture is where research becomes system design.
+- [Architecture Portfolio](/architecture/portfolio): This is the Architecture-native portfolio view for Jincubator.
+- [Partnerships](/partnerships/intro): Jincubator is a research and innovation studio exploring technical systems through research, architecture, prototypes, products, and venture formation.
 - [Product](/product/intro): This section contains information about productizing research with the current focuse being high performance solving Infrastructure.
 🚧 ⛏️ Under Construction
 - [Kanga Finance: Harmony Hackathon 2021](/proposals/Harmony): [kanga.finance](https://kanga.finance/) is a Dex implementation inspired by Sushi and proof of concept integration with one-wallet. ([github](https://github.com/kangafinance)). Winner of $30,000 in prizes from [Harmony Hackathon](https://bounties.gitcoin.co/hackathon/harmony-defi/onboard).
@@ -14,9 +17,21 @@
 - [Proposals](/proposals/intro): Welcome to the Jincubator Research Hub.
 - [Research Proposal: Solvers, Arbitrage & Intent-Based Protocols](/proposals/solving-arbitrage): Over the past eight months, I’ve developed both a solver engine and an intent-based swap protocol integrating Uniswap v4. My work spans arbitrage detection/execution, real-time streaming, solver frameworks, and resource-efficient intent mechanisms. Current implementations and documentation are accessible via [jincubator.com/research](https://www.jincubator.com/research).
 - [Sunrise DEX](/proposals/sunrise): [Link to original W3 Grant Proposal](https://github.com/w3f/Grants-Program/blob/master/applications/sunrise-dex.md)
-- [Solving, Arbitrage and Market Making](/research/intro): This knowledge base and learning center is based upon research done around trading, payments, solving, arbitrage and market making infrastructure.
-It includes architectures that John has worked on as well as reference architectures for Payments and Trading infrastructure.
-It also contains design patters for No Liquidity Solving for intent based systems.
+- [Research](/research/intro): This knowledge base documents research, architecture, prototypes, and product development across:
+- [AI Systems Architecture](/architecture/ai-systems/intro): AI Systems architecture is a lightweight, forward-looking section for AI-assisted engineering, research tooling, agent systems, automation, evidence workflows, and architecture generation.
+- [Enterprise Architecture](/architecture/enterprise-architecture/intro): Enterprise Architecture covers platform design, integration systems, generated API workspaces, production-readiness review, and long-lived system boundaries.
+- [Enterprise SOA](/architecture/enterprise-architecture/soa): Enterprise SOA covers service-oriented architecture, enterprise integration, partner-system workflows, and long-lived platform boundaries.
+- [EAVE Parachain Architecture](/architecture/distributed-systems/eave): EAVE is a distributed systems architecture example covering Substrate, FRAME, parachain runtime design, node service boundaries, and relay-chain integration.
+- [Distributed Systems Architecture](/architecture/distributed-systems/intro): Distributed Systems architecture covers chains, bridges, proving systems, runtime boundaries, data availability, and cross-chain infrastructure.
+- [Reference Architecture: Circle](/architecture/financial-infrastructure/circle): This wrapper keeps Circle architecture in the Architecture section while preserving the canonical research dossier.
+- [Financial Infrastructure Architecture](/architecture/financial-infrastructure/intro): Financial Infrastructure architecture covers payments, settlement, stablecoins, financial platform engineering, enterprise integration, SOA, enterprise platform architecture, APIs, and operational controls.
+- [Financial Platform Engineering](/architecture/financial-infrastructure/platform-engineering): Financial Platform Engineering covers API platforms, generated contract workspaces, payment surfaces, KYC boundaries, fiat rails, ledgers, custody, and production-readiness gaps.
+- [Settlement Architecture](/architecture/financial-infrastructure/settlement): Settlement architecture covers how obligations become final across stablecoin systems, intent flows, proving systems, and cross-chain infrastructure.
+- [Trading Systems Evolution](/architecture/trading-systems/evolution): Trading Systems Evolution shows the path from research-oriented solver infrastructure toward productized trading-system architecture.
+- [Reference Architecture: FalconX](/architecture/trading-systems/falconx): This wrapper keeps FalconX architecture in the Architecture section while preserving the canonical research dossier.
+- [Trading Systems Architecture](/architecture/trading-systems/intro): Trading Systems architecture covers route evaluation, market data, execution, solver infrastructure, replay validation, and strategy platforms.
+- [Salus Architecture](/architecture/trading-systems/salus): Salus evolves the Solver architecture into clearer trading and execution infrastructure.
+- [Solver Architecture](/architecture/trading-systems/solver): Solver architecture is the original trading and execution infrastructure foundation for Jincubator.
 - [Project-X Technical White Paper](/product/previous/2018-07-17-projectx): Blockchain ledger platform with a focus on interoperability, speed and privacy
 - [Lessons Learned from Devcon5](/product/previous/2019-10-16-devcon5): Devcon5 key take aways on emerging blockchain technologies, new initatives and what the community is looking for.
 - [EAVE Parachain Design](/product/previous/2021-04-01-eave-parachain): Emerging Asset Value Engine (EAVE) Polkadot Parachain
@@ -34,6 +49,7 @@ It also contains design patters for No Liquidity Solving for intent based system
 - [Solver Evolution Roadmap: 0.1 to 2.0](/product/solving/roadmap): This roadmap outlines the evolution of the solver system from the current 0.1 arbitrage-focused implementation to a comprehensive intent-based solving platform. The roadmap spans from Q4 2024 through Q2 2025, transitioning from single-purpose arbitrage to multi-protocol intent solving across chains.
 - [Route Evaluation](/product/solving/routes): Route evaluation is the process of analyzing and scoring different possible paths for executing trades or solving intents. The system uses sophisticated algorithms to discover profitable arbitrage opportunities and optimize capital efficiency across multiple DEX protocols.
 - [Strategies](/product/solving/strategies): Strategies define the approach and methodology used to solve different types of intents and trading problems. The system implements a flexible strategy framework that enables market makers and solvers to deploy sophisticated trading algorithms with real-time profitability analysis and execution.
+- [AI Engineering](/research/ai-engineering/intro): AI Engineering is a strategic research area for Jincubator.
 - [Overview](/research/Intents/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
 - [IntentSwap](/research/Intents/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
 - [Uniswap V4 Hook Development - WIP](/research/Intents/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
@@ -43,7 +59,23 @@ It also contains design patters for No Liquidity Solving for intent based system
 - [Circle Architecture Research Dossier](/research/architecture/circle): This dossier collects Circle-oriented architecture research and interview-preparation material. It is intentionally separate from the [architecture portfolio](/research/architecture/john): these are company research and architecture-review tracks, not personal ownership claims.
 - [FalconX Architecture Research Dossier](/research/architecture/falconx): This dossier collects FalconX-oriented architecture research and interview-preparation material. It is intentionally separate from the [architecture portfolio](/research/architecture/john): this is a public-evidence trading-platform research track, not a personal ownership claim.
 - [System Design & Architecture Portfolio](/research/architecture/john): Selected architecture, system design, and engineering leadership work spanning enterprise integration, payments, distributed systems, blockchain infrastructure, DeFi protocols, and trading systems.
+- [Cosmos IBC](/research/bridge/cosmos-ibc): date: 2023-02-24
+- [Harmony Horizon](/research/bridge/harmony-horizon): date: 2023-02-24
+- [Crosschain Bridge Analysis - An Introduction](/research/bridge/intro): date: 2023-02-04
+- [Isomorph](/research/bridge/isomorph): date: 2023-02-24
+- [Near Rainbow Bridge](/research/bridge/near-rainbow): date: 2023-02-24
+- [Polymer Labs](/research/bridge/polymerlabs): date: 2023-02-24
+- [Snowbridge](/research/bridge/snowbridge): date: 2023-02-24
+- [Succinct Labs](/research/bridge/succinct): date: 2023-02-24
+- [Intent Architecture](/architecture/defi-systems/intents): Intent architecture covers the systems that express desired outcomes, lock or allocate resources, route execution, and validate settlement conditions.
+- [DeFi Systems Architecture](/architecture/defi-systems/intro): DeFi Systems architecture covers intents, hooks, liquidity infrastructure, protocol execution, solver participation, and automated protocol workflows.
+- [Kanga AMM Incentives Migration](/architecture/defi-systems/kanga): Kanga is a DeFi systems architecture example covering AMM incentives, migration, and protocol walkthrough material.
+- [Protocol Architecture](/architecture/defi-systems/protocol): Protocol architecture focuses on the runtime and contract boundaries for intent execution, resource locking, solver payloads, hooks, arbiters, allocators, and settlement.
 - [Celestia](/research/dataAvailabilty/celestia): date: 2023-06-19
+- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
+- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
+- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
+- [Code bases and reviews](/research/code/intro): date: 2023-02-04
 - [Avalanche](/research/chains/avalanche): date: 2023-02-04
 - [Binance Smart Chain](/research/chains/binance): date: 2023-02-04
 - [Cosmos](/research/chains/cosmos): -date: 2023-02-04
@@ -55,24 +87,14 @@ last-updated: 2023-02-04
 - [NEAR](/research/chains/near): date: 2023-02-04
 - [Polkadot](/research/chains/polkadot): date: 2023-02-04
 - [Polygon](/research/chains/polygon): date: 2023-02-04
-- [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
-- [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
-- [Ethereum Code](/research/code/ethereum): date: 2023-02-04
-- [Code bases and reviews](/research/code/intro): date: 2023-02-04
-- [Cosmos IBC](/research/bridge/cosmos-ibc): date: 2023-02-24
-- [Harmony Horizon](/research/bridge/harmony-horizon): date: 2023-02-24
-- [Crosschain Bridge Analysis - An Introduction](/research/bridge/intro): date: 2023-02-04
-- [Isomorph](/research/bridge/isomorph): date: 2023-02-24
-- [Near Rainbow Bridge](/research/bridge/near-rainbow): date: 2023-02-24
-- [Polymer Labs](/research/bridge/polymerlabs): date: 2023-02-24
-- [Snowbridge](/research/bridge/snowbridge): date: 2023-02-24
-- [Succinct Labs](/research/bridge/succinct): date: 2023-02-24
+- [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro): DeFi Protocol Engineering covers protocol design, intents, hooks, liquidity infrastructure, solver participation, and integrations with ecosystems such as Uniswap, 1inch, and Tycho.
 - [Overview](/research/deprecated/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single and mult-chain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may used the swappers locked funds for execution.
 - [IntentSwap](/research/deprecated/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
 - [Uniswap V4 Hook Development - WIP](/research/deprecated/hooks): This section documents design work to be done for enhancing Uniswap V4 through the use of hooks for better price discovery, swapping and solver execution.
 - [Solving and Arbitrage Research](/research/deprecated/intro): Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.propellerheads.xyz/tycho/overview), Intents using [ERC-7683](https://www.erc7683.org/spec), [EIP-712](https://eips.ethereum.org/EIPS/eip-712), [Compactx](https://github.com/uniswap/compactx) and [Uniswap V4 Hooks](https://docs.uniswap.org/contracts/v4/overview). Development can be found in the github organization [jincubator](https://github.com/jincubator).
 - [Protocol](/research/deprecated/protocol): The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
 - [Resource Management](/research/deprecated/resources): The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+- [Distributed Systems](/research/distributed-systems/intro): Distributed Systems collects research on chains, bridges, zero knowledge systems, cryptographic primitives, data availability, and cross-chain infrastructure.
 - [Fast Fourier Transforms](/research/primitives/fast-fourier-transforms): date: 2023-02-04
 - [Fraud Proofs](/research/primitives/fraud-proofs): date: 2023-02-04
 - [Cryptographic and Mathematic Primitives](/research/primitives/intro): date: 2023-02-04
@@ -80,16 +102,21 @@ last-updated: 2023-02-04
 - [Cryptographic Primitives](/research/primitives/primitives): date: 2023-02-04
 - [Signature Schemes in Consensus Protocols](/research/primitives/signatures): date: 2023-02-05
 - [Weak Subjectivity](/research/primitives/weak-subjectivity): date: 2023-02-04
-- [Axiom](/research/zk/axiom): date: 2023-06-28
-- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
-- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
-- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
+- [Financial Infrastructure](/research/financial-infrastructure/intro): Financial Infrastructure covers payments, settlement, stablecoins, and enterprise financial platforms.
+- [Trading Systems](/research/trading-systems/intro): Trading Systems is the primary research domain for solving, arbitrage, execution, market data, and market-making infrastructure.
 - [Uniswap V4 Intent Hook](/research/solving/intent-management-hook): This project was an exploration into the use of hooks for intent based solving.
 The goal was to implement an intent based hook, that would allow a pool to receive swaps, publish them to a solver network to find the best price for the swap. If a solver returned a more profitable swap (for the swapper) the intent would be executed, the swapper would receive a better return than the pool could offer and the solver would claim the funds. If after the deadline (usually 1 to 2 blocks) no solution with a better return has been provided. Then the swap would be executed as normal upon the pool.
 - [NEAR FUSION+ Smart Contract Development](/research/solving/near): NEAR Fusion+ is a comprehensive DeFi protocol that migrates 1inch's proven Limit Order Protocol and Cross-Chain Swap functionality to the NEAR blockchain. The system provides two primary capabilities: advanced limit order trading with partial fills and extensible features, and atomic cross-chain swaps secured by time-locked escrow contracts.
 - [Solving, Arbitrage & Market Making](/research/solving/solving): In this article I discuss my personal Journey for 2025. Give an example of a cyclical arbitrage built on the latest high performant solving and market making infrastructure. Discuss how this infrastructure can be applied to Intent Based Solving Sytems (think UniswapX, CowSwap, 1inch) and give a full breakdown of the mathematics and technical implementation of a generic solving infrastructure service that I have been developing.
 - [Appendices](/research/solving/solving): **Investors**: Please help with introductions to portfolio companies and liquidity providers in the space. Also reach out if this technology can be utilized in startups you are currently evaluating.
 - [No Liquidity Solving (Tycho 1inch)](/research/solving/tycho1inchNOL): This research was conducted as part of [Unite DeFi](https://ethglobal.com/showcase/defiunite-jincubator-g1h0p)
+- [Axiom](/research/zk/axiom): date: 2023-06-28
+- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
+- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
+- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
 - [1inch](/product/solving/intentsolve/1inch): 1inch is a DEX aggregator that sources liquidity from various exchanges to offer users better token swap rates. Our solver infrastructure provides comprehensive support for 1inch's intent-based protocols, including limit order solving and liquidity aggregation integration.
 - [CowSwap](/product/solving/intentsolve/cowswap): CowSwap is a MEV-protected DEX that uses batch auctions and coincidence of wants to provide better prices and protection from MEV. Our solver infrastructure provides comprehensive support for CowSwap's intent-based solving system, enabling efficient order filling and improved user outcomes.
 - [Uniswap X](/product/solving/intentsolve/uniswapx): Uniswap X is a new permissionless, open-source, auction-based protocol for trading across AMMs and other liquidity sources. Our solver infrastructure provides comprehensive support for Uniswap X's intent-based architecture, enabling efficient order filling through sophisticated routing and execution strategies.
+- [Payments](/research/financial-infrastructure/payments/intro): Payments research focuses on the systems that move value between users, applications, enterprises, banks, wallets, and onchain infrastructure.
+- [Settlement](/research/financial-infrastructure/settlement/intro): Settlement research focuses on how obligations become final across payment systems, stablecoin platforms, intent systems, and cross-chain infrastructure.
+- [Stablecoins](/research/financial-infrastructure/stablecoins/intro): Stablecoin research focuses on token systems used for payments, settlement, liquidity, and financial platform infrastructure.
