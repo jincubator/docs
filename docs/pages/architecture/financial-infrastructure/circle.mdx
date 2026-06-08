@@ -1,0 +1,31 @@
+import { ZoomImage } from "../../../public/components/ZoomImage";
+
+# Reference Architecture: Circle
+
+This wrapper keeps Circle architecture in the Architecture section while preserving the canonical research dossier.
+
+Circle is a reference architecture, not a Jincubator-built system. It is useful as a financial-infrastructure architecture lens across public APIs, wallets, contracts, CCTP, stablecoins, platform controls, and operational boundaries.
+
+<ZoomImage
+  src="/images/research/CircleSystemDesign.png"
+  alt="Circle system design tracks"
+/>
+
+<ZoomImage
+  src="/images/research/circle-stablecoin-enterprise-infographic.png"
+  alt="Circle stablecoin architecture"
+/>
+
+## Architecture Lens
+
+- API platform surfaces for wallets, contracts, CCTP, gateway, minting, and payment products.
+- Stablecoin control surfaces including mint, burn, pause, blacklist, permit, and upgradeability.
+- CCTP burn, mint, message, attestation, finality, and replay-protection boundaries.
+- Evidence discipline around public docs, OpenAPI schemas, repositories, and labeled assumptions.
+
+## Deeper Research
+
+- [Circle Architecture Research Dossier](/research/architecture/circle)
+- [Financial Infrastructure Research](/research/financial-infrastructure/intro)
+- [Stablecoins Research](/research/financial-infrastructure/stablecoins/intro)
+- [Settlement Research](/research/financial-infrastructure/settlement/intro)

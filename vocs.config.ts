@@ -17,7 +17,7 @@ const defaultOgImageUrl = `https://vocs.dev/api/og?logo=${siteUrl}/images/jincub
 export default defineConfig({
   title: "Jincubator",
   description:
-    "Research focused on Intent BasedSolving, Arbitrage and Market Making",
+    "Research and innovation studio exploring technical systems through research, architecture, prototypes, and product development.",
   iconUrl: "/images/jincubator.png",
   logoUrl: "/images/jincubator.png",
   ogImageUrl: {
@@ -69,16 +69,24 @@ export default defineConfig({
   },
   topNav: [
     {
+      text: "Home",
+      link: "/",
+    },
+    {
       text: "Research",
       link: "/research/intro",
     },
     {
-      text: "Proposals",
-      link: "/proposals/intro",
+      text: "Architecture",
+      link: "/architecture/intro",
     },
     {
       text: "Product",
       link: "/product/intro",
+    },
+    {
+      text: "Proposals",
+      link: "/proposals/intro",
     },
     {
       text: "Partnerships",
@@ -89,52 +97,108 @@ export default defineConfig({
     "/research": [
       { text: "Research", link: "/research/intro" },
       {
-        text: "Architectural Designs (2026)",
+        text: "Trading Systems",
         items: [
-          { text: "John's Architectures", link: "/research/architecture/john" },
-          {
-            text: "Payment Architecture(Circle)",
-            link: "/research/architecture/circle",
-          },
-          {
-            text: "Trading Archichitecture (FalconX)",
-            link: "/research/architecture/falconx",
-          },
-        ],
-      },
-      {
-        text: "Solving and Arbitrage (2025)",
-        items: [
+          { text: "Intro", link: "/research/trading-systems/intro" },
           {
             text: "High Performance Route Evaluation",
             link: "/research/solving/solving",
           },
           {
-            text: "No Liquidity Solving (Tycho 1inch)",
+            text: "Tycho and 1inch Solving",
             link: "/research/solving/tycho1inchNOL",
           },
           {
-            text: "Near Contract Development (1inch Contracts)",
+            text: "1inch NEAR Contracts",
             link: "/research/solving/near",
           },
           {
-            text: "Liquidity Management with ERC-6909 Vault",
-            link: "/research/Intents/protocol",
-          },
-          {
-            text: "Uniswap V4 - Intent Management Hook",
+            text: "Intent Management Hook",
             link: "/research/solving/intent-management-hook",
           },
         ],
       },
       {
-        text: "Layer 1 Platforms (2022/2023)",
-        collapsed: false,
+        text: "Financial Infrastructure",
         items: [
+          { text: "Intro", link: "/research/financial-infrastructure/intro" },
           {
-            text: "Layer 1 Intro",
+            text: "Payments",
+            link: "/research/financial-infrastructure/payments/intro",
+          },
+          {
+            text: "Settlement",
+            link: "/research/financial-infrastructure/settlement/intro",
+          },
+          {
+            text: "Stablecoins",
+            link: "/research/financial-infrastructure/stablecoins/intro",
+          },
+        ],
+      },
+      {
+        text: "DeFi Protocol Engineering",
+        items: [
+          { text: "Intro", link: "/research/defi-protocol-engineering/intro" },
+          { text: "Intents", link: "/research/Intents/intro" },
+          {
+            text: "Intent Flow",
+            link: "/research/Intents/flow",
+          },
+          {
+            text: "Protocol and Resource Locking",
+            link: "/research/Intents/protocol",
+          },
+          { text: "Resource Management", link: "/research/Intents/resources" },
+          { text: "Uniswap V4 Hooks", link: "/research/Intents/hooks" },
+          {
+            text: "Uniswap V4 - Intent Management Hook",
+            link: "/research/solving/intent-management-hook",
+          },
+          {
+            text: "Tycho and 1inch Solving",
+            link: "/research/solving/tycho1inchNOL",
+          },
+        ],
+      },
+      {
+        text: "Distributed Systems",
+        items: [
+          { text: "Intro", link: "/research/distributed-systems/intro" },
+          {
+            text: "Chains",
             link: "/research/chains/intro",
           },
+          {
+            text: "Bridges",
+            link: "/research/bridge/intro",
+          },
+          {
+            text: "Zero Knowledge",
+            link: "/research/zk/intro",
+          },
+          {
+            text: "Primitives",
+            link: "/research/primitives/intro",
+          },
+          {
+            text: "Data Availability",
+            link: "/research/dataAvailabilty/celestia",
+          },
+          {
+            text: "Code Reviews",
+            link: "/research/code/intro",
+          },
+        ],
+      },
+      {
+        text: "AI Engineering",
+        items: [{ text: "Intro", link: "/research/ai-engineering/intro" }],
+      },
+      {
+        text: "Historical Chains",
+        collapsed: true,
+        items: [
           {
             text: "Avalanche",
             link: "/research/chains/avalanche",
@@ -157,7 +221,7 @@ export default defineConfig({
           },
           {
             text: "NEAR",
-            link: "/research/chains/NEAR",
+            link: "/research/chains/near",
           },
           {
             text: "Harmony",
@@ -174,15 +238,12 @@ export default defineConfig({
         ],
       },
       {
-        text: "Code Reviews (2022/2023)",
+        text: "Historical Code Reviews",
+        collapsed: true,
         items: [
           {
-            text: "Code Review Intro",
-            link: "/research/code/intro",
-          },
-          {
             text: "Horizon Bridge",
-            link: "/research/code/horizon",
+            link: "/research/code/Horizon",
           },
           {
             text: "Ethereum Near Bridge",
@@ -195,12 +256,9 @@ export default defineConfig({
         ],
       },
       {
-        text: "Cross Chain Bridges (2022/2023)",
+        text: "Historical Bridges",
+        collapsed: true,
         items: [
-          {
-            text: "Bridging Intro",
-            link: "/research/bridge/intro",
-          },
           {
             text: "Cosmos IBC",
             link: "/research/bridge/cosmos-ibc",
@@ -232,12 +290,9 @@ export default defineConfig({
         ],
       },
       {
-        text: "Zero Knowledge (2022/2023)",
+        text: "Historical Zero Knowledge",
+        collapsed: true,
         items: [
-          {
-            text: "Zero Knowledge Intro",
-            link: "/research/zk/intro",
-          },
           {
             text: "ZK Proof of Stake",
             link: "/research/zk/zkpos",
@@ -253,12 +308,9 @@ export default defineConfig({
         ],
       },
       {
-        text: "Primitives (2022/2023)",
+        text: "Historical Primitives",
+        collapsed: true,
         items: [
-          {
-            text: "Primitives Intro",
-            link: "/research/primitives/intro",
-          },
           {
             text: "Fraud Proofs",
             link: "/research/primitives/fraud-proofs",
@@ -278,6 +330,117 @@ export default defineConfig({
           {
             text: "Signature Schemes",
             link: "/research/primitives/signatures",
+          },
+        ],
+      },
+    ],
+
+    "/architecture": [
+      { text: "Architecture", link: "/architecture/intro" },
+      { text: "Architecture Portfolio", link: "/architecture/portfolio" },
+      {
+        text: "Trading Systems",
+        items: [
+          {
+            text: "Overview",
+            link: "/architecture/trading-systems/intro",
+          },
+          {
+            text: "Solver Architecture",
+            link: "/architecture/trading-systems/solver",
+          },
+          {
+            text: "Salus Architecture",
+            link: "/architecture/trading-systems/salus",
+          },
+          {
+            text: "Trading Evolution",
+            link: "/architecture/trading-systems/evolution",
+          },
+          {
+            text: "Reference Architecture: FalconX",
+            link: "/architecture/trading-systems/falconx",
+          },
+        ],
+      },
+      {
+        text: "Financial Infrastructure",
+        items: [
+          {
+            text: "Overview",
+            link: "/architecture/financial-infrastructure/intro",
+          },
+          {
+            text: "Settlement Architecture",
+            link: "/architecture/financial-infrastructure/settlement",
+          },
+          {
+            text: "Financial Platform Engineering",
+            link: "/architecture/financial-infrastructure/platform-engineering",
+          },
+          {
+            text: "Enterprise SOA",
+            link: "/architecture/enterprise-architecture/soa",
+          },
+          {
+            text: "Reference Architecture: Circle",
+            link: "/architecture/financial-infrastructure/circle",
+          },
+        ],
+      },
+      {
+        text: "DeFi Systems",
+        items: [
+          {
+            text: "Overview",
+            link: "/architecture/defi-systems/intro",
+          },
+          {
+            text: "Intent Architecture",
+            link: "/architecture/defi-systems/intents",
+          },
+          {
+            text: "Protocol Architecture",
+            link: "/architecture/defi-systems/protocol",
+          },
+          {
+            text: "Kanga AMM Incentives Migration",
+            link: "/architecture/defi-systems/kanga",
+          },
+        ],
+      },
+      {
+        text: "Distributed Systems",
+        items: [
+          {
+            text: "Overview",
+            link: "/architecture/distributed-systems/intro",
+          },
+          {
+            text: "EAVE Parachain Architecture",
+            link: "/architecture/distributed-systems/eave",
+          },
+        ],
+      },
+      {
+        text: "Enterprise Architecture",
+        items: [
+          {
+            text: "Overview",
+            link: "/architecture/enterprise-architecture/intro",
+          },
+          {
+            text: "Enterprise SOA",
+            link: "/architecture/enterprise-architecture/soa",
+          },
+        ],
+      },
+      {
+        text: "AI Systems",
+        items: [
+          {
+            text: "Overview",
+            link: "/architecture/ai-systems/intro",
           },
         ],
       },

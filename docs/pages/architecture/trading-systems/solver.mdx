@@ -1,0 +1,30 @@
+import { ZoomImage } from "../../../public/components/ZoomImage";
+
+# Solver Architecture
+
+Solver architecture is the original trading and execution infrastructure foundation for Jincubator.
+
+It covers route discovery, Tycho-backed market data, simulation, profitability gates, execution queues, and the runtime path from liquidity discovery to transaction execution.
+
+<ZoomImage
+  src="/images/architecture/v4/solver-architecture.png"
+  alt="Solver architecture"
+/>
+
+<ZoomImage
+  src="/images/architecture/v4/solver-walkthrough.png"
+  alt="Solver walkthrough"
+/>
+
+## Architecture Lens
+
+- Route universe construction and graph updates.
+- Simulation and profitability gating before execution.
+- Queue-separated hot path and execution queue.
+- Integration with Tycho indexing, simulation, and execution services.
+
+## Deeper Research
+
+- [System Design & Architecture Portfolio](/research/architecture/john)
+- [High Performance Route Evaluation](/research/solving/solving)
+- [No Liquidity Solving with Tycho and 1inch](/research/solving/tycho1inchNOL)
