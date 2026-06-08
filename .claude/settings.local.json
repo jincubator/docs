@@ -32,7 +32,9 @@
       "Bash(docs/pages/product/solving/roadmap.mdx )",
       "Bash(docs/pages/product/solving/implementation.mdx)",
       "Bash(perl:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

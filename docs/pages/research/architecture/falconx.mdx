@@ -1,0 +1,42 @@
+import { ZoomImage } from "../../../public/components/ZoomImage";
+
+# FalconX Architecture Research Dossier
+
+This dossier collects FalconX-oriented architecture research and interview-preparation material. It is intentionally separate from the [architecture portfolio](/research/architecture/john): this is a public-evidence trading-platform research track, not a personal ownership claim.
+
+## FalconX Ecosystem
+
+<ZoomImage
+  src="/images/research/falconx-architecture.png"
+  alt="FalconX ecosystem architecture"
+/>
+
+FalconX is analyzed as a client-facing institutional digital asset prime brokerage and execution platform. Public evidence supports REST, WebSocket, and FIX connectivity; RFQ/RFS trading workflows; account/reporting APIs; custody and financing product surfaces; DMA/off-exchange settlement products; and expansion into derivatives/options and ETP/ETF markets.
+
+## Architecture Signals
+
+- Institutional client connectivity across REST, WebSocket, and FIX.
+- RFQ request/response and RFS streaming-price workflows.
+- Prime brokerage surfaces: custody, financing, DMA, settlement, reporting, positions, balances, transfers.
+- Public expansion themes: derivatives/options, OTC products, ETP/ETF and TradFi convergence.
+- Responsible inference around OMS/EMS, venue connectivity, risk, credit, margin, settlement, market-data distribution, and reporting systems.
+
+## Evidence Boundary
+
+The validated public story is client-facing and product-facing. It does not validate FalconX internal service names, deployment topology, matching-engine design, venue-gateway implementation, SBE usage, Aeron usage, Rust usage, risk-engine implementation, or settlement-ledger architecture.
+
+## Further Reading
+
+- https://github.com/falconxio
+- https://deepwiki.com/falconxio/falconx-go
+- https://deepwiki.com/falconxio/golang-socketio
+- [FalconX docs](https://app.falconx.io/docs/rfq-rfs?token=3626#client-order-id)
+- [Financial Information eXchange (FIX)](https://www.fixtrading.org/) - [wikipedia](https://en.wikipedia.org/wiki/Financial_Information_eXchange)
+  - [what is fix](https://www.fixtrading.org/what-is-fix)
+  - [specification](https://www.fixtrading.org/online-specification/)
+  - [Technical Standards and Diagram](https://www.fixtrading.org/standards/)
+  - [Fix specification](https://www.fixtrading.org/online-specification/)
+  - [Simple Binary Encoding Specification](https://www.fixtrading.org/standards/sbe/)
+- [Aeron Docs](https://aeron.io/docs/) - https://github.com/aeron-io/aeron - [Simple Binary Encoding](https://aeron.io/docs/simple-binary-encoding/basic-sample)
+  - [SBE Tool Guide](https://github.com/aeron-io/simple-binary-encoding/wiki/Sbe-Tool-Guide)
+  - [**High-Performance Messaging with Aeron: A Practical Guide**](https://medium.com/%40svosh2/the-aeron-e101d54262f4)
