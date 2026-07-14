@@ -2160,55 +2160,6 @@ This area is intentionally sparse for now. It exists so future AI architecture w
 
 import { ZoomImage } from "../../../public/components/ZoomImage";
 
-## EAVE Parachain Architecture
-
-EAVE is a distributed systems architecture example covering Substrate, FRAME, parachain runtime design, node service boundaries, and relay-chain integration.
-
-<ZoomImage src="/images/architecture/v4/eave-parachain-architecture.png" alt="EAVE parachain architecture" />
-
-<ZoomImage src="/images/architecture/v4/eave-runtime-code-walkthrough.png" alt="EAVE runtime code walkthrough" />
-
-### Architecture Lens
-
-* Runtime, node service, pallet, collator, and relay-chain boundaries.
-* Project-owned runtime logic versus upstream framework behavior.
-* Code walkthroughs that connect architecture to implementation.
-
-### Related Research
-
-* [Distributed Systems Research](/research/distributed-systems/intro)
-* [Polkadot Research](/research/chains/polkadot)
-* [EAVE Parachain Design](/product/previous/2021-04-01-eave-parachain)
-
-
-## Distributed Systems Architecture
-
-Distributed Systems architecture covers chains, bridges, proving systems, runtime boundaries, data availability, and cross-chain infrastructure.
-
-This section keeps the architecture lens focused on how distributed components interact, where responsibility boundaries sit, and what evidence supports each system design.
-
-### Current Architecture Work
-
-* [EAVE Parachain Architecture](/architecture/distributed-systems/eave)
-
-### Architecture Lens
-
-* Runtime, node service, pallet, collator, and relay-chain boundaries.
-* Bridge and cross-chain verification architecture.
-* Proving, storage, and settlement boundaries.
-* Project-owned versus upstream framework behavior.
-
-### Related Research
-
-* [Distributed Systems Research](/research/distributed-systems/intro)
-* [Chains](/research/chains/intro)
-* [Bridges](/research/bridge/intro)
-* [Zero Knowledge](/research/zk/intro)
-* [Primitives](/research/primitives/intro)
-
-
-import { ZoomImage } from "../../../public/components/ZoomImage";
-
 ## Intent Architecture
 
 Intent architecture covers the systems that express desired outcomes, lock or allocate resources, route execution, and validate settlement conditions.
@@ -2361,6 +2312,55 @@ Enterprise SOA is also part of the [Financial Infrastructure Architecture](/arch
 * [Financial Infrastructure Architecture](/architecture/financial-infrastructure/intro)
 * [Financial Platform Engineering](/architecture/financial-infrastructure/platform-engineering)
 * [System Design & Architecture Portfolio](/research/architecture/john)
+
+
+import { ZoomImage } from "../../../public/components/ZoomImage";
+
+## EAVE Parachain Architecture
+
+EAVE is a distributed systems architecture example covering Substrate, FRAME, parachain runtime design, node service boundaries, and relay-chain integration.
+
+<ZoomImage src="/images/architecture/v4/eave-parachain-architecture.png" alt="EAVE parachain architecture" />
+
+<ZoomImage src="/images/architecture/v4/eave-runtime-code-walkthrough.png" alt="EAVE runtime code walkthrough" />
+
+### Architecture Lens
+
+* Runtime, node service, pallet, collator, and relay-chain boundaries.
+* Project-owned runtime logic versus upstream framework behavior.
+* Code walkthroughs that connect architecture to implementation.
+
+### Related Research
+
+* [Distributed Systems Research](/research/distributed-systems/intro)
+* [Polkadot Research](/research/chains/polkadot)
+* [EAVE Parachain Design](/product/previous/2021-04-01-eave-parachain)
+
+
+## Distributed Systems Architecture
+
+Distributed Systems architecture covers chains, bridges, proving systems, runtime boundaries, data availability, and cross-chain infrastructure.
+
+This section keeps the architecture lens focused on how distributed components interact, where responsibility boundaries sit, and what evidence supports each system design.
+
+### Current Architecture Work
+
+* [EAVE Parachain Architecture](/architecture/distributed-systems/eave)
+
+### Architecture Lens
+
+* Runtime, node service, pallet, collator, and relay-chain boundaries.
+* Bridge and cross-chain verification architecture.
+* Proving, storage, and settlement boundaries.
+* Project-owned versus upstream framework behavior.
+
+### Related Research
+
+* [Distributed Systems Research](/research/distributed-systems/intro)
+* [Chains](/research/chains/intro)
+* [Bridges](/research/bridge/intro)
+* [Zero Knowledge](/research/zk/intro)
+* [Primitives](/research/primitives/intro)
 
 
 import { ZoomImage } from "../../../public/components/ZoomImage";
@@ -11493,6 +11493,27 @@ fn calculate_priority(&self, route: &MinimalRoute, evaluation: &RouteEvaluation)
 * **Performance Tuning**: Batch sizes, queue configurations
 
 
+## AI Engineering
+
+AI Engineering is a strategic research area for Jincubator.
+
+This section is intentionally lightweight for now. It exists to anchor future work around AI-assisted development, research tooling, agent systems, automation, architecture analysis, and product development workflows without implying that the current site already has deep public coverage in each area.
+
+### Current Focus
+
+* AI-assisted engineering
+* Research tooling
+* Agent systems
+* Automation
+* Architecture and evidence workflows
+
+### Current Position
+
+AI Engineering should be visible in the taxonomy, but it should not dominate the site until more public research, architecture, and product material exists.
+
+For now, the strongest current content remains [Trading Systems](/research/trading-systems/intro), [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro), [Architecture](/architecture/intro), and [Product](/product/intro).
+
+
 import { ZoomImage } from "../../../public/components/ZoomImage";
 
 ## Overview
@@ -12206,27 +12227,6 @@ Many functions in The Compact use custom structs for their calldata. Here are so
 
 * **For Deposits (used with Permit2):**
   * `DepositDetails`: Helper for batch Permit2 deposits.
-
-
-## AI Engineering
-
-AI Engineering is a strategic research area for Jincubator.
-
-This section is intentionally lightweight for now. It exists to anchor future work around AI-assisted development, research tooling, agent systems, automation, architecture analysis, and product development workflows without implying that the current site already has deep public coverage in each area.
-
-### Current Focus
-
-* AI-assisted engineering
-* Research tooling
-* Agent systems
-* Automation
-* Architecture and evidence workflows
-
-### Current Position
-
-AI Engineering should be visible in the taxonomy, but it should not dominate the site until more public research, architecture, and product material exists.
-
-For now, the strongest current content remains [Trading Systems](/research/trading-systems/intro), [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro), [Architecture](/architecture/intro), and [Product](/product/intro).
 
 
 import { ZoomImage } from "../../../public/components/ZoomImage";
@@ -27482,6 +27482,29 @@ For the latest system-design view, see:
 Payments sits closely beside [Settlement](/research/financial-infrastructure/settlement/intro) and [Stablecoins](/research/financial-infrastructure/stablecoins/intro), because payment products depend on finality, reconciliation, liquidity, and token-control systems.
 
 
+## Stablecoins
+
+Stablecoin research focuses on token systems used for payments, settlement, liquidity, and financial platform infrastructure.
+
+The current material is strongest around Circle architecture, stablecoin control surfaces, CCTP, mint and burn flows, proxy upgrades, pausing, blacklisting, permit flows, and the relationship between stablecoins and settlement infrastructure.
+
+### Current Focus
+
+* Stablecoin contract architecture
+* Mint, burn, pause, blacklist, and upgrade controls
+* CCTP and cross-chain stablecoin movement
+* Settlement and reconciliation patterns
+* Stablecoin infrastructure for product development
+
+### Architecture View
+
+* [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
+* [Settlement Architecture](/architecture/financial-infrastructure/settlement)
+* [Settlement](/research/financial-infrastructure/settlement/intro)
+
+Stablecoins sit at the center of payments, DeFi liquidity, and settlement infrastructure, so this area should stay connected to both financial infrastructure and protocol engineering research.
+
+
 ## Settlement
 
 Settlement research focuses on how obligations become final across payment systems, stablecoin platforms, intent systems, and cross-chain infrastructure.
@@ -27510,27 +27533,4 @@ For the latest system-design view, see:
 * [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
 
 Settlement is a bridge between [Financial Infrastructure](/research/financial-infrastructure/intro), [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro), and [Distributed Systems](/research/distributed-systems/intro).
-
-
-## Stablecoins
-
-Stablecoin research focuses on token systems used for payments, settlement, liquidity, and financial platform infrastructure.
-
-The current material is strongest around Circle architecture, stablecoin control surfaces, CCTP, mint and burn flows, proxy upgrades, pausing, blacklisting, permit flows, and the relationship between stablecoins and settlement infrastructure.
-
-### Current Focus
-
-* Stablecoin contract architecture
-* Mint, burn, pause, blacklist, and upgrade controls
-* CCTP and cross-chain stablecoin movement
-* Settlement and reconciliation patterns
-* Stablecoin infrastructure for product development
-
-### Architecture View
-
-* [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
-* [Settlement Architecture](/architecture/financial-infrastructure/settlement)
-* [Settlement](/research/financial-infrastructure/settlement/intro)
-
-Stablecoins sit at the center of payments, DeFi liquidity, and settlement infrastructure, so this area should stay connected to both financial infrastructure and protocol engineering research.
 
