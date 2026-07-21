@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). We have incorporated [Mandates and Solver Payloads](./protocol) to allow Intents to be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+The Protocol leverages an expansive locking system from [the-compact](https://github.com/jincubator/the-compact/). Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs. [Mandates and Solver Payloads](./protocol) describe the proposed execution design.
 
 > As of July 25th the [the-compact](https://github.com/jincubator/the-compact/) we are developing on has been forked from [Uniswap the-compact](https://github.com/Uniswap/the-compact/tree/v1) v1 branch which has not as yet been deployed.
 

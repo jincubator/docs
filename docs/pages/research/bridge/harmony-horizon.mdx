@@ -7,7 +7,7 @@
 
 This document reviews the [horizon](https://github.com/johnwhitton/horizon/tree/refactorV2) current implementation, development tasks that need to be done to support POW and offers some thoughts on next steps to support Ethereum 2.0 and other chains.
 
-Further thoughs on ETH 2.0 support, removing the ETHHASH logic and SPV client and potentially replacing with MMR trees per epoch and checkpoints similar to Harmony Light Client on Ethereum, can find inspiration in [near-rainbow](./near-rainbow.mdx).
+Further thoughs on ETH 2.0 support, removing the ETHHASH logic and SPV client and potentially replacing with MMR trees per epoch and checkpoints similar to Harmony Light Client on Ethereum, can find inspiration in [near-rainbow](/research/bridge/near-rainbow).
 
 ## Approach
 
@@ -17,7 +17,7 @@ Horizon 2.0 approach is to use validity proofs implemented by on-chain smart con
 
 ### Ethereum Light Client
 
-1. ETH 2.0 support see [here](/research/chains/ethereum.mdx)
+1. ETH 2.0 support see [here](/research/chains/ethereum)
 2. Queuing mechanism should be implemented to queue bridge transactions. The queue can be polled as part of the block relay functionality to process bridge transactions once the blocks have been relayed.
 3. Consider whether we can use p2p messaging to receive published blocks rather than looping and polling via an RPC.
 
@@ -47,7 +47,7 @@ Sequencing of Transactions: Needs to be implemented and `TokenMap` in `bridge.js
 
 ### Ethereum Light Client
 
-1. ETH 2.0 support see [here](/research/chains/ethereum.mdx)
+1. ETH 2.0 support see [here](/research/chains/ethereum)
 2. Queuing mechanism should be implemented to queue bridge transactions. The queue can be polled as part of the block relay functionality to process bridge transactions once the blocks have been relayed.
 3. Consider whether we can use p2p messaging to receive published blocks rather than looping and polling via an RPC.
 
@@ -135,7 +135,7 @@ _Note: here we document functionality developed in solidity. We recommend readin
 
 **Harmony contracts deployed to Ethereum 1.0**
 
-_Note these contracts were planned to be implemented with Harmony Light Client support which includes Merkle Mountain Ranges (see this [PR](https://github.com/harmony-one/harmony/pull/3872) and this [review](../chains/harmony#light-client-support)). The planned timeline for implementing this had not been finalized as of Feb 2023._
+_Note these contracts were planned to be implemented with Harmony Light Client support which includes Merkle Mountain Ranges (see this [PR](https://github.com/harmony-one/harmony/pull/3872) and this [review](/research/chains/harmony#light-client-support)). The planned timeline for implementing this had not been finalized as of Feb 2023._
 
 - [HarmonyLightClient.sol](https://github.com/johnwhitton/horizon/blob/refactorV2/contracts/HarmonyLightClient.sol): Allows submission of checkpoints and manages mappings for `checkPointBlocks` (holding blockHeader information including the Merkle Mountain Range Root field `mmrRoot`).
 - [HarmonyParser.sol](https://github.com/johnwhitton/horizon/blob/refactorV2/contracts/HarmonyParser.sol): Parse RLP-encoded block header into BlockHeader data structure and transactions with data fields order as defined in the Transaction struct.

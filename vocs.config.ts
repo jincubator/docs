@@ -7,48 +7,33 @@ import { rehypeMermaidZoom } from "./rehype-mermaid-zoom.js";
 
 const siteUrl = "https://www.jincubator.com";
 const architecturePath = "/research/architecture/john";
-const architectureUrl = `${siteUrl}${architecturePath}/`;
 const architectureImageUrl = `${siteUrl}/images/research/solver-enterprise-infographic.png`;
-const architectureTitle = "System Design & Architecture Portfolio";
-const architectureDescription =
-  "Selected architecture, system design, and engineering leadership work spanning enterprise integration, payments, distributed systems, blockchain infrastructure, DeFi protocols, and trading systems.";
-const defaultOgImageUrl = `https://vocs.dev/api/og?logo=${siteUrl}/images/jincubator.png&title=%title&description=%description`;
+const defaultOgImageUrl = `${siteUrl}/images/jincubator.png`;
 
 export default defineConfig({
   title: "Jincubator",
+  titleTemplate: "%s — Jincubator",
   description:
-    "Research and innovation studio exploring technical systems through research, architecture, prototypes, and product development.",
+    "John Whitton's independent research and engineering studio for financial and distributed systems.",
   iconUrl: "/images/jincubator.png",
-  logoUrl: "/images/jincubator.png",
   ogImageUrl: {
     "/": defaultOgImageUrl,
     [architecturePath]: architectureImageUrl,
   },
-  head: {
-    [architecturePath]: createElement(
+  head: ({ path }) => {
+    const canonicalUrl = new URL(path, siteUrl).toString();
+    return createElement(
       Fragment,
       null,
       createElement("link", {
         rel: "canonical",
-        href: architectureUrl,
+        href: canonicalUrl,
       }),
       createElement("meta", {
         property: "og:url",
-        content: architectureUrl,
+        content: canonicalUrl,
       }),
-      createElement("meta", {
-        name: "twitter:title",
-        content: architectureTitle,
-      }),
-      createElement("meta", {
-        name: "twitter:description",
-        content: architectureDescription,
-      }),
-      createElement("meta", {
-        name: "twitter:image",
-        content: architectureImageUrl,
-      }),
-    ),
+    );
   },
   vite: {
     plugins: [
@@ -69,8 +54,8 @@ export default defineConfig({
   },
   topNav: [
     {
-      text: "Home",
-      link: "/",
+      text: "Work",
+      link: "/work/intro",
     },
     {
       text: "Research",
@@ -81,19 +66,32 @@ export default defineConfig({
       link: "/architecture/intro",
     },
     {
-      text: "Product",
-      link: "/product/intro",
+      text: "Prototypes",
+      link: "/prototypes/intro",
     },
     {
-      text: "Proposals",
-      link: "/proposals/intro",
+      text: "Archive",
+      link: "/archive/intro",
     },
     {
-      text: "Partnerships",
-      link: "/partnerships/intro",
+      text: "Engage",
+      link: "/engage/intro",
+    },
+    {
+      text: "John Whitton",
+      link: "https://johnwhitton.com/",
     },
   ],
   sidebar: {
+    "/work": [
+      { text: "Work", link: "/work/intro" },
+      { text: "Salus", link: "/work/salus" },
+    ],
+    "/prototypes": [
+      { text: "Prototypes", link: "/prototypes/intro" },
+    ],
+    "/archive": [{ text: "Archive", link: "/archive/intro" }],
+    "/engage": [{ text: "Engage", link: "/engage/intro" }],
     "/research": [
       { text: "Research", link: "/research/intro" },
       {
@@ -467,77 +465,19 @@ export default defineConfig({
       },
     ],
     "/product": [
-      { text: "Product", link: "/product/intro" },
+      { text: "Legacy Product Route", link: "/product/intro" },
       {
-        text: "High Performance Solving",
+        text: "Public Architecture Summaries",
         items: [
           { text: "Overview", link: "/product/solving/overview" },
           { text: "Collectors", link: "/product/solving/collectors" },
           { text: "Route Evaluation", link: "/product/solving/routes" },
           { text: "Strategies", link: "/product/solving/strategies" },
           { text: "Protocol Onboarding", link: "/product/solving/protocols" },
-          {
-            text: "Solver Support",
-            items: [
-              { text: "CowSwap", link: "/product/solving/intentsolve/cowswap" },
-              { text: "1inch", link: "/product/solving/intentsolve/1inch" },
-              {
-                text: "Uniswap X",
-                link: "/product/solving/intentsolve/uniswapx",
-              },
-            ],
-          },
-          {
-            text: "FlashHook (Uniswap v4)",
-            link: "/product/solving/flash-hook",
-          },
-          {
-            text: "Liquidity Management",
-            link: "/product/solving/liquidity-management",
-          },
-        ],
-      },
-      {
-        text: "Roadmap",
-        items: [
-          { text: "Roadmap", link: "/product/solving/roadmap" },
-          { text: "Design", link: "/product/solving/design" },
-          { text: "Design 0.2", link: "/product/solving/design-0-2" },
-          { text: "Design 1.0", link: "/product/solving/design-1-0" },
-          { text: "Design 2.0", link: "/product/solving/design-2-0" },
-        ],
-      },
-      {
-        text: "Previous Work",
-        items: [
-          {
-            text: "Rainbow Bridge Research (Harmony 2022)",
-            link: "/product/previous/2023-02-23-rainbow-costs",
-          },
-          {
-            text: "Draft EAVE Whitepaper",
-            link: "/product/previous/2021-12-01-eave-defi",
-          },
-          {
-            text: "Kanga Protocol Whitepaper",
-            link: "/product/previous/2021-05-01-kanga",
-          },
-          {
-            text: "EAVE Parachain Design",
-            link: "/product/previous/2021-04-01-eave-parachain",
-          },
-          {
-            text: "Lessons Learned from Devcon5",
-            link: "/product/previous/2019-10-16-devcon5",
-          },
-          {
-            text: "Project-X Technical White Paper",
-            link: "/product/previous/2018-07-17-projectx",
-          },
         ],
       },
     ],
-    "/partnerships": [{ text: "Partnerships", link: "/partnerships/intro" }],
+    "/partnerships": [{ text: "Engage", link: "/engage/intro" }],
   },
   socials: [
     {

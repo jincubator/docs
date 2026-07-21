@@ -2,12 +2,12 @@
 
 ## Overview
 
-The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution. It does this by introducing a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
+The Protocol is part of an opinionated architecture for an intent based solving protocol which facilitates single- and multichain solving of intents. Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs. The design introduces a SolverPayload which can be executed by the Arbiter to ensure the EIP-712 signed mandate is met.
 
 Key Goals for this design include
 
 - Intent Based Architecture to improve execution
-- Ability for Solvers to execute fills without needing to provide upfront capital
+- Ability for solvers to execute fills without pre-funding trading principal; infrastructure and transaction costs remain
 
 The protocol is inspired by or leverages the following key components
 

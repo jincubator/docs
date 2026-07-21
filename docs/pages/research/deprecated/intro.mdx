@@ -8,14 +8,14 @@ Work in 2025 on Solving, Arbitrage and Indexing using [Tycho](https://docs.prope
 
 Liquidity Fragmentation and Capital Efficiency are areas that can be optimized in Blockchain protocols, with the emergence of Multiple L2 Chains and a shift towards intent-based architectures. There is a greater need than ever for a settlement layer to balance provided liquidity.
 
-This is an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Intents can be solved on a single chain without provisioning up front capital as we arbiters can confirm mandates have been met by solvers at execution time, thus solvers may use the swappers locked funds for execution.
+This is an opinionated architecture for an intent based solving protocol which facilitates single and multichain solving of intents. Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs.
 
 ## Goals
 
 Key Goals for this design include
 
 - Intent Based Architecture to improve execution
-- Ability for Solvers to execute fills without needing to provide upfront capital
+- Ability for solvers to execute fills without pre-funding trading principal; infrastructure and transaction costs remain
 
 Future work includes
 
@@ -27,8 +27,9 @@ Future work includes
 
 <iframe
   src="https://www.loom.com/embed/b4635dbab0bb473f84f5bc55e514e845"
-  frameborder="0"
-  allowfullscreen
+  title="Historical intent-based architecture overview"
+  frameBorder="0"
+  allowFullScreen
   allow="autoplay; encrypted-media"
   style={{
     width: "100%",

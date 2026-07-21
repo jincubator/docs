@@ -1,0 +1,314 @@
+{
+  "facts": [
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 0,
+      "as_of_date": "2026-07-09",
+      "definition": "Routes selected after gas and all configured gates in the retained Base run.",
+      "display_label": "Base selected after-gas routes",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.base.after_gas_selected",
+      "input_hashes": {
+        "runtime_metrics_sha256": "a8280c700cde497132dd32045556cb98174bcd41078fa815f3801e739a8fdce4"
+      },
+      "limitations": "Zero selected routes is specific to this retained run; it is not a claim about all periods, execution success, or realized profit.",
+      "maturity_label": "Observed",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "routes",
+      "workload": "base-trace-20260709T144000Z; 500 blocks; 1,279,758 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 38462,
+      "as_of_date": "2026-07-09",
+      "definition": "Highest observed per-window route-evaluation rate in the retained run; distinct from aggregate sustained throughput.",
+      "display_label": "Base peak route-evaluation throughput",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.base.throughput.peak",
+      "input_hashes": {
+        "runtime_metrics_sha256": "a8280c700cde497132dd32045556cb98174bcd41078fa815f3801e739a8fdce4"
+      },
+      "limitations": "A peak window is not sustained performance and does not establish opportunity recall, execution success, realized profit, or commercial validation.",
+      "maturity_label": "Benchmarked \u2014 retained evidence",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "evaluations/second",
+      "workload": "base-trace-20260709T144000Z; 500 blocks; 1,279,758 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 16537,
+      "as_of_date": "2026-07-09",
+      "definition": "Aggregate evaluated-route count divided by measured service time across the retained run; distinct from the highest per-window peak.",
+      "display_label": "Base sustained route-evaluation throughput",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.base.throughput.sustained",
+      "input_hashes": {
+        "runtime_metrics_sha256": "a8280c700cde497132dd32045556cb98174bcd41078fa815f3801e739a8fdce4"
+      },
+      "limitations": "Throughput does not establish opportunity recall, execution success, realized profit, current live performance, or commercial validation.",
+      "maturity_label": "Benchmarked \u2014 retained evidence",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "evaluations/second",
+      "workload": "base-trace-20260709T144000Z; 500 blocks; 1,279,758 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 0,
+      "as_of_date": "2026-07-09",
+      "definition": "Routes selected after gas and all configured gates in the retained Ethereum run.",
+      "display_label": "Ethereum selected after-gas routes",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.ethereum.after_gas_selected",
+      "input_hashes": {
+        "runtime_metrics_sha256": "23c34fbbe1f7b5592669ce04c04c5fa2064c3c54878911240a48b43628078241"
+      },
+      "limitations": "Zero selected routes is specific to this retained run; it is not a claim about all periods, execution success, or realized profit.",
+      "maturity_label": "Observed",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "routes",
+      "workload": "ethereum-trace-20260709T143958Z; 100 blocks; 486,934 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 2401108,
+      "as_of_date": "2026-07-09",
+      "definition": "Generated candidate routes with at most four hops in the retained Ethereum route catalog.",
+      "display_label": "Ethereum max-four-hop route catalog",
+      "evidence_status": "retained_snapshot_reproduced",
+      "id": "salus.ethereum.max_four_hop_routes",
+      "input_hashes": {
+        "runtime_metrics_sha256": "23c34fbbe1f7b5592669ce04c04c5fa2064c3c54878911240a48b43628078241"
+      },
+      "limitations": "A generated route is not an evaluated route, filtered opportunity, submitted execution, or realized after-gas profit.",
+      "maturity_label": "Observed",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "generated routes",
+      "workload": "ethereum-trace-20260709T143958Z; 100 blocks; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 4552,
+      "as_of_date": "2026-07-09",
+      "definition": "Pool components included by the retained Ethereum graph snapshot and its protocol inclusion policy.",
+      "display_label": "Ethereum pool components",
+      "evidence_status": "retained_snapshot_reproduced",
+      "id": "salus.ethereum.pool_components",
+      "input_hashes": {
+        "runtime_metrics_sha256": "23c34fbbe1f7b5592669ce04c04c5fa2064c3c54878911240a48b43628078241"
+      },
+      "limitations": "The count depends on the retained snapshot and inclusion policy and does not establish liquidity quality, executability, or current live coverage.",
+      "maturity_label": "Observed",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "pool components",
+      "workload": "ethereum-trace-20260709T143958Z; 100 blocks; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 7528,
+      "as_of_date": "2026-07-09",
+      "definition": "Highest observed per-window route-evaluation rate in the retained run; distinct from aggregate sustained throughput.",
+      "display_label": "Ethereum peak route-evaluation throughput",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.ethereum.throughput.peak",
+      "input_hashes": {
+        "runtime_metrics_sha256": "23c34fbbe1f7b5592669ce04c04c5fa2064c3c54878911240a48b43628078241"
+      },
+      "limitations": "A peak window is not sustained performance and does not establish opportunity recall, execution success, realized profit, or commercial validation.",
+      "maturity_label": "Benchmarked \u2014 retained evidence",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "evaluations/second",
+      "workload": "ethereum-trace-20260709T143958Z; 100 blocks; 486,934 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 4554,
+      "as_of_date": "2026-07-09",
+      "definition": "Aggregate evaluated-route count divided by measured service time across the retained run; distinct from the highest per-window peak.",
+      "display_label": "Ethereum sustained route-evaluation throughput",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.ethereum.throughput.sustained",
+      "input_hashes": {
+        "runtime_metrics_sha256": "23c34fbbe1f7b5592669ce04c04c5fa2064c3c54878911240a48b43628078241"
+      },
+      "limitations": "Throughput does not establish opportunity recall, execution success, realized profit, current live performance, or commercial validation.",
+      "maturity_label": "Benchmarked \u2014 retained evidence",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "evaluations/second",
+      "workload": "ethereum-trace-20260709T143958Z; 100 blocks; 486,934 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 3415,
+      "as_of_date": "2026-07-09",
+      "definition": "Token nodes in the retained Ethereum graph snapshot used by the July 9 replay evidence.",
+      "display_label": "Ethereum token nodes",
+      "evidence_status": "retained_snapshot_reproduced",
+      "id": "salus.ethereum.token_nodes",
+      "input_hashes": {
+        "runtime_metrics_sha256": "23c34fbbe1f7b5592669ce04c04c5fa2064c3c54878911240a48b43628078241"
+      },
+      "limitations": "Token nodes are graph entries, not independently validated tradable assets; the value is retained-run evidence, not current live state.",
+      "maturity_label": "Observed",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "token nodes",
+      "workload": "ethereum-trace-20260709T143958Z; 100 blocks; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 0,
+      "as_of_date": "2026-07-09",
+      "definition": "Routes selected after gas and all configured gates in the retained Unichain run.",
+      "display_label": "Unichain selected after-gas routes",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.unichain.after_gas_selected",
+      "input_hashes": {
+        "runtime_metrics_sha256": "92c46345b32a30b44de50362ae034b79488701f5c3c9fd2a3f8130cc4579aa53"
+      },
+      "limitations": "Zero selected routes is specific to this retained run; it is not a claim about all periods, execution success, or realized profit.",
+      "maturity_label": "Observed",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "routes",
+      "workload": "unichain-trace-20260709T144002Z; 1,004 blocks; 100,714 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 21867,
+      "as_of_date": "2026-07-09",
+      "definition": "Highest observed per-window route-evaluation rate in the retained run; distinct from aggregate sustained throughput.",
+      "display_label": "Unichain peak route-evaluation throughput",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.unichain.throughput.peak",
+      "input_hashes": {
+        "runtime_metrics_sha256": "92c46345b32a30b44de50362ae034b79488701f5c3c9fd2a3f8130cc4579aa53"
+      },
+      "limitations": "A peak window is not sustained performance and does not establish opportunity recall, execution success, realized profit, or commercial validation.",
+      "maturity_label": "Benchmarked \u2014 retained evidence",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "evaluations/second",
+      "workload": "unichain-trace-20260709T144002Z; 1,004 blocks; 100,714 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 3259,
+      "as_of_date": "2026-07-09",
+      "definition": "Aggregate evaluated-route count divided by measured service time across the retained run; distinct from the highest per-window peak.",
+      "display_label": "Unichain sustained route-evaluation throughput",
+      "evidence_status": "retained_run_reproduced",
+      "id": "salus.unichain.throughput.sustained",
+      "input_hashes": {
+        "runtime_metrics_sha256": "92c46345b32a30b44de50362ae034b79488701f5c3c9fd2a3f8130cc4579aa53"
+      },
+      "limitations": "Throughput does not establish opportunity recall, execution success, realized profit, current live performance, or commercial validation.",
+      "maturity_label": "Benchmarked \u2014 retained evidence",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "evaluations/second",
+      "workload": "unichain-trace-20260709T144002Z; 1,004 blocks; 100,714 evaluated routes; retained simulation/replay artifact"
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 16,
+      "as_of_date": "2026-07-20",
+      "definition": "Tracked docs/walkthroughs Markdown corpus: 14 numbered walkthroughs plus INDEX.md and README.md.",
+      "display_label": "Walkthrough documents",
+      "evidence_status": "current_reproducible",
+      "id": "salus.walkthrough.documents",
+      "input_hashes": {},
+      "limitations": "This is a defined walkthrough corpus, not every architecture or process document in the repository.",
+      "maturity_label": "Documented",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "documents",
+      "workload": null
+    },
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "approved_value": 13,
+      "as_of_date": "2026-07-20",
+      "definition": "Cargo workspace packages returned by cargo metadata --no-deps --format-version 1 at the audited Salus commit.",
+      "display_label": "Rust crates",
+      "evidence_status": "current_reproducible",
+      "id": "salus.workspace.rust_crates",
+      "input_hashes": {},
+      "limitations": "A package count measures workspace structure, not production maturity, commercial validation, or profitability.",
+      "maturity_label": "Implemented",
+      "source_commit": "3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48",
+      "unit": "crates",
+      "workload": null
+    }
+  ],
+  "generated_on": "2026-07-21",
+  "registry_digest": "e9bbb94305ef988e480b6c133a3595700e6598ec76c9485f39d28e3a05bcad90",
+  "registry_version": "2026-07-21.1",
+  "schema_version": 1,
+  "work": [
+    {
+      "approved_public_surfaces": [
+        "jincubator",
+        "johnwhitton",
+        "portfolio"
+      ],
+      "canonical_jincubator_route": "/work/salus",
+      "display_label": "Salus trading-system research and reference implementation",
+      "id": "salus",
+      "limitations": "Not commercially validated or production-proven profitable; the latest cited retained runs selected zero after-gas routes.",
+      "maturity_label": "Active research / reference implementation",
+      "relationship": "An active Jincubator initiative led and implemented by John Whitton.",
+      "summary": "Researches ingestion, graph construction, candidate-route generation, evaluation, and the boundary between simulated signals and executable outcomes."
+    }
+  ]
+}

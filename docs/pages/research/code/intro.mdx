@@ -21,9 +21,9 @@ In this section we list codebases that implement cryptographic functions. We org
 
 We have summarized the functionality in three areas
 
-- [Signing](../primitives/signatures.mdx)
-- [Cryptographic Primitives](../primitives/primitives.mdx)
-- [Consensus](../chains/intro.mdx)
+- [Signing](/research/primitives/signatures)
+- [Cryptographic Primitives](/research/primitives/primitives)
+- [Consensus](/research/chains/intro)
 
 ## Reference Codebases
 
@@ -67,9 +67,9 @@ We have summarized the functionality in three areas
   - [Harmony MMRHardFork](https://github.com/peekpi/harmony/tree/mmrHardfork)
 
 - Bridging
-  - [Harmony Horizon Bridge](./Horizon.mdx): Detailed code review
+  - [Harmony Horizon Bridge](/research/code/Horizon): Detailed code review
     - [Horizon](https://github.com/johnwhitton/horizon/tree/refactorV2): javascript, solidity
-  - [Near Rainbow Bridge](./ethereum-near.mdx): Detailed code review
+  - [Near Rainbow Bridge](/research/code/ethereum-near): Detailed code review
     - [Near Rainbow Bridge](https://github.com/aurora-is-near/rainbow-bridge): rust, go, solidity, javascript
     - [Near Rainbow Token Connector](https://github.com/aurora-is-near/rainbow-token-connector): soldity
     - SDK
@@ -79,7 +79,7 @@ We have summarized the functionality in three areas
   - [Nomad monprepo](https://github.com/nomad-xyz/monorepo): Nomad is a cross-chain communication protocol. This repo contains the following: Smart contracts for the core Nomad protocol, Smart contracts for the Nomad token bridge SDKs for Nomad's core protocol, bridge, and governance systems, Tooling for local environment simulation and Smart contract deployment tooling.
     - [Nomad rust](https://github.com/nomad-xyz/rust): Nomad is a cross-chain communication standard that supports passing messages between blockchains easily and inexpensively. Like IBC light clients and similar systems, Nomad establishes message-passing channels between chains. Once a channel is established, any application on that chain can use it to send messages to others chains.
     - [Nomad gelato-sdk](https://github.com/nomad-xyz/gelato-sdk): This crate reimplements Gelato's Relay SDK in Rust. It simply wraps Gelato Relay requests and responses to/from Gelato endpoints with Rust types and methods.
-  - [Succinct labs](../bridge/succinct.mdx): Deep dive on Succinct labs Proof of Consensus for Ethreum.
+  - [Succinct labs](/research/bridge/succinct): Deep dive on Succinct labs Proof of Consensus for Ethreum.
     - [Proof of Consensus for Ethereum](https://github.com/succinctlabs/eth-proof-of-consensus): contains both the zkSNARK circuits as well as the smart contracts needed for our succinct light client implementation, as well as prototype message passing contracts and bridge contracts.
   - [Datachain lcp](https://github.com/datachainlab:)A proxy for light client verification executed in TEE.
   - [Cosmos ibc-go](https://github.com/cosmos/ibc-go): allows blockchains to talk to each other. This end-to-end, connection-oriented, stateful protocol provides reliable, ordered, and authenticated communication between heterogeneous blockchains.
