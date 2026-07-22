@@ -5,13 +5,10 @@ description: Public architecture of Salus market-state ingestion and graph updat
 
 # Data Collection
 
-- **Maturity:** Implemented research boundary
-- **Evidence:** [Dated Salus status](/work/salus)
-
-Collectors ingest external market-state changes, normalize them into protocol-independent components, update graph views, and identify affected candidate routes for evaluation.
+The implemented collector boundary ingests external market-state changes, normalizes them into protocol-independent components, updates graph views, and identifies affected candidate routes for evaluation.
 
 The design separates ingestion, state processing, graph maintenance, route cataloguing, evaluation, and execution evidence. This makes it possible to test each boundary without presenting a route evaluation as an opportunity or an execution.
 
 Live data-provider configuration, filtering thresholds, cache policy, queue priorities, and operating values are not published here.
 
-**Next:** review the [solver architecture](/architecture/trading-systems/solver) or [retained evidence](/work/salus).
+The [solver architecture](/architecture/trading-systems/solver) and [Salus project overview](/work/salus) provide the deeper context.

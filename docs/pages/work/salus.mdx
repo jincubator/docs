@@ -1,50 +1,54 @@
 ---
 title: Salus — Active Trading-System Research
-description: Salus status, architecture, dated retained-run evidence, and limitations.
+description: The problem, architecture, John Whitton's contribution, retained results, and limitations for Salus.
 ---
 
 # Salus
 
-- **Relationship:** An active Jincubator initiative led and implemented by John Whitton.
-- **Maturity:** Active research / reference implementation
-- **Evidence date:** Retained runs from July 9, 2026
-- **Evidence cutoff:** Salus commit <code style={{ overflowWrap: "anywhere" }}>3e4d6d5aa9ff9da7b9f26e8b6954494e93ac0a48</code>
+Salus is an active trading-system research and reference implementation led and implemented by John Whitton. It is not commercially validated or production-proven profitable.
 
-Salus researches the path from market-data ingestion through graph construction, candidate-route generation, evaluation, simulation, and controlled execution boundaries.
+## Problem
 
-## Public-safe evidence
+Trading systems must turn changing market data into candidate routes, evaluate those routes quickly, and preserve a clear boundary between a modelled signal and an executable outcome.
 
-Every figure below comes from the [generated public registry snapshot](https://www.jincubator.com/data/rebranding-registry.json), version `2026-07-21.1`, digest <code style={{ overflowWrap: "anywhere" }}>e9bbb94305ef988e480b6c133a3595700e6598ec76c9485f39d28e3a05bcad90</code>. The snapshot records the retained-run date, audited commit, chain workload, input hashes, definitions, maturity labels, and limitations.
+## Approach
 
-| Measurement | Retained value | Evidence label |
-| --- | ---: | --- |
-| Rust workspace | 13 crates | Implemented |
-| Walkthrough corpus | 16 documents: 14 numbered walkthroughs plus index and README | Documented |
-| Ethereum graph | 3,415 token nodes | Observed retained snapshot |
-| Ethereum graph | 4,552 pool components | Observed retained snapshot |
-| Ethereum route catalog | 2,401,108 generated max-four-hop routes | Observed retained snapshot |
+Salus separates market-data ingestion, graph construction, candidate-route generation, route evaluation, simulation, and controlled execution boundaries. This makes each stage testable without equating throughput or a simulated result with realized value.
 
-Generated routes are candidate paths. They are not evaluated routes, filtered opportunities, submitted or included executions, or realized after-gas profit.
+## What John built
+
+John leads and implements the system, its walkthroughs, and the retained measurement workflow.
+
+The implementation spans a 13-crate Rust workspace and 16 walkthrough documents. A retained Ethereum snapshot contains 3,415 token nodes, 4,552 pool components, and 2,401,108 generated max-four-hop routes.
+
+## Technical challenges
+
+Generated routes are candidate paths. They are not evaluated routes, filtered opportunities, submitted or included executions, or realized after-gas profit. Salus keeps those states distinct while processing changing graph data and bounded route sets.
+
+## Retained results
+
+The measurements below come from retained simulation and replay artifacts dated July 9, 2026. They were re-read by the audited code rather than produced by new live market runs.
 
 | Chain and retained workload | Evaluated routes | Sustained evaluations/sec | Peak evaluations/sec | Selected after gas |
 | --- | ---: | ---: | ---: | ---: |
-| Ethereum · `ethereum-trace-20260709T143958Z` · 100 blocks | 486,934 | 4,554 | 7,528 | 0 |
-| Base · `base-trace-20260709T144000Z` · 500 blocks | 1,279,758 | 16,537 | 38,462 | 0 |
-| Unichain · `unichain-trace-20260709T144002Z` · 1,004 blocks | 100,714 | 3,259 | 21,867 | 0 |
+| Ethereum · 100 blocks | 486,934 | 4,554 | 7,528 | 0 |
+| Base · 500 blocks | 1,279,758 | 16,537 | 38,462 | 0 |
+| Unichain · 1,004 blocks | 100,714 | 3,259 | 21,867 | 0 |
 
-Sustained throughput is aggregate evaluated-route count divided by measured service time across a retained run. Peak is the highest observed per-window rate. These were retained simulation/replay artifacts re-read by the audited code, not new live market runs.
+Sustained throughput is aggregate evaluated-route count divided by measured service time across a retained run. Peak is the highest observed per-window rate.
+
+## Limitations
 
 The three cited runs selected zero routes after gas and all configured gates. Throughput does not establish opportunity recall, execution success, realized profit, current live performance, or commercial validation.
 
-## Capital and execution boundary
-
 Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs.
 
-## Architecture
+The public material does not disclose current provider policy, fee policy, thresholds, prioritization, route selection, opportunity values, or submission strategy.
 
-The public architecture describes component boundaries and evidence method without publishing current provider policy, fee policy, thresholds, prioritization, route selection, opportunity values, or submission strategy.
+## Go deeper
 
 - [Salus architecture](/architecture/trading-systems/salus)
 - [Solver architecture](/architecture/trading-systems/solver)
+- [High-performance route evaluation](/research/solving/solving)
 
-**Next:** inspect the [architecture view](/architecture/trading-systems/salus) or [contact John](mailto:john@johnwhitton.com) about a bounded technical discussion.
+[Contact John](mailto:john@johnwhitton.com) about a bounded technical discussion.

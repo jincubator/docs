@@ -14,6 +14,19 @@ assert.deepEqual(validator.findForbidden("EAVE reported approximately $300,000")
 assert.deepEqual(validator.findForbidden("without provisioning up front capital"), [
   "unqualified capital claim",
 ]);
+assert.deepEqual(validator.findForbidden("- **Owner:** John Whitton"), [
+  "internal portfolio metadata",
+]);
+assert.deepEqual(validator.findForbidden("Registry version `2026-07-21.1`"), [
+  "registry presentation",
+]);
+assert.deepEqual(validator.findForbidden('<HomePage.Button href="/work/intro">Work</HomePage.Button>'), [
+  "duplicate homepage navigation",
+]);
+assert.deepEqual(validator.findForbidden("**Next:** Review the project"), [
+  "dashboard-style call to action",
+]);
+assert.deepEqual(validator.findForbidden("The retained evidence is dated and limited."), []);
 
 const route = "/work/intro";
 const validHtml = `<!doctype html><html><head>

@@ -46,6 +46,10 @@ export function findForbidden(text) {
     ["unqualified capital claim", /no up[- ]?front capital|without [^\n.]{0,80}up[- ]?front capital|eliminates up[- ]?front capital/i],
     ["unsupported execution-success claim", /100% execution success rate in production testing/i],
     ["unsupported EAVE precision", /EAVE[^\n]{0,100}(?:(?:\$\s*)?300,?000|\$?300k)|(?:(?:\$\s*)?300,?000|\$?300k)[^\n]{0,100}EAVE/i],
+    ["internal portfolio metadata", /(?:\*\*|<strong>)(?:owner(?: and contact)?|primary contributor|contributor|maturity|status|lifecycle|evidence(?: date| cutoff)?|relationship|engagement model|registry version|updated|current phase):(?:\*\*|<\/strong>)/i],
+    ["registry presentation", /\bregistry (?:version|digest)\b/i],
+    ["duplicate homepage navigation", /<HomePage\.Button\b[^>]*\bhref="\/(?:work\/intro|research\/intro|architecture\/intro|prototypes\/intro|archive\/intro|engage\/intro)"[^>]*>/i],
+    ["dashboard-style call to action", /\*\*Next:\*\*/i],
   ];
   return checks.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
 }
@@ -209,8 +213,6 @@ function validateBuild(root) {
   for (const [title, routes] of titles)
     if (routes.length > 1) issues.push(`duplicate active title "${title}": ${routes.join(", ")}`);
 
-  const salusHtml = fs.readFileSync(routeFile(dist, "/work/salus"), "utf8");
-  if (!salusHtml.includes(REGISTRY_DIGEST)) issues.push("/work/salus: approved registry digest is missing");
   return { issues, routeCount: builtFiles.filter((file) => file.endsWith("/index.html") || file.endsWith("dist/index.html")).length };
 }
 
