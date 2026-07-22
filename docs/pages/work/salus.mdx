@@ -1,54 +1,72 @@
 ---
-title: Salus — Active Trading-System Research
-description: The problem, architecture, John Whitton's contribution, retained results, and limitations for Salus.
+title: "Salus — Active Trading-System Research"
+description: "The architecture, engineering contribution, retained results, and limitations of the Salus trading-system reference implementation."
 ---
+
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/89ce809128405d60c1c3edd1a1d3d0c19a5cfb86/work/salus/README.md. Do not edit directly. */}
 
 # Salus
 
-Salus is an active trading-system research and reference implementation led and implemented by John Whitton. It is not commercially validated or production-proven profitable.
+Salus is an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture.
 
 ## Problem
 
-Trading systems must turn changing market data into candidate routes, evaluate those routes quickly, and preserve a clear boundary between a modelled signal and an executable outcome.
+Trading systems must turn changing market data into candidate routes, evaluate those routes within changing time constraints, and preserve the difference between a modeled signal and an executable outcome. A fast catalog or evaluator is not enough: evidence must remain attributable to a particular revision and retained workload, and each stage must be reviewable without implying success at a later stage.
+
+Salus is an active engineering initiative and reference implementation. Commercial validation remains ongoing. Its present evidence does not establish a production trading platform or profitable after-gas production execution.
 
 ## Approach
 
-Salus separates market-data ingestion, graph construction, candidate-route generation, route evaluation, simulation, and controlled execution boundaries. This makes each stage testable without equating throughput or a simulated result with realized value.
+Salus separates market-state ingestion, inspectable persistence and read models, graph construction, bounded route catalogs, route evaluation, simulation, and controlled execution gates. This makes each stage testable without equating throughput or a simulated result with realized value.
+
+The Salus implementation repository owns current behavior and implementation detail. This case study cites a pinned revision instead of copying living walkthroughs or operational documentation.
 
 ## What John built
 
-John leads and implements the system, its walkthroughs, and the retained measurement workflow.
+Jincubator develops Salus as an engineering and research initiative. John Whitton's supported contribution covers technical leadership and implementation of the system, its walkthrough documentation, and the retained measurement workflow.
 
-The implementation spans a 13-crate Rust workspace and 16 walkthrough documents. A retained Ethereum snapshot contains 3,415 token nodes, 4,552 pool components, and 2,401,108 generated max-four-hop routes.
+The reviewed implementation comprises a 13-crate Rust workspace and a 16-document walkthrough corpus. Its engineering surface includes ingestion and decoded market state, inspectable read models, graph and route catalogs, economic evaluation, simulation and preflight, controlled execution boundaries, queue-backed orchestration, and operator evidence.
+
+This artifact explains that system boundary and its retained observations. It does not reproduce implementation documentation, operational configuration, current strategy behavior, or private evidence.
 
 ## Technical challenges
 
-Generated routes are candidate paths. They are not evaluated routes, filtered opportunities, submitted or included executions, or realized after-gas profit. Salus keeps those states distinct while processing changing graph data and bounded route sets.
+A catalog route, an evaluated route, an observed opportunity, a selected after-gas route, a submitted transaction, an execution, and realized profit are different facts. Salus keeps those states distinct while processing changing graph data and bounded route sets.
+
+Separate crates, read models, evaluation stages, and execution gates improve diagnosis and review. The trade-off is more explicit coordination between components and more evidence before a result can advance from evaluation toward execution. Throughput and catalog size describe implemented capacity and retained workloads; they do not measure opportunity recall, execution success, or profitability.
+
+Salus does not require upfront trading principal for the modeled transaction structure. It still requires infrastructure, RPC, operational, and gas expenditure, and unsuccessful transactions may incur unreimbursed costs.
 
 ## Retained results
 
-The measurements below come from retained simulation and replay artifacts dated July 9, 2026. They were re-read by the audited code rather than produced by new live market runs.
+At the pinned revision, the reviewed sources record these bounded observations:
 
-| Chain and retained workload | Evaluated routes | Sustained evaluations/sec | Peak evaluations/sec | Selected after gas |
-| --- | ---: | ---: | ---: | ---: |
-| Ethereum · 100 blocks | 486,934 | 4,554 | 7,528 | 0 |
-| Base · 500 blocks | 1,279,758 | 16,537 | 38,462 | 0 |
-| Unichain · 1,004 blocks | 100,714 | 3,259 | 21,867 | 0 |
+| Observation | Measured subject | Result |
+| --- | --- | ---: |
+| Workspace structure | Cargo workspace members | 13 Rust crates |
+| Walkthrough corpus | Directory README, index, shared synthesis, and walkthroughs `01`–`13` | 16 files |
+| Ethereum retained graph snapshot | Token nodes | 3,415 |
+| Ethereum retained graph snapshot | Pool components | 4,552 |
+| Ethereum retained graph snapshot | Catalog routes with a maximum of four hops | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second | 16,537 |
+| Base retained runtime run | Peak route evaluations per second | 38,462 |
 
-Sustained throughput is aggregate evaluated-route count divided by measured service time across a retained run. Peak is the highest observed per-window rate.
+The graph figures describe a retained catalog snapshot, not work completed during every runtime block. The sustained Base rate divides completed route evaluations by measured evaluation-service time across the retained July 9 run; the peak is the highest reported observed rate within that run. Neither rate measures profitable opportunities or transactions.
+
+The latest cited retained runs selected zero after-gas routes. The measurements do not establish opportunity recall, current live performance, submitted transactions, successful executions, realized profit, or commercial validation. No new live benchmark was run for this migration.
 
 ## Limitations
 
-The three cited runs selected zero routes after gas and all configured gates. Throughput does not establish opportunity recall, execution success, realized profit, current live performance, or commercial validation.
-
-Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs.
-
-The public material does not disclose current provider policy, fee policy, thresholds, prioritization, route selection, opportunity values, or submission strategy.
+- Profitable after-gas production execution has not been established.
+- Commercial validation remains ongoing.
+- Retained results are dated observations at a pinned revision, not guarantees of present or future performance.
+- Catalog routes, route evaluations, opportunities, selected after-gas routes, submitted transactions, executions, and realized profit are not interchangeable metrics.
+- Implementation and operational maturity continue to evolve in the Salus repository.
+- Public material excludes provider configuration, gas-bidding logic, thresholds, route-selection details, opportunity identities or values, active strategy parameters, vulnerabilities, and other sensitive implementation behavior.
 
 ## Go deeper
 
-- [Salus architecture](/architecture/trading-systems/salus)
-- [Solver architecture](/architecture/trading-systems/solver)
-- [High-performance route evaluation](/research/solving/solving)
-
-[Contact John](mailto:john@johnwhitton.com) about a bounded technical discussion.
+- Explore the public [Salus architecture](https://www.jincubator.com/architecture/trading-systems/salus) and [Solver architecture](https://www.jincubator.com/architecture/trading-systems/solver).
+- Read the public [high-performance route-evaluation research](https://www.jincubator.com/research/solving/solving).
+- See the [long-form architecture portfolio](https://portfolio.johnwhitton.com/) for broader systems work.
+- [Contact John](mailto:john@johnwhitton.com) about a bounded technical discussion.

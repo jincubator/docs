@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -38,6 +39,27 @@ const CHECKED_ROUTES = [
   "/research/solving/tycho1inchNOL",
   "/research/solving/solving",
 ];
+const SALUS_MANIFEST_FIELDS = [
+  "schema_version",
+  "artifact",
+  "route",
+  "format",
+  "source",
+  "lifecycle_state",
+  "publication_status",
+  "reviews",
+  "generator",
+  "outputs",
+  "provenance_notice",
+  "publication_date",
+];
+const SALUS_ARTIFACT_FIELDS = ["id", "type", "title"];
+const SALUS_SOURCE_FIELDS = ["repository", "path", "commit", "revision_date"];
+const SALUS_REVIEW_FIELDS = ["technical", "claim", "editorial"];
+const SALUS_GENERATOR_FIELDS = ["name", "version"];
+const SALUS_OUTPUT_FIELDS = ["destination", "media_type", "sha256"];
+const PRIVATE_PUBLICATION_REFERENCE =
+  /(?:johnwhitton\/prep|\/prep\/|evidence_location|private_reviewer_notes|raw_benchmark_logs|sensitive_strategy)/i;
 
 
 export function findForbidden(text) {
@@ -52,6 +74,126 @@ export function findForbidden(text) {
     ["dashboard-style call to action", /\*\*Next:\*\*/i],
   ];
   return checks.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
+}
+
+
+function checkExactKeys(value, expected, label, issues) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    issues.push(`Salus publication ${label} must be an object`);
+    return false;
+  }
+  const actual = Object.keys(value).sort();
+  const wanted = [...expected].sort();
+  if (JSON.stringify(actual) !== JSON.stringify(wanted)) {
+    issues.push(`Salus publication ${label} fields differ`);
+    return false;
+  }
+  return true;
+}
+
+
+export function validateSalusPublication(root) {
+  const issues = [];
+  const pagePath = path.join(root, "docs/pages/work/salus.mdx");
+  const manifestPath = path.join(
+    root,
+    "docs/public/data/publications/work-salus.json",
+  );
+  if (!fs.existsSync(pagePath)) issues.push("Salus publication MDX is missing");
+  if (!fs.existsSync(manifestPath)) issues.push("Salus publication manifest is missing");
+  if (issues.length) return issues;
+
+  const pageBytes = fs.readFileSync(pagePath);
+  const page = pageBytes.toString("utf8");
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  } catch {
+    return ["Salus publication manifest is not valid JSON"];
+  }
+
+  checkExactKeys(manifest, SALUS_MANIFEST_FIELDS, "manifest", issues);
+  checkExactKeys(manifest.artifact, SALUS_ARTIFACT_FIELDS, "artifact", issues);
+  checkExactKeys(manifest.source, SALUS_SOURCE_FIELDS, "source", issues);
+  checkExactKeys(manifest.reviews, SALUS_REVIEW_FIELDS, "reviews", issues);
+  checkExactKeys(manifest.generator, SALUS_GENERATOR_FIELDS, "generator", issues);
+
+  if (manifest.schema_version !== 1)
+    issues.push("Salus publication schema_version must be 1");
+  if (
+    manifest.artifact?.id !== "work/salus" ||
+    manifest.artifact?.type !== "work" ||
+    manifest.artifact?.title !== "Salus"
+  ) issues.push("Salus publication artifact identity is invalid");
+  if (manifest.route !== "/work/salus")
+    issues.push("Salus publication route must be /work/salus");
+  if (manifest.format !== "vocs-mdx")
+    issues.push("Salus publication format must be vocs-mdx");
+  if (
+    manifest.source?.repository !== "https://github.com/jincubator/knowledge-base" ||
+    manifest.source?.path !== "work/salus/README.md" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(manifest.source?.revision_date ?? "")
+  ) issues.push("Salus publication source is invalid");
+  if (!/^[0-9a-f]{40,64}$/.test(manifest.source?.commit ?? ""))
+    issues.push("Salus publication source commit is invalid");
+  if (manifest.lifecycle_state !== "ready to publish")
+    issues.push("Salus publication lifecycle_state must be ready to publish");
+  if (manifest.publication_status !== "not published")
+    issues.push("Salus publication publication_status must be not published");
+  if (
+    manifest.reviews?.technical !== "Approved" ||
+    manifest.reviews?.claim !== "Approved" ||
+    manifest.reviews?.editorial !== "Approved"
+  ) issues.push("Salus publication reviews must be Approved");
+  if (
+    manifest.generator?.name !== "knowledge-base-publication" ||
+    manifest.generator?.version !== 1
+  ) issues.push("Salus publication generator is invalid");
+  if (manifest.publication_date !== null)
+    issues.push("Salus publication publication_date must be null");
+  if (
+    manifest.provenance_notice !==
+      "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly."
+  ) issues.push("Salus publication provenance notice is invalid");
+
+  const output = Array.isArray(manifest.outputs) && manifest.outputs.length === 1
+    ? manifest.outputs[0]
+    : null;
+  if (!output) {
+    issues.push("Salus publication output must contain exactly one entry");
+  } else {
+    checkExactKeys(output, SALUS_OUTPUT_FIELDS, "output", issues);
+    if (
+      output.destination !== "docs/pages/work/salus.mdx" ||
+      output.media_type !== "text/mdx" ||
+      !/^[0-9a-f]{64}$/.test(output.sha256 ?? "")
+    ) issues.push("Salus publication output is invalid");
+    const digest = crypto.createHash("sha256").update(pageBytes).digest("hex");
+    if (output.sha256 !== digest)
+      issues.push("Salus publication MDX SHA-256 does not match manifest");
+  }
+
+  const expectedNotice =
+    `{/* Generated from ${manifest.source?.repository}/blob/` +
+    `${manifest.source?.commit}/${manifest.source?.path}. Do not edit directly. */}`;
+  if (!page.includes(expectedNotice))
+    issues.push("Salus publication generated notice does not match manifest");
+
+  const serialized = JSON.stringify(manifest);
+  for (const label of findForbidden(page))
+    issues.push(`Salus publication MDX: ${label}`);
+  for (const label of findForbidden(serialized))
+    issues.push(`Salus publication manifest: ${label}`);
+  if (PRIVATE_PUBLICATION_REFERENCE.test(page) || PRIVATE_PUBLICATION_REFERENCE.test(serialized))
+    issues.push("Salus publication contains a private reference");
+  return issues;
+}
+
+
+export function countCanonicalUrl(htmlDocuments, expectedUrl) {
+  return htmlDocuments.filter((html) =>
+    html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/i)?.[1] === expectedUrl
+  ).length;
 }
 
 
@@ -155,6 +297,7 @@ function validateSource(root) {
   for (const field of ["evidence_location", "private_reviewer_notes", "raw_benchmark_logs", "sensitive_strategy"])
     if (serialized.includes(field)) issues.push(`public registry leaks ${field}`);
   for (const label of findForbidden(serialized)) issues.push(`public registry: ${label}`);
+  issues.push(...validateSalusPublication(root));
   return issues;
 }
 
@@ -185,6 +328,15 @@ function validateBuild(root) {
   const dist = path.join(root, "docs/dist");
   const issues = [];
   const builtFiles = walk(dist);
+  const htmlDocuments = builtFiles
+    .filter((file) => file.endsWith(".html"))
+    .map((file) => fs.readFileSync(file, "utf8"));
+  const salusRouteCount = countCanonicalUrl(
+    htmlDocuments,
+    `${SITE_URL}/work/salus`,
+  );
+  if (salusRouteCount !== 1)
+    issues.push(`expected exactly one canonical /work/salus route, found ${salusRouteCount}`);
   for (const file of builtFiles) {
     const relative = path.relative(dist, file);
     if (path.basename(file) === ".DS_Store") issues.push(`${relative}: .DS_Store copied into build`);

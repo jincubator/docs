@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "id": "work/salus",
+    "type": "work",
+    "title": "Salus"
+  },
+  "route": "/work/salus",
+  "format": "vocs-mdx",
+  "source": {
+    "repository": "https://github.com/jincubator/knowledge-base",
+    "path": "work/salus/README.md",
+    "commit": "89ce809128405d60c1c3edd1a1d3d0c19a5cfb86",
+    "revision_date": "2026-07-22"
+  },
+  "lifecycle_state": "ready to publish",
+  "publication_status": "not published",
+  "reviews": {
+    "technical": "Approved",
+    "claim": "Approved",
+    "editorial": "Approved"
+  },
+  "generator": {
+    "name": "knowledge-base-publication",
+    "version": 1
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/salus.mdx",
+      "media_type": "text/mdx",
+      "sha256": "07ba7e6aca0c704b537680ab5a751846941139e61fba5958216a4bfaf5712709"
+    }
+  ],
+  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
+  "publication_date": null
+}
