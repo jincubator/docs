@@ -101,6 +101,7 @@ Limitations.
 ## Go deeper
 
 [Architecture](https://www.jincubator.com/architecture/trading-systems/salus).
+[Current work](/work/salus).
 `;
   const manifest = {
     schema_version: 1,
@@ -146,6 +147,60 @@ Limitations.
     ),
   );
   fs.writeFileSync(pagePath, page);
+
+  const sectionMutations = [
+    page.replace("## Approach", "## Method"),
+    page.replace(
+      "## Problem\n\nProblem.\n\n## Approach\n\nApproach.",
+      "## Approach\n\nApproach.\n\n## Problem\n\nProblem.",
+    ),
+    page.replace("\n## Approach\n\nApproach.\n", ""),
+    page.replace("\n## Go deeper\n", "\n## Evidence\n\nPrivate.\n\n## Go deeper\n"),
+  ];
+  for (const invalidPage of sectionMutations) {
+    const invalid = structuredClone(manifest);
+    invalid.outputs[0].sha256 = crypto
+      .createHash("sha256")
+      .update(invalidPage)
+      .digest("hex");
+    fs.writeFileSync(pagePath, invalidPage);
+    fs.writeFileSync(manifestPath, `${JSON.stringify(invalid, null, 2)}\n`);
+    assert.ok(
+      validator.validateSalusPublication(fixtureRoot).some((issue) =>
+        issue.includes("public sections"),
+      ),
+      "expected exact ordered public-section validation issue",
+    );
+  }
+
+  const absolutePaths = [
+    "/home/alice/private-evidence",
+    String.raw`C:\Users\alice\private-evidence`,
+    String.raw`\\server\share\private-evidence`,
+    "file:///tmp/private-evidence",
+  ];
+  for (const absolutePath of absolutePaths) {
+    const invalidPage = `${page}\n${absolutePath}\n`;
+    const invalid = structuredClone(manifest);
+    invalid.outputs[0].sha256 = crypto
+      .createHash("sha256")
+      .update(invalidPage)
+      .digest("hex");
+    fs.writeFileSync(pagePath, invalidPage);
+    fs.writeFileSync(manifestPath, `${JSON.stringify(invalid, null, 2)}\n`);
+    assert.ok(
+      validator.validateSalusPublication(fixtureRoot).some((issue) =>
+        issue.includes("absolute filesystem path"),
+      ),
+      `expected absolute filesystem path issue for ${absolutePath}`,
+    );
+  }
+
+  fs.writeFileSync(pagePath, page);
+  fs.writeFileSync(manifestPath, "null\n");
+  assert.deepEqual(validator.validateSalusPublication(fixtureRoot), [
+    "Salus publication manifest must be an object",
+  ]);
 
   const mutations = [
     ["schema_version", (value) => { value.schema_version = 2; }],

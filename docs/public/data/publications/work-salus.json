@@ -10,7 +10,7 @@
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
     "path": "work/salus/README.md",
-    "commit": "89ce809128405d60c1c3edd1a1d3d0c19a5cfb86",
+    "commit": "9805d041ec966852a7f09d12a0b28c5fe5c525a9",
     "revision_date": "2026-07-22"
   },
   "lifecycle_state": "ready to publish",
@@ -28,7 +28,7 @@
     {
       "destination": "docs/pages/work/salus.mdx",
       "media_type": "text/mdx",
-      "sha256": "07ba7e6aca0c704b537680ab5a751846941139e61fba5958216a4bfaf5712709"
+      "sha256": "a879e9020b2558b6316ce2bd7eb4cb3b43793b5c5a024a2ddb456779d69d08cd"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

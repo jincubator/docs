@@ -58,8 +58,23 @@ const SALUS_SOURCE_FIELDS = ["repository", "path", "commit", "revision_date"];
 const SALUS_REVIEW_FIELDS = ["technical", "claim", "editorial"];
 const SALUS_GENERATOR_FIELDS = ["name", "version"];
 const SALUS_OUTPUT_FIELDS = ["destination", "media_type", "sha256"];
+const SALUS_PUBLIC_SECTIONS = [
+  "Problem",
+  "Approach",
+  "What John built",
+  "Technical challenges",
+  "Retained results",
+  "Limitations",
+  "Go deeper",
+];
 const PRIVATE_PUBLICATION_REFERENCE =
   /(?:johnwhitton\/prep|\/prep\/|evidence_location|private_reviewer_notes|raw_benchmark_logs|sensitive_strategy)/i;
+const ABSOLUTE_FILESYSTEM_PATHS = [
+  /\bfile:\/\//i,
+  /(?:^|[\s("'`=])[A-Za-z]:[\\/]/m,
+  /(?:^|[\s("'`=])\\\\[^\\/\s]+[\\/][^\\/\s]+/m,
+  /(?:^|[\s("'`=])\/(?:Users|home|private|tmp|var|etc|opt|usr|root|mnt|srv|Volumes)(?:[\\/]|$)/im,
+];
 
 
 export function findForbidden(text) {
@@ -92,6 +107,11 @@ function checkExactKeys(value, expected, label, issues) {
 }
 
 
+function containsAbsoluteFilesystemPath(text) {
+  return ABSOLUTE_FILESYSTEM_PATHS.some((pattern) => pattern.test(text));
+}
+
+
 export function validateSalusPublication(root) {
   const issues = [];
   const pagePath = path.join(root, "docs/pages/work/salus.mdx");
@@ -112,7 +132,8 @@ export function validateSalusPublication(root) {
     return ["Salus publication manifest is not valid JSON"];
   }
 
-  checkExactKeys(manifest, SALUS_MANIFEST_FIELDS, "manifest", issues);
+  if (!checkExactKeys(manifest, SALUS_MANIFEST_FIELDS, "manifest", issues))
+    return issues;
   checkExactKeys(manifest.artifact, SALUS_ARTIFACT_FIELDS, "artifact", issues);
   checkExactKeys(manifest.source, SALUS_SOURCE_FIELDS, "source", issues);
   checkExactKeys(manifest.reviews, SALUS_REVIEW_FIELDS, "reviews", issues);
@@ -179,6 +200,11 @@ export function validateSalusPublication(root) {
   if (!page.includes(expectedNotice))
     issues.push("Salus publication generated notice does not match manifest");
 
+  const publicSections = [...page.matchAll(/^##\s+(.+?)\s*$/gm)]
+    .map((match) => match[1]);
+  if (JSON.stringify(publicSections) !== JSON.stringify(SALUS_PUBLIC_SECTIONS))
+    issues.push("Salus publication public sections must match the projection contract");
+
   const serialized = JSON.stringify(manifest);
   for (const label of findForbidden(page))
     issues.push(`Salus publication MDX: ${label}`);
@@ -186,6 +212,8 @@ export function validateSalusPublication(root) {
     issues.push(`Salus publication manifest: ${label}`);
   if (PRIVATE_PUBLICATION_REFERENCE.test(page) || PRIVATE_PUBLICATION_REFERENCE.test(serialized))
     issues.push("Salus publication contains a private reference");
+  if (containsAbsoluteFilesystemPath(page) || containsAbsoluteFilesystemPath(serialized))
+    issues.push("Salus publication contains an absolute filesystem path");
   return issues;
 }
 
