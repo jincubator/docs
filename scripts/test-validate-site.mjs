@@ -41,6 +41,10 @@ assert.deepEqual(
 assert.deepEqual(validator.findForbidden(`<a href="/${"Users"}/name/repo">x</a>`), [
   "local filesystem path",
 ]);
+assert.deepEqual(
+  validator.findForbidden("PHASE1=/home/ubuntu/ceremony.ptau"),
+  ["local filesystem path"],
+);
 assert.deepEqual(validator.findForbidden("Ethereum block 3000000"), []);
 assert.deepEqual(validator.findForbidden("EAVE reported approximately $300,000"), [
   "unsupported EAVE precision",
@@ -88,8 +92,14 @@ assert.deepEqual(validator.validateHtml(invalidHtml, route, true), [
 const linkRoot = fs.mkdtempSync(path.join(os.tmpdir(), "built-links-"));
 try {
   const target = path.join(linkRoot, "target/index.html");
+  const history = path.join(linkRoot, "history/index.html");
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, '<h1>Target</h1><h2 id="present">Present</h2>');
+  fs.mkdirSync(path.dirname(history), { recursive: true });
+  fs.writeFileSync(
+    target,
+    '<h1>Target</h1><blockquote data-historical-context="true">Historical</blockquote><h2 id="present">Present</h2>',
+  );
+  fs.writeFileSync(history, '<h1>History</h1><a href="/missing">gone</a>');
   assert.deepEqual(
     validator.validateLinks(
       linkRoot,
@@ -100,6 +110,14 @@ try {
       "/source: missing fragment /target#missing",
       "/source: missing internal target /missing",
     ],
+  );
+  assert.deepEqual(
+    validator.validateRouteCorpus(linkRoot),
+    [
+      "/history: historical route is missing the visible Archive context",
+      "/history: missing internal target /missing",
+    ],
+    "unregistered historical routes must receive baseline context and link validation",
   );
 } finally {
   fs.rmSync(linkRoot, { recursive: true, force: true });

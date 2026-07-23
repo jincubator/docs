@@ -4,6 +4,7 @@ import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
 import remarkMermaid from "remark-mermaidjs";
 import { rehypeMermaidZoom } from "./rehype-mermaid-zoom.js";
+import { rehypeHistoricalContext } from "./rehype-historical-context.js";
 
 const siteUrl = "https://www.jincubator.com";
 const architecturePath = "/research/architecture/john";
@@ -50,7 +51,11 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkMath, remarkMermaid],
-    rehypePlugins: [rehypeMathjax, rehypeMermaidZoom],
+    rehypePlugins: [
+      rehypeMathjax,
+      rehypeMermaidZoom,
+      rehypeHistoricalContext,
+    ],
   },
   topNav: [
     { text: "Work", link: "/work/intro" },

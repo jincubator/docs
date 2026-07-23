@@ -3,30 +3,15 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  ACTIVE_ROUTES,
+  COMPATIBILITY_ROUTES,
+  needsHistoricalContext,
+} from "../route-policy.js";
 
 
 const SITE_URL = "https://www.jincubator.com";
 const REGISTRY_DIGEST = "e9bbb94305ef988e480b6c133a3595700e6598ec76c9485f39d28e3a05bcad90";
-const ACTIVE_ROUTES = [
-  "/",
-  "/work/intro",
-  "/work/salus",
-  "/work/digital-banking",
-  "/work/prototypes",
-  "/research/intro",
-  "/research/solving/solving",
-  "/research/financial-infrastructure/settlement/intro",
-  "/research/defi-protocol-engineering/intro",
-  "/architecture/intro",
-  "/architecture/portfolio",
-  "/architecture/trading-systems/solver",
-  "/architecture/financial-infrastructure/settlement",
-  "/architecture/defi-systems/intents",
-  "/articles/intro",
-  "/articles/solving-arbitrage-market-making",
-  "/archive/intro",
-  "/engage/intro",
-];
 const CHECKED_ROUTES = [
   ...ACTIVE_ROUTES,
   "/prototypes/intro",
@@ -310,12 +295,6 @@ const EXPECTED_TOP_NAVIGATION = [
   "Engage",
   "John Whitton",
 ];
-const COMPATIBILITY_ROUTES = [
-  { route: "/prototypes/intro", current: "/work/prototypes" },
-  { route: "/product/intro", current: "/work/intro" },
-  { route: "/proposals/intro", current: "/work/prototypes" },
-  { route: "/partnerships/intro", current: "/engage/intro" },
-];
 const ABSOLUTE_FILESYSTEM_PATHS = [
   /\bfile:\/\//i,
   /(?:^|[\s("'`=])[A-Za-z]:[\\/]/m,
@@ -326,7 +305,6 @@ const ABSOLUTE_FILESYSTEM_PATHS = [
 
 export function findForbidden(text) {
   const checks = [
-    ["local filesystem path", /\/(?:Users|private)\//],
     ["unqualified capital claim", /no up[- ]?front capital|without [^\n.]{0,80}up[- ]?front capital|eliminates up[- ]?front capital/i],
     ["unsupported execution-success claim", /100% execution success rate in production testing/i],
     ["unsupported EAVE precision", /EAVE[^\n]{0,100}(?:(?:\$\s*)?300,?000|\$?300k)|(?:(?:\$\s*)?300,?000|\$?300k)[^\n]{0,100}EAVE/i],
@@ -335,7 +313,11 @@ export function findForbidden(text) {
     ["duplicate homepage navigation", /<HomePage\.Button\b[^>]*\bhref="\/(?:work\/intro|research\/intro|architecture\/intro|prototypes\/intro|archive\/intro|engage\/intro)"[^>]*>/i],
     ["dashboard-style call to action", /\*\*Next:\*\*/i],
   ];
-  return checks.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
+  const labels = checks
+    .filter(([, pattern]) => pattern.test(text))
+    .map(([label]) => label);
+  if (containsAbsoluteFilesystemPath(text)) labels.unshift("local filesystem path");
+  return labels;
 }
 
 
@@ -721,6 +703,37 @@ export function validateLinks(dist, route, html) {
 }
 
 
+function routeFromIndexFile(dist, file) {
+  const relative = path.relative(dist, file);
+  return relative === "index.html"
+    ? "/"
+    : `/${path.dirname(relative).split(path.sep).join("/")}`;
+}
+
+
+export function validateRouteCorpus(dist) {
+  const issues = [];
+  const routeFiles = walk(dist)
+    .filter((file) => path.basename(file) === "index.html")
+    .sort();
+  for (const file of routeFiles) {
+    const route = routeFromIndexFile(dist, file);
+    const html = fs.readFileSync(file, "utf8");
+    if (
+      needsHistoricalContext(route) &&
+      !html.includes('data-historical-context="true"')
+    ) {
+      issues.push(`${route}: historical route is missing the visible Archive context`);
+    }
+    issues.push(...validateHtml(html, route, false));
+    issues.push(...validateLinks(dist, route, html));
+    if (containsAbsoluteFilesystemPath(html))
+      issues.push(`${route}: contains an absolute filesystem path`);
+  }
+  return issues;
+}
+
+
 function validateBuild(root) {
   const dist = path.join(root, "docs/dist");
   const issues = [];
@@ -750,6 +763,7 @@ function validateBuild(root) {
     if (file.endsWith(".html"))
       for (const label of findForbidden(fs.readFileSync(file, "utf8"))) issues.push(`${relative}: ${label}`);
   }
+  issues.push(...validateRouteCorpus(dist));
 
   const titles = new Map();
   for (const route of CHECKED_ROUTES) {

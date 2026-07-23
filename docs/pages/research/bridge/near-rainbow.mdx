@@ -426,7 +426,7 @@ cargo test --all
 
 ## Appendices
 
-### Appendix A - Ethereum to NEAR block propagation components
+### Appendix A: Ethereum to NEAR block propagation components
 
 - [EthClientContract Wrapper](https://github.com/aurora-is-near/rainbow-bridge/blob/master/eth2near/contract_wrapper/src/eth_client_contract.rs): supports [eth2-client contract](https://github.com/aurora-is-near/rainbow-bridge/blob/master/contracts/near/eth2-client/src/lib.rs) functions `impl EthClientContractTrait for EthClientContract`
   - `fn get_last_submitted_slot(&self) -> u64`
@@ -651,7 +651,7 @@ cargo test --all
     - `pub fn check_account_exists(&self, account_id: &str) -> Result<bool, Box<dyn Error>>`
     - `pub fn is_syncing(&self) -> Result<bool, Box<dyn Error>>`
 
-### Appendix B - Ethereum Light Client Finality Update Verify Components
+### Appendix B: Ethereum Light Client Finality Update Verify Components
 
 [finality-update-verify](https://github.com/aurora-is-near/rainbow-bridge/tree/master/eth2near/finality-update-verify) is called from [fn verify_bls_signature_for_finality_update](https://github.com/aurora-is-near/rainbow-bridge/blob/master/eth2near/eth2near-block-relay-rs/src/eth2near_relay.rs#L422) to verify signatures as part of light_client updates. It relies heavily on the [lighthouse](https://github.com/aurora-is-near/lighthouse) codebase for it's consensus and cryptogrphic primitives. See [Cryptographic Primitives](#cryptographic-primitives) for more information.
 
@@ -669,7 +669,7 @@ cargo test --all
   - `fn to_lighthouse_beacon_block_header(bridge_beacon_block_header: &BeaconBlockHeader,) -> types::BeaconBlockHeader`
   - `pub fn is_correct_finality_update(ethereum_network: &str, light_client_update: &LightClientUpdate,   sync_committee: SyncCommittee,) -> Result<bool, Box<dyn Error>>`
 
-### Appendix C - Cryptographic Primitives
+### Cryptographic Primitives
 
 Following are cryptographic primitives used in the [eth2-client contract](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/near/eth2-client) and [finality-update-verify](https://github.com/aurora-is-near/rainbow-bridge/tree/master/eth2near/finality-update-verify). Many are from the [lighthouse](https://github.com/aurora-is-near/lighthouse) codebase. Specifically [consensus](https://github.com/aurora-is-near/lighthouse/tree/stable/consensus) and [crypto](https://github.com/aurora-is-near/lighthouse/tree/stable/crypto) functions.
 
@@ -759,7 +759,7 @@ Some Primitives from NEAR Rainbow Bridge
   - `pub fn validate_beacon_block_header_update(header_update: &HeaderUpdate) -> bool`
   - `pub fn calculate_min_storage_balance_for_submitter(max_submitted_blocks_by_account: u32,) -> Balance`
 
-**Nearbridge Cryptographic Primitives**
+### Nearbridge Cryptographic Primitives
 
 - [Ed25519.sol](https://github.com/aurora-is-near/rainbow-bridge/blob/master/contracts/eth/nearbridge/contracts/Ed25519.sol): Solidity implementation of the [Ed25519](https://en.wikipedia.org/wiki/EdDSA) which is the EdDSA signature scheme using SHA-512 (SHA-2) and Curve25519 (see [here](https://nbeguier.medium.com/a-real-world-comparison-of-the-ssh-key-algorithms-b26b0b31bfd9)). It has the following functions
   - `function pow22501(uint256 v) private pure returns (uint256 p22501, uint256 p11)` : Computes (v^(2^250-1), v^11) mod p
@@ -853,11 +853,11 @@ At time of writing (Oct 26th, 2022).
 - Daily Transaction fees cost approximately `$600`
 - _Note: Infrastructure costs for running relayer, watchdog, etc are not included._
 
-### Appendix F - NEAR to Ethereum block propagation components
+### NEAR to Ethereum block propagation components
 
 - [eth2near-relay](https://github.com/aurora-is-near/rainbow-bridge/blob/master/cli/commands/start/eth2near-relay.js): Command to start the NEAR to Ethereum relay. See sample invocation [here](https://github.com/aurora-is-near/rainbow-bridge/blob/master/docs/development.md#near2eth-relay)
 - [near2eth-block-relay](https://github.com/aurora-is-near/rainbow-bridge/tree/master/near2eth/near2eth-block-relay) is written in javascript
-  - Has [dependencies](https://github.com/aurora-is-near/rainbow-bridge/blob/master/near2eth/near2eth-block-relay/package.json) including [rainbow-bridge-utils](https://github.com/aurora-is-near/rainbow-bridge/tree/master/utils) see [here](near-rainbow-bridge-utils) for more information. It's other dependencies are also included in `rainbow-bridge-utils`.
+  - Has [dependencies](https://github.com/aurora-is-near/rainbow-bridge/blob/master/near2eth/near2eth-block-relay/package.json) including [rainbow-bridge-utils](https://github.com/aurora-is-near/rainbow-bridge/tree/master/utils). Its other dependencies are also included in `rainbow-bridge-utils`.
     - [ethereumjs-util](https://www.npmjs.com/package/ethereumjs-util): A collection of utility functions for Ethereum.
   - Has the following functions and classes
     - `class Near2EthRelay`

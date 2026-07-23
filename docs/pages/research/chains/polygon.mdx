@@ -7,7 +7,7 @@
 
 Polygon is representative because it uses ECDSA on secp256k1 and a relatively fixed validator set.
 
-The consensus protocol is based on Peppermint<sup>[8](#f8)</sup>, a modified version of Tendermint. Validators sign produced blocks using the ECDSA signature scheme on secp256k1 curves<sup>[9](#f9)</sup>. Currently, the validator set size is fixed at 100 and only changes when a current validator resigns. This restriction will change when a new auction mechanism is implemented.<sup>[10](#f10)</sup>
+The consensus protocol is based on Peppermint<sup>8</sup>, a modified version of Tendermint. Validators sign produced blocks using the ECDSA signature scheme on secp256k1 curves<sup>9</sup>. Currently, the validator set size is fixed at 100 and only changes when a current validator resigns. This restriction will change when a new auction mechanism is implemented.<sup>10</sup>
 
 ## Consensus Mechanism
 
@@ -145,11 +145,11 @@ func init() {
 
 ## Code Review
 
-Polygon's [peppermint fork of tendermint](https://github.com/maticnetwork/tendermint) was forked from [tendermint](https://github.com/tendermint/tendermint) and as such the codebase has similar functions to those documented in [cosmos code review](./cosmos#code-review).
+Polygon's [peppermint fork of tendermint](https://github.com/maticnetwork/tendermint) was forked from [tendermint](https://github.com/tendermint/tendermint) and as such the codebase has similar functions to those documented in the retained [Cosmos review](/research/chains/cosmos).
 
 The major changes are to the consensus and signing (see above)
 
-Polygon's [bor](https://github.com/maticnetwork/bor) is cloned from [geth](https://github.com/ethereum/go-ethereum) and as such the codebase has similar functions to those documented in [ethereum 1-0 code review](./ethereum-1-0#code-review).
+Polygon's [bor](https://github.com/maticnetwork/bor) is cloned from [geth](https://github.com/ethereum/go-ethereum) and as such the codebase has similar functions to those documented in the retained [Ethereum 1.0 review](/research/chains/ethereum-1-0).
 
 ### Signing
 
