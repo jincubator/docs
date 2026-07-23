@@ -97,7 +97,7 @@ Following is a walkthough of block propogation from Ethereum to NEAR. For a bett
             - `self.eth_client_contract.is_known_block`: Checks if the block is already known on the Etherum Client Contract on NEAR
             - `self.verify_bls_signature_for_finality_update(&light_client_update)`: Verifies the BLS signatures. This calls `is_correct_finality_update` in `eth2near/finality-update-verify/src/lib.rs` \*
             - `self.eth_client_contract.send_light_client_update(light_client_update.clone())`: Updates the light client with the finalized block
-            - `self.beacon_rpc_client.get_block_number_for_slot(types::Slot::new(light_client_update.finality_update.header_update.beacon_header.slot.as_u64())),`: Validates Finalized block number is correct on Ethereum usng the `beacon_rpc_client`.
+            - `get_block_number_for_slot(...)`: Validates that the finalized block number is correct on Ethereum using the `beacon_rpc_client`.
             - `sleep(Duration::from_secs(self.sleep_time_after_submission_secs));`: sleeps for the configured submission sleep time.
     - `if !were_submission_on_iter {thread::sleep(Duration::from_secs(self.sleep_time_on_sync_secs));}`: if there were submissions sleep for however many seconds were configured for sync sleep time.
 
