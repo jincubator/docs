@@ -1,30 +1,95 @@
-import { ZoomImage } from "../../../public/components/ZoomImage";
+---
+title: "Intent Execution Boundaries"
+description: "Architecture for preserving mandate, resource authority, solver discretion, validation, execution, and settlement evidence."
+---
 
-# Intent Architecture
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/architecture/intent-execution-boundaries/README.md. Do not edit directly. */}
 
-Intent architecture covers the systems that express desired outcomes, lock or allocate resources, route execution, and validate settlement conditions.
+# Intent Execution Boundaries
 
-The architecture work connects resource locking, arbiters, fillers, solvers, Uniswap v4 hooks, Tycho execution, and protocol-specific workflows.
+An intent architecture is safe only when it preserves the user's mandate, resource authority, solver discretion, execution payload, and settlement evidence as separate boundaries.
 
-<ZoomImage
-  src="/images/architecture/v4/seamless-rebalancing-intent-architecture.png"
-  alt="Seamless rebalancing intent architecture"
-/>
+## The design problem
 
-<ZoomImage
-  src="/images/architecture/v4/seamless-protocol-walkthrough.png"
-  alt="Seamless protocol walkthrough"
-/>
+An intent states an acceptable outcome while leaving some execution choices open. That flexibility can improve routing or user experience, but it creates a trust boundary: another actor may choose venues, timing, payloads, or counterparties while using resources the user controls.
 
-## Architecture Lens
+The architecture must make the allowed freedom machine-checkable and retain enough evidence to explain why one execution was permitted.
 
-- Intent expression, mandate validation, and resource locking.
-- Solver and filler participation.
-- Rebalancing, keeper execution, hooks, and protocol automation.
-- Cross-linking between DeFi protocols and trading-system execution.
+## Mandate and resource boundaries
 
-## Deeper Research
+The mandate should bind:
 
-- [Intent Architecture Research](/research/Intents/architecture)
-- [Intents Research](/research/Intents/intro)
-- [Protocol Architecture](/architecture/defi-systems/protocol)
+- input and acceptable output assets;
+- minimum, maximum, or pricing conditions;
+- amount and permitted partial behavior;
+- expiry and replay domain;
+- permitted fillers, solvers, or execution classes;
+- fee and residual-value rules; and
+- settlement destination.
+
+Resource authority should be narrower than the application roadmap. A lock, approval, or signed order identifies the resource, owner, amount, scope, delegate, expiry, and revocation model. It should not silently authorize arbitrary calls or future features.
+
+## Discovery and validation
+
+Solvers can produce quotes, routes, payloads, or proofs. Those are proposals until validated against the mandate and current state.
+
+A validation boundary should:
+
+1. parse the proposal into a bounded execution model;
+2. verify solver or filler eligibility;
+3. check authorization, expiry, nonce, and replay state;
+4. evaluate price or oracle conditions;
+5. simulate or otherwise validate effects where the domain requires it;
+6. cap fees and residual-value behavior; and
+7. produce one exact authorized payload.
+
+Missing or failed validation is a rejection or retryable evaluation state—not permission to execute.
+
+## Execution and settlement
+
+Execution consumes the exact authorized payload and records submission separately from outcome. Atomic execution can keep resource movement and exchange in one transaction, but it does not prove user satisfaction until outputs, fees, and residual value are observed and checked.
+
+Delayed or cross-chain execution requires explicit states for expiry, cancellation, partial fulfillment, ambiguity, destination observation, and recovery. No generic “filled” flag should replace the evidence needed by the mandate.
+
+## Failure modes and controls
+
+Important failure modes include:
+
+- a solver payload exceeding the signed mandate;
+- stale oracle or route data passing after conditions move;
+- reusable resource authority being replayed or retained too long;
+- callback or hook reentrancy crossing an authority boundary;
+- residual value or fees going to an unintended party;
+- submission being presented as settlement;
+- a delayed intent becoming unowned after expiry or failure; and
+- third-party protocol guarantees being assumed rather than verified.
+
+Controls should be local to the boundary they protect: exact authorization, nonce and expiry, allowlisted call surfaces, fail-closed validation, bounded callbacks, independent outcome checks, and explicit recovery states.
+
+## Alternatives and trade-offs
+
+Direct swaps reduce solver and mandate complexity but expose route choice and timing to the user or application. Request-for-quote systems narrow competition to invited counterparties and can simplify validation, at the cost of less open discovery. Onchain auctions improve transparency but may expose intent information and add latency or transaction cost.
+
+Reusable resource locks can reduce repeated approvals and capital movement, but they increase revocation, lifecycle, and delegate-risk obligations. Atomic financing can reduce upfront principal for a bounded transaction while retaining infrastructure, RPC, operational, gas, and failed-transaction costs.
+
+## Validation boundaries
+
+Prototype validation should prove:
+
+- mandate encoding and signature domain;
+- expiry, nonce, cancellation, and replay behavior;
+- exact asset and amount authority;
+- allowed and rejected solver payloads;
+- callback and reentrancy behavior;
+- oracle and simulation failure handling;
+- output, fee, and residual-value accounting; and
+- recovery after delay, revert, ambiguous response, or partial progress.
+
+Passing local contract tests does not establish an audited protocol, production solver network, partner integration, economic sustainability, or cross-chain security.
+
+## Go deeper
+
+- See the [Intent Systems Prototypes](/work/prototypes).
+- Read the [Intent-Based Execution research](/research/defi-protocol-engineering/intro).
+- Continue to [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-systems/solver) for related evaluation-to-execution boundaries.
+- Browse historical protocol, proposal, and hook pages through the [Archive](/archive/intro).

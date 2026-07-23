@@ -7,6 +7,15 @@ import path from "node:path";
 
 const validator = await import("./validate-site.mjs").catch(() => null);
 assert.ok(validator, "validate-site.mjs must exist");
+const vocsLinkSource = fs.readFileSync(
+  path.join(process.cwd(), "node_modules/vocs/_lib/app/components/Link.js"),
+  "utf8",
+);
+assert.doesNotMatch(
+  vocsLinkSource,
+  /_jsx\(RouterLink,\s*\{\s*\.\.\.props,/,
+  "Vocs internal links must not forward hideExternalIcon to the DOM",
+);
 assert.equal(
   validator.readingTimeMinutes("word ".repeat(1_125)),
   5,
@@ -76,6 +85,26 @@ assert.deepEqual(validator.validateHtml(invalidHtml, route, true), [
   '/work/intro: image alt text is not meaningful: "Logo"',
 ]);
 
+const linkRoot = fs.mkdtempSync(path.join(os.tmpdir(), "built-links-"));
+try {
+  const target = path.join(linkRoot, "target/index.html");
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, '<h1>Target</h1><h2 id="present">Present</h2>');
+  assert.deepEqual(
+    validator.validateLinks(
+      linkRoot,
+      "/source",
+      '<a href="/target#present">ok</a><a href="/target#missing">bad</a><a href="/missing">gone</a>',
+    ),
+    [
+      "/source: missing fragment /target#missing",
+      "/source: missing internal target /missing",
+    ],
+  );
+} finally {
+  fs.rmSync(linkRoot, { recursive: true, force: true });
+}
+
 const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "salus-publication-"));
 try {
   const sourceCommit = "a".repeat(40);
@@ -121,7 +150,7 @@ Limitations.
 
 ## Go deeper
 
-[Architecture](https://www.jincubator.com/architecture/trading-systems/salus).
+[Architecture](/architecture/trading-systems/salus).
 [Current work](/work/salus).
 `;
   const manifest = {
@@ -160,11 +189,36 @@ Limitations.
   fs.writeFileSync(pagePath, page);
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
-  assert.deepEqual(validator.validateSalusPublication(fixtureRoot), []);
+  assert.deepEqual(
+    validator.validatePublicationByArtifact(fixtureRoot, "work/salus"),
+    [],
+  );
+
+  const absoluteInternalLinkPage = page.replace(
+    "[Architecture](/architecture/trading-systems/salus)",
+    "[Architecture](https://www.jincubator.com/architecture/trading-systems/salus)",
+  );
+  const absoluteInternalLinkManifest = structuredClone(manifest);
+  absoluteInternalLinkManifest.outputs[0].sha256 = crypto
+    .createHash("sha256")
+    .update(absoluteInternalLinkPage)
+    .digest("hex");
+  fs.writeFileSync(pagePath, absoluteInternalLinkPage);
+  fs.writeFileSync(
+    manifestPath,
+    `${JSON.stringify(absoluteInternalLinkManifest, null, 2)}\n`,
+  );
+  assert.ok(
+    validator.validatePublicationByArtifact(fixtureRoot, "work/salus").some((issue) =>
+      issue.includes("internal Jincubator links must be site-relative"),
+    ),
+  );
+  fs.writeFileSync(pagePath, page);
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
   fs.appendFileSync(pagePath, "\nmanual edit\n");
   assert.ok(
-    validator.validateSalusPublication(fixtureRoot).some((issue) =>
+    validator.validatePublicationByArtifact(fixtureRoot, "work/salus").some((issue) =>
       issue.includes("MDX SHA-256 does not match manifest"),
     ),
   );
@@ -188,7 +242,7 @@ Limitations.
     fs.writeFileSync(pagePath, invalidPage);
     fs.writeFileSync(manifestPath, `${JSON.stringify(invalid, null, 2)}\n`);
     assert.ok(
-      validator.validateSalusPublication(fixtureRoot).some((issue) =>
+      validator.validatePublicationByArtifact(fixtureRoot, "work/salus").some((issue) =>
         issue.includes("public sections"),
       ),
       "expected exact ordered public-section validation issue",
@@ -211,7 +265,7 @@ Limitations.
     fs.writeFileSync(pagePath, invalidPage);
     fs.writeFileSync(manifestPath, `${JSON.stringify(invalid, null, 2)}\n`);
     assert.ok(
-      validator.validateSalusPublication(fixtureRoot).some((issue) =>
+      validator.validatePublicationByArtifact(fixtureRoot, "work/salus").some((issue) =>
         issue.includes("absolute filesystem path"),
       ),
       `expected absolute filesystem path issue for ${absolutePath}`,
@@ -220,7 +274,7 @@ Limitations.
 
   fs.writeFileSync(pagePath, page);
   fs.writeFileSync(manifestPath, "null\n");
-  assert.deepEqual(validator.validateSalusPublication(fixtureRoot), [
+  assert.deepEqual(validator.validatePublicationByArtifact(fixtureRoot, "work/salus"), [
     "Salus publication manifest must be an object",
   ]);
 
@@ -242,7 +296,7 @@ Limitations.
     mutate(invalid);
     fs.writeFileSync(manifestPath, `${JSON.stringify(invalid, null, 2)}\n`);
     assert.ok(
-      validator.validateSalusPublication(fixtureRoot).some((issue) =>
+      validator.validatePublicationByArtifact(fixtureRoot, "work/salus").some((issue) =>
         issue.includes(label),
       ),
       `expected ${label} validation issue`,
@@ -276,19 +330,31 @@ Limitations.
 assert.deepEqual(
   validator.validatePublications(process.cwd()),
   [],
-  "the tracked four-package handoff must pass generalized validation",
+  "the tracked ten-package handoff must pass generalized validation",
 );
 
 const handoffRoot = fs.mkdtempSync(path.join(os.tmpdir(), "publication-handoff-"));
 try {
   const handoffFiles = [
     "docs/pages/work/salus.mdx",
+    "docs/pages/work/digital-banking.mdx",
+    "docs/pages/work/prototypes.mdx",
     "docs/pages/research/solving/solving.mdx",
+    "docs/pages/research/financial-infrastructure/settlement/intro.mdx",
+    "docs/pages/research/defi-protocol-engineering/intro.mdx",
     "docs/pages/architecture/trading-systems/solver.mdx",
+    "docs/pages/architecture/financial-infrastructure/settlement.mdx",
+    "docs/pages/architecture/defi-systems/intents.mdx",
     "docs/pages/articles/solving-arbitrage-market-making.mdx",
     "docs/public/data/publications/work-salus.json",
+    "docs/public/data/publications/work-digital-banking.json",
+    "docs/public/data/publications/work-intent-systems-prototypes.json",
     "docs/public/data/publications/research-high-performance-route-evaluation.json",
+    "docs/public/data/publications/research-durable-financial-settlement.json",
+    "docs/public/data/publications/research-intent-based-execution.json",
     "docs/public/data/publications/architecture-trading-system-execution-pipelines.json",
+    "docs/public/data/publications/architecture-durable-settlement-control-planes.json",
+    "docs/public/data/publications/architecture-intent-execution-boundaries.json",
     "docs/public/data/publications/collection-solving-arbitrage-market-making.json",
   ];
   for (const relative of handoffFiles) {

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "artifact": {
-    "id": "work/salus",
+    "id": "work/intent-systems-prototypes",
     "type": "work",
-    "title": "Salus"
+    "title": "Intent Systems Prototypes"
   },
-  "route": "/work/salus",
+  "route": "/work/prototypes",
   "format": "vocs-mdx",
   "presentation": {
     "label": "Work",
@@ -13,7 +13,7 @@
   },
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/salus/README.md",
+    "path": "work/intent-systems-prototypes/README.md",
     "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
@@ -30,9 +30,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/work/prototypes.mdx",
       "media_type": "text/mdx",
-      "sha256": "6e2545185596573e157f3895f02bc6bcb74d1c26581116df3de7115fea457d44"
+      "sha256": "54e27223851de2122639108c05aafdfedc6853717851734bcb1effc320b255e9"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

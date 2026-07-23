@@ -11,17 +11,29 @@ const ACTIVE_ROUTES = [
   "/",
   "/work/intro",
   "/work/salus",
+  "/work/digital-banking",
+  "/work/prototypes",
   "/research/intro",
+  "/research/solving/solving",
+  "/research/financial-infrastructure/settlement/intro",
+  "/research/defi-protocol-engineering/intro",
   "/architecture/intro",
+  "/architecture/portfolio",
+  "/architecture/trading-systems/solver",
+  "/architecture/financial-infrastructure/settlement",
+  "/architecture/defi-systems/intents",
   "/articles/intro",
   "/articles/solving-arbitrage-market-making",
-  "/prototypes/intro",
   "/archive/intro",
   "/engage/intro",
 ];
 const CHECKED_ROUTES = [
   ...ACTIVE_ROUTES,
+  "/prototypes/intro",
   "/product/intro",
+  "/proposals/intro",
+  "/proposals/UHI5",
+  "/proposals/Unite",
   "/product/solving/overview",
   "/product/solving/collectors",
   "/product/solving/routes",
@@ -36,10 +48,8 @@ const CHECKED_ROUTES = [
   "/product/solving/intentsolve/1inch",
   "/product/solving/intentsolve/cowswap",
   "/product/solving/intentsolve/uniswapx",
-  "/proposals/Unite",
   "/partnerships/intro",
   "/research/solving/tycho1inchNOL",
-  "/research/solving/solving",
 ];
 const PUBLICATION_MANIFEST_FIELDS = [
   "schema_version",
@@ -83,6 +93,49 @@ const PUBLICATIONS = [
   },
   {
     artifact: {
+      id: "work/digital-banking",
+      type: "work",
+      title: "Digital Banking Reference Implementation",
+    },
+    route: "/work/digital-banking",
+    page: "docs/pages/work/digital-banking.mdx",
+    manifest: "docs/public/data/publications/work-digital-banking.json",
+    source: "work/digital-banking/README.md",
+    label: "Work",
+    readingTime: null,
+    sections: [
+      "Problem",
+      "Approach",
+      "What John built",
+      "Verified scope",
+      "Boundaries and limitations",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "work/intent-systems-prototypes",
+      type: "work",
+      title: "Intent Systems Prototypes",
+    },
+    route: "/work/prototypes",
+    page: "docs/pages/work/prototypes.mdx",
+    manifest:
+      "docs/public/data/publications/work-intent-systems-prototypes.json",
+    source: "work/intent-systems-prototypes/README.md",
+    label: "Work",
+    readingTime: null,
+    sections: [
+      "Why prototype",
+      "UHI5 intent hook",
+      "Unite DeFi solver prototype",
+      "What the experiments establish",
+      "Limitations",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
       id: "research/high-performance-route-evaluation",
       type: "research",
       title: "High-Performance Route Evaluation",
@@ -101,6 +154,52 @@ const PUBLICATIONS = [
       "What the evidence establishes",
       "What it does not establish",
       "Engineering implications",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "research/durable-financial-settlement",
+      type: "research",
+      title: "Durable Financial Settlement",
+    },
+    route: "/research/financial-infrastructure/settlement/intro",
+    page: "docs/pages/research/financial-infrastructure/settlement/intro.mdx",
+    manifest:
+      "docs/public/data/publications/research-durable-financial-settlement.json",
+    source: "research/durable-financial-settlement/README.md",
+    label: "Research",
+    readingTime: null,
+    sections: [
+      "The question",
+      "Evidence layers",
+      "Findings",
+      "Engineering conclusions",
+      "Alternatives and counterevidence",
+      "Limitations and freshness",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "research/intent-based-execution",
+      type: "research",
+      title: "Intent-Based Execution",
+    },
+    route: "/research/defi-protocol-engineering/intro",
+    page: "docs/pages/research/defi-protocol-engineering/intro.mdx",
+    manifest:
+      "docs/public/data/publications/research-intent-based-execution.json",
+    source: "research/intent-based-execution/README.md",
+    label: "Research",
+    readingTime: null,
+    sections: [
+      "The question",
+      "A boundary model",
+      "Prototype findings",
+      "Engineering conclusions",
+      "Alternatives and counterevidence",
+      "Limitations and freshness",
       "Go deeper",
     ],
   },
@@ -125,6 +224,54 @@ const PUBLICATIONS = [
       "Failure modes and observability",
       "Alternatives and trade-offs",
       "Applying the pattern",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "architecture/durable-settlement-control-planes",
+      type: "architecture",
+      title: "Durable Settlement Control Planes",
+    },
+    route: "/architecture/financial-infrastructure/settlement",
+    page: "docs/pages/architecture/financial-infrastructure/settlement.mdx",
+    manifest:
+      "docs/public/data/publications/architecture-durable-settlement-control-planes.json",
+    source: "architecture/durable-settlement-control-planes/README.md",
+    label: "Architecture",
+    readingTime: null,
+    sections: [
+      "The design problem",
+      "Trust and authority boundaries",
+      "Durable state model",
+      "Execution and recovery",
+      "Finality and reconciliation",
+      "Alternatives and trade-offs",
+      "Validation boundaries",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "architecture/intent-execution-boundaries",
+      type: "architecture",
+      title: "Intent Execution Boundaries",
+    },
+    route: "/architecture/defi-systems/intents",
+    page: "docs/pages/architecture/defi-systems/intents.mdx",
+    manifest:
+      "docs/public/data/publications/architecture-intent-execution-boundaries.json",
+    source: "architecture/intent-execution-boundaries/README.md",
+    label: "Architecture",
+    readingTime: null,
+    sections: [
+      "The design problem",
+      "Mandate and resource boundaries",
+      "Discovery and validation",
+      "Execution and settlement",
+      "Failure modes and controls",
+      "Alternatives and trade-offs",
+      "Validation boundaries",
       "Go deeper",
     ],
   },
@@ -162,6 +309,12 @@ const EXPECTED_TOP_NAVIGATION = [
   "Articles",
   "Engage",
   "John Whitton",
+];
+const COMPATIBILITY_ROUTES = [
+  { route: "/prototypes/intro", current: "/work/prototypes" },
+  { route: "/product/intro", current: "/work/intro" },
+  { route: "/proposals/intro", current: "/work/prototypes" },
+  { route: "/partnerships/intro", current: "/engage/intro" },
 ];
 const ABSOLUTE_FILESYSTEM_PATHS = [
   /\bfile:\/\//i,
@@ -377,17 +530,41 @@ function validatePublication(root, spec) {
     issues.push(`${subject} contains a private reference`);
   if (containsAbsoluteFilesystemPath(page) || containsAbsoluteFilesystemPath(serialized))
     issues.push(`${subject} contains an absolute filesystem path`);
+  if (/\]\(https:\/\/(?:www\.)?jincubator\.com\//i.test(page))
+    issues.push(`${subject} internal Jincubator links must be site-relative`);
   return issues;
 }
 
 
-export function validateSalusPublication(root) {
-  return validatePublication(root, PUBLICATIONS[0]);
+export function validatePublicationByArtifact(root, artifactId) {
+  const spec = PUBLICATIONS.find(({ artifact }) => artifact.id === artifactId);
+  return spec
+    ? validatePublication(root, spec)
+    : [`unknown publication artifact: ${artifactId}`];
 }
 
 
 export function validatePublications(root) {
   const issues = PUBLICATIONS.flatMap((spec) => validatePublication(root, spec));
+  const manifestDirectory = path.join(root, "docs/public/data/publications");
+  const registeredManifests = PUBLICATIONS.map(({ manifest }) => manifest).sort();
+  const trackedManifests = fs.existsSync(manifestDirectory)
+    ? fs.readdirSync(manifestDirectory)
+      .filter((name) => name.endsWith(".json"))
+      .map((name) => `docs/public/data/publications/${name}`)
+      .sort()
+    : [];
+  if (JSON.stringify(registeredManifests) !== JSON.stringify(trackedManifests))
+    issues.push("publication manifest registry does not match tracked manifests");
+  for (const [field, values] of [
+    ["artifact", PUBLICATIONS.map(({ artifact }) => artifact.id)],
+    ["route", PUBLICATIONS.map(({ route }) => route)],
+    ["page", PUBLICATIONS.map(({ page }) => page)],
+    ["manifest", PUBLICATIONS.map(({ manifest }) => manifest)],
+  ]) {
+    if (new Set(values).size !== values.length)
+      issues.push(`publication registry contains a duplicate ${field}`);
+  }
   const commits = PUBLICATIONS.flatMap((spec) => {
     try {
       const manifest = JSON.parse(
@@ -522,7 +699,7 @@ function validateSource(root) {
 }
 
 
-function validateLinks(dist, route, html) {
+export function validateLinks(dist, route, html) {
   const issues = [];
   for (const href of anchors(html)) {
     if (/^(?:mailto:|tel:|javascript:)/i.test(href)) continue;
@@ -555,6 +732,15 @@ function validateBuild(root) {
     const routeCount = countCanonicalUrl(htmlDocuments, `${SITE_URL}${route}`);
     if (routeCount !== 1)
       issues.push(`expected exactly one canonical ${route} route, found ${routeCount}`);
+  }
+  for (const { route, current } of COMPATIBILITY_ROUTES) {
+    const file = routeFile(dist, route);
+    if (!fs.existsSync(file)) {
+      issues.push(`${route}: compatibility route is missing`);
+      continue;
+    }
+    if (!anchors(fs.readFileSync(file, "utf8")).includes(current))
+      issues.push(`${route}: compatibility route must identify ${current}`);
   }
   for (const file of builtFiles) {
     const relative = path.relative(dist, file);

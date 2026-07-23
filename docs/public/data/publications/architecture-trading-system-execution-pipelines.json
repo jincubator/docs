@@ -14,7 +14,7 @@
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
     "path": "architecture/trading-system-execution-pipelines/README.md",
-    "commit": "90e4e0a428c48827a95be63aaa266dd28222e042",
+    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
   "lifecycle_state": "ready to publish",
@@ -32,7 +32,7 @@
     {
       "destination": "docs/pages/architecture/trading-systems/solver.mdx",
       "media_type": "text/mdx",
-      "sha256": "2b13191964a3bb479751ae0bf7ff2b1980c8ac9c2ea986687eb079a150a93ce7"
+      "sha256": "777eb83d4fab9b03a452c321d8853e4d9613212d6b5f89b9b4333a4ec447e669"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

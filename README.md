@@ -23,11 +23,11 @@ bun run validate:external
 
 `vocsbuild` builds the site and then checks required routes, metadata, internal links and fragments, image alt text, the public registry digest, prohibited claims, and private-path/build leakage. The external check reports reachable, definitive failure, access-controlled, and inconclusive results separately.
 
-## Generated Salus publication
+## Generated Knowledge Base publications
 
-`docs/pages/work/salus.mdx` and `docs/public/data/publications/work-salus.json` are generated together from the canonical Knowledge Base source. The page is tracked presentation output and must not be edited directly.
+The generated Work, Research, Architecture, and Article pages are tracked presentation outputs from canonical Knowledge Base artifacts. Each MDX page and its matching file under `docs/public/data/publications/` move together and must not be edited directly.
 
-To update it, run the Knowledge Base publication `stage` and `check` commands, copy both files, verify both copies with `cmp`, then run the Docs tests and build. The Docs validator checks the manifest shape, provenance consistency, and MDX digest. Checksum consistency does not replace deterministic regeneration and code review.
+To update them, commit and push the Knowledge Base source first, run every applicable publication `stage` and `check` command, copy each MDX/manifest pair, verify exact bytes with `cmp`, then run the Docs tests and build. The Docs validator checks manifest shape, artifact and route identity, one shared reachable source commit, projection sections, provenance, public safety, site-relative internal navigation, and MDX digests. Checksum consistency does not replace deterministic regeneration and code review.
 
 Manual deployment remains `bun run sitedeploy` and is not part of Track E.
 

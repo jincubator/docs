@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
   "artifact": {
-    "id": "work/salus",
-    "type": "work",
-    "title": "Salus"
+    "id": "architecture/durable-settlement-control-planes",
+    "type": "architecture",
+    "title": "Durable Settlement Control Planes"
   },
-  "route": "/work/salus",
+  "route": "/architecture/financial-infrastructure/settlement",
   "format": "vocs-mdx",
   "presentation": {
-    "label": "Work",
+    "label": "Architecture",
     "reading_time_minutes": null
   },
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/salus/README.md",
+    "path": "architecture/durable-settlement-control-planes/README.md",
     "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
@@ -30,9 +30,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/architecture/financial-infrastructure/settlement.mdx",
       "media_type": "text/mdx",
-      "sha256": "6e2545185596573e157f3895f02bc6bcb74d1c26581116df3de7115fea457d44"
+      "sha256": "e90ad4d7bf752a65c7a362c55a79caeb107318e4ec4729568412bd2c7a3bd15d"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

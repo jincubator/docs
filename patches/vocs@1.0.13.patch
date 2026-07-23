@@ -1,0 +1,43 @@
+diff --git a/_lib/app/components/Link.js b/_lib/app/components/Link.js
+index 4b14984ed59d6e9afacea79475d34917727526aa..8c2fb83690d1548862b53eaecc13fb25290decc3 100644
+--- a/_lib/app/components/Link.js
++++ b/_lib/app/components/Link.js
+@@ -6,7 +6,7 @@ import { ExternalLink } from './ExternalLink.js';
+ import * as styles from './Link.css.js';
+ import { RouterLink } from './RouterLink.js';
+ export const Link = forwardRef((props, ref) => {
+-    const { hideExternalIcon, href, variant = 'accent' } = props;
++    const { hideExternalIcon, href, variant = 'accent', ...internalProps } = props;
+     const { pathname } = useLocation();
+     // External links
+     if (href?.match(/^(www|https?)/))
+@@ -14,6 +14,6 @@ export const Link = forwardRef((props, ref) => {
+     // Internal links
+     const [before, after] = (href || '').split('#');
+     const to = `${before ? before : pathname}${after ? `#${after}` : ''}`;
+-    return (_jsx(RouterLink, { ...props, ref: ref, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless), to: to }));
++    return (_jsx(RouterLink, { ...internalProps, ref: ref, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless), to: to }));
+ });
+ //# sourceMappingURL=Link.js.map
+diff --git a/app/components/Link.tsx b/app/components/Link.tsx
+index f9ba180e40781394b9e793f91b612eed0ff523f0..8910f7fa19664329e5a8d3782543aca8c375fe0a 100644
+--- a/app/components/Link.tsx
++++ b/app/components/Link.tsx
+@@ -16,7 +16,7 @@ type LinkProps = {
+ }
+ 
+ export const Link = forwardRef((props: LinkProps, ref) => {
+-  const { hideExternalIcon, href, variant = 'accent' } = props
++  const { hideExternalIcon, href, variant = 'accent', ...internalProps } = props
+ 
+   const { pathname } = useLocation()
+ 
+@@ -41,7 +41,7 @@ export const Link = forwardRef((props: LinkProps, ref) => {
+   const to = `${before ? before : pathname}${after ? `#${after}` : ''}`
+   return (
+     <RouterLink
+-      {...(props as RouterLinkProps)}
++      {...(internalProps as RouterLinkProps)}
+       ref={ref}
+       className={clsx(
+         props.className,

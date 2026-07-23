@@ -1,29 +1,22 @@
 ---
 title: Architecture
-description: Public system-design work from John Whitton's Jincubator studio, with contribution and evidence boundaries.
+description: Reusable Jincubator architecture for trading pipelines, financial settlement control planes, and intent execution.
 ---
 
 # Architecture
 
-John's architecture work turns research into reviewable boundaries, components, data flows, controls, and trade-offs.
+Current Architecture distills reusable design forces, boundaries, trade-offs, failure modes, and validation lessons from reviewed Work and Research.
 
-- [Trading systems](/architecture/trading-systems/intro)
-- [Financial infrastructure](/architecture/financial-infrastructure/intro)
-- [DeFi systems](/architecture/defi-systems/intro)
-- [Distributed systems](/architecture/distributed-systems/intro)
-- [Enterprise architecture](/architecture/enterprise-architecture/intro)
-- [AI systems](/architecture/ai-systems/intro)
+## Evidence-aware trading-system pipelines
 
-## Current architecture
+[Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-systems/solver) separates observed state, modeled opportunities, controlled execution, and realized outcomes.
 
-- [Salus architecture](/architecture/trading-systems/salus)
-- [Solver architecture](/architecture/trading-systems/solver)
-- [Settlement architecture](/architecture/financial-infrastructure/settlement)
-- [Intent architecture](/architecture/defi-systems/intents)
+## Durable settlement control planes
 
-## Independent studies
+[Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) coordinates business authority, workflow, signing, external effects, accounting, finality, and reconciliation without assigning complete truth to one system.
 
-- [Circle reference architecture](/architecture/financial-infrastructure/circle)
-- [FalconX reference architecture](/architecture/trading-systems/falconx)
+## Intent execution boundaries
 
-The Circle and FalconX studies use public information independently. They do not imply endorsement, commission, internal access, or ownership of those organizations' systems.
+[Intent Execution Boundaries](/architecture/defi-systems/intents) keeps user mandates, resource authority, solver discretion, validation, execution, and settlement separately reviewable.
+
+The [Architecture Portfolio](/architecture/portfolio) provides the presentation view of these current narratives. Historical EAVE, enterprise, Kanga, Circle, FalconX, Salus-deep-dive, and other architecture pages remain available through the [Archive](/archive/intro) with their original context.

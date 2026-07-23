@@ -1,33 +1,76 @@
-# DeFi Protocol Engineering
+---
+title: "Intent-Based Execution"
+description: "A prototype-grounded model for reviewing intent expression, resource authority, solver output, execution, and settlement."
+---
 
-DeFi Protocol Engineering covers protocol design, intents, hooks, liquidity infrastructure, solver participation, and integrations with ecosystems such as Uniswap, 1inch, and Tycho.
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/research/intent-based-execution/README.md. Do not edit directly. */}
 
-This is one of the strongest current research areas on the site. The existing work spans intent architecture, Uniswap v4 hooks, liquidity and resource management, solver execution, Tycho-backed route evaluation, and 1inch contract development.
+# Intent-Based Execution
 
-## Current Focus
+An intent can simplify what a user expresses while moving complexity into authorization, competition, resource control, execution, and settlement boundaries.
 
-- Intents and resource management
-- Uniswap v4 hooks and execution patterns
-- 1inch and Fusion contract research
-- Tycho integration and market-data-backed routing
-- Liquidity infrastructure and solver participation
+## The question
 
-## Existing Research
+What must an intent system prove between a user's desired outcome and an observed settlement?
 
-- [Intents Research](/research/Intents/intro)
-- [Protocol and Resource-Locking Architecture](/research/Intents/protocol)
-- [Resource Management](/research/Intents/resources)
-- [Uniswap v4 Hooks](/research/Intents/hooks)
-- [Uniswap v4 Intent Management Hook](/research/solving/intent-management-hook)
-- [No Liquidity Solving with Tycho and 1inch](/research/solving/tycho1inchNOL)
-- [1inch NEAR Contract Development](/research/solving/near)
+Intent interfaces can reduce the choices exposed to a user, but the system still needs an executable mandate, controlled resources, a method for discovering or selecting execution, and evidence that the outcome satisfied the mandate.
 
-## Architecture View
+## A boundary model
 
-For the latest system-design view, see:
+A useful review follows six boundaries:
 
-- [Intent Architecture](/architecture/defi-systems/intents)
-- [Protocol Architecture](/architecture/defi-systems/protocol)
-- [Kanga AMM Incentives Migration](/architecture/defi-systems/kanga)
+1. **Expression** — what outcome, limits, expiry, and permitted flexibility did the user authorize?
+2. **Resource control** — which assets or permissions are available, for how long, and to whom?
+3. **Discovery** — how can solvers or fillers propose an execution without gaining excess authority?
+4. **Validation** — which oracle, simulation, or onchain conditions determine acceptability?
+5. **Execution** — what exact payload can move resources, and what prevents replay or substitution?
+6. **Settlement** — what evidence establishes the user outcome, fees, residual value, and failure state?
 
-DeFi Protocol Engineering overlaps with [Trading Systems](/research/trading-systems/intro) where protocol integration becomes execution infrastructure.
+The label “intent” does not answer these questions. It changes where they are implemented.
+
+## Prototype findings
+
+The UHI5 and Unite DeFi experiments expose complementary parts of the model:
+
+- a delayed Uniswap v4 hook tests how execution can be deferred while another actor seeks a route;
+- limit-order interactions test how a signed order can permit bounded pre- and post-execution behavior;
+- a Tycho-backed executor tests one path from solver-selected route material to multi-DEX execution;
+- oracle-conditioned orders test the difference between price evidence and execution authority; and
+- ERC-6909-oriented resource locking tests how reusable permissions can be separated from immediate custody transfer.
+
+The public prototype records also show the limits of early integration work: intent creation, listener, solver, partner, cross-chain, and production paths can remain planned even when one hook or contract interaction is executable.
+
+## Engineering conclusions
+
+An intent system should:
+
+- make the mandate and permitted solver discretion explicit;
+- bind resource authority to an identity, scope, expiry, and replay rule;
+- distinguish quote, proposal, selection, simulation, submission, and settlement;
+- validate solver output without granting arbitrary-call authority;
+- define who receives residual value and who bears execution costs;
+- preserve a recoverable state when execution is delayed, rejected, reverted, or ambiguous; and
+- record which claims are prototype observations versus protocol goals.
+
+Atomic execution can reduce principal exposure for a bounded flow, but it does not remove infrastructure, RPC, operational, or gas expenditure. Failed transactions may still incur unreimbursed costs.
+
+## Alternatives and counterevidence
+
+Direct user-authored transactions can be simpler when the execution path is known and user choice is acceptable. Traditional order books or request-for-quote systems can make price discovery and counterparty selection more explicit. A general solver network adds value only when its search and competition benefits justify additional authority, availability, privacy, and settlement complexity.
+
+Resource locking can reduce repeated custody movement, but it expands the importance of revocation, expiry, replay, and downstream permission review.
+
+## Limitations and freshness
+
+- The implementation evidence is historical prototype evidence, not a production solver network or audited protocol.
+- The analysis does not assert current behavior for Uniswap, 1inch, Tycho, The Compact, ERC-7683, or other third-party systems beyond the cited prototype context.
+- Seamless material is excluded from the active evidence set because contribution and disclosure boundaries remain unresolved.
+- Private solver strategy, partner plans, opportunity details, and operational configuration are excluded.
+- Revisit the analysis when a prototype supplies a complete intent-to-settlement trace and independently reviewed security boundary.
+
+## Go deeper
+
+- Review the [Intent Systems Prototypes](/work/prototypes).
+- Continue to [Intent Execution Boundaries](/architecture/defi-systems/intents).
+- Read the [2025 Unite DeFi prototype organization](https://github.com/jincubator-united-defi-2025).
+- Browse superseded intent and protocol notes through the [Archive](/archive/intro).

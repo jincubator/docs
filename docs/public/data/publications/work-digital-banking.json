@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "artifact": {
-    "id": "work/salus",
+    "id": "work/digital-banking",
     "type": "work",
-    "title": "Salus"
+    "title": "Digital Banking Reference Implementation"
   },
-  "route": "/work/salus",
+  "route": "/work/digital-banking",
   "format": "vocs-mdx",
   "presentation": {
     "label": "Work",
@@ -13,7 +13,7 @@
   },
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/salus/README.md",
+    "path": "work/digital-banking/README.md",
     "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
@@ -30,9 +30,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/work/digital-banking.mdx",
       "media_type": "text/mdx",
-      "sha256": "6e2545185596573e157f3895f02bc6bcb74d1c26581116df3de7115fea457d44"
+      "sha256": "8c54dbda47af93e0915dd0d9eee3f254921c88616f28fb8ea7335fe48359657e"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

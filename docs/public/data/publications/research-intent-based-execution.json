@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
   "artifact": {
-    "id": "work/salus",
-    "type": "work",
-    "title": "Salus"
+    "id": "research/intent-based-execution",
+    "type": "research",
+    "title": "Intent-Based Execution"
   },
-  "route": "/work/salus",
+  "route": "/research/defi-protocol-engineering/intro",
   "format": "vocs-mdx",
   "presentation": {
-    "label": "Work",
+    "label": "Research",
     "reading_time_minutes": null
   },
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/salus/README.md",
+    "path": "research/intent-based-execution/README.md",
     "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
@@ -30,9 +30,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/research/defi-protocol-engineering/intro.mdx",
       "media_type": "text/mdx",
-      "sha256": "6e2545185596573e157f3895f02bc6bcb74d1c26581116df3de7115fea457d44"
+      "sha256": "74c7de85a245c9aa75e0c350ca13516ca10e63488d03d168d37646965ddf278a"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

@@ -1,72 +1,37 @@
-import { ZoomImage } from "../../public/components/ZoomImage";
+---
+title: Architecture Portfolio
+description: The current canonical Jincubator architecture portfolio across trading, settlement, and intent execution systems.
+---
 
 # Architecture Portfolio
 
-This is the Architecture-native portfolio view for Jincubator.
+This presentation page organizes the current generated Architecture narratives. The canonical prose and review records live in the Knowledge Base; implementation details remain with their project repositories.
 
-It highlights system designs John Whitton built, led, or contributed to, and separates those from reference architectures used for research and preparation. For broader proof of work, see [portfolio.johnwhitton.com](https://portfolio.johnwhitton.com).
+## Trading systems
 
-## Trading Systems
+[Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-systems/solver) shows how observed state, modeled output, decision gates, submission, and realized outcomes stay distinct.
 
-- [Trading Evolution](/architecture/trading-systems/evolution)
-- [Solver Architecture](/architecture/trading-systems/solver)
-- [Salus Architecture](/architecture/trading-systems/salus)
+Related Work and Research:
 
-<ZoomImage
-  src="/images/architecture/v4/solver-to-salus.png"
-  alt="Solver to Salus architecture evolution"
-/>
+- [Salus](/work/salus)
+- [High-Performance Route Evaluation](/research/solving/solving)
 
-## DeFi Systems
+## Financial settlement
 
-- [Intent Architecture](/architecture/defi-systems/intents)
-- [Protocol Architecture](/architecture/defi-systems/protocol)
-- [Kanga AMM Incentives Migration](/architecture/defi-systems/kanga)
+[Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) covers authority, durable workflow, native effects, accounting, plural finality, reconciliation, and recovery.
 
-<ZoomImage
-  src="/images/architecture/v4/defi-protocol-intent-execution-architecture.png"
-  alt="DeFi protocol intent execution architecture"
-/>
+Related Work and Research:
 
-## Financial Infrastructure
+- [Digital Banking](/work/digital-banking)
+- [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro)
 
-- [Settlement Architecture](/architecture/financial-infrastructure/settlement)
-- [Financial Platform Engineering](/architecture/financial-infrastructure/platform-engineering)
-- [Enterprise SOA](/architecture/enterprise-architecture/soa)
-- [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
+## Intent execution
 
-<ZoomImage
-  src="/images/architecture/v4/eco-routes-stablecoin-settlement-architecture.png"
-  alt="Eco Routes stablecoin settlement architecture"
-/>
+[Intent Execution Boundaries](/architecture/defi-systems/intents) keeps mandates, resource authority, solver proposals, validation, execution, and settlement evidence bounded.
 
-<ZoomImage
-  src="/images/architecture/v4/emasset-prototype-to-production-architecture.png"
-  alt="Emasset prototype to production architecture"
-/>
+Related Work and Research:
 
-## Distributed Systems
+- [Intent Systems Prototypes](/work/prototypes)
+- [Intent-Based Execution](/research/defi-protocol-engineering/intro)
 
-- [EAVE Parachain Architecture](/architecture/distributed-systems/eave)
-
-<ZoomImage
-  src="/images/architecture/v4/eave-parachain-architecture.png"
-  alt="EAVE parachain architecture"
-/>
-
-## Enterprise Architecture
-
-- [Enterprise SOA](/architecture/enterprise-architecture/soa)
-- [Financial Infrastructure Architecture](/architecture/financial-infrastructure/intro)
-
-<ZoomImage
-  src="/images/architecture/v4/enterprise-soa-walkthrough.png"
-  alt="Enterprise SOA walkthrough"
-/>
-
-## Reference Architectures
-
-Reference architectures support interview preparation, architecture analysis, and technical framing. They should not be read as ownership claims.
-
-- [Reference Architecture: FalconX](/architecture/trading-systems/falconx)
-- [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
+Earlier EAVE, enterprise, protocol, settlement, Circle, FalconX, and project-specific pages are retained as historical presentation rather than current canonical Architecture. Browse them through the [Archive](/archive/intro).

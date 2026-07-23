@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
   "artifact": {
-    "id": "work/salus",
-    "type": "work",
-    "title": "Salus"
+    "id": "research/durable-financial-settlement",
+    "type": "research",
+    "title": "Durable Financial Settlement"
   },
-  "route": "/work/salus",
+  "route": "/research/financial-infrastructure/settlement/intro",
   "format": "vocs-mdx",
   "presentation": {
-    "label": "Work",
+    "label": "Research",
     "reading_time_minutes": null
   },
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/salus/README.md",
+    "path": "research/durable-financial-settlement/README.md",
     "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
@@ -30,9 +30,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/research/financial-infrastructure/settlement/intro.mdx",
       "media_type": "text/mdx",
-      "sha256": "6e2545185596573e157f3895f02bc6bcb74d1c26581116df3de7115fea457d44"
+      "sha256": "61e0a578785ab0e7e18f943696e492d0e0c4db5f6e99534267d73a4374d6778d"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

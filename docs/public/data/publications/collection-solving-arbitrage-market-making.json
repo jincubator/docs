@@ -14,7 +14,7 @@
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
     "path": "collections/solving-arbitrage-market-making/README.md",
-    "commit": "90e4e0a428c48827a95be63aaa266dd28222e042",
+    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
   "lifecycle_state": "ready to publish",
@@ -32,7 +32,7 @@
     {
       "destination": "docs/pages/articles/solving-arbitrage-market-making.mdx",
       "media_type": "text/mdx",
-      "sha256": "9e2de3d8c28d05ccbb780792d7528e8dea951270b7d986fc80f02cd1e8123944"
+      "sha256": "20d039b0588cda324b672842519838678db90d18be2d2a34fee1614f8d5122a6"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

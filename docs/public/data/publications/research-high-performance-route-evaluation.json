@@ -14,7 +14,7 @@
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
     "path": "research/high-performance-route-evaluation/README.md",
-    "commit": "90e4e0a428c48827a95be63aaa266dd28222e042",
+    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
     "revision_date": "2026-07-22"
   },
   "lifecycle_state": "ready to publish",
@@ -32,7 +32,7 @@
     {
       "destination": "docs/pages/research/solving/solving.mdx",
       "media_type": "text/mdx",
-      "sha256": "34327674e3b7ede8d32dd52a92119705d775b1caf6ca21cc601a8869d4fb7ba3"
+      "sha256": "7c2a7cd1ed40f706603167860d7512c2b3200f57e52a14f22bcb5123f37df6b7"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
