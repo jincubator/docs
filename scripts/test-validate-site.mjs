@@ -7,6 +7,27 @@ import path from "node:path";
 
 const validator = await import("./validate-site.mjs").catch(() => null);
 assert.ok(validator, "validate-site.mjs must exist");
+assert.equal(
+  validator.readingTimeMinutes("word ".repeat(1_125)),
+  5,
+  "reading time must use max(1, ceil(words / 225))",
+);
+assert.equal(
+  typeof validator.validatePublications,
+  "function",
+  "the validator must validate the complete publication handoff",
+);
+assert.deepEqual(
+  validator.topNavigation(`
+    topNav: [
+      { text: "Work", link: "/work/intro" },
+      { text: "Articles", link: "/articles/intro" },
+    ],
+    sidebar: {},
+  `),
+  ["Work", "Articles"],
+  "top navigation must be objectively readable from the site config",
+);
 
 assert.deepEqual(validator.findForbidden(`<a href="/${"Users"}/name/repo">x</a>`), [
   "local filesystem path",
@@ -108,6 +129,7 @@ Limitations.
     artifact: { id: "work/salus", type: "work", title: "Salus" },
     route: "/work/salus",
     format: "vocs-mdx",
+    presentation: { label: "Work", reading_time_minutes: null },
     source: {
       repository: "https://github.com/jincubator/knowledge-base",
       path: "work/salus/README.md",
@@ -121,7 +143,7 @@ Limitations.
       claim: "Approved",
       editorial: "Approved",
     },
-    generator: { name: "knowledge-base-publication", version: 1 },
+    generator: { name: "knowledge-base-publication", version: 2 },
     outputs: [
       {
         destination: "docs/pages/work/salus.mdx",
@@ -211,7 +233,7 @@ Limitations.
     ["output", (value) => { value.outputs[0].destination = "docs/pages/work/other.mdx"; }],
     ["reviews", (value) => { value.reviews.claim = "Needs Revision"; }],
     ["publication_date", (value) => { value.publication_date = "2026-07-22"; }],
-    ["generator", (value) => { value.generator.version = 2; }],
+    ["generator", (value) => { value.generator.version = 1; }],
     ["fields", (value) => { value.evidence_location = "private"; }],
     ["private reference", (value) => { value.provenance_notice = "johnwhitton/prep"; }],
   ];
@@ -249,4 +271,44 @@ Limitations.
   );
 } finally {
   fs.rmSync(fixtureRoot, { recursive: true, force: true });
+}
+
+assert.deepEqual(
+  validator.validatePublications(process.cwd()),
+  [],
+  "the tracked four-package handoff must pass generalized validation",
+);
+
+const handoffRoot = fs.mkdtempSync(path.join(os.tmpdir(), "publication-handoff-"));
+try {
+  const handoffFiles = [
+    "docs/pages/work/salus.mdx",
+    "docs/pages/research/solving/solving.mdx",
+    "docs/pages/architecture/trading-systems/solver.mdx",
+    "docs/pages/articles/solving-arbitrage-market-making.mdx",
+    "docs/public/data/publications/work-salus.json",
+    "docs/public/data/publications/research-high-performance-route-evaluation.json",
+    "docs/public/data/publications/architecture-trading-system-execution-pipelines.json",
+    "docs/public/data/publications/collection-solving-arbitrage-market-making.json",
+  ];
+  for (const relative of handoffFiles) {
+    const destination = path.join(handoffRoot, relative);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(process.cwd(), relative), destination);
+  }
+  const articleManifestPath = path.join(
+    handoffRoot,
+    "docs/public/data/publications/collection-solving-arbitrage-market-making.json",
+  );
+  const articleManifest = JSON.parse(fs.readFileSync(articleManifestPath, "utf8"));
+  articleManifest.source.commit = "b".repeat(40);
+  fs.writeFileSync(articleManifestPath, `${JSON.stringify(articleManifest, null, 2)}\n`);
+  assert.ok(
+    validator.validatePublications(handoffRoot).includes(
+      "publication manifests must identify one Knowledge Base source commit",
+    ),
+    "mixed source commits must fail the handoff",
+  );
+} finally {
+  fs.rmSync(handoffRoot, { recursive: true, force: true });
 }

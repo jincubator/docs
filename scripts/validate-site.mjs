@@ -13,6 +13,8 @@ const ACTIVE_ROUTES = [
   "/work/salus",
   "/research/intro",
   "/architecture/intro",
+  "/articles/intro",
+  "/articles/solving-arbitrage-market-making",
   "/prototypes/intro",
   "/archive/intro",
   "/engage/intro",
@@ -39,11 +41,12 @@ const CHECKED_ROUTES = [
   "/research/solving/tycho1inchNOL",
   "/research/solving/solving",
 ];
-const SALUS_MANIFEST_FIELDS = [
+const PUBLICATION_MANIFEST_FIELDS = [
   "schema_version",
   "artifact",
   "route",
   "format",
+  "presentation",
   "source",
   "lifecycle_state",
   "publication_status",
@@ -53,22 +56,113 @@ const SALUS_MANIFEST_FIELDS = [
   "provenance_notice",
   "publication_date",
 ];
-const SALUS_ARTIFACT_FIELDS = ["id", "type", "title"];
-const SALUS_SOURCE_FIELDS = ["repository", "path", "commit", "revision_date"];
-const SALUS_REVIEW_FIELDS = ["technical", "claim", "editorial"];
-const SALUS_GENERATOR_FIELDS = ["name", "version"];
-const SALUS_OUTPUT_FIELDS = ["destination", "media_type", "sha256"];
-const SALUS_PUBLIC_SECTIONS = [
-  "Problem",
-  "Approach",
-  "What John built",
-  "Technical challenges",
-  "Retained results",
-  "Limitations",
-  "Go deeper",
+const PUBLICATION_ARTIFACT_FIELDS = ["id", "type", "title"];
+const PUBLICATION_PRESENTATION_FIELDS = ["label", "reading_time_minutes"];
+const PUBLICATION_SOURCE_FIELDS = ["repository", "path", "commit", "revision_date"];
+const PUBLICATION_REVIEW_FIELDS = ["technical", "claim", "editorial"];
+const PUBLICATION_GENERATOR_FIELDS = ["name", "version"];
+const PUBLICATION_OUTPUT_FIELDS = ["destination", "media_type", "sha256"];
+const PUBLICATIONS = [
+  {
+    artifact: { id: "work/salus", type: "work", title: "Salus" },
+    route: "/work/salus",
+    page: "docs/pages/work/salus.mdx",
+    manifest: "docs/public/data/publications/work-salus.json",
+    source: "work/salus/README.md",
+    label: "Work",
+    readingTime: null,
+    sections: [
+      "Problem",
+      "Approach",
+      "What John built",
+      "Technical challenges",
+      "Retained results",
+      "Limitations",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "research/high-performance-route-evaluation",
+      type: "research",
+      title: "High-Performance Route Evaluation",
+    },
+    route: "/research/solving/solving",
+    page: "docs/pages/research/solving/solving.mdx",
+    manifest:
+      "docs/public/data/publications/research-high-performance-route-evaluation.json",
+    source: "research/high-performance-route-evaluation/README.md",
+    label: "Research",
+    readingTime: null,
+    sections: [
+      "The question",
+      "A measurement model",
+      "Retained observations",
+      "What the evidence establishes",
+      "What it does not establish",
+      "Engineering implications",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "architecture/trading-system-execution-pipelines",
+      type: "architecture",
+      title: "Designing Evidence-Aware Trading-System Pipelines",
+    },
+    route: "/architecture/trading-systems/solver",
+    page: "docs/pages/architecture/trading-systems/solver.mdx",
+    manifest:
+      "docs/public/data/publications/architecture-trading-system-execution-pipelines.json",
+    source: "architecture/trading-system-execution-pipelines/README.md",
+    label: "Architecture",
+    readingTime: null,
+    sections: [
+      "The design problem",
+      "Evidence states",
+      "Pipeline boundaries",
+      "Decision gates",
+      "Failure modes and observability",
+      "Alternatives and trade-offs",
+      "Applying the pattern",
+      "Go deeper",
+    ],
+  },
+  {
+    artifact: {
+      id: "collection/solving-arbitrage-market-making",
+      type: "collection",
+      title: "Solving, Arbitrage & Market Making",
+    },
+    route: "/articles/solving-arbitrage-market-making",
+    page: "docs/pages/articles/solving-arbitrage-market-making.mdx",
+    manifest:
+      "docs/public/data/publications/collection-solving-arbitrage-market-making.json",
+    source: "collections/solving-arbitrage-market-making/README.md",
+    label: "Article",
+    readingTime: 5,
+    sections: [
+      "Why build the whole path",
+      "From changing state to a reviewable decision",
+      "Throughput is evidence, not outcome",
+      "Capital efficiency changes the constraint",
+      "What the work demonstrates",
+      "Where the evidence stops",
+      "What to take away",
+      "Go deeper",
+    ],
+  },
 ];
 const PRIVATE_PUBLICATION_REFERENCE =
   /(?:johnwhitton\/prep|\/prep\/|evidence_location|private_reviewer_notes|raw_benchmark_logs|sensitive_strategy)/i;
+const EXPECTED_TOP_NAVIGATION = [
+  "Work",
+  "Research",
+  "Architecture",
+  "Articles",
+  "Engage",
+  "John Whitton",
+];
 const ABSOLUTE_FILESYSTEM_PATHS = [
   /\bfile:\/\//i,
   /(?:^|[\s("'`=])[A-Za-z]:[\\/]/m,
@@ -92,15 +186,21 @@ export function findForbidden(text) {
 }
 
 
-function checkExactKeys(value, expected, label, issues) {
+export function topNavigation(config) {
+  const block = config.match(/topNav:\s*\[([\s\S]*?)\n\s*\],\n\s*sidebar:/)?.[1] ?? "";
+  return [...block.matchAll(/\btext:\s*"([^"]+)"/g)].map((match) => match[1]);
+}
+
+
+function checkExactKeys(value, expected, subject, label, issues) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    issues.push(`Salus publication ${label} must be an object`);
+    issues.push(`${subject} ${label} must be an object`);
     return false;
   }
   const actual = Object.keys(value).sort();
   const wanted = [...expected].sort();
   if (JSON.stringify(actual) !== JSON.stringify(wanted)) {
-    issues.push(`Salus publication ${label} fields differ`);
+    issues.push(`${subject} ${label} fields differ`);
     return false;
   }
   return true;
@@ -112,15 +212,46 @@ function containsAbsoluteFilesystemPath(text) {
 }
 
 
-export function validateSalusPublication(root) {
-  const issues = [];
-  const pagePath = path.join(root, "docs/pages/work/salus.mdx");
-  const manifestPath = path.join(
-    root,
-    "docs/public/data/publications/work-salus.json",
+export function readingTimeMinutes(text) {
+  const withoutCode = text.replace(
+    /^[ \t]*(```|~~~)[^\n]*\n[\s\S]*?^[ \t]*\1[^\n]*(?:\n|$)/gm,
+    "",
   );
-  if (!fs.existsSync(pagePath)) issues.push("Salus publication MDX is missing");
-  if (!fs.existsSync(manifestPath)) issues.push("Salus publication manifest is missing");
+  const visible = withoutCode
+    .split("\n")
+    .filter((line) => {
+      const trimmed = line.trim();
+      return !(trimmed.startsWith("|") && trimmed.endsWith("|")) &&
+        !/^[ \t]*\[[^\]]+\]:/.test(line);
+    })
+    .join("\n")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\[[^\]]+\]/g, "$1")
+    .replace(/<https?:\/\/[^>]+>/g, "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/<[^>]+>/g, "");
+  const words = visible.match(/\b[\p{L}\p{N}_]+(?:[’'-][\p{L}\p{N}_]+)*\b/gu) ?? [];
+  return Math.max(1, Math.ceil(words.length / 225));
+}
+
+
+function articleNarrative(page) {
+  return page
+    .replace(/^---\n[\s\S]*?\n---\n/, "")
+    .replace(/^\{\/\* Generated from .+? \*\/\}\n/m, "")
+    .replace(/^# .+\n/m, "")
+    .replace(/^\*\d+ min read\*\n/m, "")
+    .trim();
+}
+
+
+function validatePublication(root, spec) {
+  const issues = [];
+  const subject = `${spec.artifact.title} publication`;
+  const pagePath = path.join(root, spec.page);
+  const manifestPath = path.join(root, spec.manifest);
+  if (!fs.existsSync(pagePath)) issues.push(`${subject} MDX is missing`);
+  if (!fs.existsSync(manifestPath)) issues.push(`${subject} manifest is missing`);
   if (issues.length) return issues;
 
   const pageBytes = fs.readFileSync(pagePath);
@@ -129,91 +260,148 @@ export function validateSalusPublication(root) {
   try {
     manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   } catch {
-    return ["Salus publication manifest is not valid JSON"];
+    return [`${subject} manifest is not valid JSON`];
   }
 
-  if (!checkExactKeys(manifest, SALUS_MANIFEST_FIELDS, "manifest", issues))
+  if (!checkExactKeys(
+    manifest,
+    PUBLICATION_MANIFEST_FIELDS,
+    subject,
+    "manifest",
+    issues,
+  ))
     return issues;
-  checkExactKeys(manifest.artifact, SALUS_ARTIFACT_FIELDS, "artifact", issues);
-  checkExactKeys(manifest.source, SALUS_SOURCE_FIELDS, "source", issues);
-  checkExactKeys(manifest.reviews, SALUS_REVIEW_FIELDS, "reviews", issues);
-  checkExactKeys(manifest.generator, SALUS_GENERATOR_FIELDS, "generator", issues);
+  checkExactKeys(
+    manifest.artifact,
+    PUBLICATION_ARTIFACT_FIELDS,
+    subject,
+    "artifact",
+    issues,
+  );
+  checkExactKeys(
+    manifest.presentation,
+    PUBLICATION_PRESENTATION_FIELDS,
+    subject,
+    "presentation",
+    issues,
+  );
+  checkExactKeys(manifest.source, PUBLICATION_SOURCE_FIELDS, subject, "source", issues);
+  checkExactKeys(manifest.reviews, PUBLICATION_REVIEW_FIELDS, subject, "reviews", issues);
+  checkExactKeys(
+    manifest.generator,
+    PUBLICATION_GENERATOR_FIELDS,
+    subject,
+    "generator",
+    issues,
+  );
 
   if (manifest.schema_version !== 1)
-    issues.push("Salus publication schema_version must be 1");
-  if (
-    manifest.artifact?.id !== "work/salus" ||
-    manifest.artifact?.type !== "work" ||
-    manifest.artifact?.title !== "Salus"
-  ) issues.push("Salus publication artifact identity is invalid");
-  if (manifest.route !== "/work/salus")
-    issues.push("Salus publication route must be /work/salus");
+    issues.push(`${subject} schema_version must be 1`);
+  if (JSON.stringify(manifest.artifact) !== JSON.stringify(spec.artifact))
+    issues.push(`${subject} artifact identity is invalid`);
+  if (manifest.route !== spec.route)
+    issues.push(`${subject} route must be ${spec.route}`);
   if (manifest.format !== "vocs-mdx")
-    issues.push("Salus publication format must be vocs-mdx");
+    issues.push(`${subject} format must be vocs-mdx`);
+  if (
+    manifest.presentation?.label !== spec.label ||
+    manifest.presentation?.reading_time_minutes !== spec.readingTime
+  ) issues.push(`${subject} presentation is invalid`);
   if (
     manifest.source?.repository !== "https://github.com/jincubator/knowledge-base" ||
-    manifest.source?.path !== "work/salus/README.md" ||
+    manifest.source?.path !== spec.source ||
     !/^\d{4}-\d{2}-\d{2}$/.test(manifest.source?.revision_date ?? "")
-  ) issues.push("Salus publication source is invalid");
+  ) issues.push(`${subject} source is invalid`);
   if (!/^[0-9a-f]{40,64}$/.test(manifest.source?.commit ?? ""))
-    issues.push("Salus publication source commit is invalid");
+    issues.push(`${subject} source commit is invalid`);
   if (manifest.lifecycle_state !== "ready to publish")
-    issues.push("Salus publication lifecycle_state must be ready to publish");
+    issues.push(`${subject} lifecycle_state must be ready to publish`);
   if (manifest.publication_status !== "not published")
-    issues.push("Salus publication publication_status must be not published");
+    issues.push(`${subject} publication_status must be not published`);
   if (
     manifest.reviews?.technical !== "Approved" ||
     manifest.reviews?.claim !== "Approved" ||
     manifest.reviews?.editorial !== "Approved"
-  ) issues.push("Salus publication reviews must be Approved");
+  ) issues.push(`${subject} reviews must be Approved`);
   if (
     manifest.generator?.name !== "knowledge-base-publication" ||
-    manifest.generator?.version !== 1
-  ) issues.push("Salus publication generator is invalid");
+    manifest.generator?.version !== 2
+  ) issues.push(`${subject} generator is invalid`);
   if (manifest.publication_date !== null)
-    issues.push("Salus publication publication_date must be null");
+    issues.push(`${subject} publication_date must be null`);
   if (
     manifest.provenance_notice !==
       "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly."
-  ) issues.push("Salus publication provenance notice is invalid");
+  ) issues.push(`${subject} provenance notice is invalid`);
 
   const output = Array.isArray(manifest.outputs) && manifest.outputs.length === 1
     ? manifest.outputs[0]
     : null;
   if (!output) {
-    issues.push("Salus publication output must contain exactly one entry");
+    issues.push(`${subject} output must contain exactly one entry`);
   } else {
-    checkExactKeys(output, SALUS_OUTPUT_FIELDS, "output", issues);
+    checkExactKeys(output, PUBLICATION_OUTPUT_FIELDS, subject, "output", issues);
     if (
-      output.destination !== "docs/pages/work/salus.mdx" ||
+      output.destination !== spec.page ||
       output.media_type !== "text/mdx" ||
       !/^[0-9a-f]{64}$/.test(output.sha256 ?? "")
-    ) issues.push("Salus publication output is invalid");
+    ) issues.push(`${subject} output is invalid`);
     const digest = crypto.createHash("sha256").update(pageBytes).digest("hex");
     if (output.sha256 !== digest)
-      issues.push("Salus publication MDX SHA-256 does not match manifest");
+      issues.push(`${subject} MDX SHA-256 does not match manifest`);
   }
 
   const expectedNotice =
     `{/* Generated from ${manifest.source?.repository}/blob/` +
     `${manifest.source?.commit}/${manifest.source?.path}. Do not edit directly. */}`;
   if (!page.includes(expectedNotice))
-    issues.push("Salus publication generated notice does not match manifest");
+    issues.push(`${subject} generated notice does not match manifest`);
 
   const publicSections = [...page.matchAll(/^##\s+(.+?)\s*$/gm)]
     .map((match) => match[1]);
-  if (JSON.stringify(publicSections) !== JSON.stringify(SALUS_PUBLIC_SECTIONS))
-    issues.push("Salus publication public sections must match the projection contract");
+  if (JSON.stringify(publicSections) !== JSON.stringify(spec.sections))
+    issues.push(`${subject} public sections must match the projection contract`);
+  if (spec.readingTime !== null) {
+    if (!page.includes(`*${spec.readingTime} min read*`))
+      issues.push(`${subject} reading-time label is missing`);
+    if (readingTimeMinutes(articleNarrative(page)) !== spec.readingTime)
+      issues.push(`${subject} reading time does not match the public narrative`);
+  }
 
   const serialized = JSON.stringify(manifest);
   for (const label of findForbidden(page))
-    issues.push(`Salus publication MDX: ${label}`);
+    issues.push(`${subject} MDX: ${label}`);
   for (const label of findForbidden(serialized))
-    issues.push(`Salus publication manifest: ${label}`);
+    issues.push(`${subject} manifest: ${label}`);
   if (PRIVATE_PUBLICATION_REFERENCE.test(page) || PRIVATE_PUBLICATION_REFERENCE.test(serialized))
-    issues.push("Salus publication contains a private reference");
+    issues.push(`${subject} contains a private reference`);
   if (containsAbsoluteFilesystemPath(page) || containsAbsoluteFilesystemPath(serialized))
-    issues.push("Salus publication contains an absolute filesystem path");
+    issues.push(`${subject} contains an absolute filesystem path`);
+  return issues;
+}
+
+
+export function validateSalusPublication(root) {
+  return validatePublication(root, PUBLICATIONS[0]);
+}
+
+
+export function validatePublications(root) {
+  const issues = PUBLICATIONS.flatMap((spec) => validatePublication(root, spec));
+  const commits = PUBLICATIONS.flatMap((spec) => {
+    try {
+      const manifest = JSON.parse(
+        fs.readFileSync(path.join(root, spec.manifest), "utf8"),
+      );
+      return typeof manifest.source?.commit === "string"
+        ? [manifest.source.commit]
+        : [];
+    } catch {
+      return [];
+    }
+  });
+  if (commits.length === PUBLICATIONS.length && new Set(commits).size !== 1)
+    issues.push("publication manifests must identify one Knowledge Base source commit");
   return issues;
 }
 
@@ -315,6 +503,10 @@ function validateSource(root) {
   if (fs.existsSync(path.join(root, "package-lock.json"))) issues.push("package-lock.json: competing lockfile is present");
   const config = fs.readFileSync(path.join(root, "vocs.config.ts"), "utf8");
   if (config.includes("vocs.dev/api/og")) issues.push("vocs.config.ts: external Vocs Open Graph service is present");
+  if (
+    JSON.stringify(topNavigation(config)) !==
+    JSON.stringify(EXPECTED_TOP_NAVIGATION)
+  ) issues.push("vocs.config.ts: primary navigation does not match the approved taxonomy");
 
   const registryPath = path.join(root, "docs/public/data/rebranding-registry.json");
   const registry = JSON.parse(fs.readFileSync(registryPath, "utf8"));
@@ -325,7 +517,7 @@ function validateSource(root) {
   for (const field of ["evidence_location", "private_reviewer_notes", "raw_benchmark_logs", "sensitive_strategy"])
     if (serialized.includes(field)) issues.push(`public registry leaks ${field}`);
   for (const label of findForbidden(serialized)) issues.push(`public registry: ${label}`);
-  issues.push(...validateSalusPublication(root));
+  issues.push(...validatePublications(root));
   return issues;
 }
 
@@ -359,12 +551,11 @@ function validateBuild(root) {
   const htmlDocuments = builtFiles
     .filter((file) => file.endsWith(".html"))
     .map((file) => fs.readFileSync(file, "utf8"));
-  const salusRouteCount = countCanonicalUrl(
-    htmlDocuments,
-    `${SITE_URL}/work/salus`,
-  );
-  if (salusRouteCount !== 1)
-    issues.push(`expected exactly one canonical /work/salus route, found ${salusRouteCount}`);
+  for (const { route } of PUBLICATIONS) {
+    const routeCount = countCanonicalUrl(htmlDocuments, `${SITE_URL}${route}`);
+    if (routeCount !== 1)
+      issues.push(`expected exactly one canonical ${route} route, found ${routeCount}`);
+  }
   for (const file of builtFiles) {
     const relative = path.relative(dist, file);
     if (path.basename(file) === ".DS_Store") issues.push(`${relative}: .DS_Store copied into build`);

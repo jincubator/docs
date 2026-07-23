@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
   "artifact": {
-    "id": "work/salus",
-    "type": "work",
-    "title": "Salus"
+    "id": "collection/solving-arbitrage-market-making",
+    "type": "collection",
+    "title": "Solving, Arbitrage & Market Making"
   },
-  "route": "/work/salus",
+  "route": "/articles/solving-arbitrage-market-making",
   "format": "vocs-mdx",
   "presentation": {
-    "label": "Work",
-    "reading_time_minutes": null
+    "label": "Article",
+    "reading_time_minutes": 5
   },
   "source": {
     "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/salus/README.md",
+    "path": "collections/solving-arbitrage-market-making/README.md",
     "commit": "90e4e0a428c48827a95be63aaa266dd28222e042",
     "revision_date": "2026-07-22"
   },
@@ -30,9 +30,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/articles/solving-arbitrage-market-making.mdx",
       "media_type": "text/mdx",
-      "sha256": "cb252e2770ebb840b55ad44c860842b3fb6123a4a63e98f51aa71b18beccd01c"
+      "sha256": "9e2de3d8c28d05ccbb780792d7528e8dea951270b7d986fc80f02cd1e8123944"
     }
   ],
   "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",

@@ -1,35 +1,75 @@
 ---
-title: High-Performance Route Evaluation
-description: Dated retained-run evidence and public research definitions for Salus route evaluation.
+title: "High-Performance Route Evaluation"
+description: "How to interpret retained Salus graph, catalog, and route-evaluation measurements without confusing throughput with execution or profit."
 ---
+
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/90e4e0a428c48827a95be63aaa266dd28222e042/research/high-performance-route-evaluation/README.md. Do not edit directly. */}
 
 # High-Performance Route Evaluation
 
-John's active research uses retained replay measurements from July 9, 2026 to separate graph scale and route-evaluation throughput from opportunity quality, execution, and realized outcomes.
+Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
 
-## Definitions
+## The question
 
-- A **generated route** is a candidate graph path.
-- An **evaluated route** is one assessment under a particular state and model.
-- A **filtered opportunity** is a candidate that passes named research gates.
-- **Simulated profit** is a model result, not settled value.
-- A **submitted or included execution** is a transaction lifecycle event.
-- **Realized after-gas profit** is settled economic value after costs and failures.
+How should an engineer read a high-throughput route-evaluation result? A rate alone is ambiguous. It may describe catalog construction, one evaluation service, a complete block-to-decision path, or a synthetic loop. It also says nothing by itself about whether an economically useful opportunity was selected.
 
-## Retained evidence
+The useful question is narrower: what did a retained workload measure, at which revision, and how far along the decision path did the evidence reach?
 
-The [generated public registry snapshot](https://www.jincubator.com/data/rebranding-registry.json) records the run IDs, block counts, input hashes, peak and sustained definitions, and limitations for these measurements.
+## A measurement model
 
-| Chain | Sustained evaluations/sec | Peak evaluations/sec | Selected after gas |
-| --- | ---: | ---: | ---: |
-| Ethereum | 4,554 | 7,528 | 0 |
-| Base | 16,537 | 38,462 | 0 |
-| Unichain | 3,259 | 21,867 | 0 |
+Salus separates several quantities that are easy to collapse into one headline:
 
-These are retained simulation/replay measurements re-read by the audited code, not new live market runs. Throughput does not establish opportunity recall, execution success, realized profit, current live performance, or commercial validation. The three cited runs selected zero routes after gas and all configured gates.
+- **Token nodes** and **pool components** describe a retained market graph.
+- **Catalog routes** are bounded paths available for later evaluation.
+- **Route evaluations** are completed evaluations of catalog routes against a retained workload.
+- **Opportunities** are candidates produced by economic analysis.
+- **Selected after-gas routes** have passed a later cost-aware selection gate.
+- **Submitted transactions**, **executions**, and **realized profit** are subsequent operational outcomes.
 
-Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs.
+The units form an evidence sequence, not interchangeable names for “performance.” A system can maintain a large catalog and evaluate it quickly while selecting no route after costs. That result can still demonstrate evaluator capacity, but it cannot establish profitable execution.
 
-Current provider policy, fee policy, thresholds, prioritization, route selection, opportunity values, gas bidding, and submission strategy are outside this public research summary.
+## Retained observations
 
-Review the [Salus project overview](/work/salus) or the [solver architecture](/architecture/trading-systems/solver) for more context.
+The reviewed baseline is jincubator/salus@3e4d6d5a<wbr />a9ff9da7<wbr />b9f26e8b<wbr />6954494e<wbr />93ac0a48, committed on 2026-07-20 and inspected on 2026-07-21. Its retained July 9 evidence records:
+
+| Observation | Measured subject | Result |
+| --- | --- | ---: |
+| Ethereum graph snapshot | Token nodes | 3,415 |
+| Ethereum graph snapshot | Pool components | 4,552 |
+| Ethereum bounded catalog | Routes with a maximum of four hops | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second | 16,537 |
+| Base retained runtime run | Peak route evaluations per second | 38,462 |
+
+The sustained rate divides completed route evaluations by measured evaluation-service time across the retained Base run. The peak is the highest reported observed rate within that run. These are route-evaluation rates, not transaction or profitability rates. No new live benchmark was run for this migration.
+
+## What the evidence establishes
+
+The retained measurements establish that the pinned implementation built and stored a multi-million-route bounded Ethereum catalog and processed a retained Base route-evaluation workload at the reported sustained and peak rates. The graph, catalog, and evaluator figures are separately named, which makes the result inspectable and repeatable against the retained evidence.
+
+For engineering review, the important property is not the largest number. It is the ability to state which stage produced each number and to preserve enough provenance to revisit the claim when the implementation or workload changes.
+
+## What it does not establish
+
+The latest cited retained runs selected zero after-gas routes. The measurements therefore do not establish opportunity recall, selected economic value, submitted transactions, successful execution, realized profit, current live performance, or commercial validation.
+
+They also do not support comparing Salus with another system unless the workloads, hardware, timing boundaries, graph filters, route definitions, and evaluation semantics are made comparable. A higher rate can reflect a narrower evaluation boundary rather than a better end-to-end system.
+
+Provider configuration, operational thresholds, route-selection details, opportunity identities or values, gas-bidding behavior, active strategy parameters, and vulnerabilities are outside this public analysis.
+
+## Engineering implications
+
+Performance reports for route evaluators should publish a measurement contract before a headline:
+
+1. identify the implementation revision and observation date;
+2. define graph, catalog, evaluation, selection, and execution units separately;
+3. state the measured timing boundary and retained workload;
+4. place zero or negative downstream results next to throughput figures;
+5. record what evidence would be needed to advance the claim.
+
+This structure makes evaluator capacity useful without asking it to prove an economic or operational outcome it did not measure.
+
+## Go deeper
+
+- See [Salus as governed Work](https://www.jincubator.com/work/salus) for the bounded engineering contribution and its limitations.
+- Continue to [Designing Evidence-Aware Trading-System Pipelines](https://www.jincubator.com/architecture/trading-systems/solver) for the reusable system boundary behind these measurement stages.
+- Read [Solving, Arbitrage & Market Making](https://www.jincubator.com/articles/solving-arbitrage-market-making) for the concise narrative synthesis.

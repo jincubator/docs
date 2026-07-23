@@ -66,12 +66,8 @@ export default defineConfig({
       link: "/architecture/intro",
     },
     {
-      text: "Prototypes",
-      link: "/prototypes/intro",
-    },
-    {
-      text: "Archive",
-      link: "/archive/intro",
+      text: "Articles",
+      link: "/articles/intro",
     },
     {
       text: "Engage",
@@ -86,6 +82,14 @@ export default defineConfig({
     "/work": [
       { text: "Work", link: "/work/intro" },
       { text: "Salus", link: "/work/salus" },
+      { text: "Prototypes", link: "/prototypes/intro" },
+    ],
+    "/articles": [
+      { text: "Articles", link: "/articles/intro" },
+      {
+        text: "Solving, Arbitrage & Market Making",
+        link: "/articles/solving-arbitrage-market-making",
+      },
     ],
     "/prototypes": [
       { text: "Prototypes", link: "/prototypes/intro" },

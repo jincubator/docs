@@ -1,0 +1,74 @@
+---
+title: "Solving, Arbitrage & Market Making"
+description: "What John Whitton learned and built, why the Salus architecture matters, what the retained results establish, and where the evidence stops."
+---
+
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/90e4e0a428c48827a95be63aaa266dd28222e042/collections/solving-arbitrage-market-making/README.md. Do not edit directly. */}
+
+# Solving, Arbitrage & Market Making
+
+*5 min read*
+
+Building a trading strategy is only part of the engineering problem. The harder task is constructing a system that can explain how changing market state became a modeled opportunity, why that opportunity did or did not advance, and what the retained evidence actually proves.
+
+## Why build the whole path
+
+John Whitton's route into solving and market making began with a practical question: what would it take to turn decentralized-exchange state into a decision that could survive technical and economic scrutiny? Reading protocol designs was useful, but building the complete path exposed the boundaries that a strategy diagram leaves out.
+
+That work became Salus, an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. It is not a customer deployment, a fund, a commercially validated product, or a proven profitable system. Its value at this stage is the engineering surface it makes inspectable: ingestion, read models, graph construction, bounded route catalogs, economic evaluation, simulation, controlled execution gates, and retained evidence.
+
+The project moved the learning problem from “can a route be modeled?” to “can every stage explain what it knows?” That shift matters because a trading system can be fast and technically sophisticated while its downstream economic evidence remains incomplete.
+
+## From changing state to a reviewable decision
+
+The reusable architecture separates collection, strategy, decision gates, execution, and outcome evidence. Collection observes external state and preserves which revision was seen. Catalog and strategy stages derive bounded paths and model their outputs. Later gates decide whether a candidate remains valid after costs and a newer view of the world. Execution records an attempted action. Outcome evidence reconciles what actually happened.
+
+Those are not interchangeable steps. A catalog route is a path available for evaluation. A route evaluation is a modeled calculation. An opportunity is a candidate interpretation of that calculation. A selected after-gas route has passed a later economic gate. Submission, execution, and realized profit each require additional evidence.
+
+Keeping the stages distinct creates more interfaces and more explicit coordination, but it also prevents one optimistic flag from becoming the system's entire truth. A failed preflight, stale state revision, or missing cost input can stop advancement at the boundary where the evidence changed. Negative outcomes remain useful because they reveal which gate was reached.
+
+## Throughput is evidence, not outcome
+
+The retained Salus measurements show why vocabulary matters. At the reviewed revision, an Ethereum snapshot contained 3,415 token nodes and 4,552 pool components. Its bounded catalog contained 2,401,108 routes with a maximum of four hops. A retained Base runtime run recorded 16,537 sustained and 38,462 peak route evaluations per second.
+
+These figures describe different subjects. The graph figures describe a retained market model. Catalog size describes bounded candidate paths. The Base rates describe completed route evaluations within a measured evaluation-service boundary. None of them counts profitable opportunities, submitted transactions, executions, or realized profit.
+
+The latest cited retained runs selected zero after-gas routes. That result belongs beside the throughput numbers because it defines where the evidence stopped. The runs demonstrate evaluator capacity against a retained workload; they do not establish opportunity recall, current live performance, profitable execution, or commercial validation. No new live benchmark was run for this migration.
+
+For a technical leader, this qualification is not a weakness in the result. It is evidence that the system and its editorial account can distinguish capacity from outcome.
+
+## Capital efficiency changes the constraint
+
+The modeled transaction structure can use borrowed liquidity, so Salus does not require upfront trading principal for that structure. This changes the capital constraint, but it does not make operation free or remove risk.
+
+Infrastructure, RPC, operational, and gas expenditure still exist, and unsuccessful transactions may incur unreimbursed costs. A transaction structure that can revert atomically can limit some state-transition outcomes, but it does not establish that every attempted transaction is costless or profitable. Economic selection, preflight validation, submission policy, and final reconciliation remain separate responsibilities.
+
+The broader lesson is that architecture should name the resource a mechanism removes and the costs it leaves behind. “Capital efficient” is useful when it describes the modeled funding requirement; it becomes misleading when used as shorthand for proven economics.
+
+## What the work demonstrates
+
+Salus demonstrates John's ability to connect protocol research with systems engineering: to move from external state, through inspectable models and high-throughput evaluation, toward controlled execution boundaries and retained evidence. The reviewed implementation includes a 13-crate Rust workspace and a 16-document walkthrough corpus, with current implementation truth remaining in the Salus repository.
+
+The strongest engineering signal is not a single benchmark. It is the combination of bounded components, explicit evidence states, dated measurements, and visible limitations. The system can be reviewed at the point where a claim is made instead of relying on a broad statement that the entire pipeline “works.”
+
+That architecture also generalizes. Intent solvers, liquidation systems, routing services, and other event-driven decision engines all need to separate modeled output from authorized action and observed outcome. Their strategies and protocols differ, but the evidence problem is similar.
+
+## Where the evidence stops
+
+Commercial validation remains ongoing, and profitable after-gas production execution has not been established. The retained observations are dated facts at a pinned revision, not guarantees of present or future performance.
+
+Public material also stops before operational detail. It excludes provider configuration, gas-bidding logic, thresholds, route-selection details, opportunity identities or values, active strategy parameters, vulnerabilities, and other sensitive implementation behavior. Those boundaries protect current implementation ownership and prevent an editorial synthesis from becoming an operational manual.
+
+The earlier composite article included historical performance, execution, opportunity, partnership, and commercial language that does not meet the current evidence and disclosure contract. This narrative retains the engineering journey but replaces those claims with the reviewed Salus baseline and its explicit stopping point.
+
+## What to take away
+
+High-performance solving is not one algorithm or one rate. It is a chain of evidence-bearing decisions made under changing state. The system is credible when each stage can state what it observed, what it modeled, which gate it passed, and what remains unknown.
+
+Salus is still an active initiative. Its current public value is a disciplined reference implementation and an evidence-aware engineering case study—not a claim of completed commercial or profitable outcome. That distinction makes the work more useful to technical readers because it shows both what has been built and what must still be proven.
+
+## Go deeper
+
+- Start with the governed [Salus Work case study](https://www.jincubator.com/work/salus).
+- Examine the [retained route-evaluation measurements](https://www.jincubator.com/research/solving/solving).
+- Apply the [evidence-aware pipeline architecture](https://www.jincubator.com/architecture/trading-systems/solver).

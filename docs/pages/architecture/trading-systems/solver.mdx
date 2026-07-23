@@ -1,30 +1,85 @@
-import { ZoomImage } from "../../../public/components/ZoomImage";
+---
+title: "Designing Evidence-Aware Trading-System Pipelines"
+description: "A reusable architecture for separating observed state, modeled opportunities, controlled execution, and realized outcomes."
+---
 
-# Solver Architecture
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/90e4e0a428c48827a95be63aaa266dd28222e042/architecture/trading-system-execution-pipelines/README.md. Do not edit directly. */}
 
-Solver architecture is the original trading and execution infrastructure foundation for Jincubator.
+# Designing Evidence-Aware Trading-System Pipelines
 
-It covers route discovery, Tycho-backed market data, simulation, profitability gates, execution queues, and the runtime path from liquidity discovery to transaction execution.
+A trading system becomes reviewable when market state, modeled opportunities, execution decisions, and realized outcomes remain distinct. This architecture describes boundaries that preserve those distinctions without copying one implementation.
 
-<ZoomImage
-  src="/images/architecture/v4/solver-architecture.png"
-  alt="Solver architecture"
-/>
+## The design problem
 
-<ZoomImage
-  src="/images/architecture/v4/solver-walkthrough.png"
-  alt="Solver walkthrough"
-/>
+Event-driven trading systems operate across several clocks. Market state changes while catalogs are updated, routes are evaluated, transactions are simulated, and execution conditions move again. If one “profitable” flag crosses every boundary, later code and public evidence inherit assumptions they cannot verify.
 
-## Architecture Lens
+The architecture must support speed while making every advancement explicit: what state was observed, what was modeled, which gate was passed, what action was attempted, and what outcome was retained.
 
-- Route universe construction and graph updates.
-- Simulation and profitability gating before execution.
-- Queue-separated hot path and execution queue.
-- Integration with Tycho indexing, simulation, and execution services.
+## Evidence states
 
-## Deeper Research
+A useful model treats each stage as a different evidence state:
 
-- [System Design & Architecture Portfolio](/research/architecture/john)
-- [High Performance Route Evaluation](/research/solving/solving)
-- [No Liquidity Solving with Tycho and 1inch](/research/solving/tycho1inchNOL)
+1. **Observed state** records the market inputs and their provenance.
+2. **Catalog state** records bounded candidate paths derived from that state.
+3. **Evaluation state** records modeled outputs for a named route and input.
+4. **Opportunity state** records an economically interesting candidate before later costs and controls.
+5. **Selection state** records that the candidate passed the current cost-aware decision gate.
+6. **Preflight state** records simulation or validation against a later view of the world.
+7. **Submission state** records an attempted transaction.
+8. **Outcome state** records execution and realized economic results.
+
+Advancing through the sequence requires new evidence. A high evaluation rate does not imply an opportunity; a modeled opportunity does not imply selection; selection does not imply submission; and an execution receipt does not by itself establish realized profit.
+
+## Pipeline boundaries
+
+The system can be decomposed into five responsibilities:
+
+- **Collection** ingests changing external state and preserves observation identity.
+- **Catalog and strategy** derive candidates and evaluate them against a bounded state view.
+- **Simulation and decision gates** revalidate assumptions and decide whether a candidate may advance.
+- **Execution** constructs and submits an approved action without redefining the strategy result.
+- **Outcome evidence** reconciles attempted actions with receipts, costs, failures, and realized results.
+
+Each boundary exchanges a versioned record rather than shared mutable interpretation. The record identifies its inputs, creation time, state revision, and current evidence status. This makes stale decisions detectable and lets downstream failures be attributed to the stage that changed.
+
+## Decision gates
+
+Gates should be monotonic in evidence, not optimism. A candidate advances only when the next stage adds a fact required by the decision. If the relevant state has changed, the candidate returns to evaluation or expires rather than inheriting an earlier approval.
+
+Fail-closed behavior is especially important at the simulation-to-execution boundary. A failed or unavailable preflight is evidence that execution has not been validated; it is not permission to submit. The same principle applies to incomplete cost information and missing outcome reconciliation.
+
+The exact thresholds, provider configuration, bidding policy, and route-selection behavior belong to the implementation and operational owner. The reusable architectural requirement is that those inputs are explicit, reviewable, and captured with the decision they influenced.
+
+## Failure modes and observability
+
+Common failures include:
+
+- state and catalog revisions drifting apart;
+- duplicated or stale evaluations remaining eligible;
+- queues obscuring which revision a result describes;
+- simulation failure being logged without stopping advancement;
+- submission being counted as execution;
+- execution being reported without complete cost reconciliation;
+- throughput metrics crossing stage boundaries and changing meaning.
+
+Observability should follow the evidence states. Counters name their subject, identifiers connect stage records, and terminal outcomes reconcile with the earlier decision. Retained negative results—such as no candidate passing a later gate—are part of the evidence rather than noise to discard.
+
+## Alternatives and trade-offs
+
+A single in-process pipeline can be simpler and faster to prototype, but shared state makes it harder to prove which inputs produced a decision. Fully isolated services improve ownership and scaling but introduce delivery, ordering, duplication, and operational costs.
+
+The useful compromise is logical separation first: explicit stage records, idempotent consumers, bounded queues, and fail-closed gates. Process or service boundaries can then follow measured scaling or reliability needs. The architecture does not require distributed deployment merely to look modular.
+
+Persisting every intermediate record improves replay and review but increases storage and privacy obligations. Retention should therefore follow the evidence needed for diagnosis, claim support, and operational accountability—not an assumption that more telemetry is always better.
+
+## Applying the pattern
+
+Salus is one reference implementation of these boundaries, not the definition of them. Its retained evidence demonstrates why graph size, catalog routes, route evaluations, selected after-gas routes, submissions, executions, and realized profit need different names and records.
+
+The pattern also applies to intent solvers, liquidation systems, routing services, and other event-driven decision engines. Their strategies differ, but each must preserve the boundary between modeled output, authorized action, and observed outcome.
+
+## Go deeper
+
+- Review the [measurement model and retained route-evaluation evidence](https://www.jincubator.com/research/solving/solving).
+- See the bounded [Salus Work case study](https://www.jincubator.com/work/salus).
+- Read [Solving, Arbitrage & Market Making](https://www.jincubator.com/articles/solving-arbitrage-market-making) for the narrative synthesis.
