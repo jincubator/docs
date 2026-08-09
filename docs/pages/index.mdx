@@ -1,42 +1,9 @@
 ---
 layout: landing
 title: Jincubator — Independent Research and Engineering Studio
-description: Jincubator is John Whitton's independent research and engineering studio for financial and distributed systems.
+description: John Whitton's independent research and engineering studio for financial and distributed systems.
 ---
 
-import { HomePage } from "vocs/components";
+import { LandingPage } from "../components/LandingPage";
 
-<HomePage.Root>
-  <img
-    src="/images/jincubator.png"
-    alt="Jincubator infinity logo"
-    width="120"
-    height="120"
-  />
-  <h1>Jincubator</h1>
-  <HomePage.Tagline>Engineering systems where evidence, authority, and execution have to agree.</HomePage.Tagline>
-  <HomePage.Description>
-    Jincubator is John Whitton's independent research and engineering studio.
-    It turns hands-on systems work into case studies, bounded research,
-    reusable architecture, and focused writing.
-  </HomePage.Description>
-</HomePage.Root>
-
-## Explore
-
-Start with [Work](/work), follow the evidence through [Research](/research),
-apply the reusable patterns in [Architecture](/architecture), or read the
-long-form [Writing](/writing).
-
-## Featured work
-
-- [**Salus**](/work/salus) — active trading-system research and a reference implementation with dated results and explicit limitations.
-- [**Digital Banking**](/work/digital-banking) — a non-production reference implementation for durable digital-asset settlement across local Ethereum and Solana environments.
-- [**DeFi Leveraging**](/work/defi-leveraging) — architecture and engineering work on leverage-token systems, evidence boundaries, and operating constraints.
-
-## Explore further
-
-Read [About](/about) for ownership and professional context. Dated and
-superseded material remains available through the secondary [Archive](/archive).
-
-Professional experience, résumé, and contact details are at [johnwhitton.com](https://johnwhitton.com/).
+<LandingPage page="home" />

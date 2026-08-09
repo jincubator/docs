@@ -1,0 +1,327 @@
+type PageKey = "home" | "work" | "research" | "architecture" | "writing" | "about" | "archive";
+
+type Card = {
+  href: string;
+  kicker?: string;
+  summary: string;
+  title: string;
+};
+
+type Section = {
+  body: string[];
+  cards?: Card[];
+  heading: string;
+};
+
+type Landing = {
+  eyebrow: string;
+  introduction: string[];
+  promise: string;
+  sections: Section[];
+  title: string;
+};
+
+const artifactCards = {
+  salus: {
+    href: "/work/salus",
+    summary: "A system-design case study in turning changing decentralized-market state into bounded, explainable decisions.",
+    title: "Salus",
+  },
+  digitalBanking: {
+    href: "/work/digital-banking",
+    summary: "A bounded reference implementation for durable digital-asset settlement, exact-value workflows, and reconciliation.",
+    title: "Digital Banking Reference Implementation",
+  },
+  defiLeveraging: {
+    href: "/work/defi-leveraging",
+    summary: "A case study in equity-backed leverage tokens, collateral-ratio control, rebalancing, and bounded solver handoffs.",
+    title: "DeFi Leveraging",
+  },
+  prototypes: {
+    href: "/work/prototypes",
+    summary: "Experiments in mandates, authority boundaries, solver coordination, delayed execution, resource locks, and settlement.",
+    title: "Intent Systems Prototypes",
+  },
+  stablecoinIntents: {
+    href: "/work/stablecoin-intents",
+    summary: "A contribution and engineering-leadership case study in stablecoin intent routing and proof-backed settlement.",
+    title: "Stablecoin Intents",
+  },
+  eave: {
+    href: "/work/building-polkadot-parachain-eave",
+    summary: "A bounded case study of the EAVE architecture and venture-formation work, with explicit implementation limits.",
+    title: "Building a Polkadot Parachain — EAVE",
+  },
+  kanga: {
+    href: "/work/defi-protocol-engineering-kanga",
+    summary: "A case study of protocol design, AMM and incentive mechanics, source-bounded analysis, and controls.",
+    title: "DeFi Protocol Engineering — Kanga",
+  },
+  enterpriseSoa: {
+    href: "/work/enterprise-soa",
+    summary: "A public-safe case study of enterprise integration architecture, service orchestration, and operational reliability boundaries.",
+    title: "Enterprise SOA",
+  },
+  routeEvaluation: {
+    href: "/research/high-performance-route-evaluation",
+    summary: "What retained evaluator measurements establish—and the commercial outcomes that they do not establish.",
+    title: "High-Performance Route Evaluation",
+  },
+  replay: {
+    href: "/research/deterministic-replay-as-engineering-evidence",
+    summary: "How deterministic replay turns an observed state into reviewable engineering evidence.",
+    title: "Deterministic Replay as Engineering Evidence",
+  },
+  validation: {
+    href: "/research/trading-system-validation-evidence",
+    summary: "A practical evidence ladder for evaluating claims about a trading-system lifecycle.",
+    title: "What Trading-System Validation Evidence Can Prove",
+  },
+  settlementResearch: {
+    href: "/research/financial-infrastructure/settlement/intro",
+    summary: "Why network completion is only one input to durable financial settlement and recovery.",
+    title: "Durable Financial Settlement",
+  },
+  intentResearch: {
+    href: "/research/defi-protocol-engineering/intro",
+    summary: "The authority, resource, execution, and settlement evidence an intent design must keep distinct.",
+    title: "Intent-Based Execution",
+  },
+  executionPipelines: {
+    href: "/architecture/trading-system-execution-pipelines",
+    summary: "A reusable design for explicit evidence states and guarded trading-system execution.",
+    title: "Trading-System Execution Pipelines",
+  },
+  ai: {
+    href: "/architecture/evidence-grounded-ai-for-trading-systems",
+    summary: "How probabilistic investigation can remain bounded by deterministic evidence and execution authority.",
+    title: "Evidence-Grounded AI for Trading Systems",
+  },
+  liquidityGraphs: {
+    href: "/architecture/liquidity-state-to-route-graphs",
+    summary: "How durable topology and current state narrow a large route universe into inspectable work.",
+    title: "From Liquidity State to Route Graphs",
+  },
+  backpressure: {
+    href: "/architecture/backpressure-and-queue-ownership",
+    summary: "Stage-specific queue policy, freshness, ownership, and observable pressure.",
+    title: "Backpressure and Queue Ownership",
+  },
+  readModels: {
+    href: "/architecture/inspectable-trading-read-models",
+    summary: "Inspectable read models that keep identity, state, and evidence boundaries clear.",
+    title: "Inspectable Read Models for Trading Systems",
+  },
+  simulation: {
+    href: "/architecture/protocol-simulation-boundaries",
+    summary: "How simulation establishes bounded evidence without becoming a claim of execution or profit.",
+    title: "Protocol Simulation Boundaries",
+  },
+  capital: {
+    href: "/architecture/capital-efficient-funding-models",
+    summary: "Funding-model boundaries, costs, and risk that a technical design cannot abstract away.",
+    title: "Capital-Efficient Funding Models",
+  },
+  settlementArchitecture: {
+    href: "/architecture/financial-infrastructure/settlement",
+    summary: "A durable control plane for authority, workflow, native effects, accounting, and reconciliation.",
+    title: "Durable Settlement Control Planes",
+  },
+  intentArchitecture: {
+    href: "/architecture/defi-systems/intents",
+    summary: "A reusable boundary model for mandates, resource locks, solver discretion, and settlement evidence.",
+    title: "Intent Execution Boundaries",
+  },
+  solvingWriting: {
+    href: "/writing/solving-arbitrage-market-making",
+    summary: "A systems account of solving, arbitrage, and market making without collapsing engineering evidence into outcomes.",
+    title: "Solving, Arbitrage & Market Making",
+  },
+  mappingWriting: {
+    href: "/writing/mapping-liquidity-to-routes-at-scale",
+    summary: "A public technical walkthrough of narrowing liquidity changes into fresh, affected-route evaluation.",
+    title: "Mapping Liquidity to Routes at Scale",
+  },
+  lessonsWriting: {
+    href: "/writing/speed-wasnt-the-problem",
+    summary: "What retained Salus evidence changed about the relationship between infrastructure speed and strategy.",
+    title: "I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.",
+  },
+} satisfies Record<string, Card>;
+
+const landingPages: Record<PageKey, Landing> = {
+  home: {
+    eyebrow: "John Whitton · Jincubator",
+    title: "Engineering systems where evidence, authority, and execution have to agree.",
+    promise: "Explore selected engineering work, bounded research, reusable architecture, and the writing that connects them.",
+    introduction: [
+      "Jincubator is the editorial and engineering home for selected independent systems work led by John Whitton. Each case study keeps its evidence and limits visible.",
+    ],
+    sections: [
+      {
+        heading: "How I organize the work",
+        body: ["I document systems at different levels—from what I built, through the research and architectural decisions behind it, to the lessons the evidence supports."],
+        cards: [
+          { href: "/work", title: "Work", summary: "What I built." },
+          { href: "/research", title: "Research", summary: "Questions I investigated and what the evidence showed." },
+          { href: "/architecture", title: "Architecture", summary: "How I think systems like these should be designed." },
+          { href: "/writing", title: "Writing", summary: "What I learned and what I think it means." },
+        ],
+      },
+      {
+        heading: "Featured work",
+        body: ["Start with substantial case studies, then follow the evidence into focused Research and reusable Architecture."],
+        cards: [
+          { ...artifactCards.salus, kicker: "Active engineering initiative" },
+          { ...artifactCards.digitalBanking, kicker: "Reference implementation" },
+          { ...artifactCards.eave, kicker: "Parachain architecture and venture formation" },
+        ],
+      },
+    ],
+  },
+  work: {
+    eyebrow: "Selected engineering work",
+    title: "Work",
+    promise: "Understand what John designed or built, the evidence available for it, and the boundary between demonstrated capability and unproven outcome.",
+    introduction: [
+      "Work pages are case studies rather than product claims. They explain the problem, John’s role, the implemented boundaries, selected evidence, current status, and limitations.",
+      "Substantial selected work appears alongside clearly labelled prototypes. Related Research interprets evidence; related Architecture extracts reusable design lessons without copying implementation documentation.",
+    ],
+    sections: [
+      {
+        heading: "Substantial selected work",
+        body: ["These initiatives have enough implemented scope and reviewed evidence to support full case studies."],
+        cards: [
+          { ...artifactCards.salus, kicker: "Active engineering initiative" },
+          { ...artifactCards.digitalBanking, kicker: "Non-production reference implementation" },
+          { ...artifactCards.defiLeveraging, kicker: "Architecture contribution" },
+          { ...artifactCards.stablecoinIntents, kicker: "Engineering leadership and architecture" },
+          { ...artifactCards.eave, kicker: "Parachain architecture and venture formation" },
+          { ...artifactCards.kanga, kicker: "Protocol design and source-bounded mechanics" },
+          { ...artifactCards.enterpriseSoa, kicker: "Integration architecture and delivery leadership" },
+        ],
+      },
+      {
+        heading: "Prototypes and experiments",
+        body: ["Prototype records preserve useful engineering experiments without presenting them as active products or production services."],
+        cards: [{ ...artifactCards.prototypes, kicker: "Mandates, authority, and solver execution" }],
+      },
+    ],
+  },
+  research: {
+    eyebrow: "Evidence before conclusion",
+    title: "Research",
+    promise: "See the question each investigation asks, the evidence it uses, what can be concluded, and where that evidence stops.",
+    introduction: [
+      "Research pages interpret bounded evidence. They do not turn historical measurements into current benchmarks or claim production outcomes from reference implementations.",
+      "Each investigation keeps findings separate from recommendations and links to the Work or Architecture that owns implementation context or reusable design.",
+    ],
+    sections: [{
+      heading: "Current research",
+      body: ["Five investigations cover trading-system measurement, replay and validation evidence, financial settlement evidence, and authority boundaries in intent execution."],
+      cards: [artifactCards.routeEvaluation, artifactCards.replay, artifactCards.validation, artifactCards.settlementResearch, artifactCards.intentResearch],
+    }],
+  },
+  architecture: {
+    eyebrow: "Reusable systems thinking",
+    title: "Architecture",
+    promise: "Apply reviewed design boundaries, state models, controls, and trade-offs without depending on one implementation.",
+    introduction: [
+      "Architecture pages distill purposeful design lessons from reviewed Work and Research. They describe forces, responsibilities, failure modes, validation boundaries, and alternatives—not a directory of old technical pages.",
+      "The active syntheses below each own a distinct reusable design question.",
+    ],
+    sections: [{
+      heading: "Current architecture",
+      body: ["The active set covers evidence-aware pipelines, bounded AI, graph and queue boundaries, inspectable read models, simulation, funding, durable settlement, and bounded intent execution."],
+      cards: [artifactCards.executionPipelines, artifactCards.ai, artifactCards.liquidityGraphs, artifactCards.backpressure, artifactCards.readModels, artifactCards.simulation, artifactCards.capital, artifactCards.settlementArchitecture, artifactCards.intentArchitecture],
+    }],
+  },
+  writing: {
+    eyebrow: "Standalone narratives",
+    title: "Writing",
+    promise: "Read concise narratives that connect engineering work, evidence, and architecture without exposing internal editorial taxonomy.",
+    introduction: [
+      "Writing is the reader-facing home for authored synthesis. Each article has its own through-line and conclusion; it is not a directory assembled from related pages.",
+      "Detailed claims remain owned by the underlying Work, Research, and Architecture sources, while the article provides the most direct reading path.",
+    ],
+    sections: [{
+      heading: "Current articles",
+      body: ["These articles connect the wider Salus engineering journey with focused accounts of affected-route evaluation and the evidence-led shift from infrastructure speed to strategy."],
+      cards: [
+        { ...artifactCards.solvingWriting, kicker: "Engineering narrative" },
+        { ...artifactCards.mappingWriting, kicker: "Stateful pipeline deep dive" },
+        { ...artifactCards.lessonsWriting, kicker: "Commercial and engineering lessons learned" },
+      ],
+    }],
+  },
+  about: {
+    eyebrow: "About the work",
+    title: "John Whitton and Jincubator",
+    promise: "Understand who owns the work, where to find professional history and long-form material, and when a conversation is useful.",
+    introduction: [
+      "Jincubator is the editorial and engineering identity for selected independent systems work led by John Whitton. It is not presented as a staffed agency, venture platform, customer portfolio, fund, or partnership network.",
+      "John is a software architect and hands-on engineer focused on distributed financial systems, trading infrastructure, durable workflows, and intent-based execution.",
+    ],
+    sections: [
+      {
+        heading: "How the destinations relate",
+        body: ["Jincubator owns reviewed engineering narratives. johnwhitton.com is the personal front door for professional history, résumé, availability, and selected-work links. Implementation repositories remain authoritative for code, tests, decisions, and operational documentation."],
+        cards: [
+          { href: "https://johnwhitton.com/", title: "johnwhitton.com", summary: "Personal positioning, professional history, résumé, availability, and selected work." },
+          { href: "https://portfolio.johnwhitton.com/", title: "Architecture portfolio", summary: "Long-form systems and architecture publications." },
+          { href: "mailto:john@johnwhitton.com", title: "Contact John", summary: "Discuss a bounded engineering problem, architecture review, or relevant collaboration." },
+        ],
+      },
+      {
+        heading: "Current focus",
+        body: ["The active editorial corpus covers evidence-aware trading systems, durable digital-asset settlement, and intent execution. Commercial validation, production deployment, customer use, profitability, and operational maturity are stated only where the underlying evidence supports them."],
+      },
+    ],
+  },
+  archive: {
+    eyebrow: "Secondary historical destination",
+    title: "Archive",
+    promise: "Review retained historical material without treating it as current canonical guidance.",
+    introduction: [
+      "Previous Jincubator material is retained for historical reference. It may contain superseded terminology, claims, links, or presentation.",
+      "Current canonical material lives under Work, Research, Architecture, and Writing; the Archive navigation groups retained research, architecture, product, and proposal material separately.",
+    ],
+    sections: [{
+      heading: "Browse historical material",
+      body: ["Use the Archive group in the sidebar to open the retained route families. A retained page does not become current guidance merely because it remains available."],
+    }],
+  },
+};
+
+export function LandingPage({ page }: { page: PageKey }) {
+  const landing = landingPages[page];
+
+  return (
+    <div className="jincubator-landing">
+      <header className="jincubator-landing__hero">
+        <p className="jincubator-landing__eyebrow">{landing.eyebrow}</p>
+        <h1>{landing.title}</h1>
+        <p className="jincubator-landing__promise">{landing.promise}</p>
+        {landing.introduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </header>
+      {landing.sections.map((section) => (
+        <section className="jincubator-landing__section" key={section.heading}>
+          <h2>{section.heading}</h2>
+          {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          {section.cards?.length ? (
+            <div className="jincubator-landing__grid">
+              {section.cards.map((card) => (
+                <a className="jincubator-landing__card" href={card.href} key={card.href}>
+                  {card.kicker ? <span className="jincubator-landing__kicker">{card.kicker}</span> : null}
+                  <h3>{card.title}</h3>
+                  <p>{card.summary}</p>
+                  <span className="jincubator-landing__action">Read <span aria-hidden="true">→</span></span>
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ))}
+    </div>
+  );
+}

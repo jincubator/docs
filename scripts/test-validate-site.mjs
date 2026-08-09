@@ -5,10 +5,46 @@ import os from "node:os";
 import path from "node:path";
 
 const validator = await import("./validate-site.mjs");
+const presentation = await import("../docs/presentation-navigation.mjs");
 const expectedNavigation = ["Work", "Salus", "Research", "Architecture", "Writing", "About"];
 const config = fs.readFileSync(path.join(process.cwd(), "vocs.config.ts"), "utf8");
 
 assert.deepEqual(validator.topNavigation(config), expectedNavigation);
+assert.deepEqual(presentation.primaryNavigation, expectedNavigation);
+assert.match(config, /sidebar:\s*presentationSidebar,/);
+assert.deepEqual(
+  presentation.presentationSidebar.map((group) => group.text),
+  ["Work", "Research", "Architecture", "Writing", "About", "Archive"],
+);
+for (const group of presentation.presentationSidebar) {
+  assert.equal(group.collapsed, true, `${group.text} must be collapsible`);
+  assert.ok(group.items?.length, `${group.text} must contain navigable items`);
+}
+const publicNavigationRoutes = presentation.presentationSidebar.flatMap(function collect(item) {
+  return [item.link, ...(item.items ?? []).flatMap(collect)].filter(Boolean);
+});
+for (const manifestName of fs.readdirSync("docs/public/data/publications").filter((name) => name.endsWith(".json"))) {
+  const manifest = JSON.parse(fs.readFileSync(path.join("docs/public/data/publications", manifestName), "utf8"));
+  assert.ok(publicNavigationRoutes.includes(manifest.route), `${manifest.artifact.id} must be discoverable in the presentation sidebar`);
+}
+assert.equal(publicNavigationRoutes.includes("/writing/portfolio-strategy-competitor-analysis"), false);
+const presentationCss = fs.readFileSync("docs/presentation.css", "utf8");
+for (const token of ["#f7f5ef", "Georgia", ".vocs_DocsLayout_sidebar", "prefers-reduced-motion"]) {
+  assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+}
+for (const [page, key, componentPath] of [
+  ["docs/pages/index.mdx", "home", "../components/LandingPage"],
+  ["docs/pages/work/index.mdx", "work", "../../components/LandingPage"],
+  ["docs/pages/research/index.mdx", "research", "../../components/LandingPage"],
+  ["docs/pages/architecture/index.mdx", "architecture", "../../components/LandingPage"],
+  ["docs/pages/writing/index.mdx", "writing", "../../components/LandingPage"],
+  ["docs/pages/about/index.mdx", "about", "../../components/LandingPage"],
+  ["docs/pages/archive/index.mdx", "archive", "../../components/LandingPage"],
+]) {
+  const source = fs.readFileSync(page, "utf8");
+  assert.ok(source.includes(`import { LandingPage } from "${componentPath}";`));
+  assert.match(source, new RegExp(`<LandingPage page="${key}" />`));
+}
 assert.deepEqual(validator.findForbidden("Ethereum block 3000000"), []);
 assert.deepEqual(validator.findForbidden("PHASE1=/home/ubuntu/ceremony.ptau"), ["local filesystem path"]);
 assert.equal(validator.readingTimeMinutes("word ".repeat(1_125)), 5);

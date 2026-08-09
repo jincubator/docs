@@ -1,0 +1,241 @@
+/*
+ * Production implementation of the approved Knowledge Base review-site
+ * presentation direction. Content remains canonical Markdown; this file only
+ * adapts the shared Vocs shell, typography, navigation, and landing components.
+ */
+
+:root {
+  --vocs-color-background: #f7f5ef;
+  --vocs-color-background2: #fffefa;
+  --vocs-color-background3: #f1eee6;
+  --vocs-color-background4: #e8e6df;
+  --vocs-color-background5: #dedbd3;
+  --vocs-color-backgroundDark: #f7f5ef;
+  --vocs-color-border: #ccd2d0;
+  --vocs-color-border2: #d9ddda;
+  --vocs-color-heading: #17222d;
+  --vocs-color-title: #17222d;
+  --vocs-color-text: #17222d;
+  --vocs-color-text2: #304c40;
+  --vocs-color-text3: #476457;
+  --vocs-color-textHover: #17222d;
+  --vocs-color-textAccent: #476457;
+  --vocs-color-textAccentHover: #304c40;
+  --vocs-color-backgroundAccent: #476457;
+  --vocs-color-backgroundAccentHover: #304c40;
+  --vocs-color-backgroundAccentText: #fffefa;
+  --vocs-color-codeBlockBackground: #17222d;
+  --vocs-color-codeInlineBackground: #f1eee6;
+  --vocs-color-codeInlineBorder: #d9ddda;
+  --vocs-color-codeInlineText: #304c40;
+  --vocs-fontFamily-default: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --vocs-fontFamily-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --vocs-content-width: min(1120px, 100vw);
+  --vocs-sidebar-width: 280px;
+  --vocs-sidebar-horizontalPadding: 1.25rem;
+}
+
+html,
+body,
+.vocs_DocsLayout_root {
+  background: #f7f5ef;
+  color: #17222d;
+}
+
+.vocs_DocsLayout_content,
+.vocs_Content_root {
+  background: #f7f5ef;
+}
+
+.vocs_DocsLayout_gutterLeft,
+.vocs_DocsLayout_gutterTop,
+.vocs_Sidebar_logoWrapper,
+.vocs_Sidebar_footer {
+  background: #f7f5ef;
+}
+
+.vocs_DocsLayout_gutterLeft {
+  border-right: 1px solid #ccd2d0;
+}
+
+.vocs_DocsLayout_sidebar {
+  padding-inline: 1.25rem;
+}
+
+.vocs_DocsLayout_gutterTop {
+  border-bottom: 1px solid #ccd2d0;
+  box-shadow: none;
+}
+
+.vocs_Content_root h1,
+.vocs_Content_root h2,
+.vocs_Content_root h3,
+.vocs_Content_root h4 {
+  color: #17222d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+
+.vocs_Content_root h1 {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+}
+
+.vocs_Content_root h2 {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.vocs_Content_root p,
+.vocs_Content_root li,
+.vocs_Content_root td,
+.vocs_Content_root th {
+  line-height: 1.65;
+}
+
+.vocs_Content_root > img,
+.vocs_Content_root p > img {
+  display: block;
+  height: auto;
+  margin: 2rem auto;
+  max-width: 100%;
+}
+
+.vocs_Content_root pre {
+  border: 1px solid #304c40;
+  border-radius: 0.65rem;
+  box-shadow: none;
+}
+
+.vocs_Content_root table {
+  border-color: #d9ddda;
+}
+
+.vocs_Content_root th {
+  background: #fffefa;
+}
+
+.vocs_Sidebar_navigation {
+  padding-top: 1.25rem;
+}
+
+.vocs_Sidebar_sectionHeader {
+  gap: 0.5rem;
+}
+
+.vocs_Sidebar_sectionTitle,
+.vocs_Sidebar_item {
+  letter-spacing: 0;
+}
+
+.vocs_Sidebar_sectionTitle {
+  color: #17222d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.vocs_Sidebar_item[data-active="true"],
+.vocs_Sidebar_sectionTitleLink[data-active="true"] {
+  color: #304c40;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.28rem;
+}
+
+.vocs_Sidebar_levelInset {
+  border-left-color: #ccd2d0;
+}
+
+.jincubator-landing {
+  max-width: 960px;
+}
+
+.jincubator-landing__hero {
+  max-width: 760px;
+}
+
+.jincubator-landing__eyebrow,
+.jincubator-landing__kicker {
+  color: #476457;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.jincubator-landing__promise {
+  color: #304c40;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  line-height: 1.45;
+  margin: 1.5rem 0;
+}
+
+.jincubator-landing__section {
+  margin-top: clamp(2.75rem, 5vw, 4.5rem);
+}
+
+.jincubator-landing__section > p {
+  max-width: 760px;
+}
+
+.jincubator-landing__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.25rem;
+}
+
+.jincubator-landing__card {
+  background: #fffefa;
+  border: 1px solid #ccd2d0;
+  border-radius: 0.65rem;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  min-height: 13rem;
+  padding: 1.35rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.jincubator-landing__card:hover {
+  border-color: #476457;
+  box-shadow: 0 0.6rem 1.4rem rgb(23 34 45 / 10%);
+  transform: translateY(-2px);
+}
+
+.jincubator-landing__card h3 {
+  font-size: 1.45rem;
+  margin: 0.75rem 0;
+}
+
+.jincubator-landing__card p {
+  color: #304c40;
+  margin: 0;
+}
+
+.jincubator-landing__action {
+  color: #476457;
+  font-weight: 700;
+  margin-top: auto;
+  padding-top: 1.25rem;
+}
+
+@media (max-width: 720px) {
+  .jincubator-landing__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jincubator-landing__card {
+    min-height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jincubator-landing__card {
+    transition: none;
+  }
+}

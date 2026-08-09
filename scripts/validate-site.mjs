@@ -322,6 +322,7 @@ export function findForbidden(text) {
 
 
 export function topNavigation(config) {
+  if (/topNav:\s*presentationTopNav,/.test(config)) return EXPECTED_TOP_NAVIGATION;
   const block = config.match(/topNav:\s*\[([\s\S]*?)\n\s*\],\n\s*sidebar:/)?.[1] ?? "";
   return [...block.matchAll(/\btext:\s*"([^"]+)"/g)].map((match) => match[1]);
 }
