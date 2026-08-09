@@ -19,7 +19,12 @@
     {
       "destination": "docs/pages/work/digital-banking.mdx",
       "media_type": "text/mdx",
-      "sha256": "e34c568e931d222ef64f0faaddad422e45851b80b078562c299ab584ac871bdd"
+      "sha256": "5b787f598db9999f0bf9e6a203142ddc43fef244a040a280777f9f12cd338036"
+    },
+    {
+      "destination": "docs/public/assets/work/digital-banking/digital-banking-control-plane.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "6967aa2d758ff9555efcdf3dad7aab2dca46dba648f41f2e49bcccedce58096f"
     }
   ],
   "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."

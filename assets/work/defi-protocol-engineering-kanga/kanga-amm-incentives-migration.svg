@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="title desc">
+  <title id="title">KANGA AMM Incentives Migration Architecture</title>
+  <desc id="desc">Architecture-first KANGA slide covering AMM liquidity, KANGA emissions, xKANGA staking, fee conversion, migration, deployment scaffolding, and control-plane boundaries.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="82%">
+      <stop offset="0%" stop-color="#0b2243"/>
+      <stop offset="48%" stop-color="#061426"/>
+      <stop offset="100%" stop-color="#020711"/>
+    </radialGradient>
+    <linearGradient id="panelG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0a203d" stop-opacity="0.96"/>
+      <stop offset="100%" stop-color="#071426" stop-opacity="0.78"/>
+    </linearGradient>
+    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L12 6 L0 12z" fill="#96e22a"/></marker>
+    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L12 6 L0 12z" fill="#21d4ff"/></marker>
+    <marker id="arrOrange" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L12 6 L0 12z" fill="#ff8a22"/></marker>
+    <marker id="arrRed" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L12 6 L0 12z" fill="#ff4f56"/></marker>
+    <marker id="arrYellow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L12 6 L0 12z" fill="#ffd329"/></marker>
+    <style>
+      .grid{stroke:rgba(94,134,178,.15);stroke-width:1}
+      .title{font:800 76px Arial,Helvetica,sans-serif;fill:#f4f8ff;letter-spacing:0}
+      .subtitle{font:italic 700 33px Arial,Helvetica,sans-serif;fill:#d787ff;letter-spacing:0}
+      .body{font:27px Arial,Helvetica,sans-serif;fill:#f4f8ff;letter-spacing:0}
+      .small{font:24px Arial,Helvetica,sans-serif;fill:#c8d5e7;letter-spacing:0}
+      .tiny{font:21px Arial,Helvetica,sans-serif;fill:#b9c8dc;letter-spacing:0}
+      .micro{font:19px Arial,Helvetica,sans-serif;fill:#a8b8cd;letter-spacing:0}
+      .panel{fill:url(#panelG);stroke:rgba(53,160,255,.58);stroke-width:3}
+      .panelTitle{font:800 30px Arial,Helvetica,sans-serif;letter-spacing:.2px}
+      .card{fill:rgba(5,16,31,.86);stroke-width:2.5}
+      .cardTitle{font:800 24px Arial,Helvetica,sans-serif;letter-spacing:0}
+      .step{font:800 19px Arial,Helvetica,sans-serif}
+      .badge{font:800 15px Arial,Helvetica,sans-serif;fill:#fff;letter-spacing:.2px}
+      .mono{font:700 25px Menlo,Consolas,monospace;fill:#f4f8ff;letter-spacing:0}
+      .monoSmall{font:700 18px Menlo,Consolas,monospace;fill:#c8b8ff;letter-spacing:0}
+      .tableHead{font:800 20px Arial,Helvetica,sans-serif;fill:#21d4ff;letter-spacing:0}
+      .tableText{font:20px Arial,Helvetica,sans-serif;fill:#d6e2f1;letter-spacing:0}
+      .tableStrong{font:800 20px Arial,Helvetica,sans-serif;fill:#ffd329;letter-spacing:0}
+      .keyTitle{font:800 26px Arial,Helvetica,sans-serif;fill:#21d4ff;letter-spacing:0}
+      .warn{font:800 24px Arial,Helvetica,sans-serif;fill:#ff4f56;letter-spacing:0}
+      .stance{font:800 30px Arial,Helvetica,sans-serif;fill:#f4f8ff;letter-spacing:0}
+    </style>
+  </defs>
+  <rect width="3840" height="2160" fill="url(#bg)"/>
+  <g opacity=".34">
+    <path class="grid" d="M0 0V2160M170 0V2160M340 0V2160M510 0V2160M680 0V2160M850 0V2160M1020 0V2160M1190 0V2160M1360 0V2160M1530 0V2160M1700 0V2160M1870 0V2160M2040 0V2160M2210 0V2160M2380 0V2160M2550 0V2160M2720 0V2160M2890 0V2160M3060 0V2160M3230 0V2160M3400 0V2160M3570 0V2160M3740 0V2160"/>
+    <path class="grid" d="M0 0H3840M0 170H3840M0 340H3840M0 510H3840M0 680H3840M0 850H3840M0 1020H3840M0 1190H3840M0 1360H3840M0 1530H3840M0 1700H3840M0 1870H3840M0 2040H3840"/>
+  </g>
+  <rect width="3840" height="2160" fill="rgba(0,0,0,.22)"/>
+
+  <text class="title" x="90" y="104">KANGA AMM, INCENTIVES &amp; MIGRATION ARCHITECTURE</text>
+  <text class="subtitle" x="90" y="152">Architecture-first view before the protocol walkthrough: liquidity, KANGA emissions, xKANGA staking, fee conversion, launch migration, and controls.</text>
+  <text class="subtitle" x="90" y="194">Primary taxonomy: Distributed Platforms. AI Engineering is not claimed from the reviewed source material.</text>
+
+  <g>
+    <rect class="panel" x="2576" y="56" width="1184" height="146" rx="16"/>
+    <text class="tableHead" x="2608" y="96">EVIDENCE KEY</text>
+    <text class="tiny" x="2608" y="133"><tspan x="2608" dy="0">Use this slide to establish architecture and maturity boundaries.</tspan><tspan x="2608" dy="30">Then use the protocol walkthrough slide for file-level implementation details.</tspan></text>
+    <rect x="3438" y="78" width="92" height="30" rx="8" fill="#0b6b52"/><text class="badge" x="3484" y="100" text-anchor="middle">SRC</text>
+    <rect x="3542" y="78" width="86" height="30" rx="8" fill="#835b20"/><text class="badge" x="3585" y="100" text-anchor="middle">DOC</text>
+  </g>
+
+  <g>
+    <rect class="panel" x="80" y="246" width="1160" height="710" rx="16"/>
+    <path d="M102 312H1218" stroke="#21d4ff" stroke-width="2.4" opacity=".65"/>
+    <text class="panelTitle" x="108" y="291" fill="#21d4ff">LIQUIDITY PLANE: UNISWAP V2-STYLE AMM</text>
+    <rect class="card" x="116" y="348" width="290" height="122" rx="12" stroke="#21d4ff"/>
+    <text class="cardTitle" x="138" y="386" fill="#21d4ff">Users / SDK / UI</text>
+    <text class="small" x="138" y="424"><tspan x="138" dy="0">traders, LPs, stakers</tspan><tspan x="138" dy="30">addresses and ABIs</tspan></text>
+    <rect class="card" x="520" y="348" width="300" height="122" rx="12" stroke="#21d4ff"/>
+    <text class="cardTitle" x="542" y="386" fill="#21d4ff">Router02</text>
+    <text class="monoSmall" x="542" y="420">UniswapV2Router02.sol</text>
+    <text class="tiny" x="542" y="450">liquidity, swaps, quotes</text>
+    <rect class="card" x="934" y="348" width="300" height="122" rx="12" stroke="#21d4ff"/>
+    <text class="cardTitle" x="956" y="386" fill="#21d4ff">Factory</text>
+    <text class="monoSmall" x="956" y="420">UniswapV2Factory.sol</text>
+    <text class="tiny" x="956" y="450">CREATE2 pair registry</text>
+    <path d="M406 409H510" stroke="#21d4ff" stroke-width="4" marker-end="url(#arrCyan)"/>
+    <path d="M820 409H924" stroke="#21d4ff" stroke-width="4" marker-end="url(#arrCyan)"/>
+    <rect class="card" x="226" y="548" width="390" height="142" rx="12" stroke="#21d4ff"/>
+    <text class="cardTitle" x="250" y="586" fill="#21d4ff">Pair Contracts</text>
+    <text class="monoSmall" x="250" y="620">UniswapV2Pair.sol</text>
+    <text class="small" x="250" y="654">reserves, LP mint/burn, swaps</text>
+    <rect class="card" x="720" y="548" width="390" height="142" rx="12" stroke="#96e22a"/>
+    <text class="cardTitle" x="744" y="586" fill="#96e22a">LP Tokens</text>
+    <text class="small" x="744" y="624"><tspan x="744" dy="0">pool shares become</tspan><tspan x="744" dy="30">the reward surface</tspan></text>
+    <path d="M1084 470C1084 518 700 548 624 596" stroke="#21d4ff" stroke-width="4" fill="none" marker-end="url(#arrCyan)"/>
+    <path d="M616 619H710" stroke="#96e22a" stroke-width="4" marker-end="url(#arrGreen)"/>
+    <rect x="116" y="744" width="1060" height="92" rx="12" fill="rgba(0,0,0,.34)" stroke="rgba(33,212,255,.55)"/>
+    <text class="small" x="142" y="785"><tspan x="142" dy="0">Source-backed AMM behavior: deterministic pairs, reserve accounting,</tspan><tspan x="142" dy="30">constant-product swaps, fee-on liquidity, and pair lookup.</tspan></text>
+  </g>
+
+  <g>
+    <rect class="panel" x="1280" y="246" width="1210" height="710" rx="16"/>
+    <path d="M1302 312H2468" stroke="#96e22a" stroke-width="2.4" opacity=".65"/>
+    <text class="panelTitle" x="1308" y="291" fill="#96e22a">INCENTIVE PLANE: EMISSIONS, STAKING, FEE RETURN</text>
+    <rect class="card" x="1320" y="344" width="340" height="128" rx="12" stroke="#96e22a"/>
+    <text class="cardTitle" x="1342" y="382" fill="#96e22a">MasterBreeder V1</text>
+    <text class="monoSmall" x="1342" y="416">MasterBreeder.sol</text>
+    <text class="tiny" x="1342" y="448">mints KANGA by alloc points</text>
+    <rect class="card" x="1708" y="344" width="340" height="128" rx="12" stroke="#96e22a"/>
+    <text class="cardTitle" x="1730" y="382" fill="#96e22a">V2 / MiniBreeder</text>
+    <text class="monoSmall" x="1730" y="416">MasterBreederV2.sol</text>
+    <text class="tiny" x="1730" y="448">dummy pool or funded stream</text>
+    <rect class="card" x="2096" y="344" width="340" height="128" rx="12" stroke="#ffd329"/>
+    <text class="cardTitle" x="2118" y="382" fill="#ffd329">KANGA</text>
+    <text class="monoSmall" x="2118" y="416">KangaToken.sol</text>
+    <text class="tiny" x="2118" y="448">owner-mintable token</text>
+    <path d="M1660 408H1698" stroke="#96e22a" stroke-width="4" marker-end="url(#arrGreen)"/>
+    <path d="M2048 408H2086" stroke="#ffd329" stroke-width="4" marker-end="url(#arrYellow)"/>
+    <rect class="card" x="1400" y="564" width="360" height="140" rx="12" stroke="#ff8a22"/>
+    <text class="cardTitle" x="1424" y="602" fill="#ff8a22">Billabong / xKANGA</text>
+    <text class="monoSmall" x="1424" y="636">Billabong.sol</text>
+    <text class="small" x="1424" y="670">KANGA share vault</text>
+    <rect class="card" x="1868" y="564" width="380" height="140" rx="12" stroke="#ff8a22"/>
+    <text class="cardTitle" x="1892" y="602" fill="#ff8a22">KangaMaker</text>
+    <text class="monoSmall" x="1892" y="636">KangaMaker.sol</text>
+    <text class="small" x="1892" y="670">LP burn, bridge route, swap</text>
+    <path d="M2220 472C2170 528 2075 542 2058 558" stroke="#ff8a22" stroke-width="4" fill="none" marker-end="url(#arrOrange)"/>
+    <path d="M1868 634H1770" stroke="#ff8a22" stroke-width="4" marker-end="url(#arrOrange)"/>
+    <rect x="1320" y="758" width="1118" height="92" rx="12" fill="rgba(0,0,0,.34)" stroke="rgba(150,226,42,.55)"/>
+    <text class="small" x="1348" y="797"><tspan x="1348" dy="0">Architecture flywheel: LP positions earn KANGA; fee conversion can</tspan><tspan x="1348" dy="30">route protocol-held LP value into Billabong.</tspan></text>
+  </g>
+
+  <g>
+    <rect class="panel" x="2530" y="246" width="1230" height="710" rx="16"/>
+    <path d="M2552 312H3738" stroke="#ff8a22" stroke-width="2.4" opacity=".65"/>
+    <text class="panelTitle" x="2558" y="291" fill="#ff8a22">MIGRATION, DEPLOYMENT, AND CONTROL PLANE</text>
+    <rect class="card" x="2572" y="344" width="350" height="138" rx="12" stroke="#ff8a22"/>
+    <text class="cardTitle" x="2596" y="382" fill="#ff8a22">User migration</text>
+    <text class="monoSmall" x="2596" y="416">KangaBounce.sol</text>
+    <text class="tiny" x="2596" y="448">old LP burn, new Kanga LP</text>
+    <rect class="card" x="2968" y="344" width="350" height="138" rx="12" stroke="#ff8a22"/>
+    <text class="cardTitle" x="2992" y="382" fill="#ff8a22">Breeder migration</text>
+    <text class="monoSmall" x="2992" y="416">Migrator.sol</text>
+    <text class="tiny" x="2992" y="448">caller gate, desiredLiquidity</text>
+    <rect class="card" x="3364" y="344" width="350" height="138" rx="12" stroke="#ffd329"/>
+    <text class="cardTitle" x="3388" y="382" fill="#ffd329">Deploy topology</text>
+    <text class="monoSmall" x="3388" y="416">deploy/*.js</text>
+    <text class="tiny" x="3388" y="448">Hardhat multi-network setup</text>
+    <path d="M2922 413H2958" stroke="#ff8a22" stroke-width="4" marker-end="url(#arrOrange)"/>
+    <path d="M3318 413H3354" stroke="#ffd329" stroke-width="4" marker-end="url(#arrYellow)"/>
+    <rect class="card" x="2572" y="570" width="538" height="150" rx="12" stroke="#ff4f56"/>
+    <text class="cardTitle" x="2596" y="608" fill="#ff4f56">Privileged controls</text>
+    <text class="small" x="2596" y="646"><tspan x="2596" dy="0">mint owner, factory feeToSetter, breeder owner,</tspan><tspan x="2596" dy="30">migrator, maker bridges, timelock admin</tspan></text>
+    <rect class="card" x="3176" y="570" width="538" height="150" rx="12" stroke="#21d4ff"/>
+    <text class="cardTitle" x="3200" y="608" fill="#21d4ff">Address propagation</text>
+    <text class="small" x="3200" y="646"><tspan x="3200" dy="0">Deployment artifacts must align with SDK, UI,</tspan><tspan x="3200" dy="30">ABIs, chain maps, and old-router assumptions.</tspan></text>
+    <rect x="2572" y="778" width="1142" height="92" rx="12" fill="rgba(0,0,0,.34)" stroke="rgba(255,138,34,.55)"/>
+    <text class="small" x="2600" y="817"><tspan x="2600" dy="0">Safe migration lifecycle: configure, migrate, verify balances,</tspan><tspan x="2600" dy="30">then disable privileged migrator settings.</tspan></text>
+  </g>
+
+  <g>
+    <rect class="panel" x="80" y="1010" width="1650" height="570" rx="16"/>
+    <path d="M102 1076H1708" stroke="#1f9cff" stroke-width="2.4" opacity=".65"/>
+    <text class="panelTitle" x="108" y="1055" fill="#1f9cff">ARCHITECTURE DECISION TABLE</text>
+    <g transform="translate(112 1102)">
+      <text class="tableHead" x="18" y="0">BOUNDARY</text><text class="tableHead" x="430" y="0">WHAT IT OWNS</text><text class="tableHead" x="1050" y="0">WHY IT MATTERS</text>
+      <path d="M0 18H1580" stroke="#1f9cff" stroke-width="3" opacity=".7"/>
+      <rect x="0" y="40" width="1580" height="54" fill="rgba(31,156,255,.07)"/><text class="tableText" x="18" y="76">AMM core</text><text class="tableText" x="430" y="76">pair creation, reserves, swaps, LP supply</text><text class="tableText" x="1050" y="76">base liquidity and pricing primitive</text>
+      <rect x="0" y="104" width="1580" height="54" fill="transparent"/><text class="tableText" x="18" y="140">Token and rewards</text><text class="tableText" x="430" y="140">mint authority, alloc points, reward debt</text><text class="tableText" x="1050" y="140">supply and incentive control surface</text>
+      <rect x="0" y="168" width="1580" height="54" fill="rgba(31,156,255,.07)"/><text class="tableText" x="18" y="204">Staking and fees</text><text class="tableText" x="430" y="204">xKANGA shares, LP burn, conversion routes</text><text class="tableText" x="1050" y="204">fee value routing and operational route risk</text>
+      <rect x="0" y="232" width="1580" height="54" fill="transparent"/><text class="tableText" x="18" y="268">Migration tooling</text><text class="tableText" x="430" y="268">old LP to Kanga LP, breeder-held LP migration</text><text class="tableText" x="1050" y="268">launch bootstrap with high-authority assumptions</text>
+      <rect x="0" y="296" width="1580" height="54" fill="rgba(31,156,255,.07)"/><text class="tableText" x="18" y="332">Deployment ops</text><text class="tableText" x="430" y="332">Hardhat deploy scripts, chain maps, artifacts</text><text class="tableText" x="1050" y="332">runtime correctness depends on address/ABI state</text>
+      <rect x="0" y="360" width="1580" height="54" fill="transparent"/><text class="tableText" x="18" y="396">Governance utility</text><text class="tableText" x="430" y="396">timelock queue/cancel/execute</text><text class="tableText" x="1050" y="396">delayed-admin mechanism, not full DAO proof</text>
+    </g>
+  </g>
+
+  <g>
+    <rect class="panel" x="1770" y="1010" width="1990" height="570" rx="16"/>
+    <path d="M1792 1076H3738" stroke="#52627a" stroke-width="2.4" opacity=".65"/>
+    <text class="panelTitle" x="1798" y="1055" fill="#9fb2ca">IMPLEMENTATION STATUS</text>
+    <rect class="card" x="1810" y="1098" width="610" height="150" rx="12" stroke="#96e22a"/>
+    <text class="cardTitle" x="1832" y="1134" fill="#96e22a">Validated from source</text><rect x="2344" y="1112" width="62" height="30" rx="8" fill="#0b6b52"/><text class="badge" x="2375" y="1134" text-anchor="middle">SRC</text>
+    <text class="small" x="1832" y="1172"><tspan x="1832" dy="0">AMM, token, breeders, Billabong,</tspan><tspan x="1832" dy="30">KangaMaker, migration, timelock, tests.</tspan></text>
+    <rect class="card" x="2456" y="1098" width="610" height="150" rx="12" stroke="#ff4f56"/>
+    <text class="cardTitle" x="2478" y="1134" fill="#ff4f56">Source-level risks</text><rect x="2990" y="1112" width="62" height="30" rx="8" fill="#7a2938"/><text class="badge" x="3021" y="1134" text-anchor="middle">RISK</text>
+    <text class="small" x="2478" y="1172"><tspan x="2478" dy="0">Delegation warning, migrator power,</tspan><tspan x="2478" dy="30">maker bridge routes, no max slippage.</tspan></text>
+    <rect class="card" x="3102" y="1098" width="610" height="150" rx="12" stroke="#ffd329"/>
+    <text class="cardTitle" x="3124" y="1134" fill="#ffd329">Deployment caveats</text><rect x="3636" y="1112" width="62" height="30" rx="8" fill="#835b20"/><text class="badge" x="3667" y="1134" text-anchor="middle">DOC</text>
+    <text class="small" x="3124" y="1172"><tspan x="3124" dy="0">Current live ownership, deployed state,</tspan><tspan x="3124" dy="30">and production usage need validation.</tspan></text>
+    <rect class="card" x="1810" y="1288" width="610" height="150" rx="12" stroke="#ff8a22"/>
+    <text class="cardTitle" x="1832" y="1324" fill="#ff8a22">Docs-only roadmap</text><rect x="2344" y="1302" width="62" height="30" rx="8" fill="#835b20"/><text class="badge" x="2375" y="1324" text-anchor="middle">DOC</text>
+    <text class="small" x="1832" y="1362"><tspan x="1832" dy="0">Mob, Troop, Jump, LimitOrder,</tspan><tspan x="1832" dy="30">Matilda/Trident are not claimed here.</tspan></text>
+    <rect class="card" x="2456" y="1288" width="610" height="150" rx="12" stroke="#ff4f56"/>
+    <text class="cardTitle" x="2478" y="1324" fill="#ff4f56">AI relevance excluded</text><rect x="2990" y="1302" width="62" height="30" rx="8" fill="#7a2938"/><text class="badge" x="3021" y="1324" text-anchor="middle">NO</text>
+    <text class="small" x="2478" y="1362"><tspan x="2478" dy="0">No source support found for AI, agents,</tspan><tspan x="2478" dy="30">LLMs, ML, or autonomous orchestration.</tspan></text>
+    <rect class="card" x="3102" y="1288" width="610" height="150" rx="12" stroke="#21d4ff"/>
+    <text class="cardTitle" x="3124" y="1324" fill="#21d4ff">Platform framing</text><rect x="3636" y="1302" width="62" height="30" rx="8" fill="#0b6b52"/><text class="badge" x="3667" y="1324" text-anchor="middle">SRC</text>
+    <text class="small" x="3124" y="1362"><tspan x="3124" dy="0">Distributed platform signal comes from</tspan><tspan x="3124" dy="30">runtime composition and operating controls.</tspan></text>
+  </g>
+
+  <g transform="translate(80 1650)">
+    <rect x="0" y="0" width="3680" height="430" rx="18" fill="rgba(5,16,31,.88)" stroke="rgba(82,98,122,.58)" stroke-width="3"/>
+    <text class="panelTitle" x="34" y="56" fill="#21d4ff">ARCHITECTURE READING ORDER</text>
+    <text class="stance" x="34" y="114">Source-backed architecture walkthrough for senior protocol review, not a live deployment audit or ownership attestation.</text>
+    <text class="body" x="34" y="170"><tspan x="34" dy="0">Read left to right: liquidity plane first, incentive and staking plane second, migration/deployment/control plane third.</tspan><tspan x="34" dy="38">The next slide maps each box to concrete contracts, deploy scripts, tests, runtime steps, and implementation caveats.</tspan></text>
+    <g transform="translate(34 248)">
+      <circle cx="18" cy="18" r="16" fill="#21d4ff" opacity=".25" stroke="#21d4ff"/><text class="small" x="46" y="26">AMM contracts provide familiar liquidity and swap primitives.</text>
+      <circle cx="918" cy="18" r="16" fill="#96e22a" opacity=".25" stroke="#96e22a"/><text class="small" x="946" y="26">Reward and staking contracts create the tokenomics flywheel.</text>
+      <circle cx="1818" cy="18" r="16" fill="#ff8a22" opacity=".25" stroke="#ff8a22"/><text class="small" x="1846" y="26">Migration and deployment are temporary, high-authority operating surfaces.</text>
+      <circle cx="2838" cy="18" r="16" fill="#ff4f56" opacity=".25" stroke="#ff4f56"/><text class="small" x="2866" y="26">Boundaries stay visible without dominating the walkthrough slide.</text>
+    </g>
+  </g>
+</svg>

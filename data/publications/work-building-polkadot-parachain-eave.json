@@ -19,7 +19,12 @@
     {
       "destination": "docs/pages/work/building-polkadot-parachain-eave.mdx",
       "media_type": "text/mdx",
-      "sha256": "d9bc64716869bfcc5fcf868006672a2b481e41590a7e53f3bb61260ee710f3b2"
+      "sha256": "409c4e6187b70b341fafba72364e171da921dc32fb7366d42c9d0e880fb9ba32"
+    },
+    {
+      "destination": "docs/public/assets/work/building-polkadot-parachain-eave/eave-parachain-architecture.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "1f75f13f93201a65cbdd4cd229b08bbf7b6a7edf8c40057094d12dcb4c0132af"
     }
   ],
   "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
