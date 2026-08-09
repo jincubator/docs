@@ -160,9 +160,18 @@ body,
 .jincubator-image-zoom-dialog {
   background: transparent;
   border: 0;
-  max-height: 96vh;
-  max-width: 96vw;
-  padding: 3.5rem 1rem 1rem;
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  inset: 0;
+  margin: 0;
+  max-height: none;
+  max-width: none;
+  overflow: hidden;
+  padding: 0;
+  position: fixed;
+  width: 100vw;
+  width: 100dvw;
 }
 
 .jincubator-image-zoom-dialog::backdrop {
@@ -172,9 +181,11 @@ body,
 .jincubator-image-zoom-dialog img {
   background: #fffefa;
   display: block;
-  height: auto;
-  max-height: calc(96vh - 4.5rem);
-  max-width: min(1400px, 92vw);
+  height: 100%;
+  inset: 0;
+  object-fit: contain;
+  position: absolute;
+  width: 100%;
 }
 
 .jincubator-image-zoom-dialog__close {
@@ -186,8 +197,9 @@ body,
   font: inherit;
   padding: 0.55rem 0.8rem;
   position: absolute;
-  right: 1rem;
-  top: 0.5rem;
+  right: 1.25rem;
+  top: 1.25rem;
+  z-index: 1;
 }
 
 .vocs_Content_root pre {

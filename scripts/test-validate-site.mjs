@@ -37,8 +37,11 @@ assert.match(config, /zoom-images\.js/);
 for (const token of [".vocs_Content .jincubator-image-zoom", ".jincubator-image-zoom__indicator", "cursor: zoom-in"]) {
   assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }
+for (const token of ["width: 100dvw", "height: 100dvh", "max-width: none", "max-height: none", "inset: 0"]) {
+  assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+}
 const imageZoomScript = fs.readFileSync("docs/public/zoom-images.js", "utf8");
-for (const token of ["showModal", "Open the .* at full size", "vocs:route-update", ".vocs_Content", 'event.key === "Escape"']) {
+for (const token of ["showModal", "Open the .* at full size", "vocs:route-update", ".vocs_Content", 'event.key === "Escape"', "event.target === image"]) {
   assert.match(imageZoomScript, new RegExp(token));
 }
 const imageZoomTree = {
