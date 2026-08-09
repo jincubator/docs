@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "collection/speed-wasnt-the-problem",
+    "type": "collection",
+    "title": "I Built a Fast Arbitrage Engine. Speed Wasn't the Problem."
+  },
+  "route": "/writing/speed-wasnt-the-problem",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Article",
+    "reading_time_minutes": 10
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/writing/speed-wasnt-the-problem.mdx",
+      "media_type": "text/mdx",
+      "sha256": "372f5de9e55e2ec4017de9a927e6d4f7148c553518b75ba6ede7d6c8a036f4df"
+    },
+    {
+      "destination": "docs/public/assets/writing/speed-wasnt-the-problem/01-benchmark-to-outcome.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "76d4f18e6fcf7e8f0d9575fff4b27cb9144523e0d3200cfa4731b3504491e2c9"
+    },
+    {
+      "destination": "docs/public/assets/writing/speed-wasnt-the-problem/02-competitive-stack.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "103ab4a5aa562243b28953e068d000fb80a0f8f3d688b96e6173164b36365e05"
+    },
+    {
+      "destination": "docs/public/assets/writing/speed-wasnt-the-problem/03-strategy-before-optimization.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "7c5f6bb1a64d1d9716316bc567e8942de531d9a8e5e319664c232f84181f5a28"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

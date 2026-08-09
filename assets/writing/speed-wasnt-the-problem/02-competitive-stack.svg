@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 900 900">
+  <title id="title">The competitive stack</title>
+  <desc id="desc">Five stacked layers show Infrastructure, Execution, Capital, Strategy, and Intelligence. Infrastructure and Execution are marked as the original engineering emphasis; Strategy and Intelligence are marked as the revised validation emphasis, with Capital connecting both.</desc>
+  <style>
+    .bg{fill:#f4f7fa}.card{fill:#fff;stroke-width:4}.built{stroke:#3d73df}.bridge{stroke:#dc961b}.validate{stroke:#299461}.title{font:700 29px system-ui,sans-serif;fill:#0d2d4c}.body{font:20px system-ui,sans-serif;fill:#41678e}.eyebrow{font:700 18px system-ui,sans-serif;letter-spacing:3px;fill:#17858c}.pill{font:700 17px system-ui,sans-serif;fill:#fff}.footer{font:700 22px system-ui,sans-serif;fill:#fff}
+  </style>
+  <rect class="bg" width="900" height="900"/>
+  <text x="60" y="58" class="eyebrow">SALUS · COMPETITIVE MODEL</text>
+  <text x="60" y="110" class="title" style="font-size:40px">Five layers answer different questions</text>
+
+  <rect class="card validate" x="80" y="160" width="740" height="112" rx="22"/>
+  <text x="120" y="205" class="title">Intelligence</text><text x="120" y="254" class="body">What does the evidence support, and what remains unknown?</text>
+  <rect x="610" y="190" width="170" height="42" rx="21" fill="#299461"/><text x="695" y="217" text-anchor="middle" class="pill">validate next</text>
+
+  <rect class="card validate" x="80" y="290" width="740" height="112" rx="22"/>
+  <text x="120" y="335" class="title">Strategy</text><text x="120" y="384" class="body">Which behavior has positive expected value here?</text>
+  <rect x="610" y="320" width="170" height="42" rx="21" fill="#299461"/><text x="695" y="347" text-anchor="middle" class="pill">validate next</text>
+
+  <rect class="card bridge" x="80" y="420" width="740" height="112" rx="22"/>
+  <text x="120" y="465" class="title">Capital</text><text x="120" y="514" class="body">What must be funded, held, hedged, and recovered?</text>
+  <rect x="610" y="450" width="170" height="42" rx="21" fill="#dc961b"/><text x="695" y="477" text-anchor="middle" class="pill">changes economics</text>
+
+  <rect class="card built" x="80" y="550" width="740" height="112" rx="22"/>
+  <text x="120" y="595" class="title">Execution</text><text x="120" y="644" class="body">Can a valid decision reach inclusion and settlement?</text>
+  <rect x="610" y="580" width="170" height="42" rx="21" fill="#3d73df"/><text x="695" y="607" text-anchor="middle" class="pill">built first</text>
+
+  <rect class="card built" x="80" y="680" width="740" height="112" rx="22"/>
+  <text x="120" y="725" class="title">Infrastructure</text><text x="120" y="774" class="body">Can changing state become fresh, bounded work?</text>
+  <rect x="610" y="710" width="170" height="42" rx="21" fill="#3d73df"/><text x="695" y="737" text-anchor="middle" class="pill">built first</text>
+
+  <rect x="80" y="825" width="740" height="55" rx="18" fill="#0d2d4c"/>
+  <text x="450" y="860" text-anchor="middle" class="footer">Necessary layers do not prove a viable strategy.</text>
+</svg>

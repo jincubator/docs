@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/salus",
+    "type": "work",
+    "title": "Salus"
+  },
+  "route": "/work/salus",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/salus.mdx",
+      "media_type": "text/mdx",
+      "sha256": "9f4a06f96ceb2bef1a02d561edeaae75c19cc74b8fcbb9926e17dc5fd948b856"
+    },
+    {
+      "destination": "docs/public/assets/work/salus/salus-runtime-architecture.png",
+      "media_type": "image/png",
+      "sha256": "5466faa4cc47a8d45d59d8a1f1e51c7cea51ccfcc1edb3f1c21c7886888de231"
+    },
+    {
+      "destination": "docs/public/assets/work/salus/salus-code-walkthrough.png",
+      "media_type": "image/png",
+      "sha256": "8e1cbf64bb4af2a3dbf65eea6aac5fbf4a3352001e34cb43015d2e4708565436"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

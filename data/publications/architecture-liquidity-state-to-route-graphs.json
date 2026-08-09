@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/liquidity-state-to-route-graphs",
+    "type": "architecture",
+    "title": "From Liquidity State to Route Graphs"
+  },
+  "route": "/architecture/liquidity-state-to-route-graphs",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/liquidity-state-to-route-graphs.mdx",
+      "media_type": "text/mdx",
+      "sha256": "3015f87a0662bf975d0b5ed0946385f72c926f0d3155f72079ee3cdb07c28d0d"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

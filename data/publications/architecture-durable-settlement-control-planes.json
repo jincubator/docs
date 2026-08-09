@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/durable-settlement-control-planes",
+    "type": "architecture",
+    "title": "Durable Settlement Control Planes"
+  },
+  "route": "/architecture/financial-infrastructure/settlement",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/financial-infrastructure/settlement.mdx",
+      "media_type": "text/mdx",
+      "sha256": "453e809c650d3de770a0389e60e13516d81d433af5f6760d5d6bfcdd61cbcab6"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

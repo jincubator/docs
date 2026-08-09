@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "research/durable-financial-settlement",
+    "type": "research",
+    "title": "Durable Financial Settlement"
+  },
+  "route": "/research/financial-infrastructure/settlement/intro",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Research",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/research/financial-infrastructure/settlement/intro.mdx",
+      "media_type": "text/mdx",
+      "sha256": "52c630a9037f95378097876b3bf95713961b80348ee8a19e46c74cdfb0c0e2bb"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

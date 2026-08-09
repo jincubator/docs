@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1200 680">
+  <title id="title">Topology narrows changing liquidity to affected route evaluation</title>
+  <desc id="desc">A five-stage flow separates the persisted 2.4 million maximum-four-hop route universe from the filtered live catalog, a changed-component membership lookup, an affected-route subset, and current-state evaluation.</desc>
+  <style>
+    .bg{fill:#f4f7fa}.navy{fill:#0d2d4c}.muted{fill:#41678e}.box{fill:#fff;stroke-width:3}.teal{stroke:#17858c}.blue{stroke:#3d73df}.amber{stroke:#dc961b}.green{stroke:#299461}.label{font:700 27px system-ui,sans-serif;fill:#0d2d4c}.value{font:700 34px system-ui,sans-serif;fill:#0d2d4c}.small{font:22px system-ui,sans-serif;fill:#41678e}.note{font:700 24px system-ui,sans-serif;fill:#fff}.arrow{fill:none;stroke:#6a829a;stroke-width:5;marker-end:url(#arrow)}
+  </style>
+  <defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0l12 6-12 6z" fill="#6a829a"/></marker></defs>
+  <rect class="bg" width="1200" height="680"/>
+  <text x="60" y="70" class="small" style="font-weight:700;letter-spacing:4px;fill:#17858c">SALUS · TOPOLOGY BOUNDARY</text>
+  <text x="60" y="125" class="label" style="font-size:42px">From durable route identity to fresh evaluation</text>
+  <path class="arrow" d="M250 320H275"/><path class="arrow" d="M470 320H495"/><path class="arrow" d="M690 320H715"/><path class="arrow" d="M910 320H935"/>
+  <rect class="box blue" x="45" y="205" width="205" height="230" rx="22"/>
+  <text x="147" y="250" text-anchor="middle" class="label">Persisted universe</text>
+  <text x="147" y="310" text-anchor="middle" class="value">2,401,108</text>
+  <text x="147" y="350" text-anchor="middle" class="small">max-four-hop</text>
+  <text x="147" y="382" text-anchor="middle" class="small">Ethereum routes</text>
+  <rect class="box teal" x="275" y="205" width="195" height="230" rx="22"/>
+  <text x="372" y="250" text-anchor="middle" class="label">Live catalog</text>
+  <text x="372" y="310" text-anchor="middle" class="small">route bounds</text>
+  <text x="372" y="344" text-anchor="middle" class="small">protocol filters</text>
+  <text x="372" y="378" text-anchor="middle" class="small">token filters</text>
+  <rect class="box teal" x="495" y="205" width="195" height="230" rx="22"/>
+  <text x="592" y="250" text-anchor="middle" class="label">State change</text>
+  <text x="592" y="310" text-anchor="middle" class="small">component ID</text>
+  <text x="592" y="344" text-anchor="middle" class="small">+ block identity</text>
+  <text x="592" y="392" text-anchor="middle" class="small">membership lookup</text>
+  <rect class="box amber" x="715" y="205" width="195" height="230" rx="22"/>
+  <text x="812" y="250" text-anchor="middle" class="label">Affected scope</text>
+  <text x="812" y="310" text-anchor="middle" class="small">known member routes</text>
+  <text x="812" y="344" text-anchor="middle" class="small">deduplicated</text>
+  <text x="812" y="378" text-anchor="middle" class="small">and bounded</text>
+  <rect class="box green" x="935" y="205" width="220" height="230" rx="22"/>
+  <text x="1045" y="250" text-anchor="middle" class="label">Current state</text>
+  <text x="1045" y="310" text-anchor="middle" class="small">coverage gate</text>
+  <text x="1045" y="344" text-anchor="middle" class="small">exact inputs</text>
+  <text x="1045" y="378" text-anchor="middle" class="small">route evaluation</text>
+  <rect class="navy" x="60" y="500" width="1080" height="105" rx="22"/>
+  <text x="600" y="543" text-anchor="middle" class="note">The persisted universe is not scanned on every update.</text>
+  <text x="600" y="578" text-anchor="middle" class="note">Topology narrows work; current state supplies decision evidence.</text>
+</svg>

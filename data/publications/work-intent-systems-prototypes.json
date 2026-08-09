@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/intent-systems-prototypes",
+    "type": "work",
+    "title": "Intent Systems Prototypes"
+  },
+  "route": "/work/prototypes",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/prototypes.mdx",
+      "media_type": "text/mdx",
+      "sha256": "9f1e141c4b20cecb0c8743682108ff453efa859f68c29237bae8c55a8126a565"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

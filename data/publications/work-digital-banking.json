@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/digital-banking",
+    "type": "work",
+    "title": "Digital Banking Reference Implementation"
+  },
+  "route": "/work/digital-banking",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/digital-banking.mdx",
+      "media_type": "text/mdx",
+      "sha256": "e34c568e931d222ef64f0faaddad422e45851b80b078562c299ab584ac871bdd"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

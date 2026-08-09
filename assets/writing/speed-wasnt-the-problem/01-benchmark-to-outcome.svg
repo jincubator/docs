@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 800 1050">
+  <title id="title">Benchmark success versus trading outcome</title>
+  <desc id="desc">A vertical gated sequence runs from a route catalog through evaluation, economic selection, execution, inclusion, settlement, and realized profit. The retained evidence reaches evaluation, while every later gate needs separate evidence.</desc>
+  <style>
+    .bg{fill:#f4f7fa}.card{fill:#fff;stroke-width:4}.proved{stroke:#3d73df}.later{stroke:#b6c4d2}.value{font:700 28px system-ui,sans-serif;fill:#0d2d4c}.small{font:21px system-ui,sans-serif;fill:#41678e}.eyebrow{font:700 18px system-ui,sans-serif;letter-spacing:3px;fill:#17858c}.number{font:700 21px system-ui,sans-serif;fill:#fff}.arrow{fill:none;stroke:#6a829a;stroke-width:4;marker-end:url(#arrow)}
+  </style>
+  <defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0l12 6-12 6z" fill="#6a829a"/></marker></defs>
+  <rect class="bg" width="800" height="1050"/>
+  <text x="55" y="58" class="eyebrow">SALUS · EVIDENCE GATES</text>
+  <text x="55" y="108" class="value" style="font-size:38px">Speed is not the outcome</text>
+
+  <rect class="card proved" x="70" y="155" width="660" height="100" rx="20"/>
+  <circle cx="125" cy="205" r="27" fill="#3d73df"/><text x="125" y="213" text-anchor="middle" class="number">1</text>
+  <text x="175" y="195" class="value">Route catalog</text><text x="175" y="228" class="small">2,401,108 maximum-four-hop paths</text>
+  <path class="arrow" d="M400 255v35"/>
+
+  <rect class="card proved" x="70" y="295" width="660" height="112" rx="20"/>
+  <circle cx="125" cy="351" r="27" fill="#3d73df"/><text x="125" y="359" text-anchor="middle" class="number">2</text>
+  <text x="175" y="341" class="value">Route evaluation</text><text x="175" y="382" class="small">4,554/s sustained in the retained Ethereum trace</text>
+  <rect x="485" y="308" width="210" height="38" rx="19" fill="#17858c"/><text x="590" y="334" text-anchor="middle" class="number">evidence reaches here</text>
+  <path class="arrow" d="M400 407v35"/>
+
+  <rect class="card later" x="70" y="447" width="660" height="88" rx="20"/>
+  <circle cx="125" cy="491" r="27" fill="#b6c4d2"/><text x="125" y="499" text-anchor="middle" class="number">3</text>
+  <text x="175" y="501" class="value">Selected after costs</text>
+  <path class="arrow" d="M400 535v28"/>
+
+  <rect class="card later" x="70" y="568" width="660" height="88" rx="20"/>
+  <circle cx="125" cy="612" r="27" fill="#b6c4d2"/><text x="125" y="620" text-anchor="middle" class="number">4</text>
+  <text x="175" y="622" class="value">Execution attempt</text>
+  <path class="arrow" d="M400 656v28"/>
+
+  <rect class="card later" x="70" y="689" width="660" height="88" rx="20"/>
+  <circle cx="125" cy="733" r="27" fill="#b6c4d2"/><text x="125" y="741" text-anchor="middle" class="number">5</text>
+  <text x="175" y="743" class="value">Inclusion</text>
+  <path class="arrow" d="M400 777v28"/>
+
+  <rect class="card later" x="70" y="810" width="660" height="88" rx="20"/>
+  <circle cx="125" cy="854" r="27" fill="#b6c4d2"/><text x="125" y="862" text-anchor="middle" class="number">6</text>
+  <text x="175" y="864" class="value">Settlement and reconciliation</text>
+  <path class="arrow" d="M400 898v28"/>
+
+  <rect class="card later" x="70" y="931" width="660" height="72" rx="20"/>
+  <circle cx="125" cy="967" r="27" fill="#b6c4d2"/><text x="125" y="975" text-anchor="middle" class="number">7</text>
+  <text x="175" y="977" class="value">Realized profit</text>
+</svg>

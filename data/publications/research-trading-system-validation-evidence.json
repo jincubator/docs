@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "research/trading-system-validation-evidence",
+    "type": "research",
+    "title": "What Trading-System Validation Evidence Can Prove"
+  },
+  "route": "/research/trading-system-validation-evidence",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Research",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/research/trading-system-validation-evidence.mdx",
+      "media_type": "text/mdx",
+      "sha256": "eb9da9ea5744265c92755255d01291de43c20da45993450ed6b8abadaa7c0090"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

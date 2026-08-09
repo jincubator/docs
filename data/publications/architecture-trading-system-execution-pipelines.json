@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/trading-system-execution-pipelines",
+    "type": "architecture",
+    "title": "Designing Evidence-Aware Trading-System Pipelines"
+  },
+  "route": "/architecture/trading-system-execution-pipelines",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/trading-system-execution-pipelines.mdx",
+      "media_type": "text/mdx",
+      "sha256": "ae0da195aa294266b7dbc8258543b613407fee67073b4cdf583216f8b1b66449"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

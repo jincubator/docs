@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "collection/mapping-liquidity-to-routes-at-scale",
+    "type": "collection",
+    "title": "Mapping Liquidity to Routes at Scale"
+  },
+  "route": "/writing/mapping-liquidity-to-routes-at-scale",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Article",
+    "reading_time_minutes": 8
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/writing/mapping-liquidity-to-routes-at-scale.mdx",
+      "media_type": "text/mdx",
+      "sha256": "a5e417fce3dccd785f9e0b0cd3d24aef91ee464bff9447762e4fb871e60b0548"
+    },
+    {
+      "destination": "docs/public/assets/writing/mapping-liquidity-to-routes-at-scale/01-topology-boundary.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "1c86aadeceb02952daf110df728d975f605f5241633fbe9a61bb883879f35f5b"
+    },
+    {
+      "destination": "docs/public/assets/writing/mapping-liquidity-to-routes-at-scale/02-route-lifecycle.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "bed628131a5cdf50c24dab562fe73f9317d200f46b461d546c52f9c55ebd577a"
+    },
+    {
+      "destination": "docs/public/assets/writing/mapping-liquidity-to-routes-at-scale/03-queue-policy.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "8f7f92de42f2359747f04955f3c879eaa8cdea334ecbcbb268e2ae06877ccfeb"
+    },
+    {
+      "destination": "docs/public/assets/writing/mapping-liquidity-to-routes-at-scale/04-reviewed-evidence.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "2e5ec898de2e2df3296870061a13277cddc35f9980e7ae98fcd4e131b0c045ca"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

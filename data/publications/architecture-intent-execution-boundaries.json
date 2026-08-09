@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/intent-execution-boundaries",
+    "type": "architecture",
+    "title": "Intent Execution Boundaries"
+  },
+  "route": "/architecture/defi-systems/intents",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/defi-systems/intents.mdx",
+      "media_type": "text/mdx",
+      "sha256": "91d6d3177e8be40817852d3da60d639a6e1668f46eb84a93865a8cc1d1ea2abe"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

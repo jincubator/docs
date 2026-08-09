@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "collection/solving-arbitrage-market-making",
+    "type": "collection",
+    "title": "Solving, Arbitrage & Market Making"
+  },
+  "route": "/writing/solving-arbitrage-market-making",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Article",
+    "reading_time_minutes": 6
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/writing/solving-arbitrage-market-making.mdx",
+      "media_type": "text/mdx",
+      "sha256": "4830e65942090ca73c8ed50b9160423f04d9a936e3aa9a2dee28c9866340cda5"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

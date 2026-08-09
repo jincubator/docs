@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1000 780">
+  <title id="title">Strategy before optimization</title>
+  <desc id="desc">A six-step evidence-led review flows from a strategy question through evidence, economics, capability gaps, and a human decision. Implementation and optimization sit outside the loop and require separate authorization.</desc>
+  <style>
+    .bg{fill:#f4f7fa}.card{fill:#fff;stroke:#3d73df;stroke-width:4}.decision{stroke:#299461}.later{fill:#fff;stroke:#b6c4d2;stroke-width:4;stroke-dasharray:10 8}.title{font:700 25px system-ui,sans-serif;fill:#0d2d4c}.body{font:19px system-ui,sans-serif;fill:#41678e}.eyebrow{font:700 18px system-ui,sans-serif;letter-spacing:3px;fill:#17858c}.arrow{fill:none;stroke:#6a829a;stroke-width:4;marker-end:url(#arrow)}.note{font:700 20px system-ui,sans-serif;fill:#fff}
+  </style>
+  <defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0l12 6-12 6z" fill="#6a829a"/></marker></defs>
+  <rect class="bg" width="1000" height="780"/>
+  <text x="60" y="58" class="eyebrow">SALUS · INVESTMENT SEQUENCE</text>
+  <text x="60" y="108" class="title" style="font-size:40px">Strategy evaluation comes before optimization</text>
+
+  <path class="arrow" d="M315 235h60"/><path class="arrow" d="M625 235h60"/>
+  <path class="arrow" d="M810 315v70"/><path class="arrow" d="M685 465h-60"/><path class="arrow" d="M375 465h-60"/>
+
+  <rect class="card" x="65" y="165" width="250" height="140" rx="20"/>
+  <text x="95" y="210" class="title">1 · Question</text><text x="95" y="248" class="body">Name the strategy, scope,</text><text x="95" y="276" class="body">and evidence cutoff.</text>
+  <rect class="card" x="375" y="165" width="250" height="140" rx="20"/>
+  <text x="405" y="210" class="title">2 · Evidence</text><text x="405" y="248" class="body">Validate lineage; retain</text><text x="405" y="276" class="body">unknowns as unknown.</text>
+  <rect class="card" x="685" y="165" width="250" height="140" rx="20"/>
+  <text x="715" y="210" class="title">3 · Economics</text><text x="715" y="248" class="body">Estimate value, costs,</text><text x="715" y="276" class="body">capital, and uncertainty.</text>
+
+  <rect class="card" x="685" y="395" width="250" height="140" rx="20"/>
+  <text x="715" y="440" class="title">4 · Capability gap</text><text x="715" y="478" class="body">Compare requirements with</text><text x="715" y="506" class="body">the system that exists.</text>
+  <rect class="card decision" x="375" y="395" width="250" height="140" rx="20"/>
+  <text x="405" y="440" class="title">5 · Human decision</text><text x="405" y="478" class="body">Continue, defer, reject,</text><text x="405" y="506" class="body">or request more evidence.</text>
+  <rect class="later" x="65" y="395" width="250" height="140" rx="20"/>
+  <text x="95" y="440" class="title">6 · Build later</text><text x="95" y="478" class="body">Authorize implementation</text><text x="95" y="506" class="body">or optimization separately.</text>
+
+  <path class="arrow" d="M190 395v-45h-35v-38" stroke-dasharray="8 7"/>
+  <rect x="65" y="605" width="870" height="95" rx="22" fill="#0d2d4c"/>
+  <text x="500" y="645" text-anchor="middle" class="note">Evidence can change the recommendation without changing runtime policy.</text>
+  <text x="500" y="678" text-anchor="middle" class="note">Research authority is not implementation or live authority.</text>
+</svg>

@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "research/deterministic-replay-as-engineering-evidence",
+    "type": "research",
+    "title": "Deterministic Replay as Engineering Evidence"
+  },
+  "route": "/research/deterministic-replay-as-engineering-evidence",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Research",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/research/deterministic-replay-as-engineering-evidence.mdx",
+      "media_type": "text/mdx",
+      "sha256": "c7fd1a7c1304d29ab00e03941e20b0eb9586c94c465900cfd4854f45bf467dc2"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

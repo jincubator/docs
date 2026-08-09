@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/backpressure-and-queue-ownership",
+    "type": "architecture",
+    "title": "Backpressure and Queue Ownership"
+  },
+  "route": "/architecture/backpressure-and-queue-ownership",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/backpressure-and-queue-ownership.mdx",
+      "media_type": "text/mdx",
+      "sha256": "e0e5452efd0f83effd4791463fdfeaa326bf662d905b10b844c83fa47f48c9d0"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

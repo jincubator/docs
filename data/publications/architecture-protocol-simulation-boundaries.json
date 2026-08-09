@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/protocol-simulation-boundaries",
+    "type": "architecture",
+    "title": "Protocol Simulation Boundaries"
+  },
+  "route": "/architecture/protocol-simulation-boundaries",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/protocol-simulation-boundaries.mdx",
+      "media_type": "text/mdx",
+      "sha256": "ad53313f7ab2ea88fde8de6f0cd880f502e5ab5352a7d063bfe52604a67f8c22"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

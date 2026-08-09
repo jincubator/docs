@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/capital-efficient-funding-models",
+    "type": "architecture",
+    "title": "Capital-Efficient Funding Models"
+  },
+  "route": "/architecture/capital-efficient-funding-models",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/capital-efficient-funding-models.mdx",
+      "media_type": "text/mdx",
+      "sha256": "8a9b7aa8e1c99eefa5e79fc6b8dc304e506761ed7df5ffca49552a851c718ee5"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}
