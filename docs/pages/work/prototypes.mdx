@@ -1,0 +1,59 @@
+---
+title: "Intent Systems Prototypes"
+description: "Bounded UHI5 and Unite DeFi experiments in intent hooks, solver execution, resource locking, and limit-order integration."
+---
+
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/work/intent-systems-prototypes/README.md. Do not edit directly. */}
+
+# Intent Systems Prototypes
+
+Intent Systems Prototypes records two bounded Jincubator experiments that tested delayed execution, solver participation, resource locking, and limit-order integration without claiming production readiness.
+
+## Why prototype
+
+Intent systems separate a user's desired outcome from the execution path selected to achieve it. That creates useful flexibility, but it also introduces authority, resource, timing, pricing, and settlement questions that are difficult to resolve in diagrams alone.
+
+A bounded prototype can test one boundary—such as a delayed hook or a solver payload—without pretending to answer protocol economics, security, production operations, or cross-chain settlement in full.
+
+## UHI5 intent hook
+
+The 2025 UHI5 experiment explored a Uniswap v4 hook that could delay a swap so an external solver might seek a better execution path. The public material also considered intent expression, resource allocation, pricing inputs, and later cross-chain integration.
+
+The public implementation record is incomplete and explicitly lists core intent creation, listener, solver, execution, and production deployment work as unfinished. The useful result is therefore the hook and protocol-boundary investigation—not a claim that a complete intent network, partner integration, or production service was delivered.
+
+## Unite DeFi solver prototype
+
+The 2025 Unite DeFi prototype explored extending a limit-order flow with a Tycho-backed swap executor, oracle-calculated conditions, post-interaction treasury handling, and ERC-6909-oriented resource locking.
+
+The prototype demonstrates how maker-authorized assets and atomic settlement can reduce the solver's need to pre-fund trading principal for the bounded flow. Infrastructure, RPC, operational, and transaction-gas costs still exist, and failed or reverted attempts may incur unreimbursed costs.
+
+The implementation builds on third-party protocols and libraries. Their production status, audits, and guarantees do not transfer to the Jincubator prototype.
+
+## What the experiments establish
+
+Together, the experiments establish that Jincubator implemented and documented bounded integration paths around:
+
+- Uniswap v4 hook execution;
+- 1inch limit-order extensions and interactions;
+- solver payloads and multi-DEX execution;
+- oracle-conditioned orders;
+- resource-locking concepts; and
+- local Solidity development and testing surfaces.
+
+They do not establish a deployed product, audited protocol, current partner integration, cross-chain production flow, profitable solver operation, commercial validation, or repeatable user outcome.
+
+## Limitations
+
+- Both efforts are historical prototypes, not active production services.
+- Public repositories contain work-in-progress and upstream-derived material whose own licenses, audits, and version warnings continue to apply.
+- Roadmaps and proposal language describe intended work, not completed functionality.
+- No customer, partnership, funding, production-volume, profitability, or security claim is made.
+- Private implementation or planning material is outside the artifact.
+
+## Go deeper
+
+- Review the [2025 Unite DeFi public organization](https://github.com/jincubator-united-defi-2025).
+- Review the public [UHI5 protocol repository](https://github.com/jincubator/uhi5-Protocol).
+- Continue to the [intent-execution research](/research/defi-protocol-engineering/intro).
+- See the [intent-execution architecture](/architecture/defi-systems/intents).
+- Browse dated proposals and superseded experiments through the [Archive](/archive/intro).

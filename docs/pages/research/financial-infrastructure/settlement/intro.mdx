@@ -1,28 +1,77 @@
-# Settlement
+---
+title: "Durable Financial Settlement"
+description: "Why business intent, authority, submission, native effects, accounting, finality, and reconciliation need distinct evidence."
+---
 
-Settlement research focuses on how obligations become final across payment systems, stablecoin platforms, intent systems, and cross-chain infrastructure.
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/research/durable-financial-settlement/README.md. Do not edit directly. */}
 
-This area connects Circle CCTP, Eco-style fulfillment and proving flows, resource locking, stablecoin movement, cross-chain verification, and the operational guarantees required by financial applications.
+# Durable Financial Settlement
 
-## Current Focus
+Settlement evidence becomes reliable only when business intent, authorization, external effects, accounting, finality, and reconciliation remain separately identifiable.
 
-- Cross-chain settlement and message verification
-- Stablecoin transfer, mint, and burn flows
-- Intent fulfillment and resource locking
-- Finality, replay protection, and reconciliation
-- Settlement-aware product architecture
+## The question
 
-## Existing Research
+When can a financial platform call a transfer settled?
 
-- [Protocol and Resource-Locking Architecture](/research/Intents/protocol)
-- [Resource Management](/research/Intents/resources)
-- [Cross Chain Bridges](/research/bridge/intro)
+A network may accept a signed transaction and later report finality, yet the surrounding obligation can still be incomplete. Authorization, reserve or inventory evidence, accounting, customer-visible state, reconciliation, and exception handling operate under different authorities and clocks.
 
-## Architecture View
+## Evidence layers
 
-For the latest system-design view, see:
+A useful settlement model keeps at least six layers distinct:
 
-- [Settlement Architecture](/architecture/financial-infrastructure/settlement)
-- [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
+1. **Business intent** identifies the authorized obligation, parties, amount, asset, and policy context.
+2. **Authority evidence** records which policy or signer authorized one exact effect.
+3. **Submission evidence** records the attempt to hand exact material to an external system.
+4. **Native observation** records inclusion, finality, canonicality, and the observed effect through an appropriate read path.
+5. **Financial evidence** records ledger, reserve, inventory, and payout consequences.
+6. **Reconciliation evidence** compares those records and classifies missing, stale, contradictory, or complete state.
 
-Settlement is a bridge between [Financial Infrastructure](/research/financial-infrastructure/intro), [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro), and [Distributed Systems](/research/distributed-systems/intro).
+Collapsing these layers turns ambiguous responses into duplicate-effect risk and makes it difficult to distinguish technical completion from financial completion.
+
+## Findings
+
+The public Digital Banking reference implementation provides an executable case study for this model. At its pinned 2026-07-22 source revision, the repository records durable operation, workflow, attempt, observation, accounting, and reconciliation state around exact synthetic transfers on local Ethereum and Solana environments.
+
+Three findings generalize beyond the reference system:
+
+- **External identifiers are evidence, not business state.** A transaction hash or signature helps observe an effect but does not encode the original obligation, policy, accounting, or customer outcome.
+- **Ambiguity requires inquiry before retry.** A missing or failed response does not prove the external effect did not occur.
+- **Finality is plural.** Network, accounting, legal or policy, and customer-visible completion can advance independently and may need reconciliation after an earlier stage appears terminal.
+
+These findings are consistent with durable workflow and ledger patterns; the reference implementation demonstrates one bounded realization rather than universal production proof.
+
+## Engineering conclusions
+
+Settlement systems should:
+
+- persist a stable business command before external effects;
+- bind idempotency to the authorized payload and participant scope;
+- give every external attempt a durable identity;
+- separate submission from independently observed effect;
+- use narrow local transactions and explicit workflow transitions;
+- append corrections and reconciliation evidence rather than rewrite history;
+- fail closed when authority, finality, or accounting evidence is incomplete; and
+- expose incomplete and contradictory state as an operational outcome.
+
+Provider-neutral boundaries can help preserve these rules across payment rails and chains, but abstraction must not erase native signing, lifetime, finality, or observation semantics.
+
+## Alternatives and counterevidence
+
+A simpler synchronous integration can be appropriate for a low-consequence workflow when an upstream provider supplies authoritative idempotency, inquiry, and settlement semantics. Even then, the consumer must record enough identity to recover after timeout or restart.
+
+End-to-end distributed transactions are rarely available across banks, signers, ledgers, and blockchains. Where a domain does provide atomic settlement, it can remove some intermediate failure states, but it does not automatically supply customer authority, accounting, or regulatory completion.
+
+## Limitations and freshness
+
+- The principal executable example is a deliberately non-production local reference implementation.
+- Synthetic bank, reserve, ledger, identity, and chain environments do not establish bank integration, production custody, regulatory approval, audited accounting, or operational certification.
+- The analysis does not rank Ethereum, Solana, bank rails, stablecoins, or specific settlement providers.
+- Circle, ECO, Hyperlane, and legacy bridge material remain independent public-source or historical context; unresolved contribution and freshness boundaries prevent them from being treated as evidence for a current Work claim here.
+- Revisit the conclusions if the implementation's authority, workflow, observation, or reconciliation contracts materially change.
+
+## Go deeper
+
+- See the [Digital Banking Work case study](/work/digital-banking).
+- Continue to [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement).
+- Read the [Digital Banking implementation source](https://github.com/johnwhitton/digital-banking).
+- Browse dated cross-chain and stablecoin notes through the [Archive](/archive/intro).

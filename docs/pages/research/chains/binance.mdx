@@ -7,7 +7,7 @@
 
 Binanace Smart Chain (BSC) has similar signature schemes to Polygon but with a much smaller set of validators and some degree of random (yet predictable and deterministic) perturbation to the active validator set.
 
-The consensus protocol is based on Parlia<sup>[19](#f19)</sup>, a variation that adds staking, validators, and elections to the proof-of-authority consensus protocol Clique, initially proposed in the Ethereum community. The protocol uses 21 validators for producing and signing blocks, with 19 of them picked from stakers with top voting power and 2 randomly chosen every 200 blocks <sup>[20](#f20)</sup>. Blocks are signed using ECDSA on secp256k1 curves, and block headers can be verified following the standard signature verification process<sup>[21](#f21)</sup>.
+The consensus protocol is based on Parlia<sup>19</sup>, a variation that adds staking, validators, and elections to the proof-of-authority consensus protocol Clique, initially proposed in the Ethereum community. The protocol uses 21 validators for producing and signing blocks, with 19 of them picked from stakers with top voting power and 2 randomly chosen every 200 blocks <sup>20</sup>. Blocks are signed using ECDSA on secp256k1 curves, and block headers can be verified following the standard signature verification process<sup>21</sup>.
 
 ## Consensus Mechanism
 
@@ -47,7 +47,7 @@ Transactions are signed using recoverable ECDSA signatures. This method utilises
 
 ## Code Review
 
-The Binance Smart chain is cloned from [Ethereum 1.0](./ethereum-1-0.mdx) and thus the majority of code incuding primitives, signing are similar. The key addtions are
+The Binance Smart chain is cloned from [Ethereum 1.0](/research/chains/ethereum-1-0) and thus the majority of code incuding primitives, signing are similar. The key addtions are
 
 - [Consensus - Parlia](https://github.com/bnb-chain/bsc/tree/master/consensus/parlia)
 - [systemcontracts](https://github.com/bnb-chain/bsc/tree/master/core/systemcontracts)

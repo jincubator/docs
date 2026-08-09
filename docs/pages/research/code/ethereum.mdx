@@ -5,18 +5,18 @@
 
 ## Overview
 
-With the Introduction of Ethereum 2.0<sup>[1](#bp1)</sup> <sup>[2](#bp2)</sup> <sup>[3](#bp3)</sup> block production and consensus were separated<sup>[4](#bp4)</sup> into execution clients<sup>[5](#bp5)</sup> and consensus clients<sup>[6](#ts6)</sup> <sup>[7](#bp7)</sup>.
+With the Introduction of Ethereum 2.0<sup>1</sup> <sup>2</sup> <sup>3</sup> block production and consensus were separated<sup>4</sup> into execution clients<sup>5</sup> and consensus clients<sup>6</sup> <sup>7</sup>.
 
-The execution chain implemented a simplified Proof of Work<sup>[1](#bp1)</sup> reducing difficutly to zero and removing the need for omners (uncles) which would now be handled by the beacon chain<sup>[3](#bp3)</sup> which is responsible for providing consensus <sup>[2](#bp2)</sup>.
+The execution chain implemented a simplified Proof of Work<sup>1</sup> reducing difficutly to zero and removing the need for omners (uncles) which would now be handled by the beacon chain<sup>3</sup> which is responsible for providing consensus <sup>2</sup>.
 
-Light Clients<sup>[11](#ts11)</sup> were also introduced. To facilate this
+Light Clients<sup>11</sup> were also introduced. To facilate this
 a sync committee of 512 current validators is elected every 255 epochs, approximately every 27 hours (see [sample sync comittee data](#sync-committee-latest)), they are responsible for signing each block.
 
-As at December 11th, 2022 Ethereum has 487,920 validators<sup>[8](#bp8)</sup> with a sample epoch ([166581](https://beaconcha.in/epoch/166581)) and slot ([5,330,592](https://beaconcha.in/slot/5330592)) having [139 transactions](https://beaconcha.in/slot/5330592#transactions) with [19,227 votes](https://beaconcha.in/slot/5330592#votes) from 63 committees and [126 aggregated committe attestations](https://beaconcha.in/slot/5330592#attestations).
+As at December 11th, 2022 Ethereum has 487,920 validators<sup>8</sup> with a sample epoch ([166581](https://beaconcha.in/epoch/166581)) and slot ([5,330,592](https://beaconcha.in/slot/5330592)) having [139 transactions](https://beaconcha.in/slot/5330592#transactions) with [19,227 votes](https://beaconcha.in/slot/5330592#votes) from 63 committees and [126 aggregated committe attestations](https://beaconcha.in/slot/5330592#attestations).
 
 ## Abstract
 
-This research follows on from What to build next in Zero Knowledge<sup>[1](#ov1)</sup>, Crosschain Future<sup>[2](#ov2)</sup> and Technical Problems Overview<sup>[3](#ov3)</sup>.
+This research follows on from What to build next in Zero Knowledge<sup>1</sup>, Crosschain Future<sup>2</sup> and Technical Problems Overview<sup>3</sup>.
 
 Here we propose an approach for building a trustless bridging infrastructure between Ethereum and Multiple Chains, complete with costing information for storage, proof generation and verification across multiple chains.
 
@@ -30,7 +30,7 @@ For completenes we include a technical review of Ethereum 2.0 block production, 
 
 1. Define logic flow for bridging data (ERC20 initially) between Etheruem and a target chain.
 2. Identify Key Data Points which Need to be Synched and Frequency
-   1. Active Validators (Sync Committee<sup>[10](#ts10)</sup>) : every 255 epochs, approximately 27 hours.
+   1. Active Validators (Sync Committee<sup>10</sup>) : every 255 epochs, approximately 27 hours.
    2. Epoch Committee Verification: every epoch (32 slots), approx 6.4 minutes.
    3. Block Headers: every epoch (32 slots), approx 6.4 minutes.
    4. Bridge Transactions: as Needed.
@@ -49,7 +49,7 @@ For completenes we include a technical review of Ethereum 2.0 block production, 
    2. Proving infrastructure and proof generation costs (proofs can be used for multiple chains)
    3. Bridging assets infrastructure, incentives and transactional costs
 
-Reference design articles include Succinct<sup>[1](#tb1)</sup> and [Appendix B](#appendix-b-proving-and-verification-mechanisms) includes codebases for proving and verification mechanisms.
+Reference design articles include Succinct<sup>1</sup> and [Appendix B](#appendix-b-proving-and-verification-mechanisms) includes codebases for proving and verification mechanisms.
 
 ### Logic Flow
 
@@ -102,11 +102,11 @@ Reference design articles include Succinct<sup>[1](#tb1)</sup> and [Appendix B](
 
 ### Block Production
 
-Validators run both an Ethereum 1 client (e.g. geth) and a Beacon Chain Client (e.g. prysm). The geth client recieves transactions and places them into blocks. For additional details see the Ethereum Builder Specs<sup>[12](#ts12)</sup>. The following diagrams give an overview of how blocks are proposed and how MEV Boost<sup>[13](#ts13)</sup> could be integrated. For simplification we can replace mev_boost and relay with geth in the block proposal diagram as the majority of validators simply run a geth node.
+Validators run both an Ethereum 1 client (e.g. geth) and a Beacon Chain Client (e.g. prysm). The geth client recieves transactions and places them into blocks. For additional details see the Ethereum Builder Specs<sup>12</sup>. The following diagrams give an overview of how blocks are proposed and how MEV Boost<sup>13</sup> could be integrated. For simplification we can replace mev_boost and relay with geth in the block proposal diagram as the majority of validators simply run a geth node.
 
 ![Block Proposal](/images/research/block-proposal.png "Block Proposal")
 
-### Slots and Epochs <sup>[6](#ts6)</sup>
+### Slots and Epochs <sup>6</sup>
 
 > The Beacon Chain provides the heartbeat to Ethereum’s consensus. Each slot is 12 seconds and an epoch is 32 slots: 6.4 minutes.
 
@@ -116,7 +116,7 @@ Validators run both an Ethereum 1 client (e.g. geth) and a Beacon Chain Client (
 
 When a validator is nominated as a proposer for a slot in an Epoch they propose a block gathered from there Ethereum 1 client.
 
-This proposed block is attested to by other validators who have been assigned as committe members for this slot<sup>[6](#ts6)</sup>.
+This proposed block is attested to by other validators who have been assigned as committe members for this slot<sup>6</sup>.
 
 > A block proposer is a validator that has been pseudorandomly selected to build a block.
 >
@@ -134,7 +134,7 @@ This proposed block is attested to by other validators who have been assigned as
 
 ### Attestations
 
-The attestation lifecyle<sup>[9](#ts9)</sup> involves
+The attestation lifecyle<sup>9</sup> involves
 
 1. Generation of the proposed Block
 2. Propagation of the block to committee members to vote on and sign
@@ -144,7 +144,7 @@ The attestation lifecyle<sup>[9](#ts9)</sup> involves
 
 ![Attestation Life Cycle](/images/research/AttestationLifeCycle.png "Attestation Life Cycle")
 
-### Checkpoints and Finality<sup>[6b](#ts6b)</sup>
+### Checkpoints and Finality<sup>6b</sup>
 
 > When an epoch ends, if its checkpoint has garnered a ⅔ supermajority, the checkpoint gets justified.
 
@@ -154,7 +154,7 @@ The attestation lifecyle<sup>[9](#ts9)</sup> involves
 
 ![Finality](/images/research/Beacon-Chain-Justification-and-Finalization.png "Finality")
 
-### Sync Committee <sup>[10](#ts10)</sup>
+### Sync Committee <sup>10</sup>
 
 A sync committee of 512 current validators is elected every 255 epochs, approximately every 27 hours (see [sample sync comittee data](#sync-committee-latest)).
 They are responsible for signing each block which records which sync committee members (validtors) signed the block, held in `syncaggregate_bits`, and creates a bls aggregate signature held in `syncaggregate_signature` (see [block-data](#block-data-for-slot-5330592)).
@@ -165,11 +165,11 @@ They are responsible for signing each block which records which sync committee m
     "syncaggregate_signature": "0x95332c55790018eed3d17eada01cb4045348d09137505bc8697eeedaa3800a830ee2c138251850a9577f62a5488419ef0a722579156a177fb3a147017f1077af5d778f46a4cdf815fc450129d135fe5286e16df68333592e4aa45821bde780dd",
 ```
 
-This is used in Altair Light Client -- Sync Protocol<sup>[11](#ts11)</sup> which enables the beacon chain to be light client friendly for constrained environments to access Ethereum.
+This is used in Altair Light Client -- Sync Protocol<sup>11</sup> which enables the beacon chain to be light client friendly for constrained environments to access Ethereum.
 
 ### Validator Lifecycle
 
-Following is an overview of statuses for validators in Ethereum 2.0 phase 0 <sup>[14](#ts14)</sup>.
+Following is an overview of statuses for validators in Ethereum 2.0 phase 0 <sup>14</sup>.
 
 > 1. **Deposited**: the validator has made a deposit and has registered in BeaconState.
 > 2. **Eligible to be activated (Pending)**: the validator is eligible to be activated.
@@ -471,7 +471,7 @@ The term 'Portal Client' describes a piece of software which participates in the
 
 - [Syncing Block Headers](https://github.com/ethereum/portal-network-specs/blob/master/beacon-chain/sync-gossip.mdx): A beacon chain client could sync committee to perform state updates. The data object LightClientSkipSyncUpdate allows a client to quickly sync to a recent header with the appropriate sync committee. Once the client establishes a recent header, it could sync to other headers by processing LightClientUpdates. These two data types allow a client to stay up-to-date with the beacon chain.
   - [Sync State](https://github.com/ethereum/portal-network-specs/blob/master/beacon-chain/skip-sync-network.mdx): A client uses SkipSyncUpdate to skip sync from a known header to a recent header. A client with a trusted but outdated header cannot use the messages in the gossip channel bc-light-client-update to update. The client's sync-committee in the stored snapshot is too old and not connected to any update messages. The client look for the appropriate SkipSyncUpdate to skip sync its header.
-  - [Advance Block Headers](https://github.com/ethereum/portal-network-specs/blob/master/beacon-chain/sync-gossip.mdx): A beacon chain client could sync committee to perform [state updates](https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/sync-protocol.mdx). The data object [LightClientSkipSyncUpdate](skip-sync-network) allows a client to quickly sync to a recent header with the appropriate sync committee. Once the client establishes a recent header, it could sync to other headers by processing [LightClientUpdates](https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/sync-protocol.md#lightclientupdate). These two data types allow a client to stay up-to-date with the beacon chain.
+  - [Advance Block Headers](https://github.com/ethereum/portal-network-specs/blob/master/beacon-chain/sync-gossip.mdx): A beacon chain client could sync committee to perform [state updates](https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/sync-protocol.mdx). The `LightClientSkipSyncUpdate` data object allows a client to quickly sync to a recent header with the appropriate sync committee. Once the client establishes a recent header, it could sync to other headers by processing [LightClientUpdates](https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/sync-protocol.md#lightclientupdate). These two data types allow a client to stay up-to-date with the beacon chain.
 
           These two data types are placed into separate sub-networks. A light client make find-content requests on `skip-sync-network` at start of the sync to get a header with the same `SyncCommittee` object as in the current sync period. The client uses messages in the gossip topic `bc-light-client-update` to advance its header.
 
@@ -1876,7 +1876,7 @@ Abbrieviated Result
 - [beacon-chain/blockchain](https://github.com/prysmaticlabs/prysm/tree/develop/beacon-chain/blockchain)
   - [process_block.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/blockchain/process_block.go): has function `onBlock` which is called when a gossip block is received. It also has function `handleEpochBoundary` which calls `ProcessSlots` in [beacon-chain/core/transition](https://github.com/prysmaticlabs/prysm/tree/develop/beacon-chain/core/transition) and calls function `UpdateCommitteeCache` in [beacon-chain/core/helpers](https://github.com/prysmaticlabs/prysm/tree/develop/beacon-chain/core/helpers)
 - [beacon-chain/core/transition](https://github.com/prysmaticlabs/prysm/tree/develop/beacon-chain/core/transition)
-  - [transition.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/transition/transition.go): implements the whole state transition function which consists of per slot, per-epoch transitions. function `ProcessSlots` calls `ProcessEpoch` in [beacon-chain/core/altair/transition.go](<(%3Chttps://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/altair/transition.go)%3E>)
+  - [transition.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/transition/transition.go): implements the whole state transition function which consists of per slot, per-epoch transitions. function `ProcessSlots` calls `ProcessEpoch` in [beacon-chain/core/altair/transition.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/altair/transition.go)
 - [beacon-chain/core/altair](https://github.com/prysmaticlabs/prysm/tree/develop/beacon-chain/core/altair)
   - [transition.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/altair/transition.go): includes function `ProcessEpoch` which calls `ProcessSyncCommitteeUpdates` in [epoch_spec.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/altair/epoch_spec.go)
   - [epoch_spec.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/core/altair/epoch_spec.go): includes function `ProcessSyncCommitteeUpdates` which calls `NextSyncCommittee` it also persists beacon state syncCommittee by calling `beaconState.SetNextSyncCommittee(nextSyncCommittee)` in [setters_sync_committee.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/state/state-native/setters_sync_committee.go)

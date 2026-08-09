@@ -1,0 +1,62 @@
+---
+title: "Digital Banking — Durable Settlement Reference Implementation"
+description: "A bounded case study of durable workflow, local chain execution, exact-value evidence, and reconciliation in a non-production digital-banking reference system."
+---
+
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/work/digital-banking/README.md. Do not edit directly. */}
+
+# Digital Banking Reference Implementation
+
+Digital Banking is John Whitton's non-production reference implementation for durable digital-asset settlement control planes across local Ethereum and Solana environments.
+
+## Problem
+
+Moving a financial instruction through policy, signing, an external network, accounting, and reconciliation creates several different forms of evidence. An authenticated request is not signing authority. A signature is not submission. Submission is not finality. Network finality is not complete financial settlement.
+
+The engineering problem is to preserve those boundaries through retries, ambiguous responses, restarts, and independently observed effects while keeping exact quantities, authority, and business state durable.
+
+## Approach
+
+The reference implementation places business truth in a durable Java and PostgreSQL control plane. It uses stable command, workflow, operation, attempt, observation, and reconciliation identities rather than treating a chain response as the complete result.
+
+Provider-neutral ports isolate signing, chain access, synthetic bank effects, and accounting. Explicit local profiles connect those boundaries to private Ethereum and Solana development environments. Default configuration remains fail-closed: local demonstration capability does not silently become a production integration.
+
+## What John built
+
+John built the system design and implementation across:
+
+- a Java and Spring control plane with domain boundaries independent of the delivery framework;
+- PostgreSQL persistence, migrations, transactional outbox/inbox delivery, leasing, retry, and recovery;
+- exact-value operation and transfer workflows with versioned idempotency;
+- provider-neutral signing and chain-adapter boundaries;
+- local Ethereum execution through Anvil and local Solana execution through Agave and the SPL Token Program;
+- synthetic bank, accounting, reserve, supply, and reconciliation evidence for bounded demonstrations;
+- API contracts, architecture decisions, runbooks, retained verification records, and four immutable reference publications.
+
+The implementation deliberately keeps API authority, signing authority, native-network evidence, accounting state, and customer-visible finality separate.
+
+## Verified scope
+
+At [`johnwhitton/digital-banking@5f624306cd0a0d850fccecacd287122d49502fd7`](https://github.com/johnwhitton/digital-banking/tree/5f624306cd0a0d850fccecacd287122d49502fd7), inspected on 2026-07-22, the repository records two bounded product demonstrations on both local Ethereum and local Solana:
+
+- acquisition, hold, and later redemption for a synthetic user-held flow; and
+- a settlement-only transfer whose recipient is forced through automatic redemption.
+
+The demonstrations use exact synthetic amounts, durable PostgreSQL workflows, local network effects, restart recovery, and reconciliation assertions. This migration did not rerun those implementation gates; it reviewed the repository's retained status and evidence at the pinned commit.
+
+The result demonstrates an executable reference boundary and disciplined delivery approach. It does not establish production readiness, regulatory approval, security certification, real-bank integration, public-network operation, or commercial deployment.
+
+## Boundaries and limitations
+
+- The software is deliberately non-production and must not be used with real funds, production credentials, mainnet accounts, public testnets, or production signing authority.
+- Bank balances, reserves, identities, accounting, policies, and network environments are synthetic local fixtures.
+- Production identity, custody, HSM or MPC integration, compliance operations, banking rails, audited accounting, and operational certification are outside the demonstrated scope.
+- The reference asset and public case-study language do not identify a real issuer, deposit product, reserve, or announced Zelle or Early Warning Services service.
+- Immutable publications may lag the living implementation and must be read with their recorded revisions and limitations.
+
+## Go deeper
+
+- Read the [public implementation repository](https://github.com/johnwhitton/digital-banking).
+- Continue to the [durable financial-settlement research](/research/financial-infrastructure/settlement/intro).
+- See the [settlement control-plane architecture](/architecture/financial-infrastructure/settlement).
+- Review the repository's [immutable publication index](https://github.com/johnwhitton/digital-banking/blob/5f624306cd0a0d850fccecacd287122d49502fd7/docs/reference/README.md).

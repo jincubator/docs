@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "id": "work/intent-systems-prototypes",
+    "type": "work",
+    "title": "Intent Systems Prototypes"
+  },
+  "route": "/work/prototypes",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "source": {
+    "repository": "https://github.com/jincubator/knowledge-base",
+    "path": "work/intent-systems-prototypes/README.md",
+    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
+    "revision_date": "2026-07-22"
+  },
+  "lifecycle_state": "ready to publish",
+  "publication_status": "not published",
+  "reviews": {
+    "technical": "Approved",
+    "claim": "Approved",
+    "editorial": "Approved"
+  },
+  "generator": {
+    "name": "knowledge-base-publication",
+    "version": 2
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/prototypes.mdx",
+      "media_type": "text/mdx",
+      "sha256": "54e27223851de2122639108c05aafdfedc6853717851734bcb1effc320b255e9"
+    }
+  ],
+  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
+  "publication_date": null
+}

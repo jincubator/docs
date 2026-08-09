@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "id": "research/intent-based-execution",
+    "type": "research",
+    "title": "Intent-Based Execution"
+  },
+  "route": "/research/defi-protocol-engineering/intro",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Research",
+    "reading_time_minutes": null
+  },
+  "source": {
+    "repository": "https://github.com/jincubator/knowledge-base",
+    "path": "research/intent-based-execution/README.md",
+    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
+    "revision_date": "2026-07-22"
+  },
+  "lifecycle_state": "ready to publish",
+  "publication_status": "not published",
+  "reviews": {
+    "technical": "Approved",
+    "claim": "Approved",
+    "editorial": "Approved"
+  },
+  "generator": {
+    "name": "knowledge-base-publication",
+    "version": 2
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/research/defi-protocol-engineering/intro.mdx",
+      "media_type": "text/mdx",
+      "sha256": "74c7de85a245c9aa75e0c350ca13516ca10e63488d03d168d37646965ddf278a"
+    }
+  ],
+  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
+  "publication_date": null
+}

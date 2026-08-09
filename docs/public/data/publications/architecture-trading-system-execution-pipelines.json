@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "id": "architecture/trading-system-execution-pipelines",
+    "type": "architecture",
+    "title": "Designing Evidence-Aware Trading-System Pipelines"
+  },
+  "route": "/architecture/trading-systems/solver",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "source": {
+    "repository": "https://github.com/jincubator/knowledge-base",
+    "path": "architecture/trading-system-execution-pipelines/README.md",
+    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
+    "revision_date": "2026-07-22"
+  },
+  "lifecycle_state": "ready to publish",
+  "publication_status": "not published",
+  "reviews": {
+    "technical": "Approved",
+    "claim": "Approved",
+    "editorial": "Approved"
+  },
+  "generator": {
+    "name": "knowledge-base-publication",
+    "version": 2
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/trading-systems/solver.mdx",
+      "media_type": "text/mdx",
+      "sha256": "777eb83d4fab9b03a452c321d8853e4d9613212d6b5f89b9b4333a4ec447e669"
+    }
+  ],
+  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
+  "publication_date": null
+}

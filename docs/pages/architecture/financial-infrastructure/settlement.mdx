@@ -1,30 +1,95 @@
-import { ZoomImage } from "../../../public/components/ZoomImage";
+---
+title: "Durable Settlement Control Planes"
+description: "Architecture for preserving authority, durable workflow, external effects, accounting, finality, and reconciliation across financial settlement."
+---
 
-# Settlement Architecture
+{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/architecture/durable-settlement-control-planes/README.md. Do not edit directly. */}
 
-Settlement architecture covers how obligations become final across stablecoin systems, intent flows, proving systems, and cross-chain infrastructure.
+# Durable Settlement Control Planes
 
-This page uses Eco Routes as a concrete architecture example for stablecoin settlement, fulfillment validation, and protocol walkthroughs.
+A settlement control plane should coordinate authority and evidence without pretending that one API, signer, ledger, or external network owns the complete outcome.
 
-<ZoomImage
-  src="/images/architecture/v4/eco-routes-stablecoin-settlement-architecture.png"
-  alt="Eco Routes stablecoin settlement architecture"
-/>
+## The design problem
 
-<ZoomImage
-  src="/images/architecture/v4/eco-routes-protocol-walkthrough.png"
-  alt="Eco Routes protocol walkthrough"
-/>
+Financial settlement crosses systems that cannot share one database transaction or one authority. A business API accepts an obligation, a policy service permits it, a signer authorizes exact bytes, an external rail attempts an effect, observers report native state, a ledger records financial consequences, and reconciliation determines whether the records agree.
 
-## Architecture Lens
+If any one response becomes the universal status, the platform loses information needed to prevent duplicate effects and recover from ambiguity.
 
-- Stablecoin settlement state and destination world state.
-- Fulfilled-intent proof paths and settlement validation.
-- Solver, filler, reward release, and cross-chain proving boundaries.
-- Relationship between financial infrastructure and DeFi protocol execution.
+## Trust and authority boundaries
 
-## Related Research
+The control plane coordinates six independent responsibilities:
 
-- [Settlement Research](/research/financial-infrastructure/settlement/intro)
-- [Resource Management](/research/Intents/resources)
-- [Cross Chain Bridges](/research/bridge/intro)
+- **Business API and policy** authenticate a participant and authorize an exact command.
+- **Durable workflow** owns stable identity, sequencing, idempotency, timers, and recovery.
+- **Signing authority** approves exact native material under a separate policy.
+- **Rail or chain adapter** preserves native transaction and lifetime semantics.
+- **Accounting and inventory** record financial consequences from trusted evidence.
+- **Observation and reconciliation** compare native, workflow, and financial state.
+
+Trust does not flow transitively. API authentication does not grant signing authority. A signer does not decide customer or accounting finality. A submission provider does not become the only observer. Reconciliation may identify a break without gaining authority to rewrite the records it compares.
+
+## Durable state model
+
+The core state model should preserve:
+
+1. the original business command and versioned policy context;
+2. one stable workflow or operation identity;
+3. child-effect identities for bank, token, or rail actions;
+4. one or more fenced attempts for each external effect;
+5. exact submitted material and its authority evidence;
+6. append-only observations and finality decisions;
+7. financial postings linked to consumed evidence; and
+8. reconciliation findings and explicit correction records.
+
+Each transition adds evidence. A timeout creates an inquiry state, not permission to create a second effect. A later observation can supersede an earlier interpretation without rewriting history.
+
+## Execution and recovery
+
+External effects should follow a submit-once, inquire-before-retry discipline:
+
+1. durably accept and bind the command;
+2. resolve server-owned policy, route, asset, and authority context;
+3. create and fence an attempt;
+4. build and authorize exact native material;
+5. submit that material once;
+6. classify a response as accepted, rejected, or ambiguous;
+7. observe through a suitable read path;
+8. advance financial state only from sufficient evidence; and
+9. reconcile all terminal and incomplete paths.
+
+Recovery resumes from durable identity and evidence. It does not infer safety from a process restart or missing response.
+
+## Finality and reconciliation
+
+Blockchain or rail finality is one dimension. Accounting, legal or policy, and customer-visible finality may advance on different clocks.
+
+A reconciler should report complete, incomplete, stale, contradictory, or unsupported evidence. It should not mutate balances to force agreement. Financial corrections should append a digest-bound reversal or adjustment linked to the original entry.
+
+This makes negative outcomes operationally useful: an unresolved observation, incomplete payout, stale supply view, or reserve mismatch becomes a named state rather than an exception hidden in logs.
+
+## Alternatives and trade-offs
+
+A synchronous service with a single provider can reduce implementation cost, but only when the provider supplies authoritative idempotency, inquiry, and settlement evidence that the consumer can retain. It still needs a recoverable business identity.
+
+A general workflow engine can improve timers, visibility, and long-running orchestration. A database-backed worker can be simpler and more self-contained. Either is acceptable when the domain—not the runtime—owns identities, transitions, evidence, and authorization.
+
+A universal chain or payment abstraction reduces surface area but risks erasing native transaction lifetime, signing, commitment, and observation semantics. Share the control-plane contract; keep native safety rules in the adapter.
+
+## Validation boundaries
+
+Validation should combine:
+
+- pure domain tests for identity, exact quantities, lifecycle, and finality rules;
+- real-database tests for atomic acceptance, outbox/inbox delivery, leasing, concurrency, and restart;
+- native local-network tests for signing, submission, observation, and response-loss recovery;
+- end-to-end synthetic workflows that assert exact effects and reconciliation; and
+- retained evidence describing the environment, revision, and limit of each proof.
+
+Local demonstrations establish executable boundaries. They do not establish production custody, bank integration, regulatory approval, audited accounting, security certification, or operational readiness.
+
+## Go deeper
+
+- See the [Digital Banking Work case study](/work/digital-banking).
+- Read the [Durable Financial Settlement research](/research/financial-infrastructure/settlement/intro).
+- Explore the [Digital Banking implementation](https://github.com/johnwhitton/digital-banking).
+- Browse historical payment, stablecoin, bridge, and independent-study material through the [Archive](/archive/intro).
