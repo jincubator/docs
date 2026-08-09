@@ -1,0 +1,310 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="title desc">
+  <title id="title">EAVE Polkadot Parachain Architecture</title>
+  <desc id="desc">Architecture-first EAVE slide covering the Steam Cumulus/Rococo parachain path, standalone Wind caveat, governance and token configuration, collator versus relay validator boundary, developer tooling, and John-authored design records.</desc>
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020711"/>
+      <stop offset="0.55" stop-color="#071426"/>
+      <stop offset="1" stop-color="#030814"/>
+    </linearGradient>
+    <radialGradient id="accentGlow" cx="0.78" cy="0.12" r="0.72">
+      <stop offset="0" stop-color="#1f9cff" stop-opacity="0.28"/>
+      <stop offset="0.42" stop-color="#9d5cff" stop-opacity="0.13"/>
+      <stop offset="1" stop-color="#020711" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="96" height="96" patternUnits="userSpaceOnUse">
+      <path d="M96 0H0V96" fill="none" stroke="#35a0ff" stroke-opacity="0.07" stroke-width="1.5"/>
+    </pattern>
+    <marker id="arrowCyan" markerWidth="4" markerHeight="4" refX="3.4" refY="2" orient="auto">
+      <path d="M0,0 L4,2 L0,4 Z" fill="#21d4ff"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="4" markerHeight="4" refX="3.4" refY="2" orient="auto">
+      <path d="M0,0 L4,2 L0,4 Z" fill="#96e22a"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="4" markerHeight="4" refX="3.4" refY="2" orient="auto">
+      <path d="M0,0 L4,2 L0,4 Z" fill="#ff8a22"/>
+    </marker>
+    <style>
+      .bg { fill: url(#bgGrad); }
+      .grid { fill: url(#grid); opacity: 0.9; }
+      .glow { fill: url(#accentGlow); }
+      .panel { fill: rgba(7, 20, 38, 0.86); stroke: rgba(53, 160, 255, 0.55); stroke-width: 2.5; }
+      .panelStrong { fill: rgba(10, 30, 55, 0.91); stroke: rgba(33, 212, 255, 0.70); stroke-width: 3; }
+      .panelGreen { fill: rgba(10, 34, 31, 0.90); stroke: rgba(150, 226, 42, 0.64); stroke-width: 2.6; }
+      .panelPurple { fill: rgba(20, 14, 47, 0.88); stroke: rgba(157, 92, 255, 0.68); stroke-width: 2.6; }
+      .panelOrange { fill: rgba(37, 23, 10, 0.90); stroke: rgba(255, 138, 34, 0.72); stroke-width: 2.6; }
+      .panelRed { fill: rgba(42, 16, 21, 0.88); stroke: rgba(255, 79, 86, 0.72); stroke-width: 2.6; }
+      .soft { fill: rgba(12, 28, 51, 0.92); stroke: rgba(94, 134, 178, 0.42); stroke-width: 2; }
+      .softDark { fill: rgba(5, 13, 27, 0.92); stroke: rgba(94, 134, 178, 0.36); stroke-width: 2; }
+      .chipBlue { fill: rgba(31, 156, 255, 0.16); stroke: #1f9cff; stroke-width: 2; }
+      .chipGreen { fill: rgba(150, 226, 42, 0.15); stroke: #96e22a; stroke-width: 2; }
+      .chipPurple { fill: rgba(157, 92, 255, 0.18); stroke: #9d5cff; stroke-width: 2; }
+      .chipOrange { fill: rgba(255, 138, 34, 0.16); stroke: #ff8a22; stroke-width: 2; }
+      .chipRed { fill: rgba(255, 79, 86, 0.18); stroke: #ff4f56; stroke-width: 2; }
+      .title { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 78px; font-weight: 900; fill: #f4f8ff; letter-spacing: 0; }
+      .subtitle { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 31px; font-weight: 760; fill: #d4e1f3; letter-spacing: 0; }
+      .italic { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 28px; font-weight: 840; font-style: italic; fill: #e879f9; letter-spacing: 0; }
+      .eyebrow { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 19px; font-weight: 900; fill: #21d4ff; letter-spacing: 0; text-transform: uppercase; }
+      .section { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 28px; font-weight: 900; fill: #f4f8ff; letter-spacing: 0; text-transform: uppercase; }
+      .sectionBlue { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 28px; font-weight: 900; fill: #21d4ff; letter-spacing: 0; text-transform: uppercase; }
+      .sectionGreen { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 28px; font-weight: 900; fill: #b7ff3c; letter-spacing: 0; text-transform: uppercase; }
+      .sectionPurple { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 28px; font-weight: 900; fill: #c874ff; letter-spacing: 0; text-transform: uppercase; }
+      .sectionOrange { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 28px; font-weight: 900; fill: #ffb05f; letter-spacing: 0; text-transform: uppercase; }
+      .h { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 27px; font-weight: 900; fill: #ffffff; letter-spacing: 0; }
+      .hSmall { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 23px; font-weight: 900; fill: #ffffff; letter-spacing: 0; }
+      .body { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 720; fill: #dbe7f6; letter-spacing: 0; }
+      .bodySmall { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 720; fill: #c6d4e7; letter-spacing: 0; }
+      .bodyTiny { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 760; fill: #b7c5d9; letter-spacing: 0; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 16px; font-weight: 800; fill: #c4b5fd; letter-spacing: 0; }
+      .monoSmall { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; font-weight: 800; fill: #c4b5fd; letter-spacing: 0; }
+      .badgeText { font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 900; fill: #f4f8ff; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
+      .badgeSource { fill: rgba(150, 226, 42, 0.18); stroke: #96e22a; stroke-width: 2; }
+      .badgeDocs { fill: rgba(33, 212, 255, 0.16); stroke: #21d4ff; stroke-width: 2; }
+      .badgeWip { fill: rgba(255, 138, 34, 0.18); stroke: #ff8a22; stroke-width: 2; }
+      .badgeUpstream { fill: rgba(157, 92, 255, 0.18); stroke: #9d5cff; stroke-width: 2; }
+      .badgeUnknown { fill: rgba(255, 79, 86, 0.18); stroke: #ff4f56; stroke-width: 2; }
+      .arrowCyan { fill: none; stroke: #21d4ff; stroke-width: 3; marker-end: url(#arrowCyan); stroke-linecap: round; stroke-linejoin: round; }
+      .arrowGreen { fill: none; stroke: #96e22a; stroke-width: 3; marker-end: url(#arrowGreen); stroke-linecap: round; stroke-linejoin: round; }
+      .arrowOrange { fill: none; stroke: #ff8a22; stroke-width: 3; marker-end: url(#arrowOrange); stroke-linecap: round; stroke-linejoin: round; }
+      .dash { stroke-dasharray: 10 9; }
+      .rule { stroke: rgba(94, 134, 178, 0.38); stroke-width: 2; }
+      .tableHead { fill: rgba(33, 212, 255, 0.12); stroke: rgba(33, 212, 255, 0.52); stroke-width: 2; }
+      .tableCell { fill: rgba(12, 28, 51, 0.76); stroke: rgba(94, 134, 178, 0.28); stroke-width: 1.6; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="3840" height="2160"/>
+  <rect class="grid" width="3840" height="2160"/>
+  <rect class="glow" width="3840" height="2160"/>
+
+  <text class="title" x="215" y="98">EAVE POLKADOT PARACHAIN ARCHITECTURE</text>
+  <text class="italic" x="218" y="150">Architecture-first view before the runtime code walkthrough: Steam parachain, ownership boundaries, governance, tokens, tooling, and authored design evidence.</text>
+  <text class="subtitle" x="218" y="198">Primary taxonomy: DeFi Protocol Engineering + Distributed Platforms.</text>
+
+  <rect class="panel" x="2550" y="54" width="1210" height="154" rx="14"/>
+  <text class="sectionBlue" x="2584" y="98">Evidence Key</text>
+  <text class="body" x="2584" y="134">Use this slide to establish the architecture and maturity boundaries.</text>
+  <text class="body" x="2584" y="166">Then use the runtime walkthrough slide for concrete files and execution flow.</text>
+  <rect class="badgeSource" x="3452" y="76" width="112" height="32" rx="10"/><text class="badgeText" x="3508" y="93">SRC</text>
+  <rect class="badgeDocs" x="3580" y="76" width="132" height="32" rx="10"/><text class="badgeText" x="3646" y="93">DOCS</text>
+
+  <rect class="panel" x="78" y="250" width="1200" height="780" rx="14"/>
+  <text class="sectionGreen" x="108" y="302">Active Path: Steam Cumulus/Rococo Parachain</text>
+  <line class="rule" x1="108" y1="326" x2="1248" y2="326"/>
+  <g>
+    <rect class="panelGreen" x="122" y="366" width="310" height="130" rx="12"/>
+    <text class="hSmall" x="148" y="406">EAVE repo</text>
+    <text class="bodySmall" x="148" y="436">Rust workspace with</text>
+    <text class="bodySmall" x="148" y="462">active integration crates</text>
+    <text class="monoSmall" x="148" y="486">Cargo.toml | bin/</text>
+    <rect class="panelStrong" x="492" y="366" width="310" height="130" rx="12"/>
+    <text class="hSmall" x="518" y="406">CLI + service</text>
+    <text class="bodySmall" x="518" y="436">load specs, relay args,</text>
+    <text class="bodySmall" x="518" y="462">node components</text>
+    <text class="monoSmall" x="518" y="486">command.rs | service/lib.rs</text>
+    <rect class="panelGreen" x="862" y="366" width="310" height="130" rx="12"/>
+    <text class="hSmall" x="888" y="406">steam-runtime</text>
+    <text class="bodySmall" x="888" y="436">FRAME/Cumulus runtime</text>
+    <text class="bodySmall" x="888" y="462">and pallet composition</text>
+    <text class="monoSmall" x="888" y="486">runtime/steam/src/lib.rs</text>
+    <path class="arrowGreen" d="M432,431 L492,431"/>
+    <path class="arrowGreen" d="M802,431 L862,431"/>
+  </g>
+  <g>
+    <rect class="panelGreen" x="122" y="578" width="310" height="130" rx="12"/>
+    <text class="hSmall" x="148" y="618">Cumulus Aura</text>
+    <text class="bodySmall" x="148" y="648">collator when authority,</text>
+    <text class="bodySmall" x="148" y="674">full node otherwise</text>
+    <text class="monoSmall" x="148" y="698">start_node_impl</text>
+    <rect class="panelPurple" x="492" y="578" width="310" height="130" rx="12"/>
+    <text class="hSmall" x="518" y="618">Relay chain</text>
+    <text class="bodySmall" x="518" y="648">Polkadot/Rococo finality</text>
+    <text class="bodySmall" x="518" y="674">is upstream behavior</text>
+    <text class="monoSmall" x="518" y="698">eave-relay-chain</text>
+    <rect class="panelOrange" x="862" y="578" width="310" height="130" rx="12"/>
+    <text class="hSmall" x="888" y="618">Generated setup</text>
+    <text class="bodySmall" x="888" y="648">para-2000 genesis,</text>
+    <text class="bodySmall" x="888" y="674">WASM, chain specs</text>
+    <text class="monoSmall" x="888" y="698">resources/steam/*</text>
+    <path class="arrowGreen" d="M432,643 L492,643"/>
+    <path class="arrowOrange" d="M802,643 L862,643"/>
+  </g>
+  <rect class="soft" x="122" y="775" width="1050" height="170" rx="12"/>
+  <text class="hSmall" x="152" y="818">Source-backed architecture statement</text>
+  <text class="body" x="152" y="856">The strongest defensible implementation story is Steam as a Cumulus/Rococo parachain:</text>
+  <text class="body" x="152" y="890">`eave` binary -> CLI -> service -> Steam runtime -> Cumulus Aura collator -> relay chain.</text>
+  <text class="mono" x="152" y="928">source basis: eave-source-evidence-matrix.md | eave-architecture.md</text>
+
+  <rect class="panel" x="1320" y="250" width="1180" height="780" rx="14"/>
+  <text class="sectionPurple" x="1350" y="302">Standalone Wind vs Parachain Boundary</text>
+  <line class="rule" x1="1350" y1="326" x2="2470" y2="326"/>
+  <g>
+    <rect class="tableHead" x="1350" y="366" width="280" height="58"/>
+    <text class="hSmall" x="1374" y="404">Track</text>
+    <rect class="tableHead" x="1630" y="366" width="350" height="58"/>
+    <text class="hSmall" x="1654" y="404">Evidence</text>
+    <rect class="tableHead" x="1980" y="366" width="490" height="58"/>
+    <text class="hSmall" x="2004" y="404">Safe position</text>
+    <rect class="tableCell" x="1350" y="424" width="280" height="106"/>
+    <text class="body" x="1374" y="468">Steam</text>
+    <text class="bodySmall" x="1374" y="496">parachain</text>
+    <rect class="tableCell" x="1630" y="424" width="350" height="106"/>
+    <text class="bodySmall" x="1654" y="468">runtime, chain spec,</text>
+    <text class="bodySmall" x="1654" y="496">service/collator path</text>
+    <rect class="tableCell" x="1980" y="424" width="490" height="106"/>
+    <text class="bodySmall" x="2004" y="468">Active source-validated baseline.</text>
+    <text class="monoSmall" x="2004" y="498">para id 2000</text>
+    <rect class="tableCell" x="1350" y="530" width="280" height="106"/>
+    <text class="body" x="1374" y="574">Eave/Wind</text>
+    <text class="bodySmall" x="1374" y="602">standalone</text>
+    <rect class="tableCell" x="1630" y="530" width="350" height="106"/>
+    <text class="bodySmall" x="1654" y="574">runtime/eave exists;</text>
+    <text class="bodySmall" x="1654" y="602">chain spec missing</text>
+    <rect class="tableCell" x="1980" y="530" width="490" height="106"/>
+    <text class="bodySmall" x="2004" y="574">WIP; do not present as a complete</text>
+    <text class="bodySmall" x="2004" y="602">standalone production network.</text>
+    <rect class="tableCell" x="1350" y="636" width="280" height="106"/>
+    <text class="body" x="1374" y="680">Relay</text>
+    <text class="bodySmall" x="1374" y="708">validators</text>
+    <rect class="tableCell" x="1630" y="636" width="350" height="106"/>
+    <text class="bodySmall" x="1654" y="680">Polkadot/Rococo</text>
+    <text class="bodySmall" x="1654" y="708">dependency</text>
+    <rect class="tableCell" x="1980" y="636" width="490" height="106"/>
+    <text class="bodySmall" x="2004" y="680">Relay validators/finality are upstream;</text>
+    <text class="bodySmall" x="2004" y="708">Steam collator work is EAVE integration.</text>
+  </g>
+  <rect class="panelOrange" x="1350" y="792" width="1120" height="150" rx="12"/>
+  <text class="hSmall" x="1380" y="834">Collator / validator wording</text>
+  <text class="body" x="1380" y="872">Say: Steam collator path is source-backed; relay validators and relay finality are upstream.</text>
+  <text class="body" x="1380" y="906">Avoid: standalone validator architecture, custom finality, or production operations without separate proof.</text>
+
+  <rect class="panel" x="2540" y="250" width="1220" height="780" rx="14"/>
+  <text class="sectionOrange" x="2570" y="302">Governance, Tokens, Tooling and Authored Design</text>
+  <line class="rule" x1="2570" y1="326" x2="3730" y2="326"/>
+  <g>
+    <rect class="panelOrange" x="2578" y="366" width="520" height="158" rx="12"/>
+    <rect class="badgeSource" x="2604" y="390" width="104" height="30" rx="10"/>
+    <text class="badgeText" x="2656" y="406">SRC</text>
+    <text class="hSmall" x="2730" y="408">Governance config</text>
+    <text class="bodySmall" x="2604" y="452">Sudo, councils, treasury-like state,</text>
+    <text class="bodySmall" x="2604" y="482">membership and origin controls in runtime/genesis.</text>
+    <text class="monoSmall" x="2604" y="508">runtime/steam | chain_spec/steam.rs</text>
+    <rect class="panelGreen" x="3138" y="366" width="560" height="158" rx="12"/>
+    <rect class="badgeSource" x="3164" y="390" width="104" height="30" rx="10"/>
+    <text class="badgeText" x="3216" y="406">SRC</text>
+    <text class="hSmall" x="3290" y="408">Token / economic modules</text>
+    <text class="bodySmall" x="3164" y="452">Balances, Tokens, Vesting, staking pool, DEX,</text>
+    <text class="bodySmall" x="3164" y="482">CDP, EVM and generated EAVE resources.</text>
+    <text class="monoSmall" x="3164" y="508">construct_runtime! | resources/steam</text>
+  </g>
+  <g>
+    <rect class="panelStrong" x="2578" y="560" width="520" height="158" rx="12"/>
+    <rect class="badgeSource" x="2604" y="584" width="104" height="30" rx="10"/>
+    <text class="badgeText" x="2656" y="600">SRC</text>
+    <text class="hSmall" x="2730" y="602">Developer tooling</text>
+    <text class="bodySmall" x="2604" y="646">CLI exports genesis state/WASM; build scripts</text>
+    <text class="bodySmall" x="2604" y="676">create runtime WASM; resources hold artifacts.</text>
+    <text class="monoSmall" x="2604" y="702">export-genesis-* | build.rs</text>
+    <rect class="panelPurple" x="3138" y="560" width="560" height="158" rx="12"/>
+    <rect class="badgeUpstream" x="3164" y="584" width="138" height="30" rx="10"/>
+    <text class="badgeText" x="3233" y="600">UPSTREAM</text>
+    <text class="hSmall" x="3320" y="602">Framework boundary</text>
+    <text class="bodySmall" x="3164" y="646">Substrate, FRAME, Cumulus, Polkadot, XCM,</text>
+    <text class="bodySmall" x="3164" y="676">networking and finality internals.</text>
+    <text class="monoSmall" x="3164" y="702">integrated, not claimed as authored</text>
+  </g>
+  <g>
+    <rect class="panelStrong" x="2578" y="758" width="1120" height="170" rx="12"/>
+    <rect class="badgeDocs" x="2604" y="784" width="150" height="32" rx="10"/>
+    <text class="badgeText" x="2679" y="801">DOCS</text>
+    <text class="h" x="2780" y="806">John-authored architecture record</text>
+    <text class="body" x="2604" y="852">34-page EAVE Parachain Design and 31-page Draft EAVE Whitepaper.</text>
+    <text class="bodySmall" x="2604" y="888">Historical architecture and venture preparation; not production or financing evidence.</text>
+  </g>
+
+  <rect class="panel" x="78" y="1082" width="1710" height="610" rx="14"/>
+  <text class="sectionBlue" x="108" y="1134">Architecture Decision Table</text>
+  <line class="rule" x1="108" y1="1158" x2="1758" y2="1158"/>
+  <g>
+    <rect class="tableHead" x="108" y="1188" width="340" height="58"/>
+    <text class="body" x="132" y="1226">Boundary</text>
+    <rect class="tableHead" x="448" y="1188" width="560" height="58"/>
+    <text class="body" x="472" y="1226">What it owns</text>
+    <rect class="tableHead" x="1008" y="1188" width="750" height="58"/>
+    <text class="body" x="1032" y="1226">Why it matters</text>
+    <rect class="tableCell" x="108" y="1246" width="340" height="70"/>
+    <text class="bodySmall" x="132" y="1290">CLI / control plane</text>
+    <rect class="tableCell" x="448" y="1246" width="560" height="70"/>
+    <text class="bodySmall" x="472" y="1290">chain selection, relay args, genesis exports</text>
+    <rect class="tableCell" x="1008" y="1246" width="750" height="70"/>
+    <text class="bodySmall" x="1032" y="1290">developer entrypoint and local parachain setup</text>
+    <rect class="tableCell" x="108" y="1316" width="340" height="70"/>
+    <text class="bodySmall" x="132" y="1360">Node service</text>
+    <rect class="tableCell" x="448" y="1316" width="560" height="70"/>
+    <text class="bodySmall" x="472" y="1360">client/backend, tx pool, network, RPC, telemetry</text>
+    <rect class="tableCell" x="1008" y="1316" width="750" height="70"/>
+    <text class="bodySmall" x="1032" y="1360">keeps operational plumbing outside runtime logic</text>
+    <rect class="tableCell" x="108" y="1386" width="340" height="70"/>
+    <text class="bodySmall" x="132" y="1430">Runtime</text>
+    <rect class="tableCell" x="448" y="1386" width="560" height="70"/>
+    <text class="bodySmall" x="472" y="1430">dispatch, APIs, governance, tokens, pallets, storage</text>
+    <rect class="tableCell" x="1008" y="1386" width="750" height="70"/>
+    <text class="bodySmall" x="1032" y="1430">state transition boundary for protocol behavior</text>
+    <rect class="tableCell" x="108" y="1456" width="340" height="70"/>
+    <text class="bodySmall" x="132" y="1500">Collator</text>
+    <rect class="tableCell" x="448" y="1456" width="560" height="70"/>
+    <text class="bodySmall" x="472" y="1500">Cumulus Aura candidate block production</text>
+    <rect class="tableCell" x="1008" y="1456" width="750" height="70"/>
+    <text class="bodySmall" x="1032" y="1500">EAVE-owned integration; framework internals upstream</text>
+    <rect class="tableCell" x="108" y="1526" width="340" height="70"/>
+    <text class="bodySmall" x="132" y="1570">Relay chain</text>
+    <rect class="tableCell" x="448" y="1526" width="560" height="70"/>
+    <text class="bodySmall" x="472" y="1570">inclusion and finality behavior</text>
+    <rect class="tableCell" x="1008" y="1526" width="750" height="70"/>
+    <text class="bodySmall" x="1032" y="1570">dependency boundary; do not call it EAVE-authored</text>
+  </g>
+
+  <rect class="panel" x="1828" y="1082" width="1932" height="610" rx="14"/>
+  <text class="sectionOrange" x="1858" y="1134">Evidence Boundaries</text>
+  <line class="rule" x1="1858" y1="1158" x2="3730" y2="1158"/>
+  <g>
+    <rect class="panelGreen" x="1868" y="1190" width="560" height="150" rx="12"/>
+    <text class="hSmall" x="1894" y="1230">Validated from source</text>
+    <text class="bodySmall" x="1894" y="1266">Active `eave` binary, CLI, service, RPC,</text>
+    <text class="bodySmall" x="1894" y="1296">Steam runtime, chain spec and collator path.</text>
+    <rect class="panelOrange" x="2458" y="1190" width="560" height="150" rx="12"/>
+    <text class="hSmall" x="2484" y="1230">Generated artifacts</text>
+    <text class="bodySmall" x="2484" y="1266">Genesis/WASM/resources exist and support setup;</text>
+    <text class="bodySmall" x="2484" y="1296">freshness still needs rebuild comparison.</text>
+    <rect class="panelRed" x="3048" y="1190" width="620" height="150" rx="12"/>
+    <text class="hSmall" x="3074" y="1230">Production operations</text>
+    <text class="bodySmall" x="3074" y="1266">No production runbook, bootnode, pruning/archive,</text>
+    <text class="bodySmall" x="3074" y="1296">dashboard or incident-response evidence validated.</text>
+  </g>
+  <g>
+    <rect class="panelPurple" x="1868" y="1378" width="560" height="150" rx="12"/>
+    <text class="hSmall" x="1894" y="1418">Mixed pallet provenance</text>
+    <text class="bodySmall" x="1894" y="1454">Runtime composition is EAVE integration;</text>
+    <text class="bodySmall" x="1894" y="1484">many internals are upstream/vendor/forked.</text>
+    <rect class="panelOrange" x="2458" y="1378" width="560" height="150" rx="12"/>
+    <text class="hSmall" x="2484" y="1418">Local testnet evidence</text>
+    <text class="bodySmall" x="2484" y="1454">Useful for setup, but not a production deployment</text>
+    <text class="bodySmall" x="2484" y="1484">or live operations attestation.</text>
+    <rect class="panelRed" x="3048" y="1378" width="620" height="150" rx="12"/>
+    <text class="hSmall" x="3074" y="1418">WIP paths</text>
+    <text class="bodySmall" x="3074" y="1454">Standalone Eave/Wind, active Oracle RPC, and</text>
+    <text class="bodySmall" x="3074" y="1484">full pallet authorship need separate validation.</text>
+  </g>
+  <text class="body" x="1868" y="1590">Source-backed architecture walkthrough for senior platform review; authorship, integration, deployment, and operations remain separate evidence tracks.</text>
+
+  <rect class="softDark" x="78" y="1770" width="3682" height="290" rx="14"/>
+  <text class="sectionGreen" x="108" y="1822">Architecture Reading Order</text>
+  <text class="body" x="108" y="1870">Read left to right: active Steam parachain first, standalone Wind boundary second, governance/token/tooling/design evidence third.</text>
+  <text class="body" x="108" y="1910">The next slide maps this architecture to files, modules, runtime APIs, service construction, collator startup, and common code-review prompts.</text>
+  <g>
+    <circle cx="118" cy="1986" r="15" fill="#96e22a"/><text class="bodySmall" x="150" y="1994">Source-backed active path.</text>
+    <circle cx="780" cy="1986" r="15" fill="#c874ff"/><text class="bodySmall" x="812" y="1994">Upstream boundary.</text>
+    <circle cx="1410" cy="1986" r="15" fill="#ff8a22"/><text class="bodySmall" x="1442" y="1994">WIP/generated/local setup caveat.</text>
+    <circle cx="2240" cy="1986" r="15" fill="#21d4ff"/><text class="bodySmall" x="2272" y="1994">John-authored 34-page design and 31-page whitepaper.</text>
+  </g>
+</svg>

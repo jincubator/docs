@@ -19,7 +19,12 @@
     {
       "destination": "docs/pages/work/defi-protocol-engineering-kanga.mdx",
       "media_type": "text/mdx",
-      "sha256": "906b3be64ea57f6c667273e0d5bec34bfa97a66c864d7c08b35a839dc75439c9"
+      "sha256": "0f8fd007e0609d8dea05748a6e1922c4df6c90eab89c8e451263a5eaa19a3202"
+    },
+    {
+      "destination": "docs/public/assets/work/defi-protocol-engineering-kanga/kanga-amm-incentives-migration.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "de29fdee3a0603a9cda0085aa35b2e97e72678a0ff2eb194d455530eb962876f"
     }
   ],
   "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."

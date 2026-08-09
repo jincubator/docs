@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="title desc">
+  <title id="title">DIGITAL BANKING CONTROL PLANE</title>
+  <desc id="desc">Portfolio V6.1 slide A03-digital-banking.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020711"/>
+      <stop offset="0.56" stop-color="#071426"/>
+      <stop offset="1" stop-color="#020711"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="82%" cy="12%" r="72%">
+      <stop offset="0" stop-color="#1f9cff" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#020711" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="120" height="120" patternUnits="userSpaceOnUse">
+      <path d="M120 0H0V120" fill="none" stroke="#35a0ff" stroke-opacity="0.07" stroke-width="1.5"/>
+    </pattern>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#21d4ff" flood-opacity="0.18"/>
+    </filter>
+    <style>:root {
+  --bg: #020711;
+  --surface: #071426;
+  --surface-strong: #0a203d;
+  --text: #f4f8ff;
+  --muted: #b7c5d9;
+  --cyan: #21d4ff;
+  --blue: #1f9cff;
+  --lime: #96e22a;
+  --purple: #b35cff;
+  --orange: #ff8a22;
+  --red: #ff5964;
+}
+
+.deck-title { font-family: DIN Condensed, Arial Narrow, Arial, sans-serif; font-size: 188px; font-weight: 900; }
+.slide-title { font-family: DIN Condensed, Arial Narrow, Arial, sans-serif; font-size: 132px; font-weight: 900; }
+.eyebrow { font-family: Arial, Helvetica, sans-serif; font-size: 34px; font-weight: 800; letter-spacing: 8px; }
+.section-label { font-family: Arial Narrow, Arial, sans-serif; font-size: 40px; font-weight: 900; letter-spacing: 2px; }
+.body { font-family: Arial, Helvetica, sans-serif; font-size: 42px; }
+.body-strong { font-family: Arial, Helvetica, sans-serif; font-size: 46px; font-weight: 700; }
+.body-small { font-family: Arial, Helvetica, sans-serif; font-size: 34px; }
+.mono { font-family: Menlo, Monaco, Consolas, monospace; font-size: 31px; }
+.footer { font-family: Arial, Helvetica, sans-serif; font-size: 28px; }
+</style>
+  </defs>
+  <rect width="3840" height="2160" fill="url(#bg)"/>
+    <rect width="3840" height="2160" fill="url(#halo)"/>
+    <rect width="3840" height="2160" fill="url(#grid)"/>
+  <rect x="118" y="78" width="18" height="78" rx="9" fill="#96e22a"/>
+  <text x="172" y="126" class="eyebrow" fill="#96e22a">OPTIONAL TECHNICAL DEEP DIVE</text>
+  <text x="118" y="292" class="slide-title" fill="#f4f8ff">DIGITAL BANKING CONTROL PLANE</text>
+  <line x1="118" y1="342" x2="3722" y2="342" stroke="#96e22a" stroke-opacity="0.62" stroke-width="4"/>
+  <text x="118" y="500" fill="#f4f8ff" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="500" text-anchor="start" class=""><tspan x="118" dy="0">Digital Banking separates API authority, signing, network evidence, accounting, reconciliation, and</tspan><tspan x="118" dy="60">customer-visible finality.</tspan></text>
+    <rect x="118" y="670" width="620" height="340" rx="26" fill="#071426" stroke="#21d4ff" stroke-width="4"/>
+      <text x="428" y="815" fill="#21d4ff" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" text-anchor="middle" class=""><tspan x="428" dy="0">COMMAND + POLICY</tspan></text>
+      <line x1="738" y1="840" x2="814" y2="840" stroke="#b7c5d9" stroke-width="5"/><path d="M814 840l-24 -16v32z" fill="#b7c5d9"/>
+<rect x="834" y="670" width="620" height="340" rx="26" fill="#071426" stroke="#96e22a" stroke-width="4"/>
+      <text x="1144" y="815" fill="#96e22a" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" text-anchor="middle" class=""><tspan x="1144" dy="0">DURABLE WORKFLOW</tspan></text>
+      <line x1="1454" y1="840" x2="1530" y2="840" stroke="#b7c5d9" stroke-width="5"/><path d="M1530 840l-24 -16v32z" fill="#b7c5d9"/>
+<rect x="1550" y="670" width="620" height="340" rx="26" fill="#071426" stroke="#b35cff" stroke-width="4"/>
+      <text x="1860" y="815" fill="#b35cff" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" text-anchor="middle" class=""><tspan x="1860" dy="0">SIGNING + CHAINS</tspan></text>
+      <line x1="2170" y1="840" x2="2246" y2="840" stroke="#b7c5d9" stroke-width="5"/><path d="M2246 840l-24 -16v32z" fill="#b7c5d9"/>
+<rect x="2266" y="670" width="620" height="340" rx="26" fill="#071426" stroke="#ff8a22" stroke-width="4"/>
+      <text x="2576" y="815" fill="#ff8a22" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" text-anchor="middle" class=""><tspan x="2576" dy="0">OBSERVATION</tspan></text>
+      <line x1="2886" y1="840" x2="2962" y2="840" stroke="#b7c5d9" stroke-width="5"/><path d="M2962 840l-24 -16v32z" fill="#b7c5d9"/>
+<rect x="2982" y="670" width="620" height="340" rx="26" fill="#071426" stroke="#21d4ff" stroke-width="4"/>
+      <text x="3292" y="815" fill="#21d4ff" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" text-anchor="middle" class=""><tspan x="3292" dy="0">ACCOUNTING +</tspan><tspan x="3292" dy="50">RECONCILIATION</tspan></text>
+
+    <line x1="118" y1="1210" x2="3722" y2="1210" stroke="#96e22a" stroke-opacity="0.5" stroke-width="4"/>
+    <text x="118" y="1340" fill="#f4f8ff" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700" text-anchor="start" class=""><tspan x="118" dy="0">The shared principle is durable authority and evidence: request, signature, submission, finality,</tspan><tspan x="118" dy="66">accounting, and settlement remain different facts.</tspan></text>
+  <line x1="118" y1="2052" x2="3722" y2="2052" stroke="#36506f" stroke-opacity="0.7" stroke-width="2"/>
+  <text x="118" y="2106" class="footer" fill="#b7c5d9">JOHN WHITTON / ENGINEER. ARCHITECT. LEADER.</text>
+  <text x="3722" y="2106" class="footer" fill="#96e22a" text-anchor="end">APPENDIX 03</text>
+</svg>
