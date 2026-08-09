@@ -5,28 +5,20 @@
 ## Docs
 
 - [Legacy Overview](/overview)
-- [John Whitton and Jincubator](/about): Jincubator is the editorial and engineering identity for selected independent
-systems work led by John Whitton. It is not presented as a staffed agency,
-fund, customer portfolio, or partnership network.
 - [Backpressure and Queue Ownership](/architecture/backpressure-and-queue-ownership): High-throughput systems remain understandable when queues transport typed work while the domain owner decides freshness, coalescing, retry, ordering, and shutdown.
 - [Capital-Efficient Funding Models](/architecture/capital-efficient-funding-models): Transaction-scoped funding can reduce the principal an executor must hold before a trade, but it adds availability, fee, repayment, callback, state, and failure constraints that the execution design must make explicit.
 - [Evidence-Grounded AI for Trading Systems](/architecture/evidence-grounded-ai-for-trading-systems): Latency-sensitive financial systems can use predictive models and
 evidence-grounded investigation without transferring execution authority to
 probabilistic software.
-- [Architecture](/architecture): Architecture distills reusable boundaries, state models, controls, failure
-modes, and trade-offs from reviewed Work and Research.
 - [Inspectable Read Models for Trading Systems](/architecture/inspectable-trading-read-models): Trading-system persistence is credible when authoritative observations, derived current views, runtime-only state, and retained evidence artifacts remain distinguishable.
 - [Architecture](/architecture/intro): Current Architecture distills reusable design forces, boundaries, trade-offs, failure modes, and validation lessons from reviewed Work and Research.
 - [From Liquidity State to Route Graphs](/architecture/liquidity-state-to-route-graphs): A trading system needs a stable graph and catalog boundary between changing protocol state and later strategy decisions. This architecture explains what to normalize, what to preserve, and what must remain outside the mapping layer.
 - [Architecture Portfolio](/architecture/portfolio): This presentation page organizes the current generated Architecture narratives. The canonical prose and review records live in the Knowledge Base; implementation details remain with their project repositories.
 - [Protocol Simulation Boundaries](/architecture/protocol-simulation-boundaries): Protocol simulation is safe to reuse when coverage, state provenance, route-local mutation, economic inputs, and failure semantics are explicit.
 - [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines): A trading system becomes reviewable when market state, modeled opportunities, execution decisions, and realized outcomes remain distinct. This architecture describes boundaries that preserve those distinctions without copying one implementation.
-- [Archive](/archive): The Archive retains historical material for context. It is not current
-canonical guidance and may contain superseded assumptions, incomplete plans, or
-outdated links.
+- [Partnerships — Legacy Route](/partnerships/intro): Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
 - [Archive](/archive/intro): The Archive preserves research and implementation history without presenting it as current canonical work. Individual pages may contain superseded assumptions, old interfaces, incomplete plans, or historical measurements; their original dates and context govern.
 - [Engage](/engage/intro): John takes on selected, clearly bounded conversations involving:
-- [Partnerships — Legacy Route](/partnerships/intro): Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
 - [Product — Legacy Route](/product/intro): This route remains for compatibility. Current evidence-bearing work now lives under [Work](/work/intro): [Salus](/work/salus), [Digital Banking](/work/digital-banking), and [Intent Systems Prototypes](/work/prototypes).
 - [Prototypes — Compatibility Route](/prototypes/intro): Prototypes now live structurally under [Work](/work/prototypes). The current generated page covers the bounded UHI5 intent-hook and Unite DeFi solver experiments with explicit implementation and maturity limits.
 - [Kanga Finance: Harmony Hackathon 2021](/proposals/Harmony): [kanga.finance](https://kanga.finance/) is a Dex implementation inspired by Sushi and proof of concept integration with one-wallet. ([github](https://github.com/kangafinance)). Winner of $30,000 in prizes from [Harmony Hackathon](https://bounties.gitcoin.co/hackathon/harmony-defi/onboard).
@@ -36,29 +28,23 @@ outdated links.
 - [Proposals — Historical Route](/proposals/intro): This section preserves dated proposals and event submissions. Roadmaps and proposed integrations describe intent at the time; they are not evidence of completed functionality, current partnerships, production deployment, or commercial maturity.
 - [Research Proposal: Solvers, Arbitrage & Intent-Based Protocols](/proposals/solving-arbitrage): Over the past eight months, I’ve developed both a solver engine and an intent-based swap protocol integrating Uniswap v4. My work spans arbitrage detection/execution, real-time streaming, solver frameworks, and resource-efficient intent mechanisms. Retained research material is accessible via [Jincubator Research](/research/intro).
 - [Sunrise DEX](/proposals/sunrise): [Link to original W3 Grant Proposal](https://github.com/w3f/Grants-Program/blob/master/applications/sunrise-dex.md)
+- [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence): Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
+- [High-Performance Route Evaluation](/research/high-performance-route-evaluation): Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
+- [Research](/research/intro): Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
+- [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence): Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
+- [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale): *8 min read*
+- [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making): *6 min read*
+- [I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.](/writing/speed-wasnt-the-problem): *10 min read*
 - [Building a Polkadot Parachain — EAVE](/work/building-polkadot-parachain-eave): EAVE is a historical case study in translating an emerging-asset venture thesis into a Polkadot parachain design, then separating the architecture that was proposed from the integration that source evidence can actually support.
 - [DeFi Leveraging](/work/defi-leveraging): DeFi Leveraging is a bounded case study in designing leverage-token accounting, automated position rebalancing, and intent-based execution without confusing protocol safety with off-chain strategy.
 - [DeFi Protocol Engineering — Kanga](/work/defi-protocol-engineering-kanga): Kanga is a historical DeFi protocol case study that connects John's documented product and protocol design with a source-backed automated-market-maker, incentive, staking, fee-conversion, and liquidity-migration architecture.
 - [Digital Banking Reference Implementation](/work/digital-banking): Digital Banking is John Whitton's non-production reference implementation for durable digital-asset settlement control planes across local Ethereum and Solana environments.
 - [Enterprise SOA](/work/enterprise-soa): Enterprise SOA is a domain-based case study of the integration platforms John designed and delivered to connect core business systems, partner rails, customer workflows, and production operations without turning every dependency into a point-to-point interface.
-- [Work](/work): Work pages explain what John designed or built, the evidence available for it,
-and the boundary between demonstrated capability and unproven outcome.
 - [Work](/work/intro): Selected Work explains what was built, who owns the implementation, what the evidence establishes, and where the current boundary stops.
 - [Intent Systems Prototypes](/work/prototypes): Intent Systems Prototypes is a bounded record of experiments in turning a user's desired outcome into an authorized, constrained execution that another actor can coordinate and perform.
 - [Salus](/work/salus): Salus is an active Jincubator research and engineering initiative and
 reference implementation for decentralized trading-system architecture.
 - [Stablecoin Intents](/work/stablecoin-intents): Stablecoin Intents is a bounded case study in coordinating source-chain rewards, destination-chain fulfillment, and proof-backed settlement across a multi-chain system.
-- [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence): Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
-- [High-Performance Route Evaluation](/research/high-performance-route-evaluation): Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
-- [Research](/research): Research asks a bounded engineering question, states what the evidence can
-establish, and makes its limits explicit.
-- [Research](/research/intro): Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
-- [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence): Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
-- [Writing](/writing): Writing provides direct, authored narratives that connect engineering work,
-evidence, and architecture without replacing the underlying sources.
-- [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale): *8 min read*
-- [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making): *6 min read*
-- [I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.](/writing/speed-wasnt-the-problem): *10 min read*
 - [AI Systems Architecture](/architecture/ai-systems/intro): Historical taxonomy placeholder retained for compatibility. It is not a substantive current canonical Architecture artifact.
 - [Intent Execution Boundaries](/architecture/defi-systems/intents): An intent architecture is safe only when it preserves the user's mandate, resource authority, solver discretion, execution payload, and settlement evidence as separate boundaries.
 - [DeFi Systems Architecture](/architecture/defi-systems/intro): Historical architecture index. The current canonical narrative is [Intent Execution Boundaries](/architecture/defi-systems/intents).
@@ -125,11 +111,11 @@ last-updated: 2023-02-04
 - [NEAR](/research/chains/near): date: 2023-02-04
 - [Polkadot](/research/chains/polkadot): date: 2023-02-04
 - [Polygon](/research/chains/polygon): date: 2023-02-04
-- [Celestia](/research/dataAvailabilty/celestia): date: 2023-06-19
 - [Horizon Bridge](/research/code/Horizon): date: 2023-02-04
 - [Ethereum Near Bridging](/research/code/ethereum-near): date: 2023-02-04
 - [Ethereum Code](/research/code/ethereum): date: 2023-02-04
 - [Code bases and reviews](/research/code/intro): date: 2023-02-04
+- [Celestia](/research/dataAvailabilty/celestia): date: 2023-06-19
 - [Intent-Based Execution](/research/defi-protocol-engineering/intro): An intent can simplify what a user expresses while moving complexity into authorization, competition, resource control, execution, and settlement boundaries.
 - [Overview](/research/deprecated/architecture): This is an opinionated architecture for an intent based solving protocol which facilitates single- and multichain solving of intents. Flash liquidity can remove the need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs.
 - [IntentSwap](/research/deprecated/flow): Swapper(via CompactX) calls Quoter (Callibrator, SmartOrderRouter)
@@ -161,5 +147,5 @@ last-updated: 2023-02-04
 - [CoW Swap Solver Study](/product/solving/intentsolve/cowswap): This historical integration study preserves a bounded view of auction monitoring, evaluation, and settlement boundaries. It is not presented as a current deployment or operating strategy.
 - [UniswapX Solver Study](/product/solving/intentsolve/uniswapx): This historical integration study preserves a bounded view of intent monitoring, evaluation, and settlement boundaries. It is not presented as a current deployment or operating strategy.
 - [Payments](/research/financial-infrastructure/payments/intro): Historical topic page retained for compatibility. Current settlement research is [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro).
-- [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro): Settlement evidence becomes reliable only when business intent, authorization, external effects, accounting, finality, and reconciliation remain separately identifiable.
 - [Stablecoins](/research/financial-infrastructure/stablecoins/intro): Historical topic page retained for compatibility. It is not a fresh comparative stablecoin study.
+- [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro): Settlement evidence becomes reliable only when business intent, authorization, external effects, accounting, finality, and reconciliation remain separately identifiable.

@@ -5,15 +5,9 @@
 ## Legacy Overview
 
 
-## John Whitton and Jincubator
+import { LandingPage } from "../../components/LandingPage";
 
-Jincubator is the editorial and engineering identity for selected independent
-systems work led by John Whitton. It is not presented as a staffed agency,
-fund, customer portfolio, or partnership network.
-
-For professional history, résumé, and availability, visit
-[johnwhitton.com](https://johnwhitton.com/). Historical Jincubator material is
-kept separately in the [Archive](/archive).
+<LandingPage page="about" />
 
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
@@ -741,20 +735,9 @@ AI model, agent, or production AI execution plane.
   for external research and control context.
 
 
-## Architecture
+import { LandingPage } from "../../components/LandingPage";
 
-Architecture distills reusable boundaries, state models, controls, failure
-modes, and trade-offs from reviewed Work and Research.
-
-* [Trading-System Execution Pipelines](/architecture/trading-system-execution-pipelines)
-* [Evidence-Grounded AI for Trading Systems](/architecture/evidence-grounded-ai-for-trading-systems)
-* [From Liquidity State to Route Graphs](/architecture/liquidity-state-to-route-graphs)
-* [Backpressure and Queue Ownership](/architecture/backpressure-and-queue-ownership)
-* [Inspectable Read Models](/architecture/inspectable-trading-read-models)
-* [Protocol Simulation Boundaries](/architecture/protocol-simulation-boundaries)
-* [Capital-Efficient Funding Models](/architecture/capital-efficient-funding-models)
-* [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement)
-* [Intent Execution Boundaries](/architecture/defi-systems/intents)
+<LandingPage page="architecture" />
 
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
@@ -1421,16 +1404,18 @@ finished its work; it does not establish an execution or economic outcome.
 * Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the narrative synthesis.
 
 
-## Archive
+## Partnerships — Legacy Route
 
-The Archive retains historical material for context. It is not current
-canonical guidance and may contain superseded assumptions, incomplete plans, or
-outdated links.
+Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
 
-* [Research](/research/chains/intro)
-* [Architecture](/architecture/trading-systems/intro)
-* [Product](/product/intro)
-* [Proposals](/proposals/intro)
+Jincubator is John Whitton's independent studio, not a staffed agency or broad venture-fund platform.
+
+Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@johnwhitton.com).
+
+
+import { LandingPage } from "../../components/LandingPage";
+
+<LandingPage page="archive" />
 
 
 ## Archive
@@ -1487,15 +1472,6 @@ John takes on selected, clearly bounded conversations involving:
 Jincubator is not a generic agency service catalog. Scope, contribution, confidentiality, and expected evidence are agreed before work begins.
 
 [Email John](mailto\:john@johnwhitton.com), review [current work](/work/intro), or open the [long-form portfolio](https://portfolio.johnwhitton.com/).
-
-
-## Partnerships — Legacy Route
-
-Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
-
-Jincubator is John Whitton's independent studio, not a staffed agency or broad venture-fund platform.
-
-Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@johnwhitton.com).
 
 
 ## Product — Legacy Route
@@ -2217,6 +2193,922 @@ For a more comprehensive Sunrise Protocol Vision please read the following
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
+## Deterministic Replay as Engineering Evidence
+
+Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
+
+### The question
+
+When does deterministic replay constitute credible engineering evidence?
+
+A replay is valuable because it turns an observed or constructed state into a repeatable input for evaluation, regression testing, and dry-run materialization. The same command can be run after a code change and its outputs compared. That does not mean the replay reconstructs everything that happened in a live market or proves what would have happened on-chain.
+
+The distinction matters most when a replay result is used to support a claim. “This evaluator returns the same result for this retained input” is narrower than “this was the market state,” which is narrower than “this route could have been included,” which is narrower again than “this execution would have produced realized profit.”
+
+### Method
+
+The investigation reviewed the current Salus replay walkthrough and the
+implementation surfaces it described at the source revision reviewed on
+2026-07-29. It compared seven input and output boundaries:
+
+1. code revision;
+2. replay payload;
+3. configuration and blacklists;
+4. persisted route, component, and token read models;
+5. pricing and gas inputs;
+6. generated evaluation or dry-run artifacts; and
+7. live execution evidence that replay does not produce.
+
+No new live benchmark, historical reconstruction, transaction, or execution test was run. The method is a source-bounded evidence analysis, not an empirical comparison of multiple replay systems.
+
+### Evidence boundary
+
+Current replay is a family of bounded workflows rather than a single self-contained historical runtime. It can rebuild route read models from a fixture, evaluate one or more retained batches, construct local dry-run candidates, and feed a non-submitting analytics path.
+
+The retained replay payload is only one part of the input. Evaluation may also depend on current database read models, token and component metadata, route summaries and legs, configuration, blacklists, gas defaults, and code behavior. Unless those dependencies are pinned and retained together, repeating the JSON payload alone does not reproduce the original decision environment.
+
+Two replay forms expose different limits:
+
+* reserve-snapshot replay supports a bounded approximation for retained fixtures;
+* decoded protocol-state replay exercises protocol-specific simulators and rejects a route when only some legs have decoded state.
+
+Both forms can support regression evidence. Neither becomes canonical live-state authority merely because it carries a block number. Strong historical claims also require block identity, source provenance, completeness, ordering, relevant configuration, and an explanation of how mutable external data was captured.
+
+### Findings
+
+Replay supports four useful classes of claim.
+
+**Deterministic transformation.** Given the same complete declared inputs and code, a pipeline can demonstrate that it derives the same normalized state, route evaluation, classification, or output artifact.
+
+**Regression detection.** A changed output can expose a code, schema, configuration, or dependency change. The comparison is strongest when the producer, inputs, expected output, and allowed tolerances are explicit.
+
+**Boundary validation.** Replay can confirm that malformed, unsupported, incomplete, or stale inputs fail in the expected way. Negative results are evidence when they remain visible.
+
+**Local candidate construction.** Dry-run workflows can test whether an evaluation artifact can become a structurally valid execution candidate without signing, preflight, broadcast, receipt, or token-flow effects.
+
+Case-specific point-in-time reconstruction can also explain why one observed
+decision changed when selected inputs changed. That is bounded causal
+evidence, not a reusable canonical-chain replay backend: it remains limited by
+the retained route universe, source identity, ordering, configuration, and
+unavailable state.
+
+Replay does not by itself establish:
+
+* that the retained input was complete or canonical live state;
+* that route catalogs and market state described the same historical instant;
+* that a quote survived later ordering, latency, or liquidity changes;
+* that calldata would pass RPC preflight;
+* that a transaction was signed, submitted, included, or finalized; or
+* that receipt gas, token flows, funding, and settlement reconciled to realized profit.
+
+### What must be retained
+
+A reviewable replay package should identify:
+
+* producer and schema version;
+* code revision;
+* source chain and block identity;
+* state authority and completeness;
+* route-universe identity;
+* configuration and policy inputs that affect the result;
+* token, component, pricing, gas, and funding inputs;
+* expected outputs and comparison rules; and
+* unavailable facts that prevent a stronger interpretation.
+
+Content addressing can prove that retained bytes did not change. It cannot prove that those bytes were complete, authoritative, or independently obtained. Provenance and evidence class must therefore travel alongside hashes.
+
+### Limitations
+
+* This research uses one evolving implementation as its primary case.
+* It does not compare replay products or establish a universal storage format.
+* Several current replay paths still join retained payloads with mutable storage or configuration.
+* A deterministic result can remain self-referential when the same code produces both the subject and expected output.
+* Historical route truth, state root, transaction ordering, reorg handling, and finality are not inferred when they are absent.
+* No live result is converted into replay evidence by this page.
+
+### Implications
+
+Teams should state replay claims in the form “fixed inputs X under revision Y produced result Z through boundary B.” If an input was not retained, name it as unavailable rather than allowing a default to impersonate history.
+
+Replay should sit inside a validation portfolio. Unit tests prove local invariants; replay proves bounded transformation; independent comparisons can corroborate selected fields; preflight tests a later state view; submission and receipt evidence establish operational progress; reconciliation establishes financial outcome. No layer should inherit the meaning of the next.
+
+### Engineering Implementation Notes
+
+#### Replay begins with a typed source identity
+
+```rust
+pub struct SourceBlockIdentityV1 {
+    pub schema_version: u16,
+    pub chain: ChainName,
+    pub chain_id: u64,
+    pub block_number: u64,
+    pub block_hash: String,
+    pub parent_hash: Option<String>,
+    pub block_timestamp_unix_seconds: Option<i64>,
+    pub state_root: SourceBlockStateRootV1,
+}
+```
+
+Replay input is not represented as an unqualified block number. The identity
+binds chain, height, hash, parent, time, and state-root availability so a
+replay result can state what it was evaluated against and refuse a weaker
+substitute.
+
+### Related work and architecture
+
+* [Salus](/work/salus) provides the bounded Work context.
+* [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) provides the evidence taxonomy applied here.
+* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) defines the measured subjects that replay must not conflate.
+* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places replay inside a larger observed-state-to-outcome sequence.
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## High-Performance Route Evaluation
+
+Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
+
+### The question
+
+How should an engineer read a high-throughput route-evaluation result? A rate alone is ambiguous. It may describe catalog construction, one evaluation service, a complete block-to-decision path, or a synthetic loop. It also says nothing by itself about whether an economically useful opportunity was selected.
+
+The useful question is narrower: what did a retained workload measure, at which revision, and how far along the decision path did the evidence reach?
+
+### A measurement model
+
+Salus separates several quantities that are easy to collapse into one headline:
+
+* **Token nodes** and **pool components** describe a retained market graph.
+* **Catalog routes** are bounded paths available for later evaluation.
+* **Route evaluations** are completed evaluations of catalog routes against a retained workload.
+* **Opportunities** are candidates produced by economic analysis.
+* **Selected after-gas routes** have passed a later cost-aware selection gate.
+* **Submitted transactions**, **executions**, and **realized profit** are subsequent operational outcomes.
+
+The units form an evidence sequence, not interchangeable names for “performance.” A system can maintain a large catalog and evaluate it quickly while selecting no route after costs. That result can still demonstrate evaluator capacity, but it cannot establish profitable execution.
+
+### Retained observations
+
+The reviewed implementation snapshot was committed on 2026-07-20 and inspected
+on 2026-07-21. Its retained July 9 evidence records:
+
+| Observation               | Measured subject                       |    Result |
+| ------------------------- | -------------------------------------- | --------: |
+| Ethereum graph snapshot   | Token nodes                            |     3,415 |
+| Ethereum graph snapshot   | Pool components                        |     4,552 |
+| Ethereum bounded catalog  | Routes with a maximum of four hops     | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second |    16,537 |
+| Base retained runtime run | Peak route evaluations per second      |    38,462 |
+
+The sustained rate divides completed route evaluations by measured evaluation-service time across the retained Base run. The peak is the highest reported observed rate within that run. These are route-evaluation rates, not transaction or profitability rates. No new live benchmark was run for this migration.
+
+### What the evidence establishes
+
+The retained measurements establish that the pinned implementation built and stored a multi-million-route bounded Ethereum catalog and processed a retained Base route-evaluation workload at the reported sustained and peak rates. The graph, catalog, and evaluator figures are separately named, which makes the result inspectable and repeatable against the retained evidence.
+
+For engineering review, the important property is not the largest number. It is the ability to state which stage produced each number and to preserve enough provenance to revisit the claim when the implementation or workload changes.
+
+### What it does not establish
+
+The latest cited retained runs selected zero after-gas routes. The measurements therefore do not establish opportunity recall, selected economic value, submitted transactions, successful execution, realized profit, current live performance, or commercial validation.
+
+They also do not support comparing Salus with another system unless the workloads, hardware, timing boundaries, graph filters, route definitions, and evaluation semantics are made comparable. A higher rate can reflect a narrower evaluation boundary rather than a better end-to-end system.
+
+Provider configuration, operational thresholds, route-selection details, opportunity identities or values, gas-bidding behavior, active strategy parameters, and vulnerabilities are outside this public analysis.
+
+The current state-change-aware ordering experiment is passive, test-only
+evidence. Its latest retained run did not satisfy the performance, liveness,
+or dataset gates required for promotion, so it establishes neither a current
+ranking advantage nor live selection or submission authority. It also does
+not supersede the retained throughput measurements above.
+
+### Engineering implications
+
+Performance reports for route evaluators should publish a measurement contract before a headline:
+
+1. identify the implementation revision and observation date;
+2. define graph, catalog, evaluation, selection, and execution units separately;
+3. state the measured timing boundary and retained workload;
+4. place zero or negative downstream results next to throughput figures;
+5. record what evidence would be needed to advance the claim.
+
+This structure makes evaluator capacity useful without asking it to prove an economic or operational outcome it did not measure.
+
+### Non-submitting analytics boundary
+
+An offline or live-state analytics command can hydrate a route universe, apply
+available state, evaluate routes, and write inspectable summaries without
+entering execution. That boundary is useful for route coverage, missing-state
+diagnosis, and evaluation analysis.
+
+Its output remains sensitive to the route universe, state source, pricing and
+gas inputs, strategy configuration, and supported protocol state. A
+current-catalog universe is not a historical route snapshot. A block number is
+not a complete block identity. An artifact labelled “profitable routes” is a
+modeled subset, not an execution queue or realized-profit record.
+
+The Salus Analyse CARB walkthrough is consolidated here because it applies the
+same measurement question: what was evaluated, with which state, and where did
+the evidence stop? Its command and artifact details remain implementation
+documentation rather than a separate public Research page.
+
+### Engineering Implementation Notes
+
+#### A candidate carries its state boundary
+
+```rust
+if state.used_components.contains(&edge.component_id) {
+    continue;
+}
+
+if edge.token_out == *start {
+    if !state.legs.is_empty() {
+        state.push(edge, VisitedTokenMark::Skip);
+        self.routes.push(RouteCandidate {
+            route_id: route_id(&state.legs, None, None, None),
+            version: 1,
+            path: state.path.clone(),
+            legs: state.legs.clone(),
+            flash_component_id: None,
+            flash_token_address: None,
+            flash_fee_hob: None,
+            flash_available_balance: None,
+            flash_protocol: None,
+            source_block_number: self.graph.source_block_number,
+        });
+        state.pop(edge, VisitedTokenMark::Skip);
+    }
+    continue;
+}
+```
+
+The invariant is a state boundary: one candidate cannot reuse a component, and
+the temporary search state must return to its prior shape after each branch.
+`push` extends the candidate and records the visitation rule; `pop` restores
+that state after a closed route has been copied into the catalog. The route also
+carries its source block, keeping topology-derived catalog construction distinct
+from later current-state evaluation.
+
+The trade-off is a bounded copy at the point a cycle becomes a durable catalog
+entry, rather than cloning every partial traversal. That supports reproducible
+route construction and independent evaluation measurements. It is not evidence
+of an executable opportunity.
+
+### Go deeper
+
+* See [Salus as governed Work](/work/salus) for the bounded engineering contribution and its limitations.
+* Use [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) for the evidence taxonomy applied to the retained measurements.
+* Continue to [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) for the reusable system boundary behind these measurement stages.
+* Read [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) for the focused narrative connecting component changes, affected-route scope, freshness, and current evaluator evidence.
+* Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the concise narrative synthesis.
+
+
+import { LandingPage } from "../../components/LandingPage";
+
+<LandingPage page="research" />
+
+
+## Research
+
+Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
+
+### High-Performance Route Evaluation
+
+[High-Performance Route Evaluation](/research/solving/solving) explains what retained Salus graph, catalog, and evaluator measurements establish—and why throughput is not execution or profit.
+
+### Durable Financial Settlement
+
+[Durable Financial Settlement](/research/financial-infrastructure/settlement/intro) distinguishes business intent, authority, submission, native effects, accounting, finality, and reconciliation.
+
+### Intent-Based Execution
+
+[Intent-Based Execution](/research/defi-protocol-engineering/intro) uses bounded prototypes to trace the authority and evidence between a user's mandate and observed settlement.
+
+Historical chains, bridges, zero-knowledge notes, primitives, code reviews, public-source dossiers, superseded protocol material, and lightweight AI taxonomy placeholders remain accessible through the [Archive](/archive/intro).
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## What Trading-System Validation Evidence Can Prove
+
+Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
+
+### The question
+
+What can a trading-system validation result legitimately prove?
+
+“Validated” often hides several different activities: a unit test passed, a replay matched an expected artifact, two implementations agreed on a field, an RPC preflight succeeded, a transaction was accepted by a provider, or a receipt was observed. These events are valuable, but their meanings are not interchangeable.
+
+The research goal is to define an evidence taxonomy that preserves the subject, independence, input provenance, stopping point, and unavailable facts of each validation surface.
+
+### Method
+
+The investigation reviewed Salus validation, replay, analytics, simulation,
+dry-run, preflight, submission, receipt, and parity surfaces at the source
+revision reviewed on 2026-07-29. It classified each surface by:
+
+* system under test;
+* reference or expectation;
+* input provenance;
+* independence from the implementation;
+* equality or tolerance rule;
+* resulting artifact;
+* operational side effects; and
+* claim ceiling.
+
+No new command, live route, transaction, benchmark, or historical parity run was executed. Existing retained measurements selected zero after-gas routes and are not reinterpreted as execution evidence.
+
+### Evidence classes
+
+#### Implementation tests
+
+Unit and integration tests can prove that selected functions, crates, contracts, schemas, and command seams satisfy explicit assertions under test inputs. They are strong regression evidence and weak evidence of live external conditions.
+
+#### Fixture replay
+
+Replay can prove a bounded transformation for fixed declared inputs and expose regressions. It does not prove that a fixture is complete historical state or that an execution would survive later ordering and liquidity.
+
+#### Self-generated analytics
+
+An analytics path can make route coverage, classifications, missing state, and modeled economics inspectable. When it reuses the same evaluator as the runtime, agreement is self-referential rather than independent corroboration.
+
+#### Cross-implementation parity
+
+Parity can show agreement or drift on shared fields. It is bounded by route overlap, block alignment, normalization, unavailable fields, and comparison tolerance. Agreement does not prove both implementations are correct; mismatch does not diagnose which one is wrong.
+
+An equal-budget passive comparison can act as a promotion gate for a proposed
+ordering or attribution method. The current retained comparison is useful
+because it withheld promotion: the corpus was small, the latest collection was
+incomplete, and no accepted advantage threshold or live decision authority
+was established.
+
+#### Dry-run and calldata validation
+
+Dry-run can prove local candidate shape and guards. Contract tests can prove selected callback, authorization, repayment, and failure behavior in the tested environment. Neither proves current deployed state, live liquidity, inclusion, or profit.
+
+#### RPC preflight
+
+Preflight evaluates planned calldata against a provider's state view before broadcast. A success is stronger than local construction but still time-, state-, provider-, and ordering-dependent. It is not a signed submission or receipt.
+
+#### Submission and receipt
+
+A provider acceptance or bundle identifier proves a submission boundary. A transaction hash is distinct from a private bundle hash. A receipt proves inclusion and EVM success or revert at a recorded block; it does not by itself prove canonical finality or economic reconciliation.
+
+#### Commercial reconciliation
+
+Realized outcome requires authoritative token flows, funding and gas costs, allocation, inventory and cost basis where relevant, finality, and accounting reconciliation. A successful receipt is an input, not the conclusion.
+
+### Findings
+
+Five rules emerged.
+
+1. **Name the subject.** Catalog routes, route evaluations, opportunities, selected routes, submissions, executions, and realized profit are different counts.
+2. **Name the reference.** Expected files and golden fixtures are regression references; independently sourced evidence provides a different kind of corroboration.
+3. **Treat unavailable as a result.** Missing RPC, unmatched blocks, unsupported protocols, absent fields, skipped tests, and filtered routes do not pass.
+4. **State the stopping point.** Dry-run stops before RPC, preflight stops before signing, submission stops before inclusion, and receipt stops before complete reconciliation.
+5. **Advance only with new evidence.** A later claim requires a later artifact rather than optimistic reinterpretation of an earlier one.
+
+This taxonomy also changes how negative results are read. Zero selected after-gas routes is not a failed throughput measurement. It is a valid downstream result that prevents the throughput evidence from becoming a profitability claim.
+
+### Independence and comparison
+
+Validation strength depends partly on independence. A pure function checked against hand-derived values can be a strong local test. A replay compared with an artifact generated by the same code is useful for regression but not independent. A simulator compared with another implementation adds independence only for the fields and state both actually share.
+
+Comparison rules must also be explicit. Exact equality is suitable for identifiers, classifications, and many integer artifacts. Numerical comparisons may require absolute or relative tolerance, rounding rules, unit normalization, and treatment of missing values. A tool that reports mismatches but exits successfully is an observational harness, not an enforcing gate.
+
+### Evidence progression
+
+```text
+code and schema checks
+  -> deterministic fixtures and replay
+  -> bounded independent comparison
+  -> current-state simulation or preflight
+  -> signed submission
+  -> inclusion and receipt
+  -> canonicality and finality
+  -> token-flow and cost reconciliation
+  -> realized outcome
+```
+
+The progression is not necessarily one automated pipeline. It is a claim discipline. A team may stop at replay for a research result or at preflight for a no-broadcast diagnostic, as long as the resulting claim stops there too.
+
+### Limitations
+
+* The taxonomy is derived primarily from one implementation and its historical comparison harness.
+* It does not prescribe a universal CI system or testing framework.
+* It does not establish that every retained Salus validation artifact is complete.
+* External providers, block builders, mempools, and chains introduce behavior that deterministic tests cannot reproduce fully.
+* Operational thresholds, gas-bidding behavior, route selection, opportunity data, and vulnerabilities remain outside this public research.
+* No production readiness, security, execution success, or commercial result is inferred.
+
+### Recommendations
+
+* Put the evidence class and claim ceiling beside every result.
+* Retain source revision, input identity, configuration scope, comparison rule, and unavailable fields.
+* Make no-submit, preflight-only, submission, pending, included-success, included-revert, and reconciled outcomes distinct states.
+* Keep skipped, unsupported, missing, mismatched, and unavailable counts visible.
+* Require an independent review of public claims even when machine validation passes.
+
+### Engineering Implementation Notes
+
+#### Conflicting identities fail before comparison
+
+```rust
+if self.block_number == other.block_number && self.block_hash != other.block_hash {
+    return Err(SourceBlockValidationError::ConflictingBlockHash {
+        block_number: self.block_number,
+        left: self.block_hash.clone(),
+        right: other.block_hash.clone(),
+    });
+}
+if self.block_hash == other.block_hash && self.block_number != other.block_number {
+    return Err(SourceBlockValidationError::ConflictingBlockNumber {
+        block_hash: self.block_hash.clone(),
+        left: self.block_number,
+        right: other.block_number,
+    });
+}
+```
+
+Validation treats contradictory identity as a typed failure instead of silently
+selecting one observation. That is why a replay, comparison, or analytical
+result can remain bounded by the integrity of its inputs rather than acquiring
+authority merely because a calculation completed.
+
+### Related work and architecture
+
+* [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence) focuses on the replay subset.
+* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) applies the taxonomy to retained measurements.
+* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) turns the evidence progression into system boundaries.
+* [Salus](/work/salus) remains the governed Work account.
+
+
+import { LandingPage } from "../../components/LandingPage";
+
+<LandingPage page="writing" />
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## Mapping Liquidity to Routes at Scale
+
+*8 min read*
+
+A large route catalog is useful only if a system can turn a small market-state change into fresh, bounded work. Salus made that translation explicit—and made the stopping point between evaluator capacity and profitable execution equally explicit.
+
+### The state-change problem
+
+Salus is an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. One of its harder engineering problems begins with a mismatch of scale.
+
+The system needs a durable view of the paths that *could* be evaluated. At the reviewed Ethereum snapshot, that view contained 3,415 graph token nodes, 4,552 retained liquidity components, and 2,401,108 catalog routes with a maximum of four hops. But market state changes component by component and block by block. Rebuilding that universe, or scanning all of it after every update, would spend most of the latency budget rediscovering topology that was already known.
+
+The useful question is narrower: when this component changes, which already-known routes might now produce a different modeled result? That question links durable topology to live evaluation without pretending that topology itself contains a price, a profit, or a trading decision.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/01-topology-boundary.svg" alt="Diagram separating the persisted route universe from the filtered live catalog, changed-component lookup, affected-route scope, and current-state evaluation." />
+
+*The 2,401,108 figure is the persisted maximum-four-hop Ethereum route universe at the reviewed snapshot. The steady-state hot path works on a filtered live catalog and an affected subset; it does not scan all 2.4 million routes for every component update.*
+
+### Why broad reevaluation fails
+
+The first insufficient mental model was “state changed, so evaluate everything.” It is simple, but its work grows with the whole catalog rather than with the affected scope. A second version—put every request into one FIFO queue—only moves the problem. If new blocks arrive faster than old work drains, strictly preserving arrival order can make the evaluator precise about a market state that is no longer decision-useful.
+
+A third failure is semantic rather than computational: reporting a high evaluation rate as if it were a trading outcome. Catalog routes, evaluated route occurrences, positive modeled observations, selected after-gas routes, submissions, receipts, settlements, and realized profit are different evidence states. Compressing them into one “opportunity” counter makes performance easier to market and harder to trust.
+
+Salus therefore separates three concerns: topology establishes what can be recalled; the runtime establishes what is fresh enough to evaluate; the evidence model establishes how far a result actually progressed.
+
+### A durable topology boundary
+
+The durable side of the boundary gives tokens and liquidity components stable identities, constructs a graph, and generates bounded routes. A component-to-route inverted index then records membership in the active catalog. Looking up a changed component can recall known member routes directly instead of rediscovering paths.
+
+That index is topology-only. It does not cache profitability, gas, quotes, execution outcomes, or a promise that every route is currently evaluable. Current state remains separate because coverage, protocol state, and block identity can change long after the route identity was created.
+
+The reviewed implementation includes a bounded topology cache and persisted startup hydration. Broader all-route, LRU, or hybrid cache policies remain planning options, not validated current behavior. This distinction matters: a bounded implemented mechanism should not inherit the claims of a larger future design merely because both use the word “cache.”
+
+The design creates a useful invariant: durable topology can narrow work, but only current state can support a current modeled decision. A catalog identity survives across updates; its economic interpretation does not.
+
+### The affected-route hot path
+
+Once a component changes, the hot path is a sequence of narrowing and evidence-adding stages:
+
+1. Preserve the state revision and changed-component identity.
+2. Recall routes from the component-to-route membership index.
+3. Apply live catalog and route-bound filters.
+4. Prepare requests with the relevant block identity.
+5. Admit only routes whose required state coverage is present.
+6. Evaluate admitted occurrences in parallel against exact inputs.
+7. Record selection evidence separately from evaluation output.
+8. Hand any selected candidate to later freshness, preflight, and execution gates.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/02-route-lifecycle.svg" alt="Diagram of the affected-route evaluation lifecycle from component change through scoped lookup, preparation, coverage, parallel evaluation, selection evidence, and execution handoff." />
+
+*Each stage either narrows the route set or adds evidence. None silently promotes an evaluated route to execution.*
+
+The sequence makes state identity a first-class value. A result derived from one block cannot be refreshed merely by attaching a newer timestamp. If required state is absent, the system has an admission problem. If a newer useful block supersedes queued evaluation work, it has a freshness problem. If a selected candidate cannot pass preflight, it has an execution-gate result. Those outcomes should remain visible rather than collapsing into a generic failure.
+
+### Queue policy belongs to the stage
+
+Queues transport work; the service that understands the domain owns the policy. That split keeps dequeue mechanics thin while making capacity, freshness, ordering, shutdown, and failure decisions explicit.
+
+Evaluation work may favor the newest useful block and coalesce or discard superseded requests. Durable graph or persistence work instead needs to drain or record a visible incomplete outcome. Execution handoff may require bounded ordering because nonce, state, and evidence continuity matter. One global FIFO policy cannot express all three contracts safely.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/03-queue-policy.svg" alt="Diagram showing producer, bounded queue, thin adapter, policy-owning service, and output, with distinct freshness, durability, and execution queue semantics." />
+
+*Backpressure is an observable design signal. Capacity and lifecycle belong to the queue; freshness, ordering, and domain decisions belong to the consuming service.*
+
+The operational measurements follow the same boundary. Queue depth shows pressure. Queue wait and service time separate transport delay from computation. Worker utilization shows how much capacity was active. Stale-work and drop counters reveal whether speed came from silently abandoning work. Shutdown and replay evidence show whether the system can explain what completed and what did not.
+
+This is why a single throughput number is not enough. Two runs can report the same evaluations per second while differing materially in queue delay, coverage, freshness, dropped work, or evidence completeness.
+
+### What the measurements establish
+
+The article uses the current reviewed Salus evidence, not the larger figures in the immutable historical v1 PDFs. The publication manifest retains the exact evidence commit without exposing implementation navigation in the narrative.
+
+A retained Ethereum trace dated July 9, 2026 covered 100 blocks, from 25,495,691 through 25,495,790. It recorded 486,934 route evaluations across 83 completed evaluation services. Using the retained service-time denominator, it recorded 4,554 sustained and 7,528 peak route evaluations per second. In that sample, mean worker utilization was 84.65 percent and recorded route-evaluation queue wait was zero.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/04-reviewed-evidence.svg" alt="Evidence card showing the reviewed Ethereum graph size, route universe, retained trace scope, sustained and peak evaluation rates, and the zero-after-gas limitation." />
+
+*These are workload-scoped engineering indicators. They establish graph scale and evaluator capacity for the retained trace—not opportunity recall, execution, settlement, or realized profit.*
+
+The figures answer different questions. Graph nodes and liquidity components describe the retained market model. Catalog routes describe the maximum-four-hop universe at that snapshot. The evaluation count describes completed route occurrences in one trace. The sustained and peak rates describe evaluator service capacity under that measured workload.
+
+Historical v1 publications reported 33,578 sustained and 44,610 peak Ethereum evaluations per second under a different, unreconciled workload. Those releases remain immutable history. Choosing the larger number would erase the workload distinction, so it is not used as a current performance claim here.
+
+### Throughput stops before profit
+
+An evaluation computes a modeled result; it does not prove an executable profit. Economic selection still needs current quotes or exact simulation, fees and gas, freshness, and the transaction's own constraints. Execution adds further gates: preflight, submission, acceptance, receipt, inclusion, finality, settlement, and reconciliation of realized profit.
+
+The latest cited retained runs selected zero after-gas routes. They submitted nothing and do not establish profitable execution. That negative result belongs next to the throughput result because it identifies the evidence boundary: Salus demonstrated that the evaluator could process its retained workload, while the downstream economic gate found no route to advance.
+
+This is not a contradiction. Capacity and economics are independent questions. A system may need more evaluator capacity before it can test economic hypotheses at useful scale, but capacity cannot validate those hypotheses by itself.
+
+### What changed and what remains unresolved
+
+The architectural change was to make scope, freshness, and evidence explicit. Durable membership avoids repeated topology work. Affected-route recall bounds the hot path. Stage-owned queue policies keep newer decision-useful work from disappearing behind stale backlog. Stage-level metrics reveal where time and work were spent. Distinct evidence states prevent a modeled result from being promoted by vocabulary alone.
+
+Several questions remain open. The current retained evidence does not prove complete opportunity recall, profitable after-gas selection, competitive submission, inclusion, finality, settlement, or realized profit. Broader cache policies and some strategy and intelligence capabilities remain proposed. Operational tuning, private routing behavior, gas policy, thresholds, and active strategy details are intentionally outside the public account.
+
+The next useful optimization should therefore follow the next measured bottleneck, not the most impressive available rate. If coverage or freshness prevents admission, more evaluator workers will not fix it. If after-gas selection remains empty, execution throughput is not yet the limiting evidence. If candidates reach submission, the evidence model must continue through receipt and settlement.
+
+### Lessons beyond DeFi
+
+The pattern applies to any stateful system that maintains a large dependency universe while receiving small, frequent changes: incremental build systems, recommendation pipelines, fraud detection, streaming analytics, search indexing, and digital-twin simulations.
+
+Four lessons transfer directly:
+
+* Separate durable identity and membership from live decision state.
+* Index changes to affected work instead of rescanning the universe.
+* Let each stage own freshness, ordering, and failure semantics.
+* Report capacity, selection, action, and outcome as different evidence.
+
+The engineering advantage is not only speed. It is the ability to explain which state caused which bounded work, how fresh that work remained, what the system measured, and exactly where the claim stops.
+
+### Engineering Implementation Notes
+
+#### The hot path updates only owned topology
+
+```rust
+fn upsert_component(&mut self, component: &IngestComponent) {
+    self.remove_component(&component.component_id);
+
+    if self.blacklist.contains(&component.component_id) {
+        return;
+    }
+
+    let topology = ActiveComponentTopology {
+        protocol_system: component.protocol_system.clone(),
+        token_addresses: component.token_addresses.clone(),
+    };
+    for edge in component_edges(
+        &component.component_id,
+        &component.protocol_system,
+        &component.token_addresses,
+    ) {
+        let token_in = edge.token_in.clone();
+        self.adjacency.entry(token_in).or_default().push(edge);
+    }
+    sort_adjacency(&mut self.adjacency);
+    self.components
+        .insert(component.component_id.clone(), topology);
+}
+```
+
+This is the implementation boundary behind the article’s topology claim: a
+changed component replaces its own adjacency contribution instead of requiring
+the catalog to be rebuilt as one opaque operation. The code says nothing about
+profitability or execution outcome.
+
+### Go deeper
+
+* Begin with the governed [Salus Work gateway](/work/salus).
+* Review the [route-evaluation evidence and limitations](/research/high-performance-route-evaluation).
+* Examine the reusable [liquidity-state-to-route-graph boundary](/architecture/liquidity-state-to-route-graphs).
+* Apply the [queue ownership and backpressure pattern](/architecture/backpressure-and-queue-ownership).
+* Follow the broader [evidence-aware execution pipeline](/architecture/trading-system-execution-pipelines).
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## Solving, Arbitrage & Market Making
+
+*6 min read*
+
+Building a trading strategy is only part of the engineering problem. The harder task is constructing a system that can explain how changing market state became a modeled opportunity, why that opportunity did or did not advance, and what the retained evidence actually proves.
+
+### Why build the whole path
+
+John Whitton's route into solving and market making began with a practical question: what would it take to turn decentralized-exchange state into a decision that could survive technical and economic scrutiny? Reading protocol designs was useful, but building the complete path exposed the boundaries that a strategy diagram leaves out.
+
+That work became Salus, an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. It is not a customer deployment, a fund, a commercially validated product, or a proven profitable system. Its value at this stage is the engineering surface it makes inspectable: ingestion, read models, graph construction, bounded route catalogs, economic evaluation, simulation, controlled execution gates, and retained evidence.
+
+The project moved the learning problem from “can a route be modeled?” to “can every stage explain what it knows?” That shift matters because a trading system can be fast and technically sophisticated while its downstream economic evidence remains incomplete.
+
+### From changing state to a reviewable decision
+
+The reusable architecture separates collection, strategy, decision gates, execution, and outcome evidence. Collection observes external state and preserves which revision was seen. Catalog and strategy stages derive bounded paths and model their outputs. Later gates decide whether a candidate remains valid after costs and a newer view of the world. Execution records an attempted action. Outcome evidence reconciles what actually happened.
+
+Those are not interchangeable steps. A catalog route is a path available for evaluation. A route evaluation is a modeled calculation. An opportunity is a candidate interpretation of that calculation. A selected after-gas route has passed a later economic gate. Submission, execution, and realized profit each require additional evidence.
+
+Keeping the stages distinct creates more interfaces and more explicit coordination, but it also prevents one optimistic flag from becoming the system's entire truth. A failed preflight, stale state revision, or missing cost input can stop advancement at the boundary where the evidence changed. Negative outcomes remain useful because they reveal which gate was reached.
+
+Three related concerns make the current engineering story coherent. **Capture**
+keeps graph, affected-route, queue, and evaluation work bounded under changing
+state. **Causality** asks which retained change can support an explanation
+without turning correlation into proof. **Execution** preserves state identity
+through preflight, a durable attempt, private submission, and terminal outcome.
+The current passive, test-only causality comparison did not meet its promotion
+gates, so it has no live ranking or execution authority.
+
+### Throughput is evidence, not outcome
+
+The retained Salus measurements show why vocabulary matters. At the reviewed revision, an Ethereum snapshot contained 3,415 token nodes and 4,552 pool components. Its bounded catalog contained 2,401,108 routes with a maximum of four hops. A retained Base runtime run recorded 16,537 sustained and 38,462 peak route evaluations per second.
+
+These figures describe different subjects. The graph figures describe a retained market model. Catalog size describes bounded candidate paths. The Base rates describe completed route evaluations within a measured evaluation-service boundary. None of them counts profitable opportunities, submitted transactions, executions, or realized profit.
+
+The latest cited retained runs selected zero after-gas routes. That result belongs beside the throughput numbers because it defines where the evidence stopped. The runs demonstrate evaluator capacity against a retained workload; they do not establish opportunity recall, current live performance, profitable execution, or commercial validation. No new live benchmark was run for this migration.
+
+For a technical leader, this qualification is not a weakness in the result. It is evidence that the system and its editorial account can distinguish capacity from outcome.
+
+### Capital efficiency changes the constraint
+
+The modeled transaction structure can use borrowed liquidity, so Salus does not require upfront trading principal for that structure. This changes the capital constraint, but it does not make operation free or remove risk.
+
+Infrastructure, RPC, operational, and gas expenditure still exist, and unsuccessful transactions may incur unreimbursed costs. A transaction structure that can revert atomically can limit some state-transition outcomes, but it does not establish that every attempted transaction is costless or profitable. Economic selection, preflight validation, submission policy, and final reconciliation remain separate responsibilities.
+
+The broader lesson is that architecture should name the resource a mechanism removes and the costs it leaves behind. “Capital efficient” is useful when it describes the modeled funding requirement; it becomes misleading when used as shorthand for proven economics.
+
+### What the work demonstrates
+
+Salus demonstrates John's ability to connect protocol research with systems engineering: to move from external state, through inspectable models and high-throughput evaluation, toward controlled execution boundaries and retained evidence. The reviewed implementation includes a 13-crate Rust workspace and a 16-document walkthrough corpus, with current implementation truth remaining in the Salus repository.
+
+The strongest engineering signal is not a single benchmark. It is the combination of bounded components, explicit evidence states, dated measurements, and visible limitations. The system can be reviewed at the point where a claim is made instead of relying on a broad statement that the entire pipeline “works.”
+
+That architecture also generalizes. Intent solvers, liquidation systems, routing services, and other event-driven decision engines all need to separate modeled output from authorized action and observed outcome. Their strategies and protocols differ, but the evidence problem is similar.
+
+### Where the evidence stops
+
+Commercial validation remains ongoing, and profitable after-gas production execution has not been established. The retained observations are dated facts at a pinned revision, not guarantees of present or future performance.
+
+Public material also stops before operational detail. It excludes provider configuration, gas-bidding logic, thresholds, route-selection details, opportunity identities or values, active strategy parameters, vulnerabilities, and other sensitive implementation behavior. Those boundaries protect current implementation ownership and prevent an editorial synthesis from becoming an operational manual.
+
+The earlier composite article included historical performance, execution, opportunity, partnership, and commercial language that does not meet the current evidence and disclosure contract. This narrative retains the engineering journey but replaces those claims with the reviewed Salus baseline and its explicit stopping point.
+
+### What to take away
+
+High-performance solving is not one algorithm or one rate. It is a chain of evidence-bearing decisions made under changing state. The system is credible when each stage can state what it observed, what it modeled, which gate it passed, and what remains unknown.
+
+Salus is still an active initiative. Its current public value is a disciplined reference implementation and an evidence-aware engineering case study—not a claim of completed commercial or profitable outcome. That distinction makes the work more useful to technical readers because it shows both what has been built and what must still be proven.
+
+### Engineering Implementation Notes
+
+#### Admission records each narrowing step
+
+```rust
+let mut candidate_route_ids = impacted_route_ids.clone();
+candidate_route_ids.extend(refreshed_route_ids.iter().cloned());
+summary.candidate_route_count = candidate_route_ids.len();
+
+let requested_start_token_address = evaluation_controls.requested_start_token_address();
+let mut route_ids = BTreeSet::new();
+for route_id in candidate_route_ids {
+    let Some(route) = route_catalog.route(&route_id) else {
+        continue;
+    };
+    if !route_has_flash_metadata(route) {
+        continue;
+    }
+    summary.after_flash_metadata_count += 1;
+    if requested_start_token_address.is_some_and(|requested_start_token_address| {
+        route.path.first() != Some(requested_start_token_address)
+    }) {
+        continue;
+    }
+    summary.after_start_token_filter_count += 1;
+    route_ids.insert(route_id);
+}
+summary.selected_route_count = route_ids.len();
+
+RouteSelectionResult { route_ids, summary }
+```
+
+The implementation records the candidate and selected counts while enforcing
+specific eligibility conditions. That is useful engineering evidence about the
+narrowing process; it does not turn selection into submission, settlement, or
+profit.
+
+### Go deeper
+
+* Start with the governed [Salus Work case study](/work/salus).
+* Examine the [retained route-evaluation measurements](/research/high-performance-route-evaluation).
+* Apply the [evidence-aware pipeline architecture](/architecture/trading-system-execution-pipelines).
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.
+
+*10 min read*
+
+*What building Salus taught me about infrastructure, execution, strategy, and competing in professional on-chain markets.*
+
+I built Salus around a reasonable but incomplete thesis: we were primarily competing against other arbitrage and search systems. If that was the race, throughput, freshness, latency, and execution performance were the primary competitive problems. The engineering worked. The conclusion did not follow. The evidence forced me to separate a fast component from a competitive strategy—and to change what I would invest in next.
+
+### I Thought the Problem Was Speed
+
+An on-chain arbitrage system works inside a finite window. It observes a state change, identifies affected paths, evaluates their economics, prepares an action, and competes for inclusion. Work that finishes after the relevant state has changed is not merely slow; it is no longer the same decision.
+
+That made performance the obvious first problem. A large route universe could not be rebuilt after every pool update. A conventional FIFO backlog could preserve work that was already commercially useless. A throughput figure without state identity could hide the fact that the system was evaluating yesterday's market.
+
+My incomplete hypothesis was that removing those bottlenecks would expose the business outcome. If Salus could keep enough fresh work moving through the evaluator, opportunity capture and profitable execution would become primarily a matter of tuning.
+
+The hypothesis was useful because it produced a concrete engineering program. It was incomplete because it treated infrastructure capacity as the scarce resource before proving that the evaluated strategy had positive expected value in the market where it had to compete. It was reasonable to begin with the performance problem; it was not sufficient to treat that problem as the whole competitive thesis.
+
+### So I Built the Infrastructure
+
+Salus became an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. I separated durable topology from live state, persisted bounded route catalogs, indexed liquidity components back to known routes, and carried block identity through preparation and evaluation.
+
+The runtime used bounded queues and stage-specific freshness policies. Evaluation work could favor the newest useful state, while durable work needed a different shutdown and completion contract. Strategy evaluation, economic selection, preflight, submission, receipt, and outcome evidence remained separate states rather than one optimistic “success” flag.
+
+The result was not one clever arbitrage algorithm. It was an inspectable path from external state to a bounded decision, with enough telemetry to distinguish queue wait from service time, throughput from stale work, and evaluation from execution.
+
+That technical story already has its own owner. [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) explains the component-to-route boundary, affected-route hot path, and queue policy in detail. The reusable [execution-pipeline architecture](/architecture/trading-system-execution-pipelines) explains why each evidence gate stays distinct. Here, those mechanisms matter because they made the later commercial diagnosis possible.
+
+### The Benchmark Looked Good
+
+At the retained Ethereum snapshot, Salus represented 3,415 graph token nodes and 4,552 liquidity components. Its persisted catalog contained 2,401,108 routes with a maximum of four hops. Those are topology counts: they describe the universe the system could draw from, not routes scanned after every update and not opportunities.
+
+A retained Ethereum trace dated July 9, 2026 covered 100 blocks. It completed 486,934 route evaluations across 83 evaluation services. Using the retained service-time measure, the run recorded 4,554 sustained and 7,528 peak route evaluations per second.
+
+That result established something real. The evaluator could process a substantial, block-scoped workload through the reviewed architecture. It did not establish that the catalog contained the commercially best opportunities, that every relevant opportunity was recalled, that a modeled result survived costs, or that Salus could win inclusion.
+
+The larger historical rate sometimes associated with Salus came from a different no-throttle profile and is not comparable enough to use as this article's current claim. A stronger headline would have made a weaker argument.
+
+<img src="/assets/writing/speed-wasnt-the-problem/01-benchmark-to-outcome.svg" alt="A gated evidence sequence from the route catalog through evaluation, economic selection, execution, inclusion, settlement, and realized profit, with the retained evidence stopping after evaluation." />
+
+*The retained workload established evaluator capacity. Every later gate requires different evidence.*
+
+### But Speed Wasn't Producing the Outcome
+
+The latest metric-bearing Ethereum, Base, and Unichain runs selected zero after-gas routes. They therefore produced no evidence of submission, inclusion, settlement, or realized profit. Profitable production execution and commercial validation have not been established.
+
+That negative result was more valuable than treating the benchmark as a victory. It showed that the pipeline had reached an evidence boundary. More evaluator capacity might still matter, but the retained workload did not identify it as the next limiting business outcome.
+
+The vocabulary became part of the diagnosis. A catalog route is a path available for evaluation. A route evaluation is a modeled calculation. A positive modeled result is not necessarily positive after costs. A selected after-gas candidate is not a submission. Relay acceptance is not inclusion. Inclusion is not settlement, and settlement still needs reconciliation before anyone can claim realized profit.
+
+The distinction prevented a component success from being promoted into a business claim. It also changed the engineering question from “How do I evaluate more routes?” to “Which evidence would justify spending more time on evaluation at all?”
+
+**Faster at doing what?** Until the strategy, capital model, and execution path have a plausible economic case, more evaluator capacity may only optimize a component of the wrong market hypothesis.
+
+### We Were Competing Against More Than Arbitrage Bots
+
+The easy explanation for a missed outcome is that another bot was faster. Later evidence made that explanation too simple.
+
+A bounded review of retained Ethereum observations separated several classes of result. Most reviewed cases ended at internal parity or capability boundaries rather than proving competitor advantage. Some were deliberate economic abstentions: the system declined to advance work when refreshed costs exceeded the modeled value. A smaller set reached private relay acceptance and expired without inclusion. Exact ordered replay established one causal invalidator; attribution remained incomplete for the other reviewed cases.
+
+That review did not produce a universal competitor ranking. It did not establish beneficial ownership, complete period profit, hidden payments, private hedges, or the strategy behind every observed transaction. It did show why “they were faster” was not a sufficient causal model.
+
+Different systems can compete with different strategies, execution shapes, and capital structures. One may use a narrow executor where another pays for generic routing. One may hold inventory where another borrows inside a transaction. One may combine several actions where another evaluates a single cyclic route. Even when two transactions touch the same market state, they may not be expressing the same arbitrage race, strategy, or economics.
+
+The useful conclusion was not that I had decoded a competitor's edge. It was that Salus needed a better way to distinguish internal defects, correct abstention, ordering loss, capital-model differences, and strategy mismatch before deciding what to optimize.
+
+### The Actual Competitive Stack
+
+I now use a five-layer model for the problem:
+
+1. **Infrastructure** turns changing state into fresh, bounded, observable work.
+2. **Execution** carries a valid decision through simulation, preflight, submission, inclusion, and settlement.
+3. **Capital** determines which positions can be funded, held, hedged, and unwound—and which costs or risks the system actually bears.
+4. **Strategy** determines which market behavior has positive expected value under those execution and capital constraints.
+5. **Intelligence** compares retained evidence, competitor economics, and capability gaps without confusing inference with fact.
+
+<img src="/assets/writing/speed-wasnt-the-problem/02-competitive-stack.svg" alt="Five competitive layers—Infrastructure, Execution, Capital, Strategy, and Intelligence—showing Salus's original emphasis on the first two and the revised emphasis on validating strategy and intelligence before more optimization." />
+
+*The model is an editorial synthesis, not a claim that every layer is implemented or mature.*
+
+Salus initially put most of its investment into Infrastructure and Execution. That was defensible: without fresh state, deterministic evaluation, and evidence-bearing handoffs, later experiments would have been impossible to trust. But those layers cannot choose the market thesis on their own.
+
+The revised emphasis begins with Strategy and Intelligence. The question is no longer whether the runtime can be made faster in the abstract. It is which strategy has defensible economics in the observed competitive environment, what capital and execution model it requires, and whether the gap from Salus's current capabilities is worth closing.
+
+### What I Changed
+
+First, I stopped treating telemetry as a report added after implementation. Queue wait, service time, utilization, stale work, selection, and outcome classification became design inputs. A fast stage surrounded by missing evidence is not a well-understood stage.
+
+Second, I treated freshness as correctness. State identity has to survive the entire path. A result cannot become current merely because it finished recently; it must still describe the state against which the later decision will act.
+
+Third, I made attempts and outcomes durable enough to review. Failures, abstentions, expiry, and incomplete attribution need stable identities and typed states. Otherwise the only retained stories are the ones that looked successful at the time.
+
+Fourth, I separated opportunity capture from causality. Observing a positive model or a route-touching transaction does not prove why an opportunity appeared or who consumed it. Replay can strengthen a causal conclusion, but association remains association until the required ordered evidence exists.
+
+Finally, I moved strategy economics ahead of another round of performance optimization. Infrastructure work now needs a named strategy question, an evidence gap it closes, and a decision it can change.
+
+### Strategy Evaluation Now Comes Before Optimization
+
+The proposed review sequence is deliberately reversible:
+
+1. Define the strategy question, evidence cutoff, and comparison set.
+2. Validate the evidence lineage and record what remains unavailable.
+3. Estimate economics with ranges and uncertainty rather than invented precision.
+4. Compare capital, execution, settlement, risk, and operating requirements with current capabilities.
+5. Record the capability gaps and choose: continue, defer, reject, or request more evidence.
+6. Only then authorize implementation or optimization as a separate decision.
+
+<img src="/assets/writing/speed-wasnt-the-problem/03-strategy-before-optimization.svg" alt="A review loop from evidence and economics through capability gaps and a human decision, with implementation and optimization outside the loop until separately authorized." />
+
+*Research can change a recommendation without silently changing runtime policy, allocating capital, or starting live operation.*
+
+This is not an automated strategy selector. It is a human-reviewed investment discipline. A lower theoretical return may be the better next experiment when its evidence is stronger, its capital exposure is bounded, or its implementation reuses capabilities Salus already has. A high theoretical return with unknown inventory, inclusion, or settlement economics is not a priority; it is an unanswered research question.
+
+Evidence-first development can slow the first implementation because it asks for a defined decision, evidence boundary, and economic hypothesis before another optimization cycle. It reduces a more expensive risk: spending months making a strategy faster before establishing that it can be economically competitive.
+
+### What Comes Next
+
+The next useful editorial and research work is a bounded competitor-economics study and a strategy matrix. The first would explain what can and cannot be learned from observable execution and capital behavior. The second would compare candidate strategies against Salus's current infrastructure, execution, capital, evidence, and operational capabilities.
+
+Both remain proposed. The separate competitor-economics draft remains under its own technical, claim, and editorial review; this article does not link to it as a public reading destination, authorize the research program, or imply that a strategy decision has already been made. The existing [evidence-grounded AI architecture](/architecture/evidence-grounded-ai-for-trading-systems) describes where probabilistic investigation may eventually help while keeping deterministic safety and execution authority separate. AI or ML does not currently control Salus execution or establish profit.
+
+The practical next step is smaller: use the current evidence to decide which question deserves the next engineering dollar. If a strategy cannot show a plausible positive expected value after realistic capital and execution costs, a faster implementation only reaches the wrong answer sooner.
+
+### Performance Wins Benchmarks. Strategy Wins Markets.
+
+The benchmark was not wasted work. It proved that the evaluator could handle the retained workload, and the architecture made that claim auditable. More importantly, it created the observability and evidence boundaries needed to discover that performance was not sufficient.
+
+That is the lesson I would carry into any trading, fintech, or distributed decision system: optimize the constraint that the evidence identifies, not the one the engineering team is best prepared to improve.
+
+Infrastructure makes a strategy testable. Execution makes a valid decision actionable. Capital changes the economics. Intelligence makes the unknowns visible. But strategy decides whether the system is solving a market problem with positive expected value.
+
+The question I would now ask before another performance push is: **Are we optimizing the thing that actually determines whether we win?**
+
+I built a fast engine. The more important engineering decision was allowing its evidence to change the thesis.
+
+### Engineering Implementation Notes
+
+#### A throughput number needs pressure and policy beside it
+
+```rust
+    pub(crate) fn record_queue_snapshot(&self, metric: QueueSnapshotMetric<'_>) {
+        let snapshot = metric.snapshot;
+        let mut fields = Map::new();
+        fields.insert(
+            "event".to_owned(),
+            Value::String("queue_snapshot".to_owned()),
+        );
+        fields.insert("label".to_owned(), Value::String(metric.label.to_owned()));
+        fields.insert("queue".to_owned(), Value::String(snapshot.name.clone()));
+        fields.insert(
+            "overflow_policy".to_owned(),
+            Value::String(queue_overflow_policy_label(&snapshot.overflow_policy).to_owned()),
+        );
+        fields.insert("capacity".to_owned(), json!(snapshot.capacity));
+        fields.insert("current_depth".to_owned(), json!(snapshot.current_depth));
+        fields.insert("peak_depth".to_owned(), json!(snapshot.peak_depth));
+        fields.insert("sent".to_owned(), json!(snapshot.sent_count));
+        fields.insert("dropped".to_owned(), json!(snapshot.dropped_count));
+        fields.insert("blocked".to_owned(), json!(snapshot.blocked_send_count));
+        fields.insert("closed".to_owned(), json!(snapshot.closed_error_count));
+        self.record_event(fields);
+```
+
+The implementation treats a queue snapshot as a structured event: its label,
+policy, capacity, depth, and sent, dropped, blocked, and closed outcomes travel
+together. The invariant is that a throughput figure must retain the pressure
+and loss context needed to interpret it.
+
+That instrumentation has a small recording cost, but it prevents a fast rate
+from hiding a saturated or dropping stage. It is evidence about runtime
+capacity—not commercial competitiveness, after-gas selection, execution, or
+realized profit.
+
+### Go deeper
+
+* Start with the integrated [Salus Work gateway](/work/salus).
+* Read the detailed [route-scaling and freshness story](/writing/mapping-liquidity-to-routes-at-scale).
+* Review [what retained route-evaluation evidence can establish](/research/high-performance-route-evaluation).
+* Follow the [trading-system validation evidence ladder](/research/trading-system-validation-evidence).
+* Apply the reusable [execution-pipeline boundaries](/architecture/trading-system-execution-pipelines).
+* Explore the public-safe [evidence-grounded AI boundary](/architecture/evidence-grounded-ai-for-trading-systems).
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
 ## Building a Polkadot Parachain — EAVE
 
 EAVE is a historical case study in translating an emerging-asset venture thesis into a Polkadot parachain design, then separating the architecture that was proposed from the integration that source evidence can actually support.
@@ -2745,22 +3637,9 @@ No source-code repository, live middleware runtime, deployment package, monitori
 The settlement architecture is related by reusable control-plane principles, not by project identity. No historical company-labelled Enterprise SOA page or image is linked as a canonical source.
 
 
-## Work
+import { LandingPage } from "../../components/LandingPage";
 
-Work pages explain what John designed or built, the evidence available for it,
-and the boundary between demonstrated capability and unproven outcome.
-
-* [Salus](/work/salus)
-* [Digital Banking](/work/digital-banking)
-* [DeFi Leveraging](/work/defi-leveraging)
-* [Intent Systems Prototypes](/work/prototypes)
-* [Stablecoin Intents](/work/stablecoin-intents)
-* [Building a Polkadot Parachain — EAVE](/work/building-polkadot-parachain-eave)
-* [DeFi Protocol Engineering — Kanga](/work/defi-protocol-engineering-kanga)
-* [Enterprise SOA](/work/enterprise-soa)
-
-Related [Research](/research) interprets evidence; [Architecture](/architecture)
-extracts reusable design lessons.
+<LandingPage page="work" />
 
 
 ## Work
@@ -3378,936 +4257,6 @@ Similar intent lifecycles can use different state primitives. An EVM mapping, ac
 * Apply [Intent Execution Boundaries](/architecture/defi-systems/intents) when separating intent creation, solving, settlement, and proof.
 * Compare the financial evidence model in [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro).
 * See [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) for authority, workflow, finality, and reconciliation patterns.
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## Deterministic Replay as Engineering Evidence
-
-Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
-
-### The question
-
-When does deterministic replay constitute credible engineering evidence?
-
-A replay is valuable because it turns an observed or constructed state into a repeatable input for evaluation, regression testing, and dry-run materialization. The same command can be run after a code change and its outputs compared. That does not mean the replay reconstructs everything that happened in a live market or proves what would have happened on-chain.
-
-The distinction matters most when a replay result is used to support a claim. “This evaluator returns the same result for this retained input” is narrower than “this was the market state,” which is narrower than “this route could have been included,” which is narrower again than “this execution would have produced realized profit.”
-
-### Method
-
-The investigation reviewed the current Salus replay walkthrough and the
-implementation surfaces it described at the source revision reviewed on
-2026-07-29. It compared seven input and output boundaries:
-
-1. code revision;
-2. replay payload;
-3. configuration and blacklists;
-4. persisted route, component, and token read models;
-5. pricing and gas inputs;
-6. generated evaluation or dry-run artifacts; and
-7. live execution evidence that replay does not produce.
-
-No new live benchmark, historical reconstruction, transaction, or execution test was run. The method is a source-bounded evidence analysis, not an empirical comparison of multiple replay systems.
-
-### Evidence boundary
-
-Current replay is a family of bounded workflows rather than a single self-contained historical runtime. It can rebuild route read models from a fixture, evaluate one or more retained batches, construct local dry-run candidates, and feed a non-submitting analytics path.
-
-The retained replay payload is only one part of the input. Evaluation may also depend on current database read models, token and component metadata, route summaries and legs, configuration, blacklists, gas defaults, and code behavior. Unless those dependencies are pinned and retained together, repeating the JSON payload alone does not reproduce the original decision environment.
-
-Two replay forms expose different limits:
-
-* reserve-snapshot replay supports a bounded approximation for retained fixtures;
-* decoded protocol-state replay exercises protocol-specific simulators and rejects a route when only some legs have decoded state.
-
-Both forms can support regression evidence. Neither becomes canonical live-state authority merely because it carries a block number. Strong historical claims also require block identity, source provenance, completeness, ordering, relevant configuration, and an explanation of how mutable external data was captured.
-
-### Findings
-
-Replay supports four useful classes of claim.
-
-**Deterministic transformation.** Given the same complete declared inputs and code, a pipeline can demonstrate that it derives the same normalized state, route evaluation, classification, or output artifact.
-
-**Regression detection.** A changed output can expose a code, schema, configuration, or dependency change. The comparison is strongest when the producer, inputs, expected output, and allowed tolerances are explicit.
-
-**Boundary validation.** Replay can confirm that malformed, unsupported, incomplete, or stale inputs fail in the expected way. Negative results are evidence when they remain visible.
-
-**Local candidate construction.** Dry-run workflows can test whether an evaluation artifact can become a structurally valid execution candidate without signing, preflight, broadcast, receipt, or token-flow effects.
-
-Case-specific point-in-time reconstruction can also explain why one observed
-decision changed when selected inputs changed. That is bounded causal
-evidence, not a reusable canonical-chain replay backend: it remains limited by
-the retained route universe, source identity, ordering, configuration, and
-unavailable state.
-
-Replay does not by itself establish:
-
-* that the retained input was complete or canonical live state;
-* that route catalogs and market state described the same historical instant;
-* that a quote survived later ordering, latency, or liquidity changes;
-* that calldata would pass RPC preflight;
-* that a transaction was signed, submitted, included, or finalized; or
-* that receipt gas, token flows, funding, and settlement reconciled to realized profit.
-
-### What must be retained
-
-A reviewable replay package should identify:
-
-* producer and schema version;
-* code revision;
-* source chain and block identity;
-* state authority and completeness;
-* route-universe identity;
-* configuration and policy inputs that affect the result;
-* token, component, pricing, gas, and funding inputs;
-* expected outputs and comparison rules; and
-* unavailable facts that prevent a stronger interpretation.
-
-Content addressing can prove that retained bytes did not change. It cannot prove that those bytes were complete, authoritative, or independently obtained. Provenance and evidence class must therefore travel alongside hashes.
-
-### Limitations
-
-* This research uses one evolving implementation as its primary case.
-* It does not compare replay products or establish a universal storage format.
-* Several current replay paths still join retained payloads with mutable storage or configuration.
-* A deterministic result can remain self-referential when the same code produces both the subject and expected output.
-* Historical route truth, state root, transaction ordering, reorg handling, and finality are not inferred when they are absent.
-* No live result is converted into replay evidence by this page.
-
-### Implications
-
-Teams should state replay claims in the form “fixed inputs X under revision Y produced result Z through boundary B.” If an input was not retained, name it as unavailable rather than allowing a default to impersonate history.
-
-Replay should sit inside a validation portfolio. Unit tests prove local invariants; replay proves bounded transformation; independent comparisons can corroborate selected fields; preflight tests a later state view; submission and receipt evidence establish operational progress; reconciliation establishes financial outcome. No layer should inherit the meaning of the next.
-
-### Engineering Implementation Notes
-
-#### Replay begins with a typed source identity
-
-```rust
-pub struct SourceBlockIdentityV1 {
-    pub schema_version: u16,
-    pub chain: ChainName,
-    pub chain_id: u64,
-    pub block_number: u64,
-    pub block_hash: String,
-    pub parent_hash: Option<String>,
-    pub block_timestamp_unix_seconds: Option<i64>,
-    pub state_root: SourceBlockStateRootV1,
-}
-```
-
-Replay input is not represented as an unqualified block number. The identity
-binds chain, height, hash, parent, time, and state-root availability so a
-replay result can state what it was evaluated against and refuse a weaker
-substitute.
-
-### Related work and architecture
-
-* [Salus](/work/salus) provides the bounded Work context.
-* [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) provides the evidence taxonomy applied here.
-* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) defines the measured subjects that replay must not conflate.
-* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places replay inside a larger observed-state-to-outcome sequence.
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## High-Performance Route Evaluation
-
-Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
-
-### The question
-
-How should an engineer read a high-throughput route-evaluation result? A rate alone is ambiguous. It may describe catalog construction, one evaluation service, a complete block-to-decision path, or a synthetic loop. It also says nothing by itself about whether an economically useful opportunity was selected.
-
-The useful question is narrower: what did a retained workload measure, at which revision, and how far along the decision path did the evidence reach?
-
-### A measurement model
-
-Salus separates several quantities that are easy to collapse into one headline:
-
-* **Token nodes** and **pool components** describe a retained market graph.
-* **Catalog routes** are bounded paths available for later evaluation.
-* **Route evaluations** are completed evaluations of catalog routes against a retained workload.
-* **Opportunities** are candidates produced by economic analysis.
-* **Selected after-gas routes** have passed a later cost-aware selection gate.
-* **Submitted transactions**, **executions**, and **realized profit** are subsequent operational outcomes.
-
-The units form an evidence sequence, not interchangeable names for “performance.” A system can maintain a large catalog and evaluate it quickly while selecting no route after costs. That result can still demonstrate evaluator capacity, but it cannot establish profitable execution.
-
-### Retained observations
-
-The reviewed implementation snapshot was committed on 2026-07-20 and inspected
-on 2026-07-21. Its retained July 9 evidence records:
-
-| Observation               | Measured subject                       |    Result |
-| ------------------------- | -------------------------------------- | --------: |
-| Ethereum graph snapshot   | Token nodes                            |     3,415 |
-| Ethereum graph snapshot   | Pool components                        |     4,552 |
-| Ethereum bounded catalog  | Routes with a maximum of four hops     | 2,401,108 |
-| Base retained runtime run | Sustained route evaluations per second |    16,537 |
-| Base retained runtime run | Peak route evaluations per second      |    38,462 |
-
-The sustained rate divides completed route evaluations by measured evaluation-service time across the retained Base run. The peak is the highest reported observed rate within that run. These are route-evaluation rates, not transaction or profitability rates. No new live benchmark was run for this migration.
-
-### What the evidence establishes
-
-The retained measurements establish that the pinned implementation built and stored a multi-million-route bounded Ethereum catalog and processed a retained Base route-evaluation workload at the reported sustained and peak rates. The graph, catalog, and evaluator figures are separately named, which makes the result inspectable and repeatable against the retained evidence.
-
-For engineering review, the important property is not the largest number. It is the ability to state which stage produced each number and to preserve enough provenance to revisit the claim when the implementation or workload changes.
-
-### What it does not establish
-
-The latest cited retained runs selected zero after-gas routes. The measurements therefore do not establish opportunity recall, selected economic value, submitted transactions, successful execution, realized profit, current live performance, or commercial validation.
-
-They also do not support comparing Salus with another system unless the workloads, hardware, timing boundaries, graph filters, route definitions, and evaluation semantics are made comparable. A higher rate can reflect a narrower evaluation boundary rather than a better end-to-end system.
-
-Provider configuration, operational thresholds, route-selection details, opportunity identities or values, gas-bidding behavior, active strategy parameters, and vulnerabilities are outside this public analysis.
-
-The current state-change-aware ordering experiment is passive, test-only
-evidence. Its latest retained run did not satisfy the performance, liveness,
-or dataset gates required for promotion, so it establishes neither a current
-ranking advantage nor live selection or submission authority. It also does
-not supersede the retained throughput measurements above.
-
-### Engineering implications
-
-Performance reports for route evaluators should publish a measurement contract before a headline:
-
-1. identify the implementation revision and observation date;
-2. define graph, catalog, evaluation, selection, and execution units separately;
-3. state the measured timing boundary and retained workload;
-4. place zero or negative downstream results next to throughput figures;
-5. record what evidence would be needed to advance the claim.
-
-This structure makes evaluator capacity useful without asking it to prove an economic or operational outcome it did not measure.
-
-### Non-submitting analytics boundary
-
-An offline or live-state analytics command can hydrate a route universe, apply
-available state, evaluate routes, and write inspectable summaries without
-entering execution. That boundary is useful for route coverage, missing-state
-diagnosis, and evaluation analysis.
-
-Its output remains sensitive to the route universe, state source, pricing and
-gas inputs, strategy configuration, and supported protocol state. A
-current-catalog universe is not a historical route snapshot. A block number is
-not a complete block identity. An artifact labelled “profitable routes” is a
-modeled subset, not an execution queue or realized-profit record.
-
-The Salus Analyse CARB walkthrough is consolidated here because it applies the
-same measurement question: what was evaluated, with which state, and where did
-the evidence stop? Its command and artifact details remain implementation
-documentation rather than a separate public Research page.
-
-### Engineering Implementation Notes
-
-#### A candidate carries its state boundary
-
-```rust
-if state.used_components.contains(&edge.component_id) {
-    continue;
-}
-
-if edge.token_out == *start {
-    if !state.legs.is_empty() {
-        state.push(edge, VisitedTokenMark::Skip);
-        self.routes.push(RouteCandidate {
-            route_id: route_id(&state.legs, None, None, None),
-            version: 1,
-            path: state.path.clone(),
-            legs: state.legs.clone(),
-            flash_component_id: None,
-            flash_token_address: None,
-            flash_fee_hob: None,
-            flash_available_balance: None,
-            flash_protocol: None,
-            source_block_number: self.graph.source_block_number,
-        });
-        state.pop(edge, VisitedTokenMark::Skip);
-    }
-    continue;
-}
-```
-
-The invariant is a state boundary: one candidate cannot reuse a component, and
-the temporary search state must return to its prior shape after each branch.
-`push` extends the candidate and records the visitation rule; `pop` restores
-that state after a closed route has been copied into the catalog. The route also
-carries its source block, keeping topology-derived catalog construction distinct
-from later current-state evaluation.
-
-The trade-off is a bounded copy at the point a cycle becomes a durable catalog
-entry, rather than cloning every partial traversal. That supports reproducible
-route construction and independent evaluation measurements. It is not evidence
-of an executable opportunity.
-
-### Go deeper
-
-* See [Salus as governed Work](/work/salus) for the bounded engineering contribution and its limitations.
-* Use [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) for the evidence taxonomy applied to the retained measurements.
-* Continue to [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) for the reusable system boundary behind these measurement stages.
-* Read [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) for the focused narrative connecting component changes, affected-route scope, freshness, and current evaluator evidence.
-* Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the concise narrative synthesis.
-
-
-## Research
-
-Research asks a bounded engineering question, states what the evidence can
-establish, and makes its limits explicit.
-
-* [High-Performance Route Evaluation](/research/high-performance-route-evaluation)
-* [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence)
-* [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence)
-* [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro)
-* [Intent-Based Execution](/research/defi-protocol-engineering/intro)
-
-Historical research remains in the [Archive](/archive).
-
-
-## Research
-
-Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
-
-### High-Performance Route Evaluation
-
-[High-Performance Route Evaluation](/research/solving/solving) explains what retained Salus graph, catalog, and evaluator measurements establish—and why throughput is not execution or profit.
-
-### Durable Financial Settlement
-
-[Durable Financial Settlement](/research/financial-infrastructure/settlement/intro) distinguishes business intent, authority, submission, native effects, accounting, finality, and reconciliation.
-
-### Intent-Based Execution
-
-[Intent-Based Execution](/research/defi-protocol-engineering/intro) uses bounded prototypes to trace the authority and evidence between a user's mandate and observed settlement.
-
-Historical chains, bridges, zero-knowledge notes, primitives, code reviews, public-source dossiers, superseded protocol material, and lightweight AI taxonomy placeholders remain accessible through the [Archive](/archive/intro).
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## What Trading-System Validation Evidence Can Prove
-
-Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
-
-### The question
-
-What can a trading-system validation result legitimately prove?
-
-“Validated” often hides several different activities: a unit test passed, a replay matched an expected artifact, two implementations agreed on a field, an RPC preflight succeeded, a transaction was accepted by a provider, or a receipt was observed. These events are valuable, but their meanings are not interchangeable.
-
-The research goal is to define an evidence taxonomy that preserves the subject, independence, input provenance, stopping point, and unavailable facts of each validation surface.
-
-### Method
-
-The investigation reviewed Salus validation, replay, analytics, simulation,
-dry-run, preflight, submission, receipt, and parity surfaces at the source
-revision reviewed on 2026-07-29. It classified each surface by:
-
-* system under test;
-* reference or expectation;
-* input provenance;
-* independence from the implementation;
-* equality or tolerance rule;
-* resulting artifact;
-* operational side effects; and
-* claim ceiling.
-
-No new command, live route, transaction, benchmark, or historical parity run was executed. Existing retained measurements selected zero after-gas routes and are not reinterpreted as execution evidence.
-
-### Evidence classes
-
-#### Implementation tests
-
-Unit and integration tests can prove that selected functions, crates, contracts, schemas, and command seams satisfy explicit assertions under test inputs. They are strong regression evidence and weak evidence of live external conditions.
-
-#### Fixture replay
-
-Replay can prove a bounded transformation for fixed declared inputs and expose regressions. It does not prove that a fixture is complete historical state or that an execution would survive later ordering and liquidity.
-
-#### Self-generated analytics
-
-An analytics path can make route coverage, classifications, missing state, and modeled economics inspectable. When it reuses the same evaluator as the runtime, agreement is self-referential rather than independent corroboration.
-
-#### Cross-implementation parity
-
-Parity can show agreement or drift on shared fields. It is bounded by route overlap, block alignment, normalization, unavailable fields, and comparison tolerance. Agreement does not prove both implementations are correct; mismatch does not diagnose which one is wrong.
-
-An equal-budget passive comparison can act as a promotion gate for a proposed
-ordering or attribution method. The current retained comparison is useful
-because it withheld promotion: the corpus was small, the latest collection was
-incomplete, and no accepted advantage threshold or live decision authority
-was established.
-
-#### Dry-run and calldata validation
-
-Dry-run can prove local candidate shape and guards. Contract tests can prove selected callback, authorization, repayment, and failure behavior in the tested environment. Neither proves current deployed state, live liquidity, inclusion, or profit.
-
-#### RPC preflight
-
-Preflight evaluates planned calldata against a provider's state view before broadcast. A success is stronger than local construction but still time-, state-, provider-, and ordering-dependent. It is not a signed submission or receipt.
-
-#### Submission and receipt
-
-A provider acceptance or bundle identifier proves a submission boundary. A transaction hash is distinct from a private bundle hash. A receipt proves inclusion and EVM success or revert at a recorded block; it does not by itself prove canonical finality or economic reconciliation.
-
-#### Commercial reconciliation
-
-Realized outcome requires authoritative token flows, funding and gas costs, allocation, inventory and cost basis where relevant, finality, and accounting reconciliation. A successful receipt is an input, not the conclusion.
-
-### Findings
-
-Five rules emerged.
-
-1. **Name the subject.** Catalog routes, route evaluations, opportunities, selected routes, submissions, executions, and realized profit are different counts.
-2. **Name the reference.** Expected files and golden fixtures are regression references; independently sourced evidence provides a different kind of corroboration.
-3. **Treat unavailable as a result.** Missing RPC, unmatched blocks, unsupported protocols, absent fields, skipped tests, and filtered routes do not pass.
-4. **State the stopping point.** Dry-run stops before RPC, preflight stops before signing, submission stops before inclusion, and receipt stops before complete reconciliation.
-5. **Advance only with new evidence.** A later claim requires a later artifact rather than optimistic reinterpretation of an earlier one.
-
-This taxonomy also changes how negative results are read. Zero selected after-gas routes is not a failed throughput measurement. It is a valid downstream result that prevents the throughput evidence from becoming a profitability claim.
-
-### Independence and comparison
-
-Validation strength depends partly on independence. A pure function checked against hand-derived values can be a strong local test. A replay compared with an artifact generated by the same code is useful for regression but not independent. A simulator compared with another implementation adds independence only for the fields and state both actually share.
-
-Comparison rules must also be explicit. Exact equality is suitable for identifiers, classifications, and many integer artifacts. Numerical comparisons may require absolute or relative tolerance, rounding rules, unit normalization, and treatment of missing values. A tool that reports mismatches but exits successfully is an observational harness, not an enforcing gate.
-
-### Evidence progression
-
-```text
-code and schema checks
-  -> deterministic fixtures and replay
-  -> bounded independent comparison
-  -> current-state simulation or preflight
-  -> signed submission
-  -> inclusion and receipt
-  -> canonicality and finality
-  -> token-flow and cost reconciliation
-  -> realized outcome
-```
-
-The progression is not necessarily one automated pipeline. It is a claim discipline. A team may stop at replay for a research result or at preflight for a no-broadcast diagnostic, as long as the resulting claim stops there too.
-
-### Limitations
-
-* The taxonomy is derived primarily from one implementation and its historical comparison harness.
-* It does not prescribe a universal CI system or testing framework.
-* It does not establish that every retained Salus validation artifact is complete.
-* External providers, block builders, mempools, and chains introduce behavior that deterministic tests cannot reproduce fully.
-* Operational thresholds, gas-bidding behavior, route selection, opportunity data, and vulnerabilities remain outside this public research.
-* No production readiness, security, execution success, or commercial result is inferred.
-
-### Recommendations
-
-* Put the evidence class and claim ceiling beside every result.
-* Retain source revision, input identity, configuration scope, comparison rule, and unavailable fields.
-* Make no-submit, preflight-only, submission, pending, included-success, included-revert, and reconciled outcomes distinct states.
-* Keep skipped, unsupported, missing, mismatched, and unavailable counts visible.
-* Require an independent review of public claims even when machine validation passes.
-
-### Engineering Implementation Notes
-
-#### Conflicting identities fail before comparison
-
-```rust
-if self.block_number == other.block_number && self.block_hash != other.block_hash {
-    return Err(SourceBlockValidationError::ConflictingBlockHash {
-        block_number: self.block_number,
-        left: self.block_hash.clone(),
-        right: other.block_hash.clone(),
-    });
-}
-if self.block_hash == other.block_hash && self.block_number != other.block_number {
-    return Err(SourceBlockValidationError::ConflictingBlockNumber {
-        block_hash: self.block_hash.clone(),
-        left: self.block_number,
-        right: other.block_number,
-    });
-}
-```
-
-Validation treats contradictory identity as a typed failure instead of silently
-selecting one observation. That is why a replay, comparison, or analytical
-result can remain bounded by the integrity of its inputs rather than acquiring
-authority merely because a calculation completed.
-
-### Related work and architecture
-
-* [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence) focuses on the replay subset.
-* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) applies the taxonomy to retained measurements.
-* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) turns the evidence progression into system boundaries.
-* [Salus](/work/salus) remains the governed Work account.
-
-
-## Writing
-
-Writing provides direct, authored narratives that connect engineering work,
-evidence, and architecture without replacing the underlying sources.
-
-* [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making)
-* [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale)
-* [I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.](/writing/speed-wasnt-the-problem)
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## Mapping Liquidity to Routes at Scale
-
-*8 min read*
-
-A large route catalog is useful only if a system can turn a small market-state change into fresh, bounded work. Salus made that translation explicit—and made the stopping point between evaluator capacity and profitable execution equally explicit.
-
-### The state-change problem
-
-Salus is an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. One of its harder engineering problems begins with a mismatch of scale.
-
-The system needs a durable view of the paths that *could* be evaluated. At the reviewed Ethereum snapshot, that view contained 3,415 graph token nodes, 4,552 retained liquidity components, and 2,401,108 catalog routes with a maximum of four hops. But market state changes component by component and block by block. Rebuilding that universe, or scanning all of it after every update, would spend most of the latency budget rediscovering topology that was already known.
-
-The useful question is narrower: when this component changes, which already-known routes might now produce a different modeled result? That question links durable topology to live evaluation without pretending that topology itself contains a price, a profit, or a trading decision.
-
-<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/01-topology-boundary.svg" alt="Diagram separating the persisted route universe from the filtered live catalog, changed-component lookup, affected-route scope, and current-state evaluation." />
-
-*The 2,401,108 figure is the persisted maximum-four-hop Ethereum route universe at the reviewed snapshot. The steady-state hot path works on a filtered live catalog and an affected subset; it does not scan all 2.4 million routes for every component update.*
-
-### Why broad reevaluation fails
-
-The first insufficient mental model was “state changed, so evaluate everything.” It is simple, but its work grows with the whole catalog rather than with the affected scope. A second version—put every request into one FIFO queue—only moves the problem. If new blocks arrive faster than old work drains, strictly preserving arrival order can make the evaluator precise about a market state that is no longer decision-useful.
-
-A third failure is semantic rather than computational: reporting a high evaluation rate as if it were a trading outcome. Catalog routes, evaluated route occurrences, positive modeled observations, selected after-gas routes, submissions, receipts, settlements, and realized profit are different evidence states. Compressing them into one “opportunity” counter makes performance easier to market and harder to trust.
-
-Salus therefore separates three concerns: topology establishes what can be recalled; the runtime establishes what is fresh enough to evaluate; the evidence model establishes how far a result actually progressed.
-
-### A durable topology boundary
-
-The durable side of the boundary gives tokens and liquidity components stable identities, constructs a graph, and generates bounded routes. A component-to-route inverted index then records membership in the active catalog. Looking up a changed component can recall known member routes directly instead of rediscovering paths.
-
-That index is topology-only. It does not cache profitability, gas, quotes, execution outcomes, or a promise that every route is currently evaluable. Current state remains separate because coverage, protocol state, and block identity can change long after the route identity was created.
-
-The reviewed implementation includes a bounded topology cache and persisted startup hydration. Broader all-route, LRU, or hybrid cache policies remain planning options, not validated current behavior. This distinction matters: a bounded implemented mechanism should not inherit the claims of a larger future design merely because both use the word “cache.”
-
-The design creates a useful invariant: durable topology can narrow work, but only current state can support a current modeled decision. A catalog identity survives across updates; its economic interpretation does not.
-
-### The affected-route hot path
-
-Once a component changes, the hot path is a sequence of narrowing and evidence-adding stages:
-
-1. Preserve the state revision and changed-component identity.
-2. Recall routes from the component-to-route membership index.
-3. Apply live catalog and route-bound filters.
-4. Prepare requests with the relevant block identity.
-5. Admit only routes whose required state coverage is present.
-6. Evaluate admitted occurrences in parallel against exact inputs.
-7. Record selection evidence separately from evaluation output.
-8. Hand any selected candidate to later freshness, preflight, and execution gates.
-
-<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/02-route-lifecycle.svg" alt="Diagram of the affected-route evaluation lifecycle from component change through scoped lookup, preparation, coverage, parallel evaluation, selection evidence, and execution handoff." />
-
-*Each stage either narrows the route set or adds evidence. None silently promotes an evaluated route to execution.*
-
-The sequence makes state identity a first-class value. A result derived from one block cannot be refreshed merely by attaching a newer timestamp. If required state is absent, the system has an admission problem. If a newer useful block supersedes queued evaluation work, it has a freshness problem. If a selected candidate cannot pass preflight, it has an execution-gate result. Those outcomes should remain visible rather than collapsing into a generic failure.
-
-### Queue policy belongs to the stage
-
-Queues transport work; the service that understands the domain owns the policy. That split keeps dequeue mechanics thin while making capacity, freshness, ordering, shutdown, and failure decisions explicit.
-
-Evaluation work may favor the newest useful block and coalesce or discard superseded requests. Durable graph or persistence work instead needs to drain or record a visible incomplete outcome. Execution handoff may require bounded ordering because nonce, state, and evidence continuity matter. One global FIFO policy cannot express all three contracts safely.
-
-<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/03-queue-policy.svg" alt="Diagram showing producer, bounded queue, thin adapter, policy-owning service, and output, with distinct freshness, durability, and execution queue semantics." />
-
-*Backpressure is an observable design signal. Capacity and lifecycle belong to the queue; freshness, ordering, and domain decisions belong to the consuming service.*
-
-The operational measurements follow the same boundary. Queue depth shows pressure. Queue wait and service time separate transport delay from computation. Worker utilization shows how much capacity was active. Stale-work and drop counters reveal whether speed came from silently abandoning work. Shutdown and replay evidence show whether the system can explain what completed and what did not.
-
-This is why a single throughput number is not enough. Two runs can report the same evaluations per second while differing materially in queue delay, coverage, freshness, dropped work, or evidence completeness.
-
-### What the measurements establish
-
-The article uses the current reviewed Salus evidence, not the larger figures in the immutable historical v1 PDFs. The publication manifest retains the exact evidence commit without exposing implementation navigation in the narrative.
-
-A retained Ethereum trace dated July 9, 2026 covered 100 blocks, from 25,495,691 through 25,495,790. It recorded 486,934 route evaluations across 83 completed evaluation services. Using the retained service-time denominator, it recorded 4,554 sustained and 7,528 peak route evaluations per second. In that sample, mean worker utilization was 84.65 percent and recorded route-evaluation queue wait was zero.
-
-<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/04-reviewed-evidence.svg" alt="Evidence card showing the reviewed Ethereum graph size, route universe, retained trace scope, sustained and peak evaluation rates, and the zero-after-gas limitation." />
-
-*These are workload-scoped engineering indicators. They establish graph scale and evaluator capacity for the retained trace—not opportunity recall, execution, settlement, or realized profit.*
-
-The figures answer different questions. Graph nodes and liquidity components describe the retained market model. Catalog routes describe the maximum-four-hop universe at that snapshot. The evaluation count describes completed route occurrences in one trace. The sustained and peak rates describe evaluator service capacity under that measured workload.
-
-Historical v1 publications reported 33,578 sustained and 44,610 peak Ethereum evaluations per second under a different, unreconciled workload. Those releases remain immutable history. Choosing the larger number would erase the workload distinction, so it is not used as a current performance claim here.
-
-### Throughput stops before profit
-
-An evaluation computes a modeled result; it does not prove an executable profit. Economic selection still needs current quotes or exact simulation, fees and gas, freshness, and the transaction's own constraints. Execution adds further gates: preflight, submission, acceptance, receipt, inclusion, finality, settlement, and reconciliation of realized profit.
-
-The latest cited retained runs selected zero after-gas routes. They submitted nothing and do not establish profitable execution. That negative result belongs next to the throughput result because it identifies the evidence boundary: Salus demonstrated that the evaluator could process its retained workload, while the downstream economic gate found no route to advance.
-
-This is not a contradiction. Capacity and economics are independent questions. A system may need more evaluator capacity before it can test economic hypotheses at useful scale, but capacity cannot validate those hypotheses by itself.
-
-### What changed and what remains unresolved
-
-The architectural change was to make scope, freshness, and evidence explicit. Durable membership avoids repeated topology work. Affected-route recall bounds the hot path. Stage-owned queue policies keep newer decision-useful work from disappearing behind stale backlog. Stage-level metrics reveal where time and work were spent. Distinct evidence states prevent a modeled result from being promoted by vocabulary alone.
-
-Several questions remain open. The current retained evidence does not prove complete opportunity recall, profitable after-gas selection, competitive submission, inclusion, finality, settlement, or realized profit. Broader cache policies and some strategy and intelligence capabilities remain proposed. Operational tuning, private routing behavior, gas policy, thresholds, and active strategy details are intentionally outside the public account.
-
-The next useful optimization should therefore follow the next measured bottleneck, not the most impressive available rate. If coverage or freshness prevents admission, more evaluator workers will not fix it. If after-gas selection remains empty, execution throughput is not yet the limiting evidence. If candidates reach submission, the evidence model must continue through receipt and settlement.
-
-### Lessons beyond DeFi
-
-The pattern applies to any stateful system that maintains a large dependency universe while receiving small, frequent changes: incremental build systems, recommendation pipelines, fraud detection, streaming analytics, search indexing, and digital-twin simulations.
-
-Four lessons transfer directly:
-
-* Separate durable identity and membership from live decision state.
-* Index changes to affected work instead of rescanning the universe.
-* Let each stage own freshness, ordering, and failure semantics.
-* Report capacity, selection, action, and outcome as different evidence.
-
-The engineering advantage is not only speed. It is the ability to explain which state caused which bounded work, how fresh that work remained, what the system measured, and exactly where the claim stops.
-
-### Engineering Implementation Notes
-
-#### The hot path updates only owned topology
-
-```rust
-fn upsert_component(&mut self, component: &IngestComponent) {
-    self.remove_component(&component.component_id);
-
-    if self.blacklist.contains(&component.component_id) {
-        return;
-    }
-
-    let topology = ActiveComponentTopology {
-        protocol_system: component.protocol_system.clone(),
-        token_addresses: component.token_addresses.clone(),
-    };
-    for edge in component_edges(
-        &component.component_id,
-        &component.protocol_system,
-        &component.token_addresses,
-    ) {
-        let token_in = edge.token_in.clone();
-        self.adjacency.entry(token_in).or_default().push(edge);
-    }
-    sort_adjacency(&mut self.adjacency);
-    self.components
-        .insert(component.component_id.clone(), topology);
-}
-```
-
-This is the implementation boundary behind the article’s topology claim: a
-changed component replaces its own adjacency contribution instead of requiring
-the catalog to be rebuilt as one opaque operation. The code says nothing about
-profitability or execution outcome.
-
-### Go deeper
-
-* Begin with the governed [Salus Work gateway](/work/salus).
-* Review the [route-evaluation evidence and limitations](/research/high-performance-route-evaluation).
-* Examine the reusable [liquidity-state-to-route-graph boundary](/architecture/liquidity-state-to-route-graphs).
-* Apply the [queue ownership and backpressure pattern](/architecture/backpressure-and-queue-ownership).
-* Follow the broader [evidence-aware execution pipeline](/architecture/trading-system-execution-pipelines).
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## Solving, Arbitrage & Market Making
-
-*6 min read*
-
-Building a trading strategy is only part of the engineering problem. The harder task is constructing a system that can explain how changing market state became a modeled opportunity, why that opportunity did or did not advance, and what the retained evidence actually proves.
-
-### Why build the whole path
-
-John Whitton's route into solving and market making began with a practical question: what would it take to turn decentralized-exchange state into a decision that could survive technical and economic scrutiny? Reading protocol designs was useful, but building the complete path exposed the boundaries that a strategy diagram leaves out.
-
-That work became Salus, an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. It is not a customer deployment, a fund, a commercially validated product, or a proven profitable system. Its value at this stage is the engineering surface it makes inspectable: ingestion, read models, graph construction, bounded route catalogs, economic evaluation, simulation, controlled execution gates, and retained evidence.
-
-The project moved the learning problem from “can a route be modeled?” to “can every stage explain what it knows?” That shift matters because a trading system can be fast and technically sophisticated while its downstream economic evidence remains incomplete.
-
-### From changing state to a reviewable decision
-
-The reusable architecture separates collection, strategy, decision gates, execution, and outcome evidence. Collection observes external state and preserves which revision was seen. Catalog and strategy stages derive bounded paths and model their outputs. Later gates decide whether a candidate remains valid after costs and a newer view of the world. Execution records an attempted action. Outcome evidence reconciles what actually happened.
-
-Those are not interchangeable steps. A catalog route is a path available for evaluation. A route evaluation is a modeled calculation. An opportunity is a candidate interpretation of that calculation. A selected after-gas route has passed a later economic gate. Submission, execution, and realized profit each require additional evidence.
-
-Keeping the stages distinct creates more interfaces and more explicit coordination, but it also prevents one optimistic flag from becoming the system's entire truth. A failed preflight, stale state revision, or missing cost input can stop advancement at the boundary where the evidence changed. Negative outcomes remain useful because they reveal which gate was reached.
-
-Three related concerns make the current engineering story coherent. **Capture**
-keeps graph, affected-route, queue, and evaluation work bounded under changing
-state. **Causality** asks which retained change can support an explanation
-without turning correlation into proof. **Execution** preserves state identity
-through preflight, a durable attempt, private submission, and terminal outcome.
-The current passive, test-only causality comparison did not meet its promotion
-gates, so it has no live ranking or execution authority.
-
-### Throughput is evidence, not outcome
-
-The retained Salus measurements show why vocabulary matters. At the reviewed revision, an Ethereum snapshot contained 3,415 token nodes and 4,552 pool components. Its bounded catalog contained 2,401,108 routes with a maximum of four hops. A retained Base runtime run recorded 16,537 sustained and 38,462 peak route evaluations per second.
-
-These figures describe different subjects. The graph figures describe a retained market model. Catalog size describes bounded candidate paths. The Base rates describe completed route evaluations within a measured evaluation-service boundary. None of them counts profitable opportunities, submitted transactions, executions, or realized profit.
-
-The latest cited retained runs selected zero after-gas routes. That result belongs beside the throughput numbers because it defines where the evidence stopped. The runs demonstrate evaluator capacity against a retained workload; they do not establish opportunity recall, current live performance, profitable execution, or commercial validation. No new live benchmark was run for this migration.
-
-For a technical leader, this qualification is not a weakness in the result. It is evidence that the system and its editorial account can distinguish capacity from outcome.
-
-### Capital efficiency changes the constraint
-
-The modeled transaction structure can use borrowed liquidity, so Salus does not require upfront trading principal for that structure. This changes the capital constraint, but it does not make operation free or remove risk.
-
-Infrastructure, RPC, operational, and gas expenditure still exist, and unsuccessful transactions may incur unreimbursed costs. A transaction structure that can revert atomically can limit some state-transition outcomes, but it does not establish that every attempted transaction is costless or profitable. Economic selection, preflight validation, submission policy, and final reconciliation remain separate responsibilities.
-
-The broader lesson is that architecture should name the resource a mechanism removes and the costs it leaves behind. “Capital efficient” is useful when it describes the modeled funding requirement; it becomes misleading when used as shorthand for proven economics.
-
-### What the work demonstrates
-
-Salus demonstrates John's ability to connect protocol research with systems engineering: to move from external state, through inspectable models and high-throughput evaluation, toward controlled execution boundaries and retained evidence. The reviewed implementation includes a 13-crate Rust workspace and a 16-document walkthrough corpus, with current implementation truth remaining in the Salus repository.
-
-The strongest engineering signal is not a single benchmark. It is the combination of bounded components, explicit evidence states, dated measurements, and visible limitations. The system can be reviewed at the point where a claim is made instead of relying on a broad statement that the entire pipeline “works.”
-
-That architecture also generalizes. Intent solvers, liquidation systems, routing services, and other event-driven decision engines all need to separate modeled output from authorized action and observed outcome. Their strategies and protocols differ, but the evidence problem is similar.
-
-### Where the evidence stops
-
-Commercial validation remains ongoing, and profitable after-gas production execution has not been established. The retained observations are dated facts at a pinned revision, not guarantees of present or future performance.
-
-Public material also stops before operational detail. It excludes provider configuration, gas-bidding logic, thresholds, route-selection details, opportunity identities or values, active strategy parameters, vulnerabilities, and other sensitive implementation behavior. Those boundaries protect current implementation ownership and prevent an editorial synthesis from becoming an operational manual.
-
-The earlier composite article included historical performance, execution, opportunity, partnership, and commercial language that does not meet the current evidence and disclosure contract. This narrative retains the engineering journey but replaces those claims with the reviewed Salus baseline and its explicit stopping point.
-
-### What to take away
-
-High-performance solving is not one algorithm or one rate. It is a chain of evidence-bearing decisions made under changing state. The system is credible when each stage can state what it observed, what it modeled, which gate it passed, and what remains unknown.
-
-Salus is still an active initiative. Its current public value is a disciplined reference implementation and an evidence-aware engineering case study—not a claim of completed commercial or profitable outcome. That distinction makes the work more useful to technical readers because it shows both what has been built and what must still be proven.
-
-### Engineering Implementation Notes
-
-#### Admission records each narrowing step
-
-```rust
-let mut candidate_route_ids = impacted_route_ids.clone();
-candidate_route_ids.extend(refreshed_route_ids.iter().cloned());
-summary.candidate_route_count = candidate_route_ids.len();
-
-let requested_start_token_address = evaluation_controls.requested_start_token_address();
-let mut route_ids = BTreeSet::new();
-for route_id in candidate_route_ids {
-    let Some(route) = route_catalog.route(&route_id) else {
-        continue;
-    };
-    if !route_has_flash_metadata(route) {
-        continue;
-    }
-    summary.after_flash_metadata_count += 1;
-    if requested_start_token_address.is_some_and(|requested_start_token_address| {
-        route.path.first() != Some(requested_start_token_address)
-    }) {
-        continue;
-    }
-    summary.after_start_token_filter_count += 1;
-    route_ids.insert(route_id);
-}
-summary.selected_route_count = route_ids.len();
-
-RouteSelectionResult { route_ids, summary }
-```
-
-The implementation records the candidate and selected counts while enforcing
-specific eligibility conditions. That is useful engineering evidence about the
-narrowing process; it does not turn selection into submission, settlement, or
-profit.
-
-### Go deeper
-
-* Start with the governed [Salus Work case study](/work/salus).
-* Examine the [retained route-evaluation measurements](/research/high-performance-route-evaluation).
-* Apply the [evidence-aware pipeline architecture](/architecture/trading-system-execution-pipelines).
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.
-
-*10 min read*
-
-*What building Salus taught me about infrastructure, execution, strategy, and competing in professional on-chain markets.*
-
-I built Salus around a reasonable but incomplete thesis: we were primarily competing against other arbitrage and search systems. If that was the race, throughput, freshness, latency, and execution performance were the primary competitive problems. The engineering worked. The conclusion did not follow. The evidence forced me to separate a fast component from a competitive strategy—and to change what I would invest in next.
-
-### I Thought the Problem Was Speed
-
-An on-chain arbitrage system works inside a finite window. It observes a state change, identifies affected paths, evaluates their economics, prepares an action, and competes for inclusion. Work that finishes after the relevant state has changed is not merely slow; it is no longer the same decision.
-
-That made performance the obvious first problem. A large route universe could not be rebuilt after every pool update. A conventional FIFO backlog could preserve work that was already commercially useless. A throughput figure without state identity could hide the fact that the system was evaluating yesterday's market.
-
-My incomplete hypothesis was that removing those bottlenecks would expose the business outcome. If Salus could keep enough fresh work moving through the evaluator, opportunity capture and profitable execution would become primarily a matter of tuning.
-
-The hypothesis was useful because it produced a concrete engineering program. It was incomplete because it treated infrastructure capacity as the scarce resource before proving that the evaluated strategy had positive expected value in the market where it had to compete. It was reasonable to begin with the performance problem; it was not sufficient to treat that problem as the whole competitive thesis.
-
-### So I Built the Infrastructure
-
-Salus became an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. I separated durable topology from live state, persisted bounded route catalogs, indexed liquidity components back to known routes, and carried block identity through preparation and evaluation.
-
-The runtime used bounded queues and stage-specific freshness policies. Evaluation work could favor the newest useful state, while durable work needed a different shutdown and completion contract. Strategy evaluation, economic selection, preflight, submission, receipt, and outcome evidence remained separate states rather than one optimistic “success” flag.
-
-The result was not one clever arbitrage algorithm. It was an inspectable path from external state to a bounded decision, with enough telemetry to distinguish queue wait from service time, throughput from stale work, and evaluation from execution.
-
-That technical story already has its own owner. [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) explains the component-to-route boundary, affected-route hot path, and queue policy in detail. The reusable [execution-pipeline architecture](/architecture/trading-system-execution-pipelines) explains why each evidence gate stays distinct. Here, those mechanisms matter because they made the later commercial diagnosis possible.
-
-### The Benchmark Looked Good
-
-At the retained Ethereum snapshot, Salus represented 3,415 graph token nodes and 4,552 liquidity components. Its persisted catalog contained 2,401,108 routes with a maximum of four hops. Those are topology counts: they describe the universe the system could draw from, not routes scanned after every update and not opportunities.
-
-A retained Ethereum trace dated July 9, 2026 covered 100 blocks. It completed 486,934 route evaluations across 83 evaluation services. Using the retained service-time measure, the run recorded 4,554 sustained and 7,528 peak route evaluations per second.
-
-That result established something real. The evaluator could process a substantial, block-scoped workload through the reviewed architecture. It did not establish that the catalog contained the commercially best opportunities, that every relevant opportunity was recalled, that a modeled result survived costs, or that Salus could win inclusion.
-
-The larger historical rate sometimes associated with Salus came from a different no-throttle profile and is not comparable enough to use as this article's current claim. A stronger headline would have made a weaker argument.
-
-<img src="/assets/writing/speed-wasnt-the-problem/01-benchmark-to-outcome.svg" alt="A gated evidence sequence from the route catalog through evaluation, economic selection, execution, inclusion, settlement, and realized profit, with the retained evidence stopping after evaluation." />
-
-*The retained workload established evaluator capacity. Every later gate requires different evidence.*
-
-### But Speed Wasn't Producing the Outcome
-
-The latest metric-bearing Ethereum, Base, and Unichain runs selected zero after-gas routes. They therefore produced no evidence of submission, inclusion, settlement, or realized profit. Profitable production execution and commercial validation have not been established.
-
-That negative result was more valuable than treating the benchmark as a victory. It showed that the pipeline had reached an evidence boundary. More evaluator capacity might still matter, but the retained workload did not identify it as the next limiting business outcome.
-
-The vocabulary became part of the diagnosis. A catalog route is a path available for evaluation. A route evaluation is a modeled calculation. A positive modeled result is not necessarily positive after costs. A selected after-gas candidate is not a submission. Relay acceptance is not inclusion. Inclusion is not settlement, and settlement still needs reconciliation before anyone can claim realized profit.
-
-The distinction prevented a component success from being promoted into a business claim. It also changed the engineering question from “How do I evaluate more routes?” to “Which evidence would justify spending more time on evaluation at all?”
-
-**Faster at doing what?** Until the strategy, capital model, and execution path have a plausible economic case, more evaluator capacity may only optimize a component of the wrong market hypothesis.
-
-### We Were Competing Against More Than Arbitrage Bots
-
-The easy explanation for a missed outcome is that another bot was faster. Later evidence made that explanation too simple.
-
-A bounded review of retained Ethereum observations separated several classes of result. Most reviewed cases ended at internal parity or capability boundaries rather than proving competitor advantage. Some were deliberate economic abstentions: the system declined to advance work when refreshed costs exceeded the modeled value. A smaller set reached private relay acceptance and expired without inclusion. Exact ordered replay established one causal invalidator; attribution remained incomplete for the other reviewed cases.
-
-That review did not produce a universal competitor ranking. It did not establish beneficial ownership, complete period profit, hidden payments, private hedges, or the strategy behind every observed transaction. It did show why “they were faster” was not a sufficient causal model.
-
-Different systems can compete with different strategies, execution shapes, and capital structures. One may use a narrow executor where another pays for generic routing. One may hold inventory where another borrows inside a transaction. One may combine several actions where another evaluates a single cyclic route. Even when two transactions touch the same market state, they may not be expressing the same arbitrage race, strategy, or economics.
-
-The useful conclusion was not that I had decoded a competitor's edge. It was that Salus needed a better way to distinguish internal defects, correct abstention, ordering loss, capital-model differences, and strategy mismatch before deciding what to optimize.
-
-### The Actual Competitive Stack
-
-I now use a five-layer model for the problem:
-
-1. **Infrastructure** turns changing state into fresh, bounded, observable work.
-2. **Execution** carries a valid decision through simulation, preflight, submission, inclusion, and settlement.
-3. **Capital** determines which positions can be funded, held, hedged, and unwound—and which costs or risks the system actually bears.
-4. **Strategy** determines which market behavior has positive expected value under those execution and capital constraints.
-5. **Intelligence** compares retained evidence, competitor economics, and capability gaps without confusing inference with fact.
-
-<img src="/assets/writing/speed-wasnt-the-problem/02-competitive-stack.svg" alt="Five competitive layers—Infrastructure, Execution, Capital, Strategy, and Intelligence—showing Salus's original emphasis on the first two and the revised emphasis on validating strategy and intelligence before more optimization." />
-
-*The model is an editorial synthesis, not a claim that every layer is implemented or mature.*
-
-Salus initially put most of its investment into Infrastructure and Execution. That was defensible: without fresh state, deterministic evaluation, and evidence-bearing handoffs, later experiments would have been impossible to trust. But those layers cannot choose the market thesis on their own.
-
-The revised emphasis begins with Strategy and Intelligence. The question is no longer whether the runtime can be made faster in the abstract. It is which strategy has defensible economics in the observed competitive environment, what capital and execution model it requires, and whether the gap from Salus's current capabilities is worth closing.
-
-### What I Changed
-
-First, I stopped treating telemetry as a report added after implementation. Queue wait, service time, utilization, stale work, selection, and outcome classification became design inputs. A fast stage surrounded by missing evidence is not a well-understood stage.
-
-Second, I treated freshness as correctness. State identity has to survive the entire path. A result cannot become current merely because it finished recently; it must still describe the state against which the later decision will act.
-
-Third, I made attempts and outcomes durable enough to review. Failures, abstentions, expiry, and incomplete attribution need stable identities and typed states. Otherwise the only retained stories are the ones that looked successful at the time.
-
-Fourth, I separated opportunity capture from causality. Observing a positive model or a route-touching transaction does not prove why an opportunity appeared or who consumed it. Replay can strengthen a causal conclusion, but association remains association until the required ordered evidence exists.
-
-Finally, I moved strategy economics ahead of another round of performance optimization. Infrastructure work now needs a named strategy question, an evidence gap it closes, and a decision it can change.
-
-### Strategy Evaluation Now Comes Before Optimization
-
-The proposed review sequence is deliberately reversible:
-
-1. Define the strategy question, evidence cutoff, and comparison set.
-2. Validate the evidence lineage and record what remains unavailable.
-3. Estimate economics with ranges and uncertainty rather than invented precision.
-4. Compare capital, execution, settlement, risk, and operating requirements with current capabilities.
-5. Record the capability gaps and choose: continue, defer, reject, or request more evidence.
-6. Only then authorize implementation or optimization as a separate decision.
-
-<img src="/assets/writing/speed-wasnt-the-problem/03-strategy-before-optimization.svg" alt="A review loop from evidence and economics through capability gaps and a human decision, with implementation and optimization outside the loop until separately authorized." />
-
-*Research can change a recommendation without silently changing runtime policy, allocating capital, or starting live operation.*
-
-This is not an automated strategy selector. It is a human-reviewed investment discipline. A lower theoretical return may be the better next experiment when its evidence is stronger, its capital exposure is bounded, or its implementation reuses capabilities Salus already has. A high theoretical return with unknown inventory, inclusion, or settlement economics is not a priority; it is an unanswered research question.
-
-Evidence-first development can slow the first implementation because it asks for a defined decision, evidence boundary, and economic hypothesis before another optimization cycle. It reduces a more expensive risk: spending months making a strategy faster before establishing that it can be economically competitive.
-
-### What Comes Next
-
-The next useful editorial and research work is a bounded competitor-economics study and a strategy matrix. The first would explain what can and cannot be learned from observable execution and capital behavior. The second would compare candidate strategies against Salus's current infrastructure, execution, capital, evidence, and operational capabilities.
-
-Both remain proposed. The separate competitor-economics draft remains under its own technical, claim, and editorial review; this article does not link to it as a public reading destination, authorize the research program, or imply that a strategy decision has already been made. The existing [evidence-grounded AI architecture](/architecture/evidence-grounded-ai-for-trading-systems) describes where probabilistic investigation may eventually help while keeping deterministic safety and execution authority separate. AI or ML does not currently control Salus execution or establish profit.
-
-The practical next step is smaller: use the current evidence to decide which question deserves the next engineering dollar. If a strategy cannot show a plausible positive expected value after realistic capital and execution costs, a faster implementation only reaches the wrong answer sooner.
-
-### Performance Wins Benchmarks. Strategy Wins Markets.
-
-The benchmark was not wasted work. It proved that the evaluator could handle the retained workload, and the architecture made that claim auditable. More importantly, it created the observability and evidence boundaries needed to discover that performance was not sufficient.
-
-That is the lesson I would carry into any trading, fintech, or distributed decision system: optimize the constraint that the evidence identifies, not the one the engineering team is best prepared to improve.
-
-Infrastructure makes a strategy testable. Execution makes a valid decision actionable. Capital changes the economics. Intelligence makes the unknowns visible. But strategy decides whether the system is solving a market problem with positive expected value.
-
-The question I would now ask before another performance push is: **Are we optimizing the thing that actually determines whether we win?**
-
-I built a fast engine. The more important engineering decision was allowing its evidence to change the thesis.
-
-### Engineering Implementation Notes
-
-#### A throughput number needs pressure and policy beside it
-
-```rust
-    pub(crate) fn record_queue_snapshot(&self, metric: QueueSnapshotMetric<'_>) {
-        let snapshot = metric.snapshot;
-        let mut fields = Map::new();
-        fields.insert(
-            "event".to_owned(),
-            Value::String("queue_snapshot".to_owned()),
-        );
-        fields.insert("label".to_owned(), Value::String(metric.label.to_owned()));
-        fields.insert("queue".to_owned(), Value::String(snapshot.name.clone()));
-        fields.insert(
-            "overflow_policy".to_owned(),
-            Value::String(queue_overflow_policy_label(&snapshot.overflow_policy).to_owned()),
-        );
-        fields.insert("capacity".to_owned(), json!(snapshot.capacity));
-        fields.insert("current_depth".to_owned(), json!(snapshot.current_depth));
-        fields.insert("peak_depth".to_owned(), json!(snapshot.peak_depth));
-        fields.insert("sent".to_owned(), json!(snapshot.sent_count));
-        fields.insert("dropped".to_owned(), json!(snapshot.dropped_count));
-        fields.insert("blocked".to_owned(), json!(snapshot.blocked_send_count));
-        fields.insert("closed".to_owned(), json!(snapshot.closed_error_count));
-        self.record_event(fields);
-```
-
-The implementation treats a queue snapshot as a structured event: its label,
-policy, capacity, depth, and sent, dropped, blocked, and closed outcomes travel
-together. The invariant is that a throughput figure must retain the pressure
-and loss context needed to interpret it.
-
-That instrumentation has a small recording cost, but it prevents a fast rate
-from hiding a saturated or dropping stage. It is evidence about runtime
-capacity—not commercial competitiveness, after-gas selection, execution, or
-realized profit.
-
-### Go deeper
-
-* Start with the integrated [Salus Work gateway](/work/salus).
-* Read the detailed [route-scaling and freshness story](/writing/mapping-liquidity-to-routes-at-scale).
-* Review [what retained route-evaluation evidence can establish](/research/high-performance-route-evaluation).
-* Follow the [trading-system validation evidence ladder](/research/trading-system-validation-evidence).
-* Apply the reusable [execution-pipeline boundaries](/architecture/trading-system-execution-pipelines).
-* Explore the public-safe [evidence-grounded AI boundary](/architecture/evidence-grounded-ai-for-trading-systems).
 
 
 ## AI Systems Architecture
@@ -12656,51 +12605,6 @@ summary](https://wiki.polygon.technology/docs/pos/peppermint/)
 [documentations](https://wiki.polygon.technology/docs/maintain/validate/validator-responsibilities/)
 
 
-## Celestia
-
-* date: 2023-06-19
-* last updated: 2023-06-19
-
-### Overview
-
-Celestia[^ov-1] is a modular consensus and data network, built to enable anyone to easily deploy their own blockchain with minimal overhead.
-
-### Cryptographic Primitives
-
-* [whitepaper](https://arxiv.org/pdf/1809.09044.pdf)
-  * 2.2 Merkle Trees and Sparse Merkle Trees
-  * 2.3 Erasure Codes and Reed-Solomon Codes
-  * 5 Data Availability Proofs
-    * 5.1 Strawman 1D Reed-Solomon Availability Scheme
-    * 5.2 2D Reed-Solomon Encoded Merkle Tree Construction
-    * 5.3 Random Sampling and Network Block Recovery
-    * 5.4 Selective Share Disclosure
-    * 5.5 Fraud Proofs of Incorrectly Generated Extended Data
-* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
-* [Implementation celestia-app pkg](https://github.com/celestiaorg/celestia-app/tree/main/pkg)
-
-#### Namespaced Merkle Tree Wrapper
-
-* [code](https://github.com/celestiaorg/celestia-app/tree/main/pkg/wrapper)
-
-### Appendices
-
-### References
-
-* [Learn Modular](https://celestia.org/learn/)
-* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities
-* [Celestia App Specifications](https://celestiaorg.github.io/celestia-app/index.html)
-* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
-* [Rollkit Docs](https://rollkit.dev/docs/intro/)
-* [Rollkit Architecture Design Records](https://github.com/rollkit/rollkit/tree/main/docs/lazy-adr)
-* [Rollkit Dependency Graph](https://github.com/rollkit/rollkit/blob/main/docs/specification/rollkit-dependency-graph.mdx)
-* [Quantum Gravity Bridge](https://github.com/celestiaorg/quantum-gravity-bridge/tree/master)
-
-### Footnotes
-
-[^ov-1]: [Celestia](https://celestia.org/): the first modular blockchan network.
-
-
 ## Horizon Bridge
 
 * date: 2023-02-04
@@ -16413,6 +16317,51 @@ We have summarized the functionality in three areas
   * [succinctlabs](https://github.com/succinctlabs/eth-proof-of-consensus) (circom)
 
 
+## Celestia
+
+* date: 2023-06-19
+* last updated: 2023-06-19
+
+### Overview
+
+Celestia[^ov-1] is a modular consensus and data network, built to enable anyone to easily deploy their own blockchain with minimal overhead.
+
+### Cryptographic Primitives
+
+* [whitepaper](https://arxiv.org/pdf/1809.09044.pdf)
+  * 2.2 Merkle Trees and Sparse Merkle Trees
+  * 2.3 Erasure Codes and Reed-Solomon Codes
+  * 5 Data Availability Proofs
+    * 5.1 Strawman 1D Reed-Solomon Availability Scheme
+    * 5.2 2D Reed-Solomon Encoded Merkle Tree Construction
+    * 5.3 Random Sampling and Network Block Recovery
+    * 5.4 Selective Share Disclosure
+    * 5.5 Fraud Proofs of Incorrectly Generated Extended Data
+* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
+* [Implementation celestia-app pkg](https://github.com/celestiaorg/celestia-app/tree/main/pkg)
+
+#### Namespaced Merkle Tree Wrapper
+
+* [code](https://github.com/celestiaorg/celestia-app/tree/main/pkg/wrapper)
+
+### Appendices
+
+### References
+
+* [Learn Modular](https://celestia.org/learn/)
+* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities
+* [Celestia App Specifications](https://celestiaorg.github.io/celestia-app/index.html)
+* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
+* [Rollkit Docs](https://rollkit.dev/docs/intro/)
+* [Rollkit Architecture Design Records](https://github.com/rollkit/rollkit/tree/main/docs/lazy-adr)
+* [Rollkit Dependency Graph](https://github.com/rollkit/rollkit/blob/main/docs/specification/rollkit-dependency-graph.mdx)
+* [Quantum Gravity Bridge](https://github.com/celestiaorg/quantum-gravity-bridge/tree/master)
+
+### Footnotes
+
+[^ov-1]: [Celestia](https://celestia.org/): the first modular blockchan network.
+
+
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
 ## Intent-Based Execution
@@ -18310,6 +18259,31 @@ For the latest system-design view, see:
 Payments sits closely beside [Settlement](/research/financial-infrastructure/settlement/intro) and [Stablecoins](/research/financial-infrastructure/stablecoins/intro), because payment products depend on finality, reconciliation, liquidity, and token-control systems.
 
 
+## Stablecoins
+
+> Historical topic page retained for compatibility. It is not a fresh comparative stablecoin study.
+
+Stablecoin research focuses on token systems used for payments, settlement, liquidity, and financial platform infrastructure.
+
+The retained material is strongest around Circle architecture, stablecoin control surfaces, CCTP, mint and burn flows, proxy upgrades, pausing, blacklisting, permit flows, and the relationship between stablecoins and settlement infrastructure.
+
+### Historical focus
+
+* Stablecoin contract architecture
+* Mint, burn, pause, blacklist, and upgrade controls
+* CCTP and cross-chain stablecoin movement
+* Settlement and reconciliation patterns
+* Stablecoin infrastructure for product development
+
+### Architecture View
+
+* [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
+* [Settlement Architecture](/architecture/financial-infrastructure/settlement)
+* [Settlement](/research/financial-infrastructure/settlement/intro)
+
+Stablecoins sit at the center of payments, DeFi liquidity, and settlement infrastructure, so this area should stay connected to both financial infrastructure and protocol engineering research.
+
+
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
 ## Durable Financial Settlement
@@ -18382,29 +18356,4 @@ End-to-end distributed transactions are rarely available across banks, signers, 
 * Continue to [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement).
 * Read the [Digital Banking implementation source](https://github.com/johnwhitton/digital-banking).
 * Browse dated cross-chain and stablecoin notes through the [Archive](/archive/intro).
-
-
-## Stablecoins
-
-> Historical topic page retained for compatibility. It is not a fresh comparative stablecoin study.
-
-Stablecoin research focuses on token systems used for payments, settlement, liquidity, and financial platform infrastructure.
-
-The retained material is strongest around Circle architecture, stablecoin control surfaces, CCTP, mint and burn flows, proxy upgrades, pausing, blacklisting, permit flows, and the relationship between stablecoins and settlement infrastructure.
-
-### Historical focus
-
-* Stablecoin contract architecture
-* Mint, burn, pause, blacklist, and upgrade controls
-* CCTP and cross-chain stablecoin movement
-* Settlement and reconciliation patterns
-* Stablecoin infrastructure for product development
-
-### Architecture View
-
-* [Reference Architecture: Circle](/architecture/financial-infrastructure/circle)
-* [Settlement Architecture](/architecture/financial-infrastructure/settlement)
-* [Settlement](/research/financial-infrastructure/settlement/intro)
-
-Stablecoins sit at the center of payments, DeFi liquidity, and settlement infrastructure, so this area should stay connected to both financial infrastructure and protocol engineering research.
 
