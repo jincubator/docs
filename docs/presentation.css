@@ -93,12 +93,101 @@ body,
   line-height: 1.65;
 }
 
-.vocs_Content_root > img,
-.vocs_Content_root p > img {
+.vocs_Content > img,
+.vocs_Content p > img,
+.vocs_Content > .jincubator-image-zoom,
+.vocs_Content p > .jincubator-image-zoom {
   display: block;
   height: auto;
   margin: 2rem auto;
   max-width: 100%;
+}
+
+.vocs_Content .jincubator-image-zoom {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: zoom-in;
+  padding: 0;
+  position: relative;
+}
+
+.vocs_Content .jincubator-image-zoom__image {
+  display: block;
+  height: auto;
+  margin: 0;
+  max-width: 100%;
+}
+
+.vocs_Content .jincubator-image-zoom__indicator {
+  align-items: center;
+  background: rgb(23 34 45 / 90%);
+  border: 2px solid #fffefa;
+  border-radius: 999px;
+  bottom: 0.8rem;
+  box-shadow: 0 0.2rem 0.8rem rgb(23 34 45 / 30%);
+  display: flex;
+  height: 2.3rem;
+  justify-content: center;
+  position: absolute;
+  right: 0.8rem;
+  width: 2.3rem;
+}
+
+.vocs_Content .jincubator-image-zoom__indicator::before {
+  border: 2px solid #fffefa;
+  border-radius: 50%;
+  content: "";
+  height: 0.72rem;
+  width: 0.72rem;
+}
+
+.vocs_Content .jincubator-image-zoom__indicator::after {
+  background: #fffefa;
+  content: "";
+  height: 2px;
+  position: absolute;
+  transform: rotate(45deg) translate(0.37rem, 0.37rem);
+  width: 0.55rem;
+}
+
+.vocs_Content .jincubator-image-zoom:focus-visible {
+  border-radius: 0.3rem;
+  outline: 3px solid #476457;
+  outline-offset: 0.35rem;
+}
+
+.jincubator-image-zoom-dialog {
+  background: transparent;
+  border: 0;
+  max-height: 96vh;
+  max-width: 96vw;
+  padding: 3.5rem 1rem 1rem;
+}
+
+.jincubator-image-zoom-dialog::backdrop {
+  background: rgb(23 34 45 / 88%);
+}
+
+.jincubator-image-zoom-dialog img {
+  background: #fffefa;
+  display: block;
+  height: auto;
+  max-height: calc(96vh - 4.5rem);
+  max-width: min(1400px, 92vw);
+}
+
+.jincubator-image-zoom-dialog__close {
+  background: #fffefa;
+  border: 1px solid #ccd2d0;
+  border-radius: 0.4rem;
+  color: #17222d;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.55rem 0.8rem;
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
 }
 
 .vocs_Content_root pre {

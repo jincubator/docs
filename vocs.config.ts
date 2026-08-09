@@ -3,8 +3,10 @@ import { defineConfig } from "vocs";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax";
 import remarkMermaid from "remark-mermaidjs";
+import { rehypeImageZoom } from "./rehype-image-zoom.js";
 import { rehypeMermaidZoom } from "./rehype-mermaid-zoom.js";
 import { rehypeHistoricalContext } from "./rehype-historical-context.js";
+import { remarkImageZoom } from "./remark-image-zoom.js";
 import { presentationSidebar, presentationTopNav } from "./docs/presentation-navigation.mjs";
 
 const siteUrl = "https://www.jincubator.com";
@@ -40,20 +42,21 @@ export default defineConfig({
   vite: {
     plugins: [
       {
-        name: "inject-mermaid-zoom",
+        name: "inject-zoom-controls",
         transformIndexHtml(html) {
           return html.replace(
             "</head>",
-            '<script src="/zoom-mermaid.js" defer></script></head>',
+            '<script src="/zoom-mermaid.js" defer></script><script src="/zoom-images.js" defer></script></head>',
           );
         },
       },
     ],
   },
   markdown: {
-    remarkPlugins: [remarkMath, remarkMermaid],
+    remarkPlugins: [remarkMath, remarkMermaid, remarkImageZoom],
     rehypePlugins: [
       rehypeMathjax,
+      rehypeImageZoom,
       rehypeMermaidZoom,
       rehypeHistoricalContext,
     ],

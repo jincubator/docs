@@ -6,6 +6,7 @@ import path from "node:path";
 
 const validator = await import("./validate-site.mjs");
 const presentation = await import("../docs/presentation-navigation.mjs");
+const { remarkImageZoom } = await import("../remark-image-zoom.js");
 const expectedNavigation = ["Work", "Salus", "Research", "Architecture", "Writing", "About"];
 const config = fs.readFileSync(path.join(process.cwd(), "vocs.config.ts"), "utf8");
 
@@ -32,6 +33,29 @@ const presentationCss = fs.readFileSync("docs/presentation.css", "utf8");
 for (const token of ["#f7f5ef", "Georgia", ".vocs_DocsLayout_sidebar", "prefers-reduced-motion"]) {
   assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }
+assert.match(config, /zoom-images\.js/);
+for (const token of [".vocs_Content .jincubator-image-zoom", ".jincubator-image-zoom__indicator", "cursor: zoom-in"]) {
+  assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+}
+const imageZoomScript = fs.readFileSync("docs/public/zoom-images.js", "utf8");
+for (const token of ["showModal", "Open the .* at full size", "vocs:route-update", ".vocs_Content", 'event.key === "Escape"']) {
+  assert.match(imageZoomScript, new RegExp(token));
+}
+const imageZoomTree = {
+  type: "root",
+  children: [{
+    type: "mdxJsxFlowElement",
+    name: "img",
+    attributes: [
+      { type: "mdxJsxAttribute", name: "src", value: "/assets/example.png" },
+      { type: "mdxJsxAttribute", name: "alt", value: "Example image" },
+    ],
+    children: [],
+  }],
+};
+remarkImageZoom()(imageZoomTree);
+assert.equal(imageZoomTree.children[0].name, "button");
+assert.equal(imageZoomTree.children[0].attributes.find((attribute) => attribute.name === "aria-label").value, "Open full-size image: Example image");
 for (const [page, key, componentPath] of [
   ["docs/pages/index.mdx", "home", "../components/LandingPage"],
   ["docs/pages/work/index.mdx", "work", "../../components/LandingPage"],
