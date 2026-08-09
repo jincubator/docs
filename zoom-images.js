@@ -43,7 +43,7 @@
 
     dialog.append(close, image);
     dialog.addEventListener("click", (event) => {
-      if (event.target === dialog) dialog.close();
+      if (event.target === dialog || event.target === image) dialog.close();
     });
     dialog.addEventListener("keydown", (event) => {
       if (event.key === "Escape") dialog.close();
