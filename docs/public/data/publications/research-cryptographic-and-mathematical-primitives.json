@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "research/cryptographic-and-mathematical-primitives",
+    "type": "research",
+    "title": "Cryptographic and Mathematical Primitives"
+  },
+  "route": "/research/primitives/intro",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Research",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/research/primitives/intro.mdx",
+      "media_type": "text/mdx",
+      "sha256": "a89f544e94544b935dd53589ef110155e966fd894d232468e43aae08679d2e0a"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

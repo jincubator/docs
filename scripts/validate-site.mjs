@@ -537,7 +537,7 @@ export function validatePublications(root) {
     ? fs.readdirSync(manifestDirectory).filter((name) => name.endsWith(".json")).sort()
     : [];
   const issues = manifests.flatMap((name) => validateReleasePublication(root, path.join(manifestDirectory, name)));
-  if (manifests.length !== 25) issues.push(`expected 25 publication manifests, found ${manifests.length}`);
+  if (manifests.length !== 26) issues.push(`expected 26 publication manifests, found ${manifests.length}`);
   const ids = manifests.flatMap((name) => {
     try { return [JSON.parse(fs.readFileSync(path.join(manifestDirectory, name), "utf8")).artifact?.id]; } catch { return []; }
   });

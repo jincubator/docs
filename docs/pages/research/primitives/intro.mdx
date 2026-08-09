@@ -1,7 +1,15 @@
-# Cryptographic and Mathematic Primitives
+---
+title: "Cryptographic and Mathematical Primitives"
+description: "A consolidated historical reference covering primitive families, signatures, light clients, fraud proofs, fast Fourier transforms, and weak subjectivity."
+---
 
-- date: 2023-02-04
-- last updated: 2023-02-04
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Cryptographic and Mathematical Primitives
+
+- original material: 2023-02-04 to 2023-02-05
+- consolidated: 2026-08-09
+- archive status: historical reference
 
 ## Overview
 
@@ -13,3 +21,354 @@ For each primitive we review
 - Applications
 - Implementations (codebases)
 - Zero Knowledge relationships/improvements
+
+This consolidated archive page brings the previously separate primitive pages into one document while preserving their original material and references.
+
+## Reference implementations and primitive families
+
+### Overview
+
+Cryptographic and Mathematic Primitives
+
+### Reference Implementations
+
+**general primitives**
+
+- [bloom filter](https://en.wikipedia.org/wiki/Bloom_filter)
+  - [geth bloombits](https://github.com/ethereum/go-ethereum/tree/master/core/bloombits) (go): Package bloombits implements bloom filtering on batches of data.
+
+- [int_to_bytes](https://ethereum.github.io/execution-specs/autoapi/ethereum/base_types/index.html)
+  - [lighthouse int_to_bytes](https://github.com/sigp/lighthouse/tree/stable/consensus/int_to_bytes) (rust): The Eth 2.0 specification uses `int.to_bytes(2, 'little')`, which throws an error if `int` doesn't fit within 3 bytes. The specification relies upon implicit asserts for some validity conditions, so we ensure the calling function is aware of the error condition as opposed to hiding it with a modulo.
+- [leaky bucket](https://en.wikipedia.org/wiki/Leaky_bucket#As_a_meter)
+  - [prysm](https://github.com/prysmaticlabs/prysm/blob/develop/container/leaky-bucket/leakybucket.go): leaky bucket as a meter
+- linked list
+  - [prysm](https://github.com/prysmaticlabs/prysm/tree/develop/container/doubly-linked-list) (go): doubly linked list
+- [merkle patrica tries](https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/)
+  - [geth trie](https://github.com/ethereum/go-ethereum/blob/master/trie/trie.go#L17) (go): Package trie implements Merkle Patricia Tries.
+  - [geth database](https://github.com/ethereum/go-ethereum/blob/master/core/state/database.go#L63) (go): Trie is a Ethereum Merkle Patricia trie.
+- [merkle trees](https://en.wikipedia.org/wiki/Merkle_tree)
+  - [prysm sparse_merkle](https://github.com/prysmaticlabs/prysm/blob/develop/container/trie/sparse_merkle.go) (go): defines utilities for sparse merkle tries for Ethereum consensus.
+  - [lighthouse cached_tree_hash](https://github.com/sigp/lighthouse/tree/stable/consensus/cached_tree_hash) (rust): Sparse Merkle tree suitable for tree hashing vectors and lists.
+  - [lighthouse tree_hash](https://github.com/sigp/lighthouse/tree/stable/consensus/tree_hash) (rust): Convenience method for `MerkleHasher` which also provides some fast-paths for small trees.`minimum_leaf_count` will only be used if it is greater than or equal to the minimum number of leaves that can be created from `bytes`.
+  - [lighthouse tree_hash_derive](https://github.com/sigp/lighthouse/tree/stable/consensus/tree_hash_derive) (rust):
+  - [tendermint go](https://github.com/tendermint/tendermint/tree/main/crypto/merkle) (go): Merkle Tree For smaller static data structures that don't require immutable snapshots or mutability; for instance the transactions and validation signatures of a block can be hashed using this simple merkle tree logic.
+  - [paritytech binary-merkle-trie](https://github.com/paritytech/substrate/tree/master/utils/binary-merkle-tree) (rust): implements a simple binary Merkle Tree utilities required for inter-op with Ethereum bridge & Solidity contract.
+  - [snowbridge merkle.go](https://github.com/Snowfork/snowbridge/blob/main/relayer/crypto/merkle/merkle.go)
+  - [snowbridge merkleization.rs](https://github.com/Snowfork/snowbridge/blob/main/parachain/pallets/ethereum-beacon-client/src/merkleization.rs)
+- [merkle_proof](https://github.com/ethereum/consensus-specs/blob/dev/ssz/merkle-proofs.mdx) [explainer](https://soliditydeveloper.com/merkle-tree)
+  - [lighthouse merkle_proof](https://github.com/sigp/lighthouse/tree/stable/consensus/merkle_proof) (rust): efficiently represents a Merkle tree of fixed depth where only the first N indices are populated by non-zero leaves (perfect for the deposit contract tree).
+  - [snowbridge simplified_mmr_proof.go](https://github.com/Snowfork/snowbridge/blob/main/relayer/crypto/merkle/simplified_mmr_proof.go)
+  - [snowbridge merkle-proof rust](https://github.com/Snowfork/snowbridge/tree/main/parachain/pallets/basic-channel/merkle-proof)
+  - [snowbridge MerkleProof.sol](https://github.com/Snowfork/snowbridge/blob/main/core/packages/contracts/contracts/utils/MerkleProof.sol)
+  - [npm package eth-proof](https://www.npmjs.com/package/eth-proof)
+- [Merkle Mountain Range](https://docs.grin.mw/wiki/chain-state/merkle-mountain-range/)
+  - [paritytech merkle-mountain-range](https://github.com/paritytech/substrate/tree/master/primitives/merkle-mountain-range) (rust)
+  - [harmony mmr (go)](https://github.com/peekpi/harmony/tree/mmrHardfork/internal/mmr): Adds a merkle mountain range to harmony's core protocol to support light clients (WIP) [PR4198](https://github.com/harmony-one/harmony/pull/4198/files)
+- queues
+  - [prysm](https://github.com/prysmaticlabs/prysm/tree/develop/container/queue) (go): priority queue
+  - [snowbridge MMRProof.sol](https://github.com/Snowfork/snowbridge/blob/main/core/packages/contracts/contracts/utils/MMRProof.sol)
+  - [snowfork merkle-mountain-range](https://github.com/Snowfork/merkle-mountain-range)
+- safe-arithmetic
+  - [lighthouse safe_arith](https://github.com/sigp/lighthouse/tree/stable/consensus/safe_arith) (rust): Library for safe arithmetic on integers, avoiding overflow and division by zero.
+- slice
+  - [prysm](https://github.com/prysmaticlabs/prysm/tree/develop/container/slice) (go)
+- [tries](https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/)
+  - [paritytech trie](https://github.com/paritytech/substrate/tree/master/primitives/trie): Utility functions to interact with Substrate's Base-16 Modified Merkle Patricia tree ("trie").
+- [Verifiable Delay Function](https://eprint.iacr.org/2018/623.pdf)
+  - [harmony vdf](https://github.com/harmony-one/harmony/tree/main/crypto/vdf) (go): Package vdf is a proof-of-concept implementation of a delay function and the security properties are not guaranteed.
+- [Verfiable Random Function](https://en.wikipedia.org/wiki/Verifiable_random_function)
+  - [harmony vrf](https://github.com/harmony-one/harmony/tree/main/crypto/vrf) (go): A VRF is a pseudorandom function f_k from a secret key k, such that that knowledge of k not only enables one to evaluate f_k at for any message m, but also to provide an NP-proof that the value f_k(m) is indeed correct without compromising the unpredictability of f_k for any m' != m. [https://ieeexplore.ieee.org/document/814584](https://ieeexplore.ieee.org/document/814584)
+  - [paritytech vrf](https://github.com/paritytech/substrate/tree/master/primitives/consensus/vrf): Primitives for VRF-based consensus engines. Schnorrkel-based VRF.
+- tree
+  - [paritytech fork-tree](https://github.com/paritytech/substrate/tree/master/utils/fork-tree) (rust): Utility library for managing tree-like ordered data with logic for pruning the tree while finalizing nodes.
+
+**Hash functions**
+
+[SHA-2](https://en.wikipedia.org/wiki/SHA-2)
+
+[difference between sha256 and kecakk256](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)
+
+- [Argon 2](https://en.wikipedia.org/wiki/Argon2)
+  - [Argon2](https://github.com/P-H-C/phc-winner-argon2): eference C implementation of Argon2.
+  - [x/crypto Argon2](https://cs.opensource.google/go/x/crypto/+/master:argon2/argon2.go) (go): Package argon2 implements the key derivation function Argon2.
+  - [rust-argon2](https://github.com/sru-systems/rust-argon2) (rust): Rust library for hashing passwords using Argon2.
+  - [node-argon2](https://www.npmjs.com/package/argon2) (typescript): Bindings to the reference Argon2 implementation.
+- [blake](<https://en.wikipedia.org/wiki/BLAKE_(hash_function)>)
+  - [blake2](https://www.blake2.net/) hash function
+    - [ethereum-go-ethereum](https://github.com/ethereum/go-ethereum/tree/master/crypto/blake2b) (go): Package blake2b implements the BLAKE2b hash algorithm defined by RFC 7693 and the extendable output function (XOF) BLAKE2Xb.
+    - [bsc blake2b](https://github.com/bnb-chain/bsc/tree/master/crypto/blake2b) (go): Package blake2b implements the BLAKE2b hash algorithm defined by RFC 7693 and the extendable output function (XOF) BLAKE2Xb.
+  - [blake3](https://github.com/BLAKE3-team/BLAKE3)
+    - [blake3 rust crate](https://crates.io/crates/blake3) (rust): BLAKE3 is based on an optimized instance of the established hash function BLAKE2 and on the original Bao tree mode.
+    - [zeebo blake3](https://github.com/zeebo/blake3) (go) : Pure Go implementation of BLAKE3 with AVX2 and SSE4.1 acceleration.
+- [keccak256](https://keccak.team/keccak.html) hash function
+  - [prysm](https://github.com/prysmaticlabs/prysm/blob/develop/crypto/hash/hash.go) (go)
+  - [lighthouse](https://github.com/sigp/lighthouse/blob/stable/crypto/eth2_hashing/src/lib.rs) (rust): wrapper over two SHA256 crates: `sha2` and `ring`
+  - [bsc crypto](https://github.com/bnb-chain/bsc/blob/master/crypto/crypto.go#L91) (go)
+  - [harmony hash](https://github.com/harmony-one/harmony/blob/main/crypto/hash/hash.go) (go)
+  - [snowbridge keccak](https://github.com/Snowfork/snowbridge/blob/main/relayer/crypto/keccak/keccak.go)
+- [sha256](https://pkg.go.dev/crypto/sha256)
+  - [tendermint tmhash](https://github.com/tendermint/tendermint/tree/main/crypto/tmhash)
+
+**encryption**
+
+- [ECIES](https://cryptobook.nakov.com/asymmetric-key-ciphers/ecies-public-key-encryption) (go): a hybrid encryption scheme
+  - [ethereum-go-ethereum](https://github.com/ethereum/go-ethereum/tree/master/crypto/ecies) (go)
+  - [bsc ecies](https://github.com/bnb-chain/bsc/tree/master/crypto/ecies) (go)
+- [ascii armored encryption uses ed25519](https://www.rfc-editor.org/rfc/pdfrfc/rfc4880.txt.pdf)
+  - [ethereum-go-ethereum](https://github.com/ethereum/go-ethereum/tree/master/crypto/signify) (go)
+  - [bsc signify](https://github.com/bnb-chain/bsc/tree/master/crypto/signify) (go)
+  - [tenderming armor](https://github.com/tendermint/tendermint/blob/main/crypto/armor/armor.go) (go)
+- [ChaCha20-Poly1305](https://en.wikipedia.org/wiki/ChaCha20-Poly1305): an authenticated encryption with additional data (AEAD) algorithm
+  - [tendermint xchacha20poly1305](https://github.com/tendermint/tendermint/tree/main/crypto/xchacha20poly1305) (go)
+- [XSalsa20](https://libsodium.gitbook.io/doc/advanced/stream_ciphers/xsalsa20) (go): XSalsa20 is a stream cipher based upon Salsa20 but with a much longer nonce: 192 bits instead of 64 bits.
+  - [tendermint xsalsa20symmetric](https://github.com/tendermint/tendermint/tree/main/crypto/xsalsa20symmetric) (go): secret must be 32 bytes long. Use something like Sha256(Bcrypt(passphrase)). The ciphertext is (secretbox.Overhead + 24) bytes longer than the plaintext.
+
+**Random number generators**
+
+- [prysm](https://github.com/prysmaticlabs/prysm/blob/develop/crypto/rand/rand.go) (go)
+
+**Serialization/DeSerialization**
+
+- [RECURSIVE-LENGTH PREFIX (RLP) SERIALIZATION](https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp/)
+  - [ethereum rlp](https://github.com/ethereum/go-ethereum/tree/master/rlp)
+  - [harmony rlp](https://github.com/harmony-one/harmony/blob/main/crypto/hash/rlp.go)
+- [Simple Serialize](https://ethereum.org/en/developers/docs/data-structures-and-encoding/ssz/)
+  - [snowbridge ssz.rs](https://github.com/Snowfork/snowbridge/blob/main/parachain/pallets/ethereum-beacon-client/src/ssz.rs)
+
+- [Merkle Patricia Trie](https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/)
+
+**Threading**
+
+- [prysm](https://github.com/prysmaticlabs/prysm/blob/develop/container/thread-safe/map.go): contains generic containers that are protected either by Mutexes or atomics underneath the hood.
+
+**zero knowledge**
+
+- hash functions
+  - [Poseidon](https://www.usenix.org/system/files/sec21-grassi.pdf): A New Hash Function for
+    Zero-Knowledge Proof Systems ([video](https://youtu.be/hUx3WpDV_l0))
+
+### References
+
+- [Bloom Filter Wikipedia](https://en.wikipedia.org/wiki/Bloom_filter): A Bloom filter is a space-efficient probabilistic data structure, conceived by Burton Howard Bloom in 1970, that is used to test whether an element is a member of a set.
+- [Bloom Filters Explainer](https://www.jasondavies.com/bloomfilter/): The bloom filter essentially consists of a bit vector of length m, represented by the central column.
+- [Bloomfilter Lesson 11 - Blockchain Academy](https://blockchain-academy.hs-mittweida.de/coursesblockchain-introduction-technical-beginner-to-intermediate/lessons/lesson-11-bloomfilter/): Blockchain Introduction Technical – Beginner to Intermediate Lesson 11 – Bloomfilter.
+- [Cuckoo Hashing](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.25.4189&rep=rep1&type=pdf): a simple dictionary with worst case constant lookup time, equaling the theoretical performance of the classic dynamic perfect hashing scheme
+  of Dietzfelbinger et al.
+- [Cukoo Hashing Visualization](http://www.lkozma.net/cuckoo_hashing_visualization/): Visualization of Cukoo Hashing an elegant method for resolving collisions in hash tables.
+- [Fast Fourier Transforms](https://vitalik.ca/general/2019/05/12/fft.html): Vitaliks explaniner on Fast Fourier Transforms. Trigger warning: specialized mathematical topic, with
+  special thanks to Karl Floersch for feedback.
+- [Merkle Trees/Merkle Proofs Lesson 10 - Blockchain Academy](https://blockchain-academy.hs-mittweida.de/courses/blockchain-introduction-technical-beginner-to-intermediate/lessons/lesson-10-merkle-trees-merkle-proofs/): Blockchain Introduction Technical – Beginner to Intermediate Lesson 10 – Merkle Trees/Merkle Proofs.
+
+---
+
+## Signature schemes in consensus protocols
+
+### Overview
+
+Both sides of the bridge need to verify what happened on the other side. To do that, the verification logic is often encapsulated inside a light client, manifested as a smart contract on the chain which the verification needs to be executed. The light client needs to follow consensus and signature verification mechanisms based on the signing algorithm and the elliptical curve used on the other side. For example, if chain A has 21 validators signing each block using ECDSA algorithm on secp256k1 curves, then chain A's light client, executed on chain B, must extract the signatures from the block headers presented to the light client, and follow the ECDSA signature verification algorithm to verify the content of the block header indeeds produces the 21 signatures contained in the block header, given the public keys of the 21 validators.
+
+Here, we present a reference table for these signature schemes and how they are used in the consensus protocols of different blockchains. We limit our initial scope to Ethereum, Polygon, Avalanche, BSC, Harmony, Cosmos, and Polkadot only (and their undelying technologies). Note that we are only looking at how signatures are used in consensus, not elsewhere in the blockchain stack, as all these protocols use ECDSA on secp256k1 for accounts in EVM interactions.
+
+| Algorithm | Curve      | Protocol  | Code                                                                                                                                                                                                                                                             | Note                                                                                                                                                                                                                                                            |
+| --------- | ---------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECDSA     | secp256k1  | Polygon   | [lib](https://github.com/maticnetwork/tendermint/tree/peppermint/crypto/secp256k1)                                                                                                                                                                               | [Modified](https://wiki.polygon.technology/docs/pos/peppermint) Tendermint validator signature scheme                                                                                                                                                           |
+|           |            | BSC       | [lib](https://github.com/bnb-chain/bsc/tree/master/crypto/secp256k1) [usage](https://github.com/bnb-chain/bsc/blob/cb9e50bdf62c6b46a71724066d39f9851181a5af/consensus/parlia/parlia.go#L546)                                                                     | Derived from [Clique](https://eips.ethereum.org/EIPS/eip-225), then [improved](https://github.com/bnb-chain/BEPs/pull/131)                                                                                                                                      |
+| BLS       | BN254      | Ethereum  | [EVM](https://github.com/ethereum/go-ethereum/blob/b946b7a13b749c99979e312c83dce34cac8dd7b1/core/vm/contracts.go#L420)                                                                                                                                           | Added by [EIP-196](https://eips.ethereum.org/EIPS/eip-196),[197](https://eips.ethereum.org/EIPS/eip-197); Mainly for use in smart contracts, such as zk-snark verification. See [explainer](https://hackmd.io/@liangcc/bls-solidity#BLS-Signatures-in-Solidity) |
+|           | BLS12-381  | Ethereum  | [prysm](https://github.com/prysmaticlabs/prysm/tree/develop/crypto/bls) [lighthouse](https://github.com/sigp/lighthouse/tree/stable/crypto/bls)                                                                                                                  | See [PoS design](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/keys/) and [explainer](https://hackmd.io/@benjaminion/bls12-381)                                                                                                              |
+|           |            | Harmony   | [lib](https://github.com/harmony-one/bls/tree/master/ffi/go/bls) [usage](https://github.com/harmony-one/harmony/tree/main/crypto/bls)                                                                                                                            | See [design](https://docs.harmony.one/home/developers/harmony-specifics/harmony-stack#signatures-and-cryptography) and [protocol review](https://medium.com/harmony-one/2022-harmony-technical-review-88462efba368)                                             |
+| RSA       | N/A        | Avalanche | [verification](https://github.com/ava-labs/avalanchego/blob/51c5edd85ccc7927443b945b427e64d91ff99f67/vms/proposervm/block/block.go#L119) [generation](https://github.com/ava-labs/avalanchego/blob/51c5edd85ccc7927443b945b427e64d91ff99f67/staking/tls.go#L121) | Uses X.509 certificate which potentially allows many algorithms; Moving towards BLS12-381 and added implementations recently                                                                                                                                    |
+| EdDSA     | Curve25519 | IBC       | [lib](https://github.com/tendermint/tendermint/tree/main/crypto/ed25519) [usage](https://github.com/tendermint/tendermint/blob/main/spec/core/encoding.md#public-key-cryptography)                                                                               | Used by all chains in Cosmos network, including [Cosmos Hub](https://hub.cosmos.network/main/validators/overview.html)                                                                                                                                          |
+| Schnorr   | Curve25519 | Substrate | [lib](https://github.com/paritytech/substrate/blob/master/primitives/application-crypto/src/sr25519.rs)                                                                                                                                                          | See also brief [intro](https://wiki.polkadot.network/docs/learn-cryptography#what-is-sr25519-and-where-did-it-come-from) from Polkadot                                                                                                                          |
+
+### Resources
+
+#### Algorithms
+
+##### ECDSA
+
+- [Wikipedia](https://www.wikiwand.com/en/Elliptic_Curve_Digital_Signature_Algorithm)
+- Standard: [SEC 2: Recommended Elliptic Curve Domain Parameters](https://www.secg.org/sec2-v2.pdf)
+
+##### BLS
+
+- [Wikipedia](https://en.wikipedia.org/wiki/BLS_digital_signature)
+- Paper: [Short Signatures from the Weil Pairing](https://www.iacr.org/archive/asiacrypt2001/22480516.pdf)
+- Tutorial: [BLS signatures: better than Schnorr](https://medium.com/cryptoadvance/bls-signatures-better-than-schnorr-5a7fe30ea716)
+- Analysis: [Secret Sharing and Threshold Signatures with BLS](https://www.dash.org/blog/secret-sharing-and-threshold-signatures-with-bls/)
+- Deep dive: [BLS Signatures in Solidity](https://hackmd.io/@liangcc/bls-solidity)
+
+##### EdDSA
+
+- [Wikipedia](https://en.wikipedia.org/wiki/EdDSA)
+- [GoLang](https://pkg.go.dev/golang.org/x/crypto/ed25519)
+
+#### Curves
+
+- [Curve database](https://neuromancer.sk/std/)
+
+##### secp256k1
+
+- [Bitcoin Wiki](https://en.bitcoin.it/wiki/Secp256k1)
+- Tutorial: [A Bluffer’s Guide to secp256k1](https://medium.com/asecuritysite-when-bob-met-alice/a-bluffers-guide-to-secp256k1-404e423e612)
+
+##### BLS12-381
+
+- Deep dive: [BLS12-381 For The Rest Of Us](https://hackmd.io/@benjaminion/bls12-381)
+- Intro: [BLS12-381: New zk-SNARK Elliptic Curve Construction](https://electriccoin.co/blog/new-snark-curve/)
+- Paper: [Fast and simple constant-time hashing to the BLS12-381 elliptic curve](https://tches.iacr.org/index.php/TCHES/article/view/8348/7697)
+- Benchmark: [BLS: Is it really that slow](https://www.dash.org/blog/bls-is-it-really-that-slow/)
+- EIP: [EIP-2537: Precompile for BLS12-381 curve operations](https://eips.ethereum.org/EIPS/eip-2537)
+- EVM launch: [Targeting Shanghai upgrade May 2023](https://ethereum-magicians.org/t/eip-2537-bls12-precompile-discussion-thread/4187/16)
+
+##### BN254
+
+- [Definition](https://neuromancer.sk/std/bn/bn254)
+- Paper: [Pairing-Friendly Elliptic Curves of Prime Order](https://eprint.iacr.org/2005/133.pdf)
+- Deep Dive: [BLS Signatures in Solidity](https://hackmd.io/@liangcc/bls-solidity)
+- Speed Optimization: [New software speed records for cryptographic pairings](https://cryptojedi.org/papers/dclxvi-20100714.pdf)
+
+#### Usage in ZKP
+
+- [A survey of elliptic curves for proof systems](https://eprint.iacr.org/2022/586.pdf)
+
+#### Signing Implementations
+
+The [Standard Curve Database](https://neuromancer.sk/std/) is a good starting point for existing signing algorithms. Base implementations such as [golang crypto](https://pkg.go.dev/golang.org/x/crypto) and [rust crypto](https://docs.rs/rust-crypto/latest/crypto/) provide good reference codebases.
+
+- [bcrypt](https://www.usenix.org/legacy/event/usenix99/provos/provos.pdf)
+  - [cosmos-sdk bcrypt](https://github.com/cosmos/cosmos-sdk/tree/main/crypto/keys/bcrypt)
+- [bip-0039](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+  - [lighthouse](https://github.com/sigp/lighthouse/tree/stable/crypto/eth2_wallet) (rust)
+- [bls](https://en.wikipedia.org/wiki/BLS_digital_signature)
+  - [ethereum-prysm](https://github.com/prysmaticlabs/prysm/tree/develop/crypto/bls)
+- [bls-12-381](https://hackmd.io/@benjaminion/bls12-381)
+  - [ethereum EIP-2537: Precompile for BLS12-381 curve operations](https://eips.ethereum.org/EIPS/eip-2537)
+  - [ethereum-go-ethereum](https://github.com/ethereum/go-ethereum/tree/master/crypto/bls12381) (go)
+  - [harmony bls](https://github.com/harmony-one/harmony/blob/main/crypto/bls/bls.go) (go): uses [harmony bls repository](https://github.com/harmony-one/bls/blob/master/readme.mdx)
+    - [bls Harmony](https://github.com/harmony-one/bls) forked from [herumi/bls\_](https://github.com/herumi/bls_): written in C++, supports Go, Rust, WebAssembly (Node.js)
+  - [prysm](https://github.com/prysmaticlabs/prysm/tree/develop/crypto/bls) (go)
+  - [lighthouse](https://github.com/sigp/lighthouse/tree/stable/crypto/bls) (rust): provides a wrapper around several BLS implementations to provide Lighthouse-specific functionality.
+  - [lighthouse](https://github.com/sigp/lighthouse/tree/stable/crypto/eth2_key_derivation) (rust): Provides path-based hierarchical BLS key derivation, as specified by [EIP-2333](https://eips.ethereum.org/EIPS/eip-2333).
+    - [Aurora Rainbow Bridge Implementation](https://github.com/aurora-is-near/lighthouse/tree/stable/crypto/bls/src/impls): Implementations
+      - [blst](https://github.com/aurora-is-near/lighthouse/blob/stable/crypto/bls/src/impls/blst.rs)
+      - [fake_crypto](https://github.com/aurora-is-near/lighthouse/blob/stable/crypto/bls/src/impls/fake_crypto.rs)
+      - [milagro](https://github.com/aurora-is-near/lighthouse/blob/stable/crypto/bls/src/impls/milagro.rs): support for [Apache Milagro](https://milagro.apache.org/docs/milagro-intro/)
+  - [lighthouse](https://github.com/sigp/lighthouse/tree/stable/crypto/eth2_keystore) (rust): Provides a JSON keystore for a BLS keypair, as specified by [EIP-2335](https://eips.ethereum.org/EIPS/eip-2335).
+  - [bsc bls12381](https://github.com/bnb-chain/bsc/tree/master/crypto/bls12381) (go)
+  - [blst](https://github.com/supranational/blst): blst (pronounced 'blast') is a BLS12-381 signature library focused on performance and security. It is written in C and assembly.
+- [bn256](https://cryptojedi.org/papers/dclxvi-20100714.pdf)
+  - [ethereum-go-ethereum](https://github.com/ethereum/go-ethereum/tree/master/crypto/bn256) (go)
+  - [bsc bn256](https://github.com/bnb-chain/bsc/tree/master/crypto/bn256) (go)
+- [ecdsa](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm)
+  - [bsc crypto](https://github.com/bnb-chain/bsc/blob/master/crypto/crypto.go#L169) (go): toECDSA creates a private key with the given D value. The strict parameter controls whether the key's length should be enforced at the curve size or it can also accept legacy encodings (0 prefixes).
+  - [paritytech ecdsa](https://github.com/paritytech/substrate/blob/master/primitives/application-crypto/src/ecdsa.rs) (rust)
+  - [cosmos-sdk ecdsa](https://github.com/cosmos/cosmos-sdk/tree/main/crypto/keys/internal/ecdsa)
+- [ed25519](https://ed25519.cr.yp.to/ed25519-20110926.pdf) [golang](https://pkg.go.dev/golang.org/x/crypto/ed25519)
+  - [tendermint ed25519](https://github.com/tendermint/tendermint/tree/main/crypto/ed25519) (go): GenPrivKey generates a new ed25519 private key. It uses OS randomness in conjunction with the current global random seed in tendermint/libs/common to generate the private key.
+  - [paritytech ed25519](https://github.com/paritytech/substrate/blob/master/primitives/application-crypto/src/ed25519.rs) (rust)
+  - [Ed25519](https://en.wikipedia.org/wiki/EdDSA): [Ed25519.sol](https://github.com/aurora-is-near/rainbow-bridge/blob/master/contracts/eth/nearbridge/contracts/Ed25519.sol)
+  - [cosmos-sdk ed25519](https://github.com/cosmos/cosmos-sdk/tree/main/crypto/keys/ed25519)
+- [secp256k1](https://www.secg.org/sec2-v2.pdf)
+  - [ethereum-go-ethereum](https://github.com/ethereum/go-ethereum/tree/master/crypto/secp256k1) (go)
+  - [prysm](https://github.com/prysmaticlabs/prysm/tree/develop/crypto/ecdsa) (go)
+  - [bsc secp256k1](https://github.com/bnb-chain/bsc/tree/master/crypto/secp256k1)
+  - [tendermint secp256k1](https://github.com/tendermint/tendermint/tree/main/crypto/secp256k1) (go): GenPrivKeySecp256k1 hashes the secret with SHA2, and uses that 32 byte output to create the private key.
+  - [cosmos-sdk secp256k1](https://github.com/cosmos/cosmos-sdk/tree/main/crypto/keys/secp256k1)
+  - [snowbridge secp256k1](https://github.com/Snowfork/snowbridge/tree/main/relayer/crypto/secp256k1)
+- [secp256r1](https://www.secg.org/sec2-v2.pdf)
+  - [cosmos-sdk secp256r1](https://github.com/cosmos/cosmos-sdk/tree/main/crypto/keys/secp256r1)
+- [sr25519](https://wiki.polkadot.network/docs/learn-cryptography#what-is-sr25519-and-where-did-it-come-from): schnorr over ristretto25519
+  - [chainsafe go-schnorrkel](https://github.com/ChainSafe/go-schnorrkel) (go): This repo contains the Go implementation of the sr25519 signature algorithm (schnorr over ristretto25519). The existing Rust implementation is here.
+  - [paritytech substrate-bip39](https://github.com/paritytech/substrate-bip39) (rust): his is a crate for deriving secret keys for Ristretto compressed Ed25519 (should be compatible with Ed25519 at this time) from BIP39 phrases.
+  - [paritytech sr25519](https://github.com/paritytech/substrate/blob/master/primitives/application-crypto/src/sr25519.rs) rust
+  - [tendermint sr25519](https://github.com/tendermint/tendermint/tree/main/crypto/sr25519) (go): GenPrivKeyFromSecret hashes the secret with SHA2, and uses that 32 byte output to create the private key.
+  - [snowbridge sr25519](https://github.com/Snowfork/snowbridge/tree/main/relayer/crypto/secp256k1)
+
+---
+
+## Light clients
+
+### Overview
+
+### References
+
+- [Building Helios: Fully trustless access to Ethereum](https://a16zcrypto.com/building-helios-ethereum-light-client/): a Rust-based Ethereum light client we developed that provides fully trustless access to Ethereum.
+- [Annotated Ethereum Roadmap](https://notes.ethereum.org/@domothy/roadmap#Annotated-Ethereum-Roadmap)
+-
+
+---
+
+## Fraud proofs
+
+### Overview
+
+Following is an excerpt from Fraud and Data Availability Proofs:Detecting Invalid Blocks in Light Clients [^1].
+
+> Light clients, also known as Simple Payment Verification (SPV) clients, are nodes which only download a small portion of the data in a blockchain, and use indirect means to verify that a given chain is valid. Instead of validating blocks, they assume that the chain favoured by the blockchain’s consensus algorithm only contains valid blocks, and that the majority of block producers are honest. By allowing such clients to receive fraud proofs generated by fully validating nodes that show that a block violates the protocol rules, and combining this with probabilistic sampling techniques to verify that all of the data in a block actually is available to be downloaded so that fraud can be detected, we can eliminate the honest-majority assumption for block validity, and instead make much weaker assumptions about a minimum number of honest nodes that rebroadcast data. Fraud and data availability proofs are key to enabling on-chain scaling of blockchains while maintaining a strong assurance that on-chain data is available and valid. We present, implement, and evaluate a fraud and data availability proof system.
+
+Here is an overview of how NEAR bridge uses this in an optimistic approach
+
+The leading NEAR Ethereum Bridge today Near Rainbow Bridge uses an optimistic approach. Following is an excerpt from NearOnEthClient [^near-1].
+
+> we adopt the optimistic [^near-2] approach where NearOnEthClient verifies everything in the NEAR header except the signatures. Then anyone can challenge a signature in a submitted header within a 4-hour challenge window. The challenge requires verification of a single Ed25519 signature which would cost about 500k Ethereum gas (expensive, but possible).
+
+### Footnotes
+
+[^1]: [Fraud and Data Availability Proofs:Detecting Invalid Blocks in Light Clients](http://www0.cs.ucl.ac.uk/staff/M.AlBassam/publications/fraudproofs.pdf): Fraud and data availability proofs are key to enabling on-chain scaling of blockchains while maintaining a strong assurance that on-chain data is available and valid.
+[^near-1]: [NEAR: ETH-NEAR Rainbow Bridge](https://near.org/blog/eth-near-rainbow-bridge/): a bridge, called Rainbow Bridge, to connect the Ethereum and NEAR blockchains.
+[^near-2]: [Optimistic Contracts](https://medium.com/@deaneigenmann/optimistic-contracts-fb75efa7ca84): contracts that accept all information as fact until proven to be non-factual. This allows for a reduction in the cost of verifying data, as on-chain verification would only be necessary when one is sure that the data is false.
+
+---
+
+## Fast Fourier transforms
+
+### Overview
+
+### References
+
+- [Fast Fourier Transforms](https://vitalik.ca/general/2019/05/12/fft.html)
+
+---
+
+## Weak subjectivity
+
+### Overview
+
+Following is an excerpt from _Analysis on Weak Subjectivity in Ethereum 2.0_ [^1] .
+
+> Weak subjectivity [^2] is a social-consensus-driven approach for solving the fun- damental “nothing-at-stake” problem of proof-of-stake protocols. In particular, it addresses the problem in the presence of long-range forks, while the slash- ing mechanism handles the case of short-range forks. Specifically, the current weak subjectivity mechanism deals with the following two types of long-range attacks [^3]
+>
+> – _Exploiting retired validators:_ Adversaries can create and reveal a new chain branching from a certain block on the canonical chain, after 2/3 of validators who were active for the block have exited. Note that such validators can still justify and finalize conflicting blocks at earlier slots without being slashed after they have exited.
+>
+> – _Exploiting diverging validator sets:_ Adversaries can build a new chain until the validator set for the new chain is sufficiently different from that of the canonical chain. The larger the difference between the two validator sets, the lower the accountable safety tolerance. For example, if the intersection of the two sets is smaller than 2/3 of each set, then it is possible to have conflicting blocks to be finalized without any validators violating the slashing conditions.
+>
+> _It is unknown whether this mechanism can deal with other types of long-range attacks, if any, in general._
+>
+> The current weak subjectivity mechanism employs a social consensus layer in parallel to maintain sufficiently many checkpoints (called weak subjectivity check- points) so that there exist no conflicting finalized blocks that are descendants of the latest weak subjectivity checkpoint. In other words, the purpose of the latest weak subjectivity checkpoints is to deterministically identify the unique canonical chain even in the presence of conflicting finalized blocks caused by the long-range attacks.
+
+### References
+
+Articles and guides
+
+- [Weak Subjectivity in Eth2.0](https://notes.ethereum.org/@adiasg/weak-subjectvity-eth2): This document is aimed for Eth2.0 client teams to understand weak subjectivity periods and their implication.
+
+- [Phase 0 -- Weak Subjectivity Guide](https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/weak-subjectivity.mdx): This document is a guide for implementing the Weak Subjectivity protections in Phase 0.
+
+Documentation
+
+- [Ethereum Docs: WEAK SUBJECTIVITY](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/weak-subjectivity/): This refers to a chain that can progress objectively after some initial seed of information is retrieved socially.
+
+- [Teku Docs: Weak Subjectivity](https://docs.teku.consensys.net/Concepts/Weak-Subjectivity/): The weak subjectivity period refers to how far behind the chain head a node can be before 1/3 of validators may have exited since the node was last in sync.
+
+Implementations
+
+- [Prysm: weak_subjectivity_checks.go](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/blockchain/weak_subjectivity_checks.go)
+  - [NewWeakSubjectivityVerifier](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/blockchain/weak_subjectivity_checks.go#L31) validates a checkpoint, and if valid, uses it to initialize a weak subjectivity verifier.
+  - [VerifyWeakSubjectivity](https://github.com/prysmaticlabs/prysm/blob/develop/beacon-chain/blockchain/weak_subjectivity_checks.go#L52) verifies the weak subjectivity root in the service struct.
+
+Footnotes
+[^1]: [Analysis on Weak Subjectivity in Ethereum 2.0](https://github.com/runtimeverification/beacon-chain-verification/blob/master/weak-subjectivity/weak-subjectivity-analysis.pdf):
+
+[^2]: [Proof of Stake: How I Learned to Love Weak Subjectivity](https://blog.ethereum.org/2014/11/25/proof-stake-learned-love-weak-subjectivity):
+
+[^3]: It is unknown whether this mechanism can deal with other types of long-range attacks, if any, in general

@@ -21,6 +21,28 @@ for (const group of presentation.presentationSidebar) {
   assert.equal(group.collapsed, true, `${group.text} must be collapsible`);
   assert.ok(group.items?.length, `${group.text} must contain navigable items`);
 }
+const archiveNavigation = presentation.presentationSidebar.find((group) => group.text === "Archive");
+const archiveRoutes = (archiveNavigation.items ?? []).flatMap(function collectArchive(item) {
+  return [item.link, ...(item.items ?? []).flatMap(collectArchive)].filter(Boolean);
+}).filter((route) => route !== "/archive");
+assert.equal(archiveRoutes.length, 60, "Archive must expose every approved historical target");
+assert.equal(new Set(archiveRoutes).size, 60, "Archive targets must not be duplicated");
+assert.equal(archiveRoutes.includes("/product/solving/design"), false, "Excluded solver placeholders must remain absent");
+for (const route of archiveRoutes) {
+  assert.equal(
+    fs.existsSync(`docs/pages${route}.mdx`),
+    true,
+    `Archive target must retain its route file: ${route}`,
+  );
+}
+const archiveResearch = archiveNavigation.items.find((item) => item.text === "Research");
+const historicalPrimitives = archiveResearch.items.find((item) => item.text === "Historical Primitives");
+assert.deepEqual(historicalPrimitives.items, [{ text: "Primitives", link: "/research/primitives/intro" }]);
+for (const family of ["Historical Chains", "Historical Code Reviews", "Historical Bridges", "Historical Zero Knowledge"]) {
+  const item = archiveResearch.items.find((candidate) => candidate.text === family);
+  assert.equal(item.collapsed, true, `${family} must remain collapsible`);
+  assert.ok(item.items.length > 1, `${family} must expose its historical pages`);
+}
 const publicNavigationRoutes = presentation.presentationSidebar.flatMap(function collect(item) {
   return [item.link, ...(item.items ?? []).flatMap(collect)].filter(Boolean);
 });
@@ -78,9 +100,13 @@ assert.equal(validator.readingTimeMinutes("word ".repeat(1_125)), 5);
 assert.deepEqual(validator.validatePublications(process.cwd()), []);
 
 const manifests = fs.readdirSync("docs/public/data/publications").filter((name) => name.endsWith(".json"));
-assert.equal(manifests.length, 25);
+assert.equal(manifests.length, 26);
 assert.equal(manifests.includes("collection-portfolio-strategy-competitor-analysis.json"), false);
 assert.equal(manifests.filter((name) => name === "work-salus.json").length, 1);
+assert.equal(
+  manifests.includes("research-cryptographic-and-mathematical-primitives.json"),
+  true,
+);
 
 const salusManifestPath = path.join("docs/public/data/publications", "work-salus.json");
 const salusManifest = JSON.parse(fs.readFileSync(salusManifestPath, "utf8"));
@@ -92,6 +118,30 @@ for (const privateField of ["source", "reviews", "lifecycle_state", "publication
 const salusPage = fs.readFileSync("docs/pages/work/salus.mdx", "utf8");
 assert.match(salusPage, /Generated canonical editorial projection/);
 assert.doesNotMatch(salusPage, /KNOWLEDGE BASE REVIEW|Provisional production|github\.com\/jincubator\/knowledge-base|\/Users\//i);
+
+const primitivesPage = fs.readFileSync("docs/pages/research/primitives/intro.mdx", "utf8");
+assert.match(primitivesPage, /^# Cryptographic and Mathematical Primitives$/m);
+for (const heading of [
+  "Reference implementations and primitive families",
+  "Signature schemes in consensus protocols",
+  "Light clients",
+  "Fraud proofs",
+  "Fast Fourier transforms",
+  "Weak subjectivity",
+]) {
+  assert.match(primitivesPage, new RegExp(`^## ${heading}$`, "m"));
+}
+assert.doesNotMatch(primitivesPage, /\/Users\/|github\.com\/jincubator\/knowledge-base/i);
+for (const route of [
+  "fast-fourier-transforms",
+  "fraud-proofs",
+  "light-clients",
+  "primitives",
+  "signatures",
+  "weak-subjectivity",
+]) {
+  assert.equal(fs.existsSync(`docs/pages/research/primitives/${route}.mdx`), true);
+}
 
 const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "jincubator-publication-"));
 try {
