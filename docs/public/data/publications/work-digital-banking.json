@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "artifact": {
     "id": "work/digital-banking",
     "type": "work",
@@ -11,30 +11,16 @@
     "label": "Work",
     "reading_time_minutes": null
   },
-  "source": {
-    "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "work/digital-banking/README.md",
-    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
-    "revision_date": "2026-07-22"
-  },
-  "lifecycle_state": "ready to publish",
-  "publication_status": "not published",
-  "reviews": {
-    "technical": "Approved",
-    "claim": "Approved",
-    "editorial": "Approved"
-  },
   "generator": {
-    "name": "knowledge-base-publication",
-    "version": 2
+    "name": "jincubator-publication",
+    "version": 4
   },
   "outputs": [
     {
       "destination": "docs/pages/work/digital-banking.mdx",
       "media_type": "text/mdx",
-      "sha256": "8c54dbda47af93e0915dd0d9eee3f254921c88616f28fb8ea7335fe48359657e"
+      "sha256": "e34c568e931d222ef64f0faaddad422e45851b80b078562c299ab584ac871bdd"
     }
   ],
-  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
-  "publication_date": null
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
 }

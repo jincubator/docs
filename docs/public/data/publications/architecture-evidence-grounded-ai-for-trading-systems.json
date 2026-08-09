@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/evidence-grounded-ai-for-trading-systems",
+    "type": "architecture",
+    "title": "Evidence-Grounded AI for Trading Systems"
+  },
+  "route": "/architecture/evidence-grounded-ai-for-trading-systems",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/evidence-grounded-ai-for-trading-systems.mdx",
+      "media_type": "text/mdx",
+      "sha256": "000a8885e16e30a296b001588db0af87cb9b5a9c0e660fcecfb7517a8a75b9b2"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

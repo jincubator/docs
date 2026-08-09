@@ -1,0 +1,162 @@
+---
+title: "Inspectable Read Models for Trading Systems"
+description: "Current read models, warm starts, runtime-only state, evidence artifacts, and authority boundaries."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Inspectable Read Models for Trading Systems
+
+Trading-system persistence is credible when authoritative observations, derived current views, runtime-only state, and retained evidence artifacts remain distinguishable.
+
+## The design problem
+
+Event-driven systems need fast startup, inspection, and scoped lookups. Persisting a current graph and route catalog can avoid rebuilding everything after a restart. But a convenient table can be mistaken for a historical ledger, a complete state snapshot, or proof that a later execution used the rows exactly as stored.
+
+The architecture must answer four questions for every durable structure:
+
+1. What fact or derivation does it represent?
+2. Which producer owns it?
+3. Which consumers may treat it as authoritative?
+4. Which relevant facts are intentionally absent?
+
+## Authority and derivation
+
+Separate persistence into explicit classes.
+
+**Authoritative source observations** retain externally sourced facts with identity, provenance, completeness, and version. Not every system can or should retain them indefinitely.
+
+**Derived current read models** support startup and query. They may represent tokens, components, graph metadata, route summaries, ordered legs, and membership indexes. They are authoritative for the application's current persisted view, not for all historical states.
+
+**Runtime-only frames** include decoded protocol simulators, current reserves, pricing context, queues, admission decisions, preflight results, nonces, and in-flight work. Persisting one current topology does not imply these existed durably.
+
+**Evidence artifacts** retain selected evaluation, execution, receipt, metric, or analysis records. Files and relational rows can have different atomicity and retention. They need typed identities and completion status rather than an assumed row order.
+
+Naming a route table “canonical” is insufficient. Canonical for warm-start lookup is different from canonical chain history or canonical commercial accounting.
+
+## Current snapshot model
+
+A practical trading read model can keep:
+
+- token and protocol-component identity;
+- ordered component-token relationships;
+- graph-generation metadata;
+- route summaries and ordered legs;
+- component-to-route and start-token membership; and
+- compact run summaries for selected analytics.
+
+This supports warm start, inspection, scoped route refresh, and later evaluation joins. The model should be bounded by one chain or target identity. If the schema omits an explicit chain field, deployment and resolver controls must prevent two chains from sharing one database identity.
+
+Current-state replacement is often simpler than preserving every mutation. Full replacement can be transactional. Incremental updates can replace one affected route family while keeping topology and derived membership tables in the same generation.
+
+## Write and consistency boundaries
+
+The strongest boundary is one transaction for one coherent read-model change. A graph replacement should not expose new components with old routes. A scoped route replacement should update summaries, legs, membership, and graph metadata together.
+
+Filesystem artifacts usually sit outside the database transaction. An analytics command may write route-level files and then upsert a summary row. Either step can fail independently. The architecture should preserve that gap:
+
+- give the artifact set a run identity;
+- record which files were completed;
+- make summary availability independent from route-detail availability;
+- reject conflicting stable IDs; and
+- never infer a missing detailed result from an aggregate row.
+
+Bounded writers may drop diagnostic records to protect a hot path. A completion marker or writer-health record should keep those runs explicitly incomplete.
+
+## Warm start and recovery
+
+A warm start should validate compatibility before using persisted data:
+
+- target or chain identity;
+- schema and migration set;
+- graph or topology identity;
+- route count and hop policy;
+- blacklist or safety-policy compatibility; and
+- generation of derived scope indexes.
+
+After hydration, live state can advance the runtime. The system should record whether a route came from warm state, refreshed topology, or a new discovery. A read model is a starting point, not permission to skip live readiness.
+
+Restart recovery for attempted actions requires a different evidence contract. It may need durable attempt identity, transaction or bundle identity, signer and nonce, lifecycle state, provider checks, receipt facts, and canonical target-block context. Route read models do not supply those facts.
+
+## Provenance, reorg, and history
+
+A current snapshot that stores only a block number cannot establish historical canonicality. Stronger claims need block hash, parent, state root where applicable, producer/version, completeness, reorg treatment, and finality status.
+
+Append-only history can support audit and replay but multiplies storage, privacy, migration, and conflict-resolution costs. Build it only when a named consumer and retention policy justify it. Current-view tables plus separately retained evidence are often the simpler truthful design.
+
+Durable submission and causal-comparison artifacts therefore remain separate
+from current Postgres read models. They may reference the same stable
+identities, but they carry different completeness and retention contracts and
+do not turn a current projection into settlement or canonical-history
+authority.
+
+## Failure modes and controls
+
+Common failures include:
+
+- a derived cache being treated as external source truth;
+- storage from the wrong chain or environment;
+- route summaries advancing without their ordered legs;
+- current topology being described as historical state;
+- runtime-only quotes or gas defaults filling gaps in retained evidence;
+- file and database outputs being assumed atomic;
+- receipt rows becoming profit rows without token-flow reconciliation; and
+- restart logic trusting a partial terminal record.
+
+Controls include schema versioning, target isolation, transactions, stable IDs, deterministic derivation, generation checks, typed missing reasons, completion markers, bounded readers, and no-replace publication of immutable evidence packages.
+
+## Trade-offs
+
+Normalized relational tables make route and component queries explicit but may require joins during startup. Materialized aggregates reduce query cost but introduce another derivation to validate.
+
+Persisting decoded protocol state can improve replay but creates versioning and provenance obligations for heterogeneous simulator state. Retaining it only in typed evidence packages may be more appropriate until a historical-state consumer exists.
+
+## Applying the pattern
+
+Salus uses current Postgres topology and route read models, runtime-only decoded state, and separate filesystem evidence surfaces. Its exact schemas and operational paths remain implementation documentation. The reusable lesson is to state what each durable surface owns and refuses to prove.
+
+The pattern applies to settlement systems, workflow engines, search indexes, and projections in any CQRS-style architecture.
+
+## Engineering Implementation Notes
+
+### The read model carries continuity state
+
+```rust
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SimulationProtocolSourceState {
+    pub status: SimulationSynchronizerStatus,
+    pub header: Option<StreamBlockHeader>,
+    pub continuity_epoch: u64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum SimulationContinuityIssue {
+    MissingEvaluationHeader,
+    ConflictingBlockIdentity,
+    ParentHashMismatch,
+    BlockGap,
+    OutOfOrderBlock,
+    Revert,
+    PartialBlock,
+    StreamRestart,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct SimulationStreamSourceContext {
+    pub evaluation_header: Option<StreamBlockHeader>,
+    pub protocol_states: BTreeMap<String, SimulationProtocolSourceState>,
+    pub continuity_epoch: u64,
+    pub issues: BTreeSet<SimulationContinuityIssue>,
+}
+```
+
+The in-memory view retains both the available state and the reasons it may not
+be comparable. Ordered maps and sets make a snapshot inspectable and stable
+for reporting, while continuity issues remain data rather than incidental log
+messages.
+
+## Related research and architecture
+
+- [From Liquidity State to Route Graphs](/architecture/liquidity-state-to-route-graphs) owns graph and catalog derivation.
+- [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence) explains the inputs a replay cannot recover from a thin read model.
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) provides the complete evidence-state path.

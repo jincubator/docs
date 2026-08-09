@@ -1,0 +1,193 @@
+---
+title: "Backpressure and Queue Ownership"
+description: "Typed queues, bounded capacity, domain-owned freshness, explicit lifecycle, and visible loss."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Backpressure and Queue Ownership
+
+High-throughput systems remain understandable when queues transport typed work while the domain owner decides freshness, coalescing, retry, ordering, and shutdown.
+
+## The design problem
+
+Queues introduce time between observation and action. In a fast-changing system, FIFO delivery alone is not enough: an item can be perfectly ordered and already stale. At the same time, aggressively dropping old work can corrupt persistence, omit required state transitions, or reorder an execution lifecycle.
+
+A reusable queue layer should know capacity, send behavior, receiver lifecycle, and transport metrics. It should not decide that one block supersedes another, that route refreshes can merge, that an execution can retry, or that a persistence write may be skipped. Those are domain facts.
+
+## Queue policy belongs to the domain
+
+The recurring boundary is:
+
+```text
+domain producer
+  -> typed work item
+  -> bounded monitored channel
+  -> worker or stage adapter
+  -> domain service
+  -> typed completion and lifecycle evidence
+```
+
+Generic mechanics can provide:
+
+- typed send and receive;
+- bounded capacity;
+- block-producer or drop behavior;
+- depth and send counters;
+- closed-channel errors; and
+- delegate success or failure metrics.
+
+The domain owner must provide:
+
+- whether every item must be processed;
+- whether newer work supersedes older work;
+- how superseded scopes merge;
+- what makes work stale;
+- whether in-flight work can be canceled;
+- deduplication identity;
+- retry ordering; and
+- drain, cancel, or abort behavior at shutdown.
+
+A policy name such as “latest wins” is not an implementation. Replacing one pending item with another is safe only when the replacement includes every still-relevant effect or the discarded effect is explicitly unnecessary.
+
+## Backpressure choices
+
+Three common strategies serve different correctness needs.
+
+**Block the producer.** Await capacity where dropping work would break state or execution ordering. This preserves accepted work but can propagate latency upstream. The blocked duration and count must be observable.
+
+**Drop newest diagnostics.** Nonessential telemetry may choose not to block the hot path. Dropped counts are part of the evidence; absence of a metric line must not be interpreted as absence of an event.
+
+**Coalesce domain work.** Route refresh, UI refresh, or cache rebuild work can often merge into a newest pending scope. Coalescing belongs in an application-specific structure because the merge operation depends on affected entities and generations.
+
+Dropping oldest, dropping newest, coalescing, and canceling in-flight work are four different behaviors. They should not share a vague enum value that hides which one occurs.
+
+## Freshness and ordering
+
+Queue order and domain order are distinct.
+
+FIFO answers which accepted message is received first. Freshness answers whether that message still describes the state on which a downstream decision may act. A block-aware worker may need to:
+
+- publish the newest observed revision;
+- remove queued metadata for older revisions;
+- drain a receiver backlog to the newest eligible item;
+- cancel compute that no longer has an eligible consumer; and
+- discard an in-flight result if a newer state arrived before completion.
+
+Previous-block analysis may intentionally retain older work, while a live latest-state path may discard it. The mode must be carried into queue policy and review evidence rather than implied by timing.
+
+Execution queues often need the opposite behavior. They may serialize attempts, deduplicate an identifier across queued and in-flight work, and process an eligible retry before new work. “Latest” would be the wrong abstraction there.
+
+## Ownership and concurrency
+
+Owned messages make asynchronous boundaries reviewable. The producer moves a complete work item into the queue; the worker owns the receiver; mutable coordinator state is not borrowed across an await.
+
+Short metadata updates can use ordinary locks, while async service calls may require async locks. Atomic revision and cancellation markers can keep hot checks cheap. These are implementation choices, but the architectural rule is stable: shared state communicates lifecycle and eligibility, not an unversioned shadow copy of the business object.
+
+Completion should be typed. A worker returns the result, source revision, processed scope, skipped or canceled status, and any metrics needed by the owner to apply it. Silent task termination is not a completion protocol.
+
+## Lifecycle and shutdown
+
+Startup must make queue ownership explicit: who holds senders, who owns the receiver, when the worker begins, and which dependencies are ready first.
+
+Shutdown must choose one of three outcomes per queue:
+
+1. **Drain** accepted work before closing when durability or ordered execution requires it.
+2. **Cancel bounded work** when stale computation has no value after shutdown.
+3. **Abort after a deadline** only with a visible incomplete result.
+
+Dropping the last sender is a useful close signal, but it is not the whole lifecycle. Background receipt tasks, completion channels, persistence writers, and metric writers may need separate joins and final flushes.
+
+## Observability
+
+Useful queue evidence includes capacity, current and maximum depth, sent, blocked, dropped, coalesced, canceled, stale-discarded, closed, processed, failed, and shutdown outcome counts. Transport counters should be separate from manager counters: a successful dequeue can still yield a domain rejection.
+
+Identifiers should link queued work to its source revision and completion. Without that join, queue throughput can look healthy while the system repeatedly processes stale or unusable work.
+
+## Failure modes and trade-offs
+
+Unbounded queues convert overload into memory growth and increasing staleness. Tiny blocking queues preserve work but can halt ingestion. Drop policies protect latency but can destroy correctness if applied to state or persistence. Coalescing reduces redundant work but makes merge correctness part of the design.
+
+More workers improve throughput only when the service is parallel-safe and results can be applied without violating ordering. A single receiver and bounded CPU fan-out can be simpler than multiplying queue layers.
+
+The latest bounded passive ordering-and-evidence pilot exposed catch-up
+pressure and produced too few complete comparison batches for promotion. The
+correct queue outcome is an incomplete evidence record and no promotion—not a
+relaxed liveness gate or an unsupported throughput claim.
+
+## Applying the pattern
+
+Salus uses generic typed queue mechanics alongside application-owned refresh, preparation, evaluation, persistence, execution, retry, and metrics behavior. The reusable lesson is the ownership split, not its specific capacities or tuning.
+
+The same pattern applies to stream processors, settlement workflows, indexing systems, background job runners, and any pipeline where freshness and correctness differ by stage.
+
+## Engineering Implementation Notes
+
+### Queue policy chooses waiting or loss, then records the outcome
+
+```rust
+impl<T: Send> MonitoredSender<T> {
+    pub async fn send(&self, item: T) -> Result<(), QueueSendError> {
+        match self.config.overflow_policy {
+            QueueOverflowPolicy::BlockProducer => self.send_with_backpressure(item).await,
+            QueueOverflowPolicy::DropNewest => self.try_send_now(item),
+            QueueOverflowPolicy::LatestWins => self.try_send_now(item),
+        }
+    }
+
+    async fn send_with_backpressure(&self, item: T) -> Result<(), QueueSendError> {
+        if self.inner.capacity() == 0 {
+            self.record_blocked_send();
+        }
+
+        self.inner.send(item).await.map_err(|_| {
+            self.record_closed_error();
+            QueueSendError::Closed {
+                queue_name: self.config.name.clone(),
+            }
+        })?;
+
+        self.record_send();
+        self.record_peak_depth(self.current_depth());
+        Ok(())
+    }
+
+    pub fn try_send_now(&self, item: T) -> Result<(), QueueSendError> {
+        match self.inner.try_send(item) {
+            Ok(()) => {
+                self.record_send();
+                self.record_peak_depth(self.current_depth());
+                Ok(())
+            }
+            Err(mpsc::error::TrySendError::Full(_)) => {
+                self.record_drop();
+                self.record_peak_depth(self.config.capacity);
+                Err(QueueSendError::DroppedByPolicy {
+                    queue_name: self.config.name.clone(),
+                })
+            }
+            Err(mpsc::error::TrySendError::Closed(_)) => {
+                self.record_closed_error();
+                Err(QueueSendError::Closed {
+                    queue_name: self.config.name.clone(),
+                })
+            }
+        }
+```
+
+The invariant is that queue pressure cannot be an invisible side effect.
+`BlockProducer` awaits capacity and records blocking; freshness-oriented
+policies use `try_send`, record the peak depth, and return a typed policy drop.
+A closed channel is recorded and returned as a different failure state.
+
+The operational trade-off is explicit: preserving every item can transfer
+latency upstream, while dropping work can protect freshness at the cost of
+intentional loss. Metrics and typed errors keep that decision available to the
+stage owner rather than hiding it in an adapter.
+
+## Related research and architecture
+
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) provides the surrounding stage model.
+- [Inspectable Read Models for Trading Systems](/architecture/inspectable-trading-read-models) covers the durable boundary queues may feed.
+- [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) explains why dropped and unavailable evidence must remain visible.
+- [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) applies stage-owned queue policy to affected-route evaluation under changing state.

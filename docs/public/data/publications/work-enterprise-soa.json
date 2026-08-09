@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/enterprise-soa",
+    "type": "work",
+    "title": "Enterprise SOA"
+  },
+  "route": "/work/enterprise-soa",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/enterprise-soa.mdx",
+      "media_type": "text/mdx",
+      "sha256": "6429496b2bb2233af33839bd0993f6e9ca5870e6255d876745db02e53955d75a"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

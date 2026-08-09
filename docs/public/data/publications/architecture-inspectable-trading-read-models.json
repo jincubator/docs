@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/inspectable-trading-read-models",
+    "type": "architecture",
+    "title": "Inspectable Read Models for Trading Systems"
+  },
+  "route": "/architecture/inspectable-trading-read-models",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/architecture/inspectable-trading-read-models.mdx",
+      "media_type": "text/mdx",
+      "sha256": "2efed24c88b74f7a707abd0cd93be99c82b7598a33ab17fcbcddfe7bf058f055"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

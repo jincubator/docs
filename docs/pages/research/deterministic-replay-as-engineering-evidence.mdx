@@ -1,0 +1,134 @@
+---
+title: "Deterministic Replay as Engineering Evidence"
+description: "What repeatable replay results prove, which inputs must be retained, and why replay does not establish live execution."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Deterministic Replay as Engineering Evidence
+
+Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
+
+## The question
+
+When does deterministic replay constitute credible engineering evidence?
+
+A replay is valuable because it turns an observed or constructed state into a repeatable input for evaluation, regression testing, and dry-run materialization. The same command can be run after a code change and its outputs compared. That does not mean the replay reconstructs everything that happened in a live market or proves what would have happened on-chain.
+
+The distinction matters most when a replay result is used to support a claim. “This evaluator returns the same result for this retained input” is narrower than “this was the market state,” which is narrower than “this route could have been included,” which is narrower again than “this execution would have produced realized profit.”
+
+## Method
+
+The investigation reviewed the current Salus replay walkthrough and the
+implementation surfaces it described at the source revision reviewed on
+2026-07-29. It compared seven input and output boundaries:
+
+1. code revision;
+2. replay payload;
+3. configuration and blacklists;
+4. persisted route, component, and token read models;
+5. pricing and gas inputs;
+6. generated evaluation or dry-run artifacts; and
+7. live execution evidence that replay does not produce.
+
+No new live benchmark, historical reconstruction, transaction, or execution test was run. The method is a source-bounded evidence analysis, not an empirical comparison of multiple replay systems.
+
+## Evidence boundary
+
+Current replay is a family of bounded workflows rather than a single self-contained historical runtime. It can rebuild route read models from a fixture, evaluate one or more retained batches, construct local dry-run candidates, and feed a non-submitting analytics path.
+
+The retained replay payload is only one part of the input. Evaluation may also depend on current database read models, token and component metadata, route summaries and legs, configuration, blacklists, gas defaults, and code behavior. Unless those dependencies are pinned and retained together, repeating the JSON payload alone does not reproduce the original decision environment.
+
+Two replay forms expose different limits:
+
+- reserve-snapshot replay supports a bounded approximation for retained fixtures;
+- decoded protocol-state replay exercises protocol-specific simulators and rejects a route when only some legs have decoded state.
+
+Both forms can support regression evidence. Neither becomes canonical live-state authority merely because it carries a block number. Strong historical claims also require block identity, source provenance, completeness, ordering, relevant configuration, and an explanation of how mutable external data was captured.
+
+## Findings
+
+Replay supports four useful classes of claim.
+
+**Deterministic transformation.** Given the same complete declared inputs and code, a pipeline can demonstrate that it derives the same normalized state, route evaluation, classification, or output artifact.
+
+**Regression detection.** A changed output can expose a code, schema, configuration, or dependency change. The comparison is strongest when the producer, inputs, expected output, and allowed tolerances are explicit.
+
+**Boundary validation.** Replay can confirm that malformed, unsupported, incomplete, or stale inputs fail in the expected way. Negative results are evidence when they remain visible.
+
+**Local candidate construction.** Dry-run workflows can test whether an evaluation artifact can become a structurally valid execution candidate without signing, preflight, broadcast, receipt, or token-flow effects.
+
+Case-specific point-in-time reconstruction can also explain why one observed
+decision changed when selected inputs changed. That is bounded causal
+evidence, not a reusable canonical-chain replay backend: it remains limited by
+the retained route universe, source identity, ordering, configuration, and
+unavailable state.
+
+Replay does not by itself establish:
+
+- that the retained input was complete or canonical live state;
+- that route catalogs and market state described the same historical instant;
+- that a quote survived later ordering, latency, or liquidity changes;
+- that calldata would pass RPC preflight;
+- that a transaction was signed, submitted, included, or finalized; or
+- that receipt gas, token flows, funding, and settlement reconciled to realized profit.
+
+## What must be retained
+
+A reviewable replay package should identify:
+
+- producer and schema version;
+- code revision;
+- source chain and block identity;
+- state authority and completeness;
+- route-universe identity;
+- configuration and policy inputs that affect the result;
+- token, component, pricing, gas, and funding inputs;
+- expected outputs and comparison rules; and
+- unavailable facts that prevent a stronger interpretation.
+
+Content addressing can prove that retained bytes did not change. It cannot prove that those bytes were complete, authoritative, or independently obtained. Provenance and evidence class must therefore travel alongside hashes.
+
+## Limitations
+
+- This research uses one evolving implementation as its primary case.
+- It does not compare replay products or establish a universal storage format.
+- Several current replay paths still join retained payloads with mutable storage or configuration.
+- A deterministic result can remain self-referential when the same code produces both the subject and expected output.
+- Historical route truth, state root, transaction ordering, reorg handling, and finality are not inferred when they are absent.
+- No live result is converted into replay evidence by this page.
+
+## Implications
+
+Teams should state replay claims in the form “fixed inputs X under revision Y produced result Z through boundary B.” If an input was not retained, name it as unavailable rather than allowing a default to impersonate history.
+
+Replay should sit inside a validation portfolio. Unit tests prove local invariants; replay proves bounded transformation; independent comparisons can corroborate selected fields; preflight tests a later state view; submission and receipt evidence establish operational progress; reconciliation establishes financial outcome. No layer should inherit the meaning of the next.
+
+## Engineering Implementation Notes
+
+### Replay begins with a typed source identity
+
+```rust
+pub struct SourceBlockIdentityV1 {
+    pub schema_version: u16,
+    pub chain: ChainName,
+    pub chain_id: u64,
+    pub block_number: u64,
+    pub block_hash: String,
+    pub parent_hash: Option<String>,
+    pub block_timestamp_unix_seconds: Option<i64>,
+    pub state_root: SourceBlockStateRootV1,
+}
+```
+
+Replay input is not represented as an unqualified block number. The identity
+binds chain, height, hash, parent, time, and state-root availability so a
+replay result can state what it was evaluated against and refuse a weaker
+substitute.
+
+## Related work and architecture
+
+- [Salus](/work/salus) provides the bounded Work context.
+- [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) provides the evidence taxonomy applied here.
+- [High-Performance Route Evaluation](/research/high-performance-route-evaluation) defines the measured subjects that replay must not conflate.
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places replay inside a larger observed-state-to-outcome sequence.

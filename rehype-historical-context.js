@@ -10,7 +10,8 @@ function routeFromFile(file) {
     : source.replace(/^docs\/pages\//, "");
   if (!relative.endsWith(".mdx")) return null;
   const stem = relative.slice(0, -4);
-  return stem === "index" ? "/" : `/${stem}`;
+  if (stem === "index") return "/";
+  return stem.endsWith("/index") ? `/${stem.slice(0, -6)}` : `/${stem}`;
 }
 
 
@@ -54,7 +55,7 @@ export function rehypeHistoricalContext() {
           {
             type: "element",
             tagName: "a",
-            properties: { href: "/archive/intro" },
+            properties: { href: "/archive" },
             children: [{ type: "text", value: "Archive" }],
           },
           { type: "text", value: " for context." },

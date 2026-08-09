@@ -1,0 +1,141 @@
+---
+title: "From Liquidity State to Route Graphs"
+description: "Deterministic graph, route-catalog, scoped-refresh, and warm-start boundaries for market-state systems."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# From Liquidity State to Route Graphs
+
+A trading system needs a stable graph and catalog boundary between changing protocol state and later strategy decisions. This architecture explains what to normalize, what to preserve, and what must remain outside the mapping layer.
+
+## The design problem
+
+Protocols expose different pool types, token sets, fees, state models, and update semantics. A route evaluator cannot efficiently rediscover all of those details for every block, yet a generic graph that erases protocol semantics is unsafe: two edges with the same tokens may quote, update, fund, and fail differently.
+
+The mapping layer needs to normalize topology without pretending topology is executable state. It should answer which tokens and components are connected, which bounded closed paths exist, and which known routes are affected by a component change. Profitability, live simulation, gas, funding readiness, and execution remain later responsibilities.
+
+## Graph and catalog boundaries
+
+The reusable flow is:
+
+```text
+source component and token observations
+  -> validated topology records
+  -> directed token adjacency graph
+  -> bounded deterministic route discovery
+  -> route catalog and membership indexes
+  -> component-scoped refresh
+  -> later state coverage, evaluation, and execution gates
+```
+
+The graph owns connectivity. A component with several tokens becomes directed token-to-token edges while retaining component and protocol identity. The graph does not attach an output quote to an edge because output depends on changing protocol state and input size.
+
+The route catalog owns stable, bounded candidates. Each route retains ordered component and token legs. An index can then support lookup by route, component, token, or start token without rerunning full discovery for every state update.
+
+The evaluator owns economics. A catalog route is not an opportunity, a selected execution, or a profitable result. Keeping this boundary explicit prevents catalog size from becoming an accidental performance or commercial claim.
+
+## Deterministic construction
+
+Determinism requires more than choosing a graph library. Source records need stable identities and an explicit ordering before they become edges. Route discovery needs bounded hop count, a defined cycle rule, prevention of invalid component reuse, deterministic traversal order, and a stable route identifier derived from the ordered legs and any execution-relevant funding identity.
+
+Deterministic maps and sets can make output ordering reviewable. They are not automatically the fastest choice, so hot-path indexes may use other structures where profiling justifies them. The contract is that equivalent inputs produce the same catalog identity and membership, regardless of worker scheduling.
+
+Blacklists and admission rules need named ownership. A topology blacklist may prevent an unsafe component from entering the graph. A strategy token or route policy belongs later. Mixing them makes it impossible to tell whether a missing route reflects market topology, safety policy, or economic selection.
+
+## Incremental updates
+
+A live system should separate topology change from state-only change.
+
+- A newly discovered or removed component can change connectivity and requires a scoped graph and route refresh.
+- A reserve, tick, balance, or other state update may affect known routes without changing topology.
+- Metadata-only change may require a record update without rediscovering paths.
+
+Component-to-route membership lets state-only updates identify affected known routes. Start-token membership lets a topology refresh replace one route family rather than rebuilding the whole catalog. A generation or topology identity prevents a cache built from an old catalog from silently serving the new one.
+
+Latest-wins coalescing can be appropriate for pending topology refreshes when the newest job includes the affected scope of superseded work. It is unsafe when replacement drops a component or start token that only the older job carried. Merge semantics must therefore be domain-owned and testable.
+
+State-change processing can preserve immutable component, pair, route, and
+route-family identities while recording per-update observations for the
+affected scope. Those joins support later comparison and explanation. The
+graph mapper still does not rank routes, prove opportunity causation, calculate
+profit, or authorize execution.
+
+## Warm start and persistence
+
+Persisted topology and route summaries can reduce cold-start work. Their role should be described as a current read model, not an append-only historical ledger. Warm start must validate chain or environment identity, schema, graph identity, route count, and compatibility with current hop and safety policies.
+
+Runtime catalogs can rebuild indexes from persisted summaries, then advance with live topology. Decoded protocol simulation state should remain separate unless the storage contract explicitly retains its source, version, completeness, and update semantics.
+
+Persistence creates a dual-write risk: graph topology, route families, and derived scope tables must advance coherently. Transactional replacement for a bounded scope is safer than independently updating several lookup tables and hoping consumers see one generation.
+
+## Controls and failure modes
+
+Important controls include:
+
+- reject malformed token or component identity;
+- retain protocol family and ordered token semantics;
+- bound path length and search work;
+- prevent invalid component or token reuse inside one candidate;
+- version route IDs when execution-relevant identity changes;
+- invalidate scope caches on catalog-generation change;
+- reject unsupported protocol state later rather than fabricating a generic quote;
+- make refresh cancellation and replacement observable; and
+- preserve zero-route and filtered-route results.
+
+Common failures are graph/catalog divergence, stale membership indexes, warm-start data from the wrong target, route IDs that omit meaningful funding or protocol identity, and state-only updates triggering unbounded rediscovery.
+
+## Trade-offs
+
+Precomputing a large route catalog makes later evaluation fast and inspectable but increases memory, persistence, and refresh cost. On-demand search reduces retained state but can repeat graph traversal during the hottest part of the pipeline.
+
+Broad normalization simplifies traversal but moves hidden protocol assumptions downstream. Protocol-specific graph types preserve semantics but can fragment common search. A practical design normalizes connectivity and identity while leaving state transition and quote behavior behind explicit protocol simulation interfaces.
+
+## Applying the pattern
+
+Salus provides one implementation example: topology flows into a directed graph, bounded route discovery, an indexed in-memory catalog, scoped refresh, and persisted read models. Its implementation-specific configurations and route behavior remain with the source repository.
+
+The same boundaries apply to path-finding across payment rails, logistics networks, service dependencies, and workflow graphs whenever changing edge state should not redefine graph identity.
+
+## Engineering Implementation Notes
+
+### Component updates own adjacency maintenance
+
+```rust
+fn upsert_component(&mut self, component: &IngestComponent) {
+    self.remove_component(&component.component_id);
+
+    if self.blacklist.contains(&component.component_id) {
+        return;
+    }
+
+    let topology = ActiveComponentTopology {
+        protocol_system: component.protocol_system.clone(),
+        token_addresses: component.token_addresses.clone(),
+    };
+    for edge in component_edges(
+        &component.component_id,
+        &component.protocol_system,
+        &component.token_addresses,
+    ) {
+        let token_in = edge.token_in.clone();
+        self.adjacency.entry(token_in).or_default().push(edge);
+    }
+    sort_adjacency(&mut self.adjacency);
+    self.components
+        .insert(component.component_id.clone(), topology);
+}
+```
+
+The graph update first removes the old component, then applies the current
+topology and restores a deterministic adjacency order. That ownership keeps
+topology maintenance distinct from downstream evaluation and makes the update
+surface inspectable.
+
+## Related research and architecture
+
+- [High-Performance Route Evaluation](/research/high-performance-route-evaluation) explains why catalog routes and evaluations need separate units.
+- [Protocol Simulation Boundaries](/architecture/protocol-simulation-boundaries) owns stateful quote semantics after topology.
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places graph and catalog state in the full decision path.
+- [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) follows the topology boundary into affected-route evaluation and its evidence limits.
+- [Salus](/work/salus) provides the governed Work context.

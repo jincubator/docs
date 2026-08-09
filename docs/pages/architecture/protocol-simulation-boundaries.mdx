@@ -1,0 +1,166 @@
+---
+title: "Protocol Simulation Boundaries"
+description: "Coverage, state, route-local mutation, economic semantics, provenance, and typed failure."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Protocol Simulation Boundaries
+
+Protocol simulation is safe to reuse when coverage, state provenance, route-local mutation, economic inputs, and failure semantics are explicit.
+
+## The design problem
+
+A multi-protocol route crosses implementations with different state, math, update, and execution semantics. A generic edge quote can hide the very differences that determine correctness. Yet the route evaluator needs one interface for amount-out simulation and state transition.
+
+The architecture must distinguish at least four support surfaces:
+
+- a protocol can be named in configuration;
+- an upstream stream can decode it;
+- an adapter can reconstruct it from a retained snapshot;
+- the live runtime can admit and evaluate it safely.
+
+These surfaces overlap but are not equivalent.
+
+## Coverage is a contract
+
+Coverage should be a machine-checkable matrix, not a marketing list. For each protocol family, record:
+
+- stream or source registration;
+- live-state decoder;
+- replay or snapshot decoder;
+- route-admission status;
+- required VM or account context;
+- hook or variant filters;
+- quote and state-transition tests;
+- execution support; and
+- unsupported or diagnostic-only status.
+
+Unknown configuration entries should not become supported routes. Decode success should not automatically widen live admission. A route is eligible only when every required leg, quote dependency, and real funding component has complete supported state for the relevant block frame.
+
+When state is missing or unsupported, reject explicitly. Falling back from decoded live state to a simpler reserve formula can produce plausible numbers with the wrong semantics.
+
+## State and ownership flow
+
+```text
+source update
+  -> protocol-specific decoded state
+  -> normalized state handle with source context
+  -> block-scoped route request
+  -> coverage filter
+  -> exact-input leg simulation
+  -> route-local transitions
+  -> economic classification
+```
+
+The source adapter owns stream registration, recovery, normalization, and decode errors. The runtime owns the block-scoped state frame, coverage, route selection, and queue handoff. The strategy owns amount search and classification. The evaluator owns exact-input leg simulation.
+
+This split avoids a “simulator service” that silently owns state acquisition, route policy, economic thresholds, and execution readiness at once.
+
+A passive state-change signal may narrow the affected route set or annotate
+why a candidate was reconsidered, but it does not replace exact leg simulation.
+Every admitted route still needs complete protocol state and route-local
+transition semantics for the relevant block frame.
+
+## Route-local state transitions
+
+A route may use the same component more than once. The second occurrence must see the state transition produced by the first, but that transition must not mutate the shared live frame used by another route.
+
+A safe evaluator:
+
+1. reads immutable simulator handles from the block frame;
+2. creates a route-local state map only when a component is reused;
+3. stores each simulated transition inside that route;
+4. passes the transitioned state to the later occurrence; and
+5. discards it after the route result.
+
+The shared live state remains read-only. Concurrent routes cannot contaminate one another, and one modeled route does not become market truth.
+
+## Numerical and economic boundaries
+
+Simulation should keep raw integer units and checked arithmetic through the protocol boundary. Token decimals apply during quote conversion. Fees need named units and rounding. Gas is a separately sourced quote input. Funding cost is separate from swap output.
+
+A protocol simulator answers “what does this state model return for this input?” Strategy may probe several inputs and search for an economically interesting amount. That search is not automatically a global optimum. Later execution still owns calldata, slippage, freshness, preflight, submission, receipt, and reconciliation.
+
+Simulation output is modeled evidence, not an inclusion or profit guarantee.
+
+## Provenance and replay
+
+A block label is useful but incomplete. Reviewable state should identify source block, producer, protocol family, decoder or simulator version, materialization status, update lineage, completeness, and any VM context.
+
+Replay may reconstruct simulator state from retained snapshots. It must reject routes where only some legs have decoded state if mixing with fallback math would change semantics. Historical claims also need route-universe and configuration provenance; a protocol snapshot alone is not enough.
+
+Content hashes protect retained bytes but do not prove that the source provided every required fact.
+
+## Failure handling
+
+Important failure classes include:
+
+- missing decoded state;
+- unsupported protocol or variant;
+- incomplete VM context;
+- source discontinuity or unmaterialized state;
+- quote error or panic;
+- output overflow;
+- invalid fee or token metadata;
+- duplicate component semantics that cannot be transitioned safely; and
+- coverage change between catalog and evaluation.
+
+Errors should become typed route rejections where possible. A nonfatal protocol quote detail can map to zero output only when that meaning is explicitly part of the simulator contract. Catching a panic protects the runtime but does not turn the route into a passing result.
+
+## Trade-offs
+
+Trait-based simulator interfaces let heterogeneous protocols share a route evaluator, but they can obscure capabilities that are not universal. Capability metadata and coverage gates compensate for that abstraction.
+
+Cloning reference-counted immutable state handles is cheap. Deep cloning every protocol state per route is simpler to reason about but can dominate cost. Route-local copy-on-transition is a useful compromise when source states support safe clone or transition semantics.
+
+Skipping decode failures keeps a stream alive but creates a completeness obligation. Downstream admission must see that state is absent rather than assuming the last value remains current.
+
+## Applying the pattern
+
+Salus uses decoded protocol state from a stream, an explicit live-admission gate, route-local transition state, and typed rejection. Replay and exact-route diagnostics have separate decode paths. Specific supported families and operational behavior remain in implementation documentation.
+
+The architecture applies to risk engines, pricing systems, workflow simulators, and digital twins where a shared interface spans heterogeneous state machines.
+
+## Engineering Implementation Notes
+
+### Simulation refuses a conflicting evaluation header
+
+```rust
+let mut issues = BTreeSet::new();
+let evaluation_header = candidates.first().and_then(|(_, first)| {
+    let first_identity = first.source_identity_v1();
+    if candidates
+        .iter()
+        .skip(1)
+        .any(|(_, header)| header.source_identity_v1() != first_identity)
+    {
+        issues.insert(SimulationContinuityIssue::ConflictingBlockIdentity);
+        return None;
+    }
+    let extractors = candidates
+        .iter()
+        .map(|(protocol, _)| protocol.as_str())
+        .collect::<Vec<_>>()
+        .join(",");
+    Some(StreamBlockHeader {
+        extractor: extractors,
+        ..(*first).clone()
+    })
+});
+if evaluation_header.is_none()
+    && !issues.contains(&SimulationContinuityIssue::ConflictingBlockIdentity)
+{
+    issues.insert(SimulationContinuityIssue::MissingEvaluationHeader);
+}
+```
+
+The simulation boundary withholds an evaluation header when otherwise-ready
+sources disagree about block identity. This is an implementation control, not
+proof that every protocol state is complete or that a candidate is executable.
+
+## Related research and architecture
+
+- [From Liquidity State to Route Graphs](/architecture/liquidity-state-to-route-graphs) owns topology before stateful quote semantics.
+- [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) explains the claim ceiling of simulation and parity.
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places simulation before execution.

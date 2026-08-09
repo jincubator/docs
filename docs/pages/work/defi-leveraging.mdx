@@ -1,0 +1,101 @@
+---
+title: "DeFi Leveraging — Protocol and Rebalancing Boundaries"
+description: "A bounded case study of leverage-token accounting, collateral-ratio control, automated rebalancing, and intent execution."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# DeFi Leveraging
+
+DeFi Leveraging is a bounded case study in designing leverage-token accounting, automated position rebalancing, and intent-based execution without confusing protocol safety with off-chain strategy.
+
+## Problem and constraints
+
+A leveraged position combines collateral, debt, equity, price exposure, lending-market rules, fees, and liquidation risk. Packaging that position as a transferable token makes the user experience simpler, but it does not remove the balance-sheet mechanics underneath it.
+
+The system must keep at least four concerns distinct:
+
+- share accounting for the holder's equity claim;
+- lending-market collateral and debt state;
+- safe transitions when the position moves outside its target range; and
+- off-chain decisions about timing, routing, liquidity, and execution.
+
+A contract can enforce accounting and post-state validity, but it cannot guarantee external liquidity, oracle freshness, transaction inclusion, or profitable execution. Conversely, an automated worker can choose a route and prepare a transaction, but it must not become the hidden authority for protocol solvency.
+
+The reviewed material spans an active core protocol and several mixed-maturity automation and intent components. That prevents one blanket maturity label: a source-backed contract or bot path is not evidence that every surrounding service is deployed, monitored, or operating successfully.
+
+## Leveraging workflow
+
+The core model treats a leverage token as an ERC-20 share of position equity:
+
+```text
+equity = collateral value - debt value
+collateral ratio = collateral value / debt value
+leverage = collateral ratio / (collateral ratio - 1)
+```
+
+The first two relationships are the accounting boundary; the leverage expression is a derived presentation of the same balance sheet. The reviewed design uses collateral ratio—not a generic health-factor claim—as the control variable.
+
+A bounded user flow works as follows:
+
+1. A manager reads collateral, debt, equity, and the configured lending and rebalance adapters.
+2. A router can wrap mint or redeem operations with a flash loan and swap so the user's equity input is converted into the complete collateral-and-debt action.
+3. The leverage token mints or burns shares representing equity rather than gross collateral.
+4. Lending adapters isolate market-specific balances, oracle conversion, interest accrual, and liquidation parameters from the manager.
+5. Fees and rounding remain explicit parts of preview and execution rather than being hidden behind an advertised leverage number.
+
+Position maintenance uses minimum, target, and maximum collateral-ratio bands. A position below the minimum is too debt-heavy; one above the maximum is under-levered relative to its target. On-chain rebalance adapters determine eligibility and validate that the resulting state moves toward the target without crossing it invalidly.
+
+Execution is layered. A Dutch-auction path can expose a rebalance to takers. A separate automation service can monitor eligibility, simulate an action, and decide whether to create or take an auction. An intent path can have a keeper construct an order and its constraints, while a solver separately receives an auction and builds candidate settlement interactions. Order creation is not settlement, and local test liquidity is not evidence of general market routing.
+
+## Contribution and scope
+
+The approved evidence supports John's architecture and integration contribution across:
+
+- decomposing the system into manager, token, lending-adapter, rebalance-adapter, router, automation, keeper, solver, and indexing boundaries;
+- tracing collateral, debt, equity, collateral-ratio, leverage, mint, redeem, and rebalance relationships back to source evidence;
+- separating contract-enforced validity from off-chain timing, routing, simulation, and settlement construction;
+- distinguishing active core components from work-in-progress keeper, solver, indexing, and liquidity paths; and
+- documenting the difference between a rebalance order, a candidate solution, a submitted transaction, and proven live operation.
+
+This is meaningful architecture work because it makes responsibility and failure surfaces reviewable. It does not establish that John personally authored every described contract or service. Exact role, team boundary, production ownership, and components personally implemented remain John-owned review items.
+
+No quantitative product outcome is claimed. The retained evidence supports a detailed system decomposition and source-backed workflow, not a performance benchmark, adoption result, commercial outcome, or deployment attestation.
+
+## Architecture and risk boundaries
+
+### Protocol authority
+
+The manager and adapters own accounting, eligibility, fees, and permitted post-state transitions. Upgrade authority, governance roles, configured markets, and deployed versions can change the safety boundary and require separate evidence.
+
+### Lending and price risk
+
+Collateral and debt values depend on market-specific balance and oracle behavior. Interest accrual, liquidation parameters, e-mode or equivalent market features, rounding, and stale data can change the safe operating range. A generic derivation cannot replace per-market validation.
+
+### Rebalancing and liquidity
+
+Ratio bands define when adjustment is allowed; they do not guarantee that a suitable swap, flash loan, auction taker, or solver route exists. Slippage, fees, inventory, transaction ordering, and failed execution remain external constraints.
+
+### Keeper and solver separation
+
+A keeper may observe state and construct an order. A solver may parse that order, evaluate liquidity, and construct settlement interactions. The separation limits authority and clarifies failure handling, but successful live settlement, accepted hook schemas, and production liquidity paths require evidence that this migration did not have.
+
+### Operations and observability
+
+Source-present workers, alerts, metrics, indexers, and dashboards describe implementation shape. They do not prove current deployment, coverage, service levels, response ownership, or historical reliability.
+
+## Status and limitations
+
+- The reviewed evidence supports an active core leverage-token architecture with mixed active, work-in-progress, test-only, and experimental surrounding components.
+- Exact deployed contract versions, enabled markets, role ownership, live workers, current dashboards, and operating configuration were not validated.
+- The intent keeper and solver paths are source-backed but work in progress; live end-to-end settlement was not established.
+- Local or mock liquidity validates a test boundary only. It does not establish production routing, price quality, capacity, or profitable execution.
+- Existing audit references were inventoried, but their scope and findings were not reviewed for this artifact; no security certification is implied.
+- No claim is made about a client relationship, customer deployment, commercial validation, adoption, revenue, volume, performance, or production outcome.
+- Exact dates, team boundaries, personal implementation scope, and approved public assets still require John's confirmation.
+
+## Related research and architecture
+
+- Continue to [Intent-Based Execution](/research/defi-protocol-engineering/intro) for evidence about mandates, solver authority, and execution claims.
+- Apply [Intent Execution Boundaries](/architecture/defi-systems/intents) when separating request construction, solving, settlement, and evidence.
+- Compare the execution handoffs with [Trading-System Execution Pipelines](/architecture/trading-system-execution-pipelines).

@@ -1,0 +1,114 @@
+---
+title: "Stablecoin Intents — Proof-Backed Settlement"
+description: "A bounded case study of stablecoin intent authorization, solver-funded destination execution, proving, and reward settlement."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Stablecoin Intents
+
+Stablecoin Intents is a bounded case study in coordinating source-chain rewards, destination-chain fulfillment, and proof-backed settlement across a multi-chain system.
+
+## Problem and constraints
+
+Moving a stablecoin outcome across chains is not one atomic action. A user authorizes a source-chain reward, a solver or filler advances destination liquidity, a destination contract records what happened, a prover carries acceptable evidence back, and a source contract decides whether the reward may be withdrawn or refunded.
+
+That creates several distinct questions:
+
+- What exact outcome did the user authorize?
+- Who is allowed to fund, fulfill, prove, withdraw, or refund?
+- Which chain owns each fact?
+- What evidence connects destination fulfillment to source-chain payment?
+- How are expiry, partial funding, replay, claimant identity, and failed proving handled?
+- Which party bears liquidity, gas, finality, and inventory risk while the chains disagree in time?
+
+An intent makes the requested outcome portable, but it does not make trust or settlement disappear. The system still needs durable identities, bounded call targets, explicit deadlines, exact token amounts, proof finality, and a source-side authority that will not release funds on an ambiguous claim.
+
+## Intent and settlement flow
+
+A generic stablecoin intent has two halves. The route names the destination chain, desired token outcome, recipient calls, and execution constraints. The reward names the source-chain assets, creator, deadline, and approved prover.
+
+The reviewed flow is:
+
+1. The user publishes an intent and funds its source-chain reward.
+2. The source contract derives a stable intent identity and associates the reward with a deterministic escrow boundary.
+3. A solver observes the intent, checks supported chains, targets, selectors, expiry, available destination liquidity, and basic economics.
+4. The solver advances destination assets and invokes the destination fulfillment boundary.
+5. The destination contract executes the authorized calls and records the claimant for the intent.
+6. A prover carries acceptable fulfillment evidence to the source-side proof state.
+7. The source contract verifies the claimant and destination before releasing the reward.
+8. If the deadline passes without valid proof, the creator follows a separate refund path.
+
+### Proof-backed reward release
+
+The key design principle is that destination execution and source payment are separate facts. A solver should not receive the source reward merely because it submitted a transaction or reported success.
+
+The reviewed material distinguishes two proof models:
+
+- a message-based path in which an approved cross-chain messaging system delivers the destination claim to a source-side prover; and
+- a storage-proof path that verifies a ladder of settlement-chain state, destination world state, destination account state, and the fulfilled-intent storage slot before recording the claimant.
+
+Those models have different trust, finality, configuration, and failure assumptions. Treating them as interchangeable would hide the real security boundary.
+
+## Contribution and scope
+
+The approved evidence supports two bounded dimensions of John's work.
+
+First, John led a team of eight engineers from 2023 through 2025 working on stablecoin, settlement, and intent-based payments infrastructure. The retained leadership material supports hiring and mentoring, architecture roadmaps, planning, and delivery. It does not supply an approved public quantitative business outcome, so this draft makes none.
+
+Second, the documented architecture contribution focuses on the proving boundary between destination fulfillment and source reward release. The reviewed local design decomposes a storage-proof ladder into:
+
+```text
+settlement-chain state
+  -> destination world state
+  -> destination account and fulfilled-intent storage
+  -> proven claimant
+  -> source reward withdrawal
+```
+
+John's architecture work made the trust differences among messaging, storage proofs, EVM storage, destination execution, solver services, and reward escrow explicit. The evidence also records a detailed source-to-destination walkthrough and separates current public architecture from an older local solver shape and a non-production proof branch.
+
+The page does not claim that John personally implemented every source, destination, solver, messaging, or escrow component. Exact design authority, code ownership, collaborators, and production operating responsibility remain John-owned review items.
+
+## Trust and security boundaries
+
+### Authorization
+
+An intent must bind creator, chains, assets, amounts, target calls, deadline, and prover. Solver flexibility is bounded by that mandate; it is not authority to invent a different outcome.
+
+### Escrow and reward state
+
+Funding, withdrawal, and refund are separate transitions. A deterministic vault or equivalent escrow boundary must not release the same reward to both claimant and creator, and partial or late funding must not silently change the authorized intent.
+
+### Destination execution
+
+The destination boundary must validate the intent identity, deadline, target calls, assets, and claimant before recording fulfillment. A transaction being included is not enough if the requested calls or amounts did not complete.
+
+### Proving
+
+A message-based prover depends on its mailbox, sender allow-list, security module, relayer path, and finality policy. A storage prover depends on block or state-root authority, settlement configuration, account-proof correctness, storage layout, mapping-slot construction, and chain-specific finality. Either model can fail through stale configuration or incorrect claimant binding.
+
+### Solver operations and liquidity
+
+The solver advances destination liquidity before receiving the source reward. It therefore bears inventory, exchange-rate, gas, proof-latency, and failure risk. Source-present queues, persistence, health checks, and cloud integrations describe an implementation shape but do not prove the production topology or its reliability.
+
+### EVM and non-EVM state
+
+Similar intent lifecycles can use different state primitives. An EVM mapping, account proof, and call sequence cannot be projected unchanged onto another runtime's account and program model. Interoperability requires preserving the lifecycle semantics while adapting the proof and authorization mechanisms.
+
+## Status and limitations
+
+- Publicly documented intent-routing concepts and reviewed local contract paths support the architecture described here.
+- The storage-proof branch is local, bounded, and non-production; shipped or current deployment status was not established.
+- The current public contract naming and an older local solver interface differ. This draft describes the stable lifecycle rather than presenting either snapshot as complete production topology.
+- Current deployed addresses, prover set, solver fleet, indexers, cloud services, dashboards, service levels, and operating ownership were not validated.
+- No partner, customer, client, endorsement, production-volume, performance, revenue, adoption, or commercial-success claim is made.
+- No approved quantitative outcome is available. Leadership scope is stated separately from business outcome.
+- No private solver detail, source-company identity, local path, screenshot, or diagram is included.
+
+## Related research and architecture
+
+- Continue to [Intent-Based Execution](/research/defi-protocol-engineering/intro) for mandate, solver, authorization, and evidence distinctions.
+- Apply [Intent Execution Boundaries](/architecture/defi-systems/intents) when separating intent creation, solving, settlement, and proof.
+- Compare the financial evidence model in [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro).
+- See [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) for authority, workflow, finality, and reconciliation patterns.

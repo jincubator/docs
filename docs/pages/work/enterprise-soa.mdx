@@ -1,0 +1,120 @@
+---
+title: "Enterprise SOA"
+description: "A public-safe case study of enterprise integration architecture, middleware control planes, service orchestration, and delivery leadership."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Enterprise SOA
+
+Enterprise SOA is a domain-based case study of the integration platforms John designed and delivered to connect core business systems, partner rails, customer workflows, and production operations without turning every dependency into a point-to-point interface.
+
+## Problem and operating context
+
+Large business workflows rarely live inside one application. An order might begin in a customer or commerce channel, require account and entitlement data from a CRM, pricing or fulfillment state from an ERP, a licensing decision, an external screening response, a logistics handoff, and updates back to several systems.
+
+A direct integration from every producer to every consumer creates a mesh of unstable dependencies. Each application must learn other systems' data models, protocols, release schedules, availability behavior, and exception semantics. A change to one endpoint can then affect many business processes, while failures become difficult to correlate across organizational boundaries.
+
+The work addressed four recurring constraints:
+
+- core systems had different data contracts, protocols, ownership, and change cycles;
+- external partners could not share internal assumptions or release processes;
+- business processes required ordered steps, response interpretation, and exception paths rather than a single request;
+- development, test, and production environments needed controlled configuration and promotion.
+
+The goal was not to hide complexity. It was to put that complexity behind explicit service boundaries, normalized contracts, orchestration, adapter ownership, and operational controls that delivery and support teams could reason about.
+
+## Integration architecture
+
+The recurring pattern was a service-oriented integration platform:
+
+```text
+business workflow trigger
+  -> stable service interface and canonical contract
+  -> middleware routing, transformation, and orchestration
+  -> core application or external partner adapter
+  -> correlated response, exception, and business-state update
+```
+
+Core systems remained owners of their business state. The integration layer owned cross-system movement: receive a request, validate it, map it into a stable internal form, select a receiver, transform it into the receiver's contract, call or enqueue the appropriate adapter, interpret the response, and return or publish a meaningful outcome.
+
+Synchronous request/response was only one pattern. Long-running or partner-dependent work needed asynchronous messages, acknowledgements, correlation identifiers, retry and timeout behavior, exception queues, and operational intervention. The middleware control plane made these decisions visible instead of burying them inside individual applications.
+
+The evidence includes classic enterprise middleware technologies and protocols: SAP PI/XI, TIBCO, SOAP/XML, BPM, message queues, EDI, FTP, HTTP, application adapters, and data mappings. Technology choice mattered, but the durable architecture was the separation among business trigger, contract, orchestration, system adapter, partner boundary, and operational evidence.
+
+## Contribution and scope
+
+The approved evidence supports John's contribution across architecture, delivery, and governance:
+
+- designed and delivered service-oriented and middleware architecture connecting ERP, CRM, commerce, entitlement, licensing, logistics, screening, and partner systems;
+- built routing, transformation, adapter configuration, request/response, monitoring, and error-handling patterns;
+- decomposed end-to-end business processes into stable service interfaces, orchestration steps, mappings, partner handoffs, and explicit exception paths;
+- standardized reusable practices across SOA, SOAP/XML, SAP PI/XI, TIBCO, and EDI/FTP/HTTP channels;
+- kept development, test, and production environments and their promotion boundaries visible in the architecture; and
+- led architecture planning, standards, implementation guidance, operating seams, and governance across distributed delivery.
+
+The work was not a single application or one middleware diagram. It was a portfolio of integration problems with a common method: decouple systems, normalize contracts, make cross-system state transitions explicit, and give teams a repeatable delivery and support model.
+
+The source does not support claiming that John personally wrote every mapping, adapter, service, or configuration. It also does not identify exact role, dates, team size, budget, delivery count, or production metric for each project. This page attributes the cross-project architecture and leadership scope the portfolio record supports and leaves the finer implementation boundary open.
+
+## Delivery and reliability decisions
+
+Several decisions made the platforms operable rather than merely connected:
+
+1. **Stable interfaces before application internals.** Business-facing contracts reduced the need for consumers to understand ERP, CRM, licensing, or partner-specific representations.
+2. **Middleware-owned orchestration.** Routing, receiver determination, mapping, sequencing, and response interpretation belonged in a governed control plane instead of being repeated in every endpoint.
+3. **Adapters as explicit ownership boundaries.** Application and partner adapters isolated protocol, authentication, channel, and data-shape differences.
+4. **Correlation across system boundaries.** Request identifiers, acknowledgements, response mapping, and exception state made a multi-step process supportable.
+5. **Asynchronous handling where partners or long-running work required it.** Queues and staged processing avoided tying business correctness to one uninterrupted call.
+6. **Environment separation and promotion discipline.** Development, test, and production configuration were distinct architecture concerns, especially for external endpoints and adapter channels.
+7. **Operational error paths in the design.** Retry, timeout, rejection, mapping failure, partner unavailability, and manual intervention needed explicit destinations and ownership.
+8. **Reusable standards over one-off integration.** Common contract, mapping, adapter, monitoring, and promotion patterns let distributed teams deliver consistently.
+
+These decisions came with trade-offs. A middleware platform introduced another runtime and operational layer. Canonical contracts and mappings required governance. Asynchronous flows complicated tracing and consistency. Environment separation slowed change. The benefit was controlled coupling and a place to manage the complexity that otherwise spread into every application.
+
+## Representative workflow patterns
+
+The private diagrams support several anonymized workflow families.
+
+### Order, customer, and entitlement
+
+A customer or order event crossed service interfaces into CRM and ERP domains, combined subscription, pricing, entitlement, tax, or partner data, then returned a result to customer-facing or downstream systems. The architecture emphasized controlled sequence, mapping, and cross-system correlation.
+
+### Provisioning, licensing, and registration
+
+Product registration, activation, repair, contract, and lead-creation flows connected product endpoints with licensing, CRM, and ERP systems. Stable service gateways kept product behavior from depending directly on each back-office application.
+
+### Logistics and fulfillment
+
+Shipping and fulfillment work crossed ERP and an external logistics boundary through adapter channels. Development, quality-assurance, and production environments were represented separately, making endpoint configuration and promotion part of the delivery design.
+
+### Compliance screening
+
+Order or recipient information moved through middleware and an external screening boundary before a downstream fulfillment decision. Receiver determination, BPM steps, mapping, response classification, loop or attempt state, timeouts, errors, and monitoring were part of the architecture rather than afterthoughts.
+
+Across these families, the transferable lesson is the same: the business process is the unit of reliability. A successful call to one dependency is not enough if the end-to-end workflow cannot be traced, recovered, and explained.
+
+## Evidence and status
+
+The immutable Prep source contains a first-person portfolio narrative, individual architecture and sequence diagrams, an enterprise handbook summary, and pitch notes recording project-specific clarifications. A related Docs page and public overview image show that Enterprise SOA was already part of the public presentation, but they retain identities and imagery that are intentionally not reused here.
+
+The evidence is strongest for architecture patterns, system boundaries, workflow types, and John's cross-project design and leadership account. It is weaker for dates, formal titles, named responsibilities within each project, code or configuration authorship, team composition, and quantitative outcomes.
+
+No source-code repository, live middleware runtime, deployment package, monitoring system, incident record, or production environment was inspected for this migration. No build or performance test was run. The page is therefore a qualitative, diagram-backed Work case study—not a production attestation or complete employment history.
+
+## Limitations
+
+- Employer, client, project, and external partner identities are intentionally omitted from the title, route, prose, metadata, cards, links, and assets.
+- Existing company-labelled diagrams are retained as private evidence and existing historical presentation; none is copied into this public artifact.
+- Exact dates, job titles, reporting lines, team size, project-by-project role, delivery volume, transaction volume, latency, availability, support load, budgets, and business outcomes remain unverified.
+- The evidence supports architecture and delivery leadership, not personal authorship of every interface, mapping, adapter, service, or configuration.
+- No source code, deployed middleware, runtime configuration, monitoring evidence, or incident history was reviewed.
+- Technology names describe the integration environment; they do not imply endorsement, a current vendor relationship, or a current implementation.
+- This page does not claim that every described workflow remains active or that historical systems meet current architecture or security standards.
+
+## Related work
+
+- Visit [John Whitton](https://johnwhitton.com/) for current professional context.
+- Read [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) for a modern application of explicit workflow state, adapter boundaries, evidence, and recovery in financial infrastructure.
+
+The settlement architecture is related by reusable control-plane principles, not by project identity. No historical company-labelled Enterprise SOA page or image is linked as a canonical source.

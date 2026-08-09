@@ -1,0 +1,131 @@
+---
+title: "DeFi Protocol Engineering — Kanga"
+description: "A bounded case study of Kanga protocol design, AMM mechanics, incentives, staking, fee conversion, migration, and controls."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# DeFi Protocol Engineering — Kanga
+
+Kanga is a historical DeFi protocol case study that connects John's documented product and protocol design with a source-backed automated-market-maker, incentive, staking, fee-conversion, and liquidity-migration architecture.
+
+## Problem and protocol purpose
+
+The design addressed a recurring DeFi problem: a market can expose a simple swap interface while depending on a much larger operating system for liquidity, incentives, protocol fees, staking, migration, governance, and deployment.
+
+The historical whitepaper proposed a broad multi-chain protocol for asset custody, routing, liquidity, yield, and exchange. Much of that material was a roadmap. The later source evidence supported a narrower and more defensible core: a Uniswap-v2-style automated market maker combined with Sushi-style liquidity incentives, a protocol token, share-based staking, fee conversion, liquidity migration, delayed administration, deployment scaffolding, and tests.
+
+That distinction matters. A credible retrospective should not describe proposed pooled custody, lending, yield strategies, alternative bonding curves, cross-chain settlement, limit orders, or a complete governance system as implemented merely because they appeared in a product design. The case study focuses on the implemented core and treats the wider vision as historical context.
+
+The practical user and operator problems in that core were:
+
+- give traders a router over deterministic liquidity pools;
+- give liquidity providers LP shares and incentive rewards;
+- control token emission and pool allocation without hiding mint authority;
+- let token holders stake through a share-vault model;
+- convert protocol-held fee value back into the protocol token;
+- migrate liquidity from older pools without breaking share assumptions; and
+- coordinate contract deployment, addresses, ownership transfer, interfaces, and administrative controls across networks.
+
+## Protocol mechanics
+
+The source-backed system can be read as five connected layers:
+
+```text
+trader or liquidity provider
+  -> router, factory, and pair contracts
+  -> LP tokens
+  -> reward distributors
+  -> KANGA token
+  -> share staking and fee conversion
+```
+
+At the liquidity layer, a factory created deterministic pair contracts and recorded token-pair mappings. Each pair managed reserves, cumulative prices, LP mint and burn, constant-product swaps, optional fee minting, and a migration-sensitive first-mint path. A router supplied the user periphery for adding and removing liquidity, native-asset wrapping, path quotes, and exact-input or exact-output swaps.
+
+At the incentive layer, the primary reward contract used the familiar accumulated-reward-per-share model. Each pool stored an LP token, allocation weight, last reward block, and accumulated KANGA per share; each user stored deposited amount and reward debt. Pool updates minted rewards, split a development allocation, and advanced the accumulator. Deposit, withdrawal, harvest, and emergency withdrawal changed user accounting and LP custody.
+
+Two extension models changed how rewards entered the system. A V2 distributor used a dummy-token position in the primary reward contract to receive and redistribute a reward stream without taking direct mint authority. A smaller time-based distributor paid pre-funded KANGA per second. These variants illustrate a useful separation between minting supply and allocating a funded or inherited stream.
+
+At the staking layer, Billabong used share-vault accounting. A depositor received xKANGA shares proportional to the KANGA already held; withdrawing burned shares for a pro-rata amount. Additional KANGA entering the vault increased the backing of existing shares without assigning rewards one user at a time.
+
+KangaMaker formed the fee-conversion path. It could burn protocol-held LP, recursively route the component tokens through the protocol token, the wrapped native token, or configured bridge assets, then send KANGA into Billabong. This connected AMM fee value to staking-share backing, while making liquidity, route configuration, transaction ordering, and administrative ownership part of the protocol's risk surface.
+
+The migration layer had two paths. KangaBounce represented a user-facing move from an old Uniswap-style router into Kanga pools, including permit use, old-LP removal, new-liquidity addition, and dust refunds. A breeder-controlled Migrator could replace LP held in reward pools and relied on special first-mint behavior to preserve a desired liquidity amount. Both paths were implementation conveniences with elevated assumptions and authority.
+
+## Contribution and scope
+
+John's supported contribution is the authorship and systems reasoning visible in the May 2021 whitepaper:
+
+- identifying trading, liquidity, yield, custody, and multi-chain problems;
+- decomposing a proposed protocol into custody, routing, pool, yield, reward, token, and governance concerns;
+- comparing alternative market and bonding-curve approaches;
+- describing user, liquidity-provider, token-holder, and ecosystem roles;
+- connecting protocol fees, incentive rewards, staking shares, and longer-term sustainability;
+- setting out a staged roadmap and the difference between initial and future capabilities; and
+- communicating the system to technical and venture audiences.
+
+The later source analysis gives that work a concrete engineering comparison. It confirms that the project contained AMM contracts, KANGA token logic, reward distributors, xKANGA staking, fee conversion, two migration mechanisms, a timelock, multicall, deployment scripts, tests, and specification files. It also shows that the implemented center of gravity was narrower than the whitepaper's broad Pouch, yield-engine, multi-curve, cross-chain, and governance vision.
+
+This comparison is the useful outcome of the case study: it shows how protocol design becomes an implementable contract graph and where a roadmap must be narrowed when evidence is reviewed. It does not establish that John personally implemented the reviewed contracts, ran deployments, operated the protocol, or owned its administrative keys.
+
+## Architecture and delivery decisions
+
+Several design choices shaped the system:
+
+1. **Known AMM primitives over a novel pool core.** Factory, pair, and router mechanics made liquidity behavior familiar. Differentiation moved into incentives, staking, fee conversion, migration, and the wider roadmap.
+2. **Explicit mint authority.** The token was owner-mintable and the primary reward contract was intended to receive that authority. This made emission control legible but concentrated risk in ownership transfer and governance.
+3. **Layered reward distribution.** V2 reused a primary emission stream through a dummy pool; the time-based variant used a funded balance. Both avoided creating another independent minting path.
+4. **Share accounting over per-user fee distribution.** Billabong represented a claim on pooled KANGA, so fee conversion could improve share backing without enumerating holders.
+5. **Configurable conversion routes.** KangaMaker could bridge tokens recursively toward KANGA, which increased asset coverage while moving correctness into owner configuration, pool liquidity, and transaction protections.
+6. **Migration as privileged temporary machinery.** User and breeder migration reduced launch friction, but factory, breeder, and pair behavior had to agree on old-pool assumptions and preserved liquidity.
+7. **Multi-network scaffolding over proven operation.** Hardhat configuration and deployment scripts named many networks and encoded address relationships. They were evidence of deployment intent and tooling, not proof that each environment was launched or maintained.
+
+The repository documentation also described SDK, interface, analytics, lending, flash loans, zaps, limits, aggregation, settlement, and other ecosystem modules. Those remained documentation plans or external references in the reviewed source family and are not presented here as Kanga implementation.
+
+## Security and authority boundaries
+
+The architecture concentrated meaningful authority in several places:
+
+- token ownership controlled minting;
+- reward-contract owners controlled pool admission, allocation weights, and migrators;
+- the factory's administrative role controlled fee routing and migration configuration;
+- KangaMaker ownership controlled bridge routes;
+- migrators could replace LP assets or influence first-mint behavior; and
+- deployment operators controlled address propagation and ownership transfers.
+
+The reviewed code analysis also recorded unresolved security signals. Token vote delegation carried an in-source production warning. Fee conversion used an externally owned account check as a guard and contained unfinished maximum-output-protection work. Conversion quality depended on pool depth and configured routes. Duplicate reward pools, underfunded time-based rewards, bad migrators, stale deployment addresses, or incorrect ownership transfer could each break economic or operational assumptions.
+
+These are historical source observations, not assertions about a current deployment. No audit result, remediation, live ownership check, exploit assessment, or current contract-address verification was available in the approved evidence. The page therefore treats them as architecture review points rather than a security certification or vulnerability notice for an operating service.
+
+## Validation and status
+
+The immutable Prep analysis records source-backed contracts for the AMM, token, reward, staking, conversion, migration, timelock, and multicall surfaces. It also records Hardhat deployment scaffolding and tests covering token behavior, reward timing and accounting, migration restrictions, staking, conversion routes, the externally owned account guard, timelock authorization, and pair metadata.
+
+Those tests existed in the source snapshot reviewed for the Prep architecture pack, but they were not rerun during that analysis or during this migration. The migration also did not inspect a live chain, current ownership, deployment artifacts against explorers, application or analytics repositories, operational monitoring, or user activity.
+
+The supported status is therefore:
+
+- **Protocol and product design:** documented in John's dated whitepaper.
+- **Core contract implementation:** present in the source analysis for AMM, incentives, staking, conversion, migration, and controls.
+- **Testing:** test and specification sources were inventoried, not rerun here.
+- **Deployment scaffolding:** multi-network configuration and scripts existed, with hard-coded and unfinished assumptions.
+- **Production, adoption, and commercial operation:** not established.
+
+The existing public page also carried a historical prize statement. This migration did not independently validate its award scope, recipient, or relationship implications, so it is not used as an outcome claim.
+
+## Limitations
+
+- John's whitepaper authorship supports protocol, product, and architecture work. It does not prove personal authorship of every Solidity contract, test, deployment script, or operational decision.
+- The source analysis is pinned through Prep but does not supply a reviewed implementation commit or contribution history for first-person code attribution.
+- The implemented source core was narrower than the whitepaper roadmap. Custody abstraction, yield strategies, multiple pool curves, lending, cross-chain settlement, limit orders, aggregation, and a complete governance system are not claimed as implemented.
+- No live test, build, deployment, explorer, audit, ownership, admin-key, liquidity, monitoring, or incident-response verification was performed.
+- No production deployment, user or partner relationship, assets-under-management, volume, profitability, adoption, audit-completion, operational-maturity, prize, or commercial-success claim is made.
+- Historical code risks are described only at the architectural level and may not represent later changes.
+- No private repository location, deployment address, company, employer, client, partner, or confidential planning material is exposed.
+
+## Related work and public resources
+
+- Read the historical <a href="/posts/2021-05-01-kanga/KANGAWhitepaper.pdf">Kanga Protocol Whitepaper</a>, authored by John in May 2021, for the original product and protocol design. Its market data, launch wording, token allocations, roadmap, and project claims are a dated snapshot rather than current evidence.
+- Visit [John Whitton](https://johnwhitton.com/) for current professional context.
+
+No current Knowledge Base Research or Architecture page is linked simply because Kanga uses AMM and incentive primitives. A later synthesis should be created only if it answers a distinct question or offers reusable design guidance beyond this case study.

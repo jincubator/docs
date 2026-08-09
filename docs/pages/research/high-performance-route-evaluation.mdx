@@ -1,0 +1,144 @@
+---
+title: "High-Performance Route Evaluation"
+description: "How to interpret retained Salus graph, catalog, and route-evaluation measurements without confusing throughput with execution or profit."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# High-Performance Route Evaluation
+
+Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
+
+## The question
+
+How should an engineer read a high-throughput route-evaluation result? A rate alone is ambiguous. It may describe catalog construction, one evaluation service, a complete block-to-decision path, or a synthetic loop. It also says nothing by itself about whether an economically useful opportunity was selected.
+
+The useful question is narrower: what did a retained workload measure, at which revision, and how far along the decision path did the evidence reach?
+
+## A measurement model
+
+Salus separates several quantities that are easy to collapse into one headline:
+
+- **Token nodes** and **pool components** describe a retained market graph.
+- **Catalog routes** are bounded paths available for later evaluation.
+- **Route evaluations** are completed evaluations of catalog routes against a retained workload.
+- **Opportunities** are candidates produced by economic analysis.
+- **Selected after-gas routes** have passed a later cost-aware selection gate.
+- **Submitted transactions**, **executions**, and **realized profit** are subsequent operational outcomes.
+
+The units form an evidence sequence, not interchangeable names for “performance.” A system can maintain a large catalog and evaluate it quickly while selecting no route after costs. That result can still demonstrate evaluator capacity, but it cannot establish profitable execution.
+
+## Retained observations
+
+The reviewed implementation snapshot was committed on 2026-07-20 and inspected
+on 2026-07-21. Its retained July 9 evidence records:
+
+| Observation | Measured subject | Result |
+| --- | --- | ---: |
+| Ethereum graph snapshot | Token nodes | 3,415 |
+| Ethereum graph snapshot | Pool components | 4,552 |
+| Ethereum bounded catalog | Routes with a maximum of four hops | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second | 16,537 |
+| Base retained runtime run | Peak route evaluations per second | 38,462 |
+
+The sustained rate divides completed route evaluations by measured evaluation-service time across the retained Base run. The peak is the highest reported observed rate within that run. These are route-evaluation rates, not transaction or profitability rates. No new live benchmark was run for this migration.
+
+## What the evidence establishes
+
+The retained measurements establish that the pinned implementation built and stored a multi-million-route bounded Ethereum catalog and processed a retained Base route-evaluation workload at the reported sustained and peak rates. The graph, catalog, and evaluator figures are separately named, which makes the result inspectable and repeatable against the retained evidence.
+
+For engineering review, the important property is not the largest number. It is the ability to state which stage produced each number and to preserve enough provenance to revisit the claim when the implementation or workload changes.
+
+## What it does not establish
+
+The latest cited retained runs selected zero after-gas routes. The measurements therefore do not establish opportunity recall, selected economic value, submitted transactions, successful execution, realized profit, current live performance, or commercial validation.
+
+They also do not support comparing Salus with another system unless the workloads, hardware, timing boundaries, graph filters, route definitions, and evaluation semantics are made comparable. A higher rate can reflect a narrower evaluation boundary rather than a better end-to-end system.
+
+Provider configuration, operational thresholds, route-selection details, opportunity identities or values, gas-bidding behavior, active strategy parameters, and vulnerabilities are outside this public analysis.
+
+The current state-change-aware ordering experiment is passive, test-only
+evidence. Its latest retained run did not satisfy the performance, liveness,
+or dataset gates required for promotion, so it establishes neither a current
+ranking advantage nor live selection or submission authority. It also does
+not supersede the retained throughput measurements above.
+
+## Engineering implications
+
+Performance reports for route evaluators should publish a measurement contract before a headline:
+
+1. identify the implementation revision and observation date;
+2. define graph, catalog, evaluation, selection, and execution units separately;
+3. state the measured timing boundary and retained workload;
+4. place zero or negative downstream results next to throughput figures;
+5. record what evidence would be needed to advance the claim.
+
+This structure makes evaluator capacity useful without asking it to prove an economic or operational outcome it did not measure.
+
+## Non-submitting analytics boundary
+
+An offline or live-state analytics command can hydrate a route universe, apply
+available state, evaluate routes, and write inspectable summaries without
+entering execution. That boundary is useful for route coverage, missing-state
+diagnosis, and evaluation analysis.
+
+Its output remains sensitive to the route universe, state source, pricing and
+gas inputs, strategy configuration, and supported protocol state. A
+current-catalog universe is not a historical route snapshot. A block number is
+not a complete block identity. An artifact labelled “profitable routes” is a
+modeled subset, not an execution queue or realized-profit record.
+
+The Salus Analyse CARB walkthrough is consolidated here because it applies the
+same measurement question: what was evaluated, with which state, and where did
+the evidence stop? Its command and artifact details remain implementation
+documentation rather than a separate public Research page.
+
+## Engineering Implementation Notes
+
+### A candidate carries its state boundary
+
+```rust
+if state.used_components.contains(&edge.component_id) {
+    continue;
+}
+
+if edge.token_out == *start {
+    if !state.legs.is_empty() {
+        state.push(edge, VisitedTokenMark::Skip);
+        self.routes.push(RouteCandidate {
+            route_id: route_id(&state.legs, None, None, None),
+            version: 1,
+            path: state.path.clone(),
+            legs: state.legs.clone(),
+            flash_component_id: None,
+            flash_token_address: None,
+            flash_fee_hob: None,
+            flash_available_balance: None,
+            flash_protocol: None,
+            source_block_number: self.graph.source_block_number,
+        });
+        state.pop(edge, VisitedTokenMark::Skip);
+    }
+    continue;
+}
+```
+
+The invariant is a state boundary: one candidate cannot reuse a component, and
+the temporary search state must return to its prior shape after each branch.
+`push` extends the candidate and records the visitation rule; `pop` restores
+that state after a closed route has been copied into the catalog. The route also
+carries its source block, keeping topology-derived catalog construction distinct
+from later current-state evaluation.
+
+The trade-off is a bounded copy at the point a cycle becomes a durable catalog
+entry, rather than cloning every partial traversal. That supports reproducible
+route construction and independent evaluation measurements. It is not evidence
+of an executable opportunity.
+
+## Go deeper
+
+- See [Salus as governed Work](/work/salus) for the bounded engineering contribution and its limitations.
+- Use [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) for the evidence taxonomy applied to the retained measurements.
+- Continue to [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) for the reusable system boundary behind these measurement stages.
+- Read [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) for the focused narrative connecting component changes, affected-route scope, freshness, and current evaluator evidence.
+- Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the concise narrative synthesis.

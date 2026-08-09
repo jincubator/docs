@@ -3,7 +3,7 @@ title: "Digital Banking — Durable Settlement Reference Implementation"
 description: "A bounded case study of durable workflow, local chain execution, exact-value evidence, and reconciliation in a non-production digital-banking reference system."
 ---
 
-{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/work/digital-banking/README.md. Do not edit directly. */}
+{/* Generated canonical editorial projection. Do not edit directly. */}
 
 # Digital Banking Reference Implementation
 
@@ -21,6 +21,30 @@ The reference implementation places business truth in a durable Java and Postgre
 
 Provider-neutral ports isolate signing, chain access, synthetic bank effects, and accounting. Explicit local profiles connect those boundaries to private Ethereum and Solana development environments. Default configuration remains fail-closed: local demonstration capability does not silently become a production integration.
 
+### Control-plane layers
+
+| Layer | Responsibility |
+| --- | --- |
+| Domain | Exact quantities, stable identities, lifecycle transitions, authority rules, and independent finality state |
+| Application | Use cases and provider-neutral ports for persistence, signing, chains, bank effects, accounting, and reconciliation |
+| Control plane | Spring APIs, composition, authenticated command handling, worker lifecycle, and operational interfaces |
+| Chain and signing adapters | Native Ethereum or Solana transaction semantics and approved signing requests without moving provider types into the domain |
+| Infrastructure and evidence | PostgreSQL state, outbox/inbox delivery, observations, accounting entries, reconciliation, and retained local verification |
+
+The dependency direction is inward: adapters implement application-owned ports, application coordinates domain rules, and the control plane composes those boundaries. A chain response remains evidence consumed by the control plane; it does not replace durable business truth.
+
+### Token-operation lifecycle
+
+1. An authorized command is accepted with an exact amount, stable identity, policy context, and idempotency binding.
+2. The application durably creates the operation, planned external effects, and delivery evidence.
+3. A worker resolves server-owned asset, route, wallet, and signing context before creating a fenced attempt.
+4. A signer authorizes exact native material; Ethereum and Solana adapters preserve their own nonce, blockhash, submission, and observation semantics.
+5. Ambiguous responses are inquired by the original identity before any retry.
+6. Independently observed network, accounting, policy, and customer-visible evidence advances on separate clocks.
+7. Reconciliation compares those records and names incomplete or contradictory outcomes instead of rewriting history.
+
+Local profiles use deliberately bounded development signers. Production custody remains outside the implementation; a future HSM or MPC provider would implement the same application-owned signer port without putting production keys or provider credentials into domain state.
+
 ## What John built
 
 John built the system design and implementation across:
@@ -37,7 +61,7 @@ The implementation deliberately keeps API authority, signing authority, native-n
 
 ## Verified scope
 
-At [`johnwhitton/digital-banking@5f624306cd0a0d850fccecacd287122d49502fd7`](https://github.com/johnwhitton/digital-banking/tree/5f624306cd0a0d850fccecacd287122d49502fd7), inspected on 2026-07-22, the repository records two bounded product demonstrations on both local Ethereum and local Solana:
+The [reviewed implementation snapshot](https://github.com/johnwhitton/digital-banking/tree/2acc82675099888e3f53d7e638ec0a291a6e83e4), inspected on 2026-07-25, records two bounded product demonstrations on both local Ethereum and local Solana:
 
 - acquisition, hold, and later redemption for a synthetic user-held flow; and
 - a settlement-only transfer whose recipient is forced through automatic redemption.
@@ -51,12 +75,16 @@ The result demonstrates an executable reference boundary and disciplined deliver
 - The software is deliberately non-production and must not be used with real funds, production credentials, mainnet accounts, public testnets, or production signing authority.
 - Bank balances, reserves, identities, accounting, policies, and network environments are synthetic local fixtures.
 - Production identity, custody, HSM or MPC integration, compliance operations, banking rails, audited accounting, and operational certification are outside the demonstrated scope.
-- The reference asset and public case-study language do not identify a real issuer, deposit product, reserve, or announced Zelle or Early Warning Services service.
+- The reference asset and public case-study language do not identify a real issuer, deposit product, reserve, named payment-network service, or announced implementation.
 - Immutable publications may lag the living implementation and must be read with their recorded revisions and limitations.
 
 ## Go deeper
 
-- Read the [public implementation repository](https://github.com/johnwhitton/digital-banking).
+- View the [Digital Banking reference implementation](https://github.com/johnwhitton/digital-banking) for living code, tests, and implementation documentation.
+- Read the [Digital Asset Settlement Executive Brief](https://github.com/johnwhitton/digital-banking/blob/2acc82675099888e3f53d7e638ec0a291a6e83e4/docs/reference/digital-asset-settlement-executive-brief.pdf) (Version 2.0.0) for the concise dual-chain control-plane case.
+- Use the detailed [Digital Banking Reference Architecture](https://github.com/johnwhitton/digital-banking/blob/2acc82675099888e3f53d7e638ec0a291a6e83e4/docs/reference/stablecoin-settlement-reference-architecture.pdf) (Version 2.0.0) for the longer authority, workflow, signing, finality, and reconciliation model.
+- Continue with the [Digital Banking Engineering Companion](https://github.com/johnwhitton/digital-banking/blob/2acc82675099888e3f53d7e638ec0a291a6e83e4/docs/reference/digital-banking-engineering-companion.pdf) (Version 1.1.1) for implementation and operating guidance.
+- Consult the [Digital Banking Reference Implementation](https://github.com/johnwhitton/digital-banking/blob/2acc82675099888e3f53d7e638ec0a291a6e83e4/docs/reference/digital-banking-reference-implementation.pdf) (Version 1.0.1) for the code-companion mapping.
 - Continue to the [durable financial-settlement research](/research/financial-infrastructure/settlement/intro).
 - See the [settlement control-plane architecture](/architecture/financial-infrastructure/settlement).
-- Review the repository's [immutable publication index](https://github.com/johnwhitton/digital-banking/blob/5f624306cd0a0d850fccecacd287122d49502fd7/docs/reference/README.md).
+- Review the repository's [immutable publication index](https://github.com/johnwhitton/digital-banking/blob/2acc82675099888e3f53d7e638ec0a291a6e83e4/docs/reference/README.md).

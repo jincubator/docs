@@ -1,40 +1,26 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "artifact": {
     "id": "research/high-performance-route-evaluation",
     "type": "research",
     "title": "High-Performance Route Evaluation"
   },
-  "route": "/research/solving/solving",
+  "route": "/research/high-performance-route-evaluation",
   "format": "vocs-mdx",
   "presentation": {
     "label": "Research",
     "reading_time_minutes": null
   },
-  "source": {
-    "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "research/high-performance-route-evaluation/README.md",
-    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
-    "revision_date": "2026-07-22"
-  },
-  "lifecycle_state": "ready to publish",
-  "publication_status": "not published",
-  "reviews": {
-    "technical": "Approved",
-    "claim": "Approved",
-    "editorial": "Approved"
-  },
   "generator": {
-    "name": "knowledge-base-publication",
-    "version": 2
+    "name": "jincubator-publication",
+    "version": 4
   },
   "outputs": [
     {
-      "destination": "docs/pages/research/solving/solving.mdx",
+      "destination": "docs/pages/research/high-performance-route-evaluation.mdx",
       "media_type": "text/mdx",
-      "sha256": "7c2a7cd1ed40f706603167860d7512c2b3200f57e52a14f22bcb5123f37df6b7"
+      "sha256": "c3520a0b1245a248192b6cdf4d5cb74702579b392b5301c7b67cddb0cc161913"
     }
   ],
-  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
-  "publication_date": null
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
 }

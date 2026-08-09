@@ -1,59 +1,135 @@
 ---
 title: "Intent Systems Prototypes"
-description: "Bounded UHI5 and Unite DeFi experiments in intent hooks, solver execution, resource locking, and limit-order integration."
+description: "Bounded experiments in mandates, authority, solver coordination, resource locking, execution, and settlement."
 ---
 
-{/* Generated from https://github.com/jincubator/knowledge-base/blob/0c92f9a60c371fe7daa899589ba49ab01aeb880e/work/intent-systems-prototypes/README.md. Do not edit directly. */}
+{/* Generated canonical editorial projection. Do not edit directly. */}
 
 # Intent Systems Prototypes
 
-Intent Systems Prototypes records two bounded Jincubator experiments that tested delayed execution, solver participation, resource locking, and limit-order integration without claiming production readiness.
+Intent Systems Prototypes is a bounded record of experiments in turning a user's desired outcome into an authorized, constrained execution that another actor can coordinate and perform.
 
-## Why prototype
+## Mandates as executable constraints
 
-Intent systems separate a user's desired outcome from the execution path selected to achieve it. That creates useful flexibility, but it also introduces authority, resource, timing, pricing, and settlement questions that are difficult to resolve in diagrams alone.
+A mandate represents the conditions under which a sponsor is willing to let another actor act on committed resources. It is more precise than a plain-language goal but less prescriptive than a fixed transaction path.
 
-A bounded prototype can test one boundary—such as a delayed hook or a solver payload—without pretending to answer protocol economics, security, production operations, or cross-chain settlement in full.
+In the strongest retained model, the mandate binds details such as:
 
-## UHI5 intent hook
+- the recipient and asset expected from the fill;
+- an expiry that limits when the request remains valid;
+- a minimum acceptable amount;
+- fee-sensitive amount parameters;
+- a salt used in the signed data; and
+- the chain and contract context in which the authorization applies.
 
-The 2025 UHI5 experiment explored a Uniswap v4 hook that could delay a swap so an external solver might seek a better execution path. The public material also considered intent expression, resource allocation, pricing inputs, and later cross-chain integration.
+The mandate is attached to a resource commitment and signed as structured data. A solver can choose a route, but it cannot silently change the signed result boundary. An arbiter derives hashes from the commitment and mandate, rejects an expired or already-used claim, derives the permitted amounts, checks the fill, records the disposition, and invokes the settlement-specific directive.
 
-The public implementation record is incomplete and explicitly lists core intent creation, listener, solver, execution, and production deployment work as unfinished. The useful result is therefore the hook and protocol-boundary investigation—not a claim that a complete intent network, partner integration, or production service was delivered.
+This distinction is the core design idea. The mandate says what an acceptable outcome is. The solver payload says how a candidate executor proposes to reach it. Keeping those two objects separate lets routing evolve without changing the sponsor's authority.
 
-## Unite DeFi solver prototype
+The prototypes do not establish one final mandate schema for every use case. General mandate types, hook-specific intent types, resource-lock data, and limit-order conditions coexist. The useful result is the boundary they reveal, not a claim that all of those models have converged.
 
-The 2025 Unite DeFi prototype explored extending a limit-order flow with a Tycho-backed swap executor, oracle-calculated conditions, post-interaction treasury handling, and ERC-6909-oriented resource locking.
+## Authority and constraint boundaries
 
-The prototype demonstrates how maker-authorized assets and atomic settlement can reduce the solver's need to pre-fund trading principal for the bounded flow. Infrastructure, RPC, operational, and transaction-gas costs still exist, and failed or reverted attempts may incur unreimbursed costs.
+Intent execution distributes responsibility across actors and contracts. The retained work explored the following boundaries:
 
-The implementation builds on third-party protocols and libraries. Their production status, audits, and guarantees do not transfer to the Jincubator prototype.
+1. **Sponsor authority.** The resource owner or sponsor authorizes a commitment and its conditions. A solver's ability to propose calls does not give it unrestricted control of the sponsor's assets.
+2. **Allocator authorization.** An allocator protects the integrity of a resource lock and helps prevent the same committed balance from being promised more than once. The retained allocator path is incomplete, so this remains a design and prototype boundary.
+3. **Arbiter judgment.** An arbiter checks mandate expiry, hashes, disposition, amount rules, and fill conditions before processing a claim. The base directive-processing extension point is not a complete settlement implementation.
+4. **Solver discretion.** A solver chooses and encodes an execution path within the mandate. That freedom is security-sensitive: targets, calldata, value, token flow, and failure behavior must be constrained by the caller and settlement context.
+5. **Protocol entrypoint.** Hook callbacks, limit-order interactions, and destination-settler adapters each impose their own caller and state assumptions. Passing one local test does not validate all entrypoints.
+6. **Resource custody.** Resource locks and maker-authorized funds can make assets available to a valid execution path. They do not remove infrastructure, RPC, operating, or transaction-gas costs, and they do not by themselves prove correct settlement.
 
-## What the experiments establish
+Replay protection appears in more than one place: signed nonces, derived claim hashes, recorded fill or cancellation dispositions, and hook storage. The layers are not interchangeable. A system must define which state is authoritative, when it becomes final, how it is cleared, and what happens after partial failure.
 
-Together, the experiments establish that Jincubator implemented and documented bounded integration paths around:
+## Intent lifecycle
 
-- Uniswap v4 hook execution;
-- 1inch limit-order extensions and interactions;
-- solver payloads and multi-DEX execution;
-- oracle-conditioned orders;
-- resource-locking concepts; and
-- local Solidity development and testing surfaces.
+The experiments support a partial lifecycle:
 
-They do not establish a deployed product, audited protocol, current partner integration, cross-chain production flow, profitable solver operation, commercial validation, or repeatable user outcome.
+```text
+express outcome and constraints
+  -> commit or authorize resources
+  -> expose the request to an executor
+  -> find and simulate a route
+  -> submit a bounded execution payload
+  -> verify authority, time, replay, and amounts
+  -> execute atomically or revert
+  -> transfer or claim the result
+  -> record disposition and reconcile
+```
 
-## Limitations
+Several stages have concrete source:
 
-- Both efforts are historical prototypes, not active production services.
-- Public repositories contain work-in-progress and upstream-derived material whose own licenses, audits, and version warnings continue to apply.
-- Roadmaps and proposal language describe intended work, not completed functionality.
-- No customer, partnership, funding, production-volume, profitability, or security claim is made.
-- Private implementation or planning material is outside the artifact.
+- structured intent, mandate, compact, claim, call, and swap types;
+- signed commitment and allocator-signature surfaces;
+- arbiter fill, cancellation, quotation, hash derivation, and disposition logic;
+- a hook path that stores a delayed swap request and accepts a solver payload;
+- flash and multi-protocol routing experiments;
+- limit-order interactions with oracle-calculated conditions and resource handling; and
+- local Solidity tests around selected contracts and flows.
 
-## Go deeper
+Other stages are deliberately incomplete. The general intent manager and solver abstraction contain placeholder behavior. The hook's create and solve paths exist, while later execute, sweep, cleanup, and recovery behavior is unfinished. The destination adapter delegates into arbiter logic but does not complete every settlement directive. Solver discovery, auctioning, reputation, and off-chain coordination are not implemented as a coherent network.
 
-- Review the [2025 Unite DeFi public organization](https://github.com/jincubator-united-defi-2025).
-- Review the public [UHI5 protocol repository](https://github.com/jincubator/uhi5-Protocol).
-- Continue to the [intent-execution research](/research/defi-protocol-engineering/intro).
-- See the [intent-execution architecture](/architecture/defi-systems/intents).
-- Browse dated proposals and superseded experiments through the [Archive](/archive/intro).
+That mixed state matters editorially. The prototypes show how lifecycle pieces can meet at explicit boundaries. They do not show a completed end-to-end service in which every request can be discovered, authorized, executed, settled, recovered, and reconciled.
+
+## Coordination and execution responsibilities
+
+The coordinator and executor answer different questions.
+
+A coordinator determines whether a request is eligible to proceed: is the authorization valid, are the resources committed, is the request still live, has it already been consumed, and which actor may attempt it? Depending on the design, those responsibilities may be split among an allocator, arbiter, relayer, hook, order protocol, or off-chain service.
+
+An executor determines how to satisfy the request: which venues to use, which calls to make, in what order, and whether the simulated result remains inside the mandate. The executor must then submit a payload through an entrypoint that can enforce the relevant authority and settlement invariants.
+
+The prototypes tested both sides without resolving them into one production topology:
+
+- arbiter logic made expiry, claim identity, disposition, amount derivation, and fill transfer explicit;
+- resource-lock work explored how committed assets and allocator authorization could support a claim;
+- delayed-hook work explored storing an intent during a swap callback and allowing a later solver path;
+- flash-routing work explored an execution backend spanning protocol-specific callbacks;
+- limit-order work explored maker-authorized assets, post-interactions, oracle conditions, and a swap executor; and
+- adapter work explored a standard destination-settler entrypoint.
+
+Atomic reversion is helpful but not sufficient. A failed call can roll back on-chain state while still consuming RPC, infrastructure, and gas expenditure. A successful local transaction can still leave unanswered questions about off-chain request delivery, conflicting executors, monitoring, recovery, finality, and operational ownership.
+
+## Prototype scope
+
+The retained public history supports a direct, commit-scoped account of John's work on the prototype repositories. It includes Solidity design and implementation across arbiter mechanics, mandate and intent types, hook experiments, routing integrations, resource management, limit-order interactions, and tests. The commits and source trees provide stronger evidence than roadmap prose alone, but the work remains mixed in maturity.
+
+What the prototypes establish:
+
+- mandates can bind outcome constraints separately from solver-selected calls;
+- commitment, authorization, arbitration, and execution are distinct trust boundaries;
+- claim hashes and dispositions can make replay state explicit;
+- hook and order-protocol entrypoints can carry intent-specific execution data;
+- locked or maker-authorized resources can be made available to a bounded atomic flow; and
+- partial implementations reveal concrete settlement, recovery, and coordination gaps.
+
+What they do not establish:
+
+- one canonical intent model across the experiments;
+- a deployed solver marketplace or reliable discovery network;
+- completed allocator, directive, hook cleanup, fallback, and recovery behavior;
+- end-to-end cross-chain settlement and finality;
+- validated protection against arbitrary or malicious solver payloads;
+- current production deployment, independent security audit, customer use, commercial validation, sustained volume, or profitable operation.
+
+No new build, live deployment, fork test, or benchmark was run for this editorial rewrite. Technical statements are limited to the retained committed sources and the existing source review.
+
+## Experimental limitations
+
+- The codebase combines active mechanics, placeholders, disabled tests, demonstrations, and future-work notes. Their presence in one repository does not give them equal maturity.
+- General intent and hook-specific intent models overlap and have not been shown to form one canonical lifecycle.
+- Base settlement directive handling is incomplete; an adapter or arbiter entrypoint is not a complete settlement proof.
+- Solver payloads are powerful and security-sensitive. Final authorization of call targets, calldata, value, token custody, and recipient behavior remains unresolved.
+- Hook execute, sweep, cleanup, fallback, and recovery paths are unfinished in the retained evidence.
+- The allocator path and some signature/domain behavior remain prototype-grade.
+- Flash and external execution integrations have incomplete or disabled validation in the retained snapshot.
+- Off-chain discovery, auctioning, reputation, conflict resolution, monitoring, incident recovery, and reconciliation are not evidenced as one operated system.
+- Third-party protocols and libraries retain their own licenses, assumptions, audits, and risks; none transfer a maturity guarantee to this work.
+- No production, customer, partner, audit, revenue, profitability, or security-outcome claim is made.
+
+## Related research and architecture
+
+- Read [Intent-Based Execution](/research/defi-protocol-engineering/intro) for the evidence question behind authority, solver participation, and execution.
+- Read [Intent Execution Boundaries](/architecture/defi-systems/intents) for the reusable lifecycle, trust, and failure model.
+
+Those pages answer different reader questions. Research evaluates what the evidence supports. Architecture describes reusable boundaries. This Work page remains the account of what the prototypes actually explored.

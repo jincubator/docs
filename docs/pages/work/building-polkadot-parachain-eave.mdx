@@ -1,0 +1,103 @@
+---
+title: "Building a Polkadot Parachain — EAVE"
+description: "A bounded case study of EAVE architecture, venture formation, and the source-backed Steam parachain path."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Building a Polkadot Parachain — EAVE
+
+EAVE is a historical case study in translating an emerging-asset venture thesis into a Polkadot parachain design, then separating the architecture that was proposed from the integration that source evidence can actually support.
+
+## Problem and context
+
+EAVE proposed an infrastructure layer for emerging digital assets whose markets and services could span more than one chain. The technical problem was broader than deploying a set of contracts. A dedicated network would need to coordinate runtime state, asset and market functions, governance, interoperability, node operation, and the security supplied by the surrounding ecosystem.
+
+The design used a Polkadot parachain to avoid treating consensus and cross-chain coordination as application-level afterthoughts. That choice created its own boundary questions:
+
+- Which behavior belonged in the EAVE runtime, and which belonged to upstream Substrate, FRAME, Cumulus, or the relay chain?
+- Which financial and interoperability modules were project integration work rather than original project code?
+- How would a collator produce parachain candidates while relay validators supplied inclusion and finality?
+- Which capabilities were active, work in progress, generated configuration, or only planned?
+- How could a venture narrative describe a broad ecosystem without turning a roadmap into an implementation or adoption claim?
+
+The public design and whitepaper explored intended users, economic roles, governance, asset services, interoperability, and a staged path toward a network. They are useful records of the product and architecture hypothesis. They are not current operational documentation, and their contemporaneous project claims are not carried forward here as verified outcomes.
+
+## Parachain architecture
+
+The strongest later source evidence supports a Steam runtime and collator path:
+
+```text
+client
+  -> EAVE RPC and node service
+  -> transaction pool and runtime validation
+  -> Steam runtime dispatch and storage
+  -> Cumulus Aura collator
+  -> upstream Polkadot/Rococo relay behavior
+```
+
+The active workspace contained an `eave` binary, command-line handling, node service, RPC composition, Steam and Eave runtime crates, chain-spec code, and generated Steam resources. The service assembled the client and backend, transaction pool, import queue, networking, telemetry, off-chain workers, RPC, relay-side connectivity, and collator or full-node paths.
+
+The Steam runtime was the best-supported active path. Its composition included FRAME system functions, Cumulus parachain support, session and Aura configuration, asset and financial modules, EVM integration, runtime APIs, and message-passing configuration. This describes integration boundaries, not blanket authorship of every pallet. FRAME, Substrate, Cumulus, Polkadot relay behavior, and mixed vendor or forked modules remain upstream or shared dependencies.
+
+The collator boundary is especially important. Source supports Cumulus Aura collator construction and a Steam chain specification. It does not support a claim that EAVE implemented custom relay finality. Candidate production was part of the project integration; relay validation, inclusion, and finality remained upstream Polkadot responsibilities.
+
+The source also contained an Eave runtime and documentation for a standalone Wind direction. That path was not equivalent in maturity: the reviewed service tree lacked a validated active Eave chain-spec and startup path, while much of its cross-chain configuration was disabled or incomplete. This page therefore treats Steam as the defensible parachain baseline and standalone Eave/Wind as work in progress.
+
+## Contribution and venture formation
+
+John's supported contribution begins with two dated public artifacts:
+
+- the 34-page *EAVE Parachain Design*, published in April 2021; and
+- the 31-page *Draft EAVE Whitepaper*, published in December 2021.
+
+Together they show architecture and product work: converting a market thesis into a system boundary, choosing a parachain model, outlining runtime and ecosystem responsibilities, considering governance and asset roles, sequencing delivery, and explaining the proposal to technical and venture audiences.
+
+That work is relevant to technical venture formation because an early platform needs more than a feature list. It needs a defensible statement of what the system owns, what it inherits, what must be implemented, how an ecosystem might participate, and which milestones would reduce technical and commercial uncertainty. The documents supplied that structure and a basis for technical discussion and investor preparation.
+
+The evidence does not establish the result of any financing process, the amount or legal status of any commitment, funds received, revenue, profitability, or a completed round. Those matters are excluded from the public account. It also does not yet assign particular source components, commits, deployments, or operational duties to John personally. Those first-person implementation details remain an owner-review item.
+
+## Architecture and delivery trade-offs
+
+Choosing a parachain concentrated application-specific state and economic rules in a dedicated runtime while relying on a larger ecosystem for relay security and interoperability. That was a meaningful separation of concerns, but it increased dependency and delivery complexity.
+
+Several trade-offs follow from the reviewed design and source:
+
+1. **Shared security versus independent operation.** A parachain could rely on relay-chain validation and finality, but it also had to conform to Cumulus and relay interfaces. The project did not own the entire consensus stack.
+2. **Runtime flexibility versus provenance clarity.** FRAME, ORML-style, EVM, bridge, and financial modules made broad functionality possible. Their mixed upstream, vendor, forked, and local origins meant that runtime composition could be claimed more safely than original implementation of every module.
+3. **Interoperability intent versus operational evidence.** Steam configured message-passing components, but the review did not establish live cross-chain traffic or production use.
+4. **Generated launch material versus reproducibility.** Steam genesis and runtime artifacts existed, with source-backed configuration pointing to parachain identifier `2000`. Other documentation referenced `77`, and the generated files were not rebuilt during this migration, so freshness remains unverified.
+5. **Local development versus production operations.** Manual-seal and development Aura paths supported local work. They did not establish bootnodes, monitoring, backups, incident response, archive strategy, or a production validator and collator estate.
+6. **A broad venture roadmap versus evidence discipline.** The public documents necessarily described intended ecosystem capabilities. This retrospective keeps those intentions distinct from source-backed integration and observed operation.
+
+These boundaries are useful beyond EAVE: the integration of a framework is still substantial engineering, but credible communication must distinguish configured composition, original code, upstream security, generated artifacts, test environments, and deployed behavior.
+
+## Status and evidence
+
+The evidence supports three different maturity statements rather than one project-wide label:
+
+- **Architecture and venture preparation:** documented in John's dated public design and whitepaper.
+- **Parachain implementation:** the Steam binary-to-runtime-to-collator path is source-backed, including chain-spec and generated-resource evidence.
+- **Standalone and production operation:** incomplete or unverified. The Eave/Wind startup path, production deployment, operational controls, live interoperability, and current generated-artifact freshness were not established.
+
+The private source review traced the active path through the binary, CLI, service, RPC, runtime, chain specification, and collator integration. It also recorded contradictions and provenance limits: an Oracle runtime API existed while its RPC wiring remained unfinished; project documentation and source disagreed on a parachain identifier; and the relay-chain fork was treated as upstream Polkadot unless a future diff proves project-specific changes.
+
+No new build, node launch, relay test, deployment inspection, or live network verification was performed for this migration. The outcome is therefore a source-bounded architecture and contribution account, not a certification of the historical software.
+
+## Limitations
+
+- The public design documents are historical venture and architecture records, not current specifications or proof that every proposed capability shipped.
+- John is evidenced as the author of the design and whitepaper. His personal authorship of particular runtime, service, pallet, relay, infrastructure, or operations code remains unconfirmed.
+- Steam is the strongest source-backed parachain path. Standalone Eave/Wind remains work in progress under the reviewed evidence.
+- The relay chain, relay finality, FRAME, Substrate, and Cumulus behavior are upstream boundaries. Mixed financial, bridge, EVM, and asset modules require deeper provenance analysis before authorship claims.
+- Local development and generated chain resources do not prove a production launch, production readiness, operational maturity, security review, audit completion, adoption, customer or partner use, or commercial success.
+- No funding, investment, revenue, profitability, or financing outcome is asserted.
+- No private repository, investor, partner, client, or internal planning material is linked or reproduced.
+
+## Related work and public resources
+
+- Read the historical <a href="/posts/2021-04-01-eave-parachain/EaveParachainDesign.pdf">EAVE Parachain Design</a>, authored by John in April 2021, for the original architecture proposal. Its roadmap and contemporaneous claims should be read as a dated snapshot.
+- Read the historical <a href="/posts/2021-12-01-eave-defi/DraftEAVEWhitepaper.pdf">Draft EAVE Whitepaper</a>, authored by John in December 2021, for the broader product and ecosystem thesis. It is not current implementation or commercial evidence.
+- Visit [John Whitton](https://johnwhitton.com/) for current professional context.
+
+No separate Knowledge Base Research or Architecture artifact is linked merely to fill a taxonomy slot. A reusable synthesis should be created only if later review establishes a distinct Reader Promise and sufficient non-duplicative evidence.

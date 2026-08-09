@@ -1,0 +1,188 @@
+---
+title: "I Built a Fast Arbitrage Engine. Speed Wasn't the Problem."
+description: "How Salus engineering evidence shifted the investment question from evaluator speed to strategy, execution, capital, and market intelligence."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.
+
+*10 min read*
+
+*What building Salus taught me about infrastructure, execution, strategy, and competing in professional on-chain markets.*
+
+I built Salus around a reasonable but incomplete thesis: we were primarily competing against other arbitrage and search systems. If that was the race, throughput, freshness, latency, and execution performance were the primary competitive problems. The engineering worked. The conclusion did not follow. The evidence forced me to separate a fast component from a competitive strategy—and to change what I would invest in next.
+
+## I Thought the Problem Was Speed
+
+An on-chain arbitrage system works inside a finite window. It observes a state change, identifies affected paths, evaluates their economics, prepares an action, and competes for inclusion. Work that finishes after the relevant state has changed is not merely slow; it is no longer the same decision.
+
+That made performance the obvious first problem. A large route universe could not be rebuilt after every pool update. A conventional FIFO backlog could preserve work that was already commercially useless. A throughput figure without state identity could hide the fact that the system was evaluating yesterday's market.
+
+My incomplete hypothesis was that removing those bottlenecks would expose the business outcome. If Salus could keep enough fresh work moving through the evaluator, opportunity capture and profitable execution would become primarily a matter of tuning.
+
+The hypothesis was useful because it produced a concrete engineering program. It was incomplete because it treated infrastructure capacity as the scarce resource before proving that the evaluated strategy had positive expected value in the market where it had to compete. It was reasonable to begin with the performance problem; it was not sufficient to treat that problem as the whole competitive thesis.
+
+## So I Built the Infrastructure
+
+Salus became an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. I separated durable topology from live state, persisted bounded route catalogs, indexed liquidity components back to known routes, and carried block identity through preparation and evaluation.
+
+The runtime used bounded queues and stage-specific freshness policies. Evaluation work could favor the newest useful state, while durable work needed a different shutdown and completion contract. Strategy evaluation, economic selection, preflight, submission, receipt, and outcome evidence remained separate states rather than one optimistic “success” flag.
+
+The result was not one clever arbitrage algorithm. It was an inspectable path from external state to a bounded decision, with enough telemetry to distinguish queue wait from service time, throughput from stale work, and evaluation from execution.
+
+That technical story already has its own owner. [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) explains the component-to-route boundary, affected-route hot path, and queue policy in detail. The reusable [execution-pipeline architecture](/architecture/trading-system-execution-pipelines) explains why each evidence gate stays distinct. Here, those mechanisms matter because they made the later commercial diagnosis possible.
+
+## The Benchmark Looked Good
+
+At the retained Ethereum snapshot, Salus represented 3,415 graph token nodes and 4,552 liquidity components. Its persisted catalog contained 2,401,108 routes with a maximum of four hops. Those are topology counts: they describe the universe the system could draw from, not routes scanned after every update and not opportunities.
+
+A retained Ethereum trace dated July 9, 2026 covered 100 blocks. It completed 486,934 route evaluations across 83 evaluation services. Using the retained service-time measure, the run recorded 4,554 sustained and 7,528 peak route evaluations per second.
+
+That result established something real. The evaluator could process a substantial, block-scoped workload through the reviewed architecture. It did not establish that the catalog contained the commercially best opportunities, that every relevant opportunity was recalled, that a modeled result survived costs, or that Salus could win inclusion.
+
+The larger historical rate sometimes associated with Salus came from a different no-throttle profile and is not comparable enough to use as this article's current claim. A stronger headline would have made a weaker argument.
+
+<img src="/assets/writing/speed-wasnt-the-problem/01-benchmark-to-outcome.svg" alt="A gated evidence sequence from the route catalog through evaluation, economic selection, execution, inclusion, settlement, and realized profit, with the retained evidence stopping after evaluation." />
+
+*The retained workload established evaluator capacity. Every later gate requires different evidence.*
+
+## But Speed Wasn't Producing the Outcome
+
+The latest metric-bearing Ethereum, Base, and Unichain runs selected zero after-gas routes. They therefore produced no evidence of submission, inclusion, settlement, or realized profit. Profitable production execution and commercial validation have not been established.
+
+That negative result was more valuable than treating the benchmark as a victory. It showed that the pipeline had reached an evidence boundary. More evaluator capacity might still matter, but the retained workload did not identify it as the next limiting business outcome.
+
+The vocabulary became part of the diagnosis. A catalog route is a path available for evaluation. A route evaluation is a modeled calculation. A positive modeled result is not necessarily positive after costs. A selected after-gas candidate is not a submission. Relay acceptance is not inclusion. Inclusion is not settlement, and settlement still needs reconciliation before anyone can claim realized profit.
+
+The distinction prevented a component success from being promoted into a business claim. It also changed the engineering question from “How do I evaluate more routes?” to “Which evidence would justify spending more time on evaluation at all?”
+
+**Faster at doing what?** Until the strategy, capital model, and execution path have a plausible economic case, more evaluator capacity may only optimize a component of the wrong market hypothesis.
+
+## We Were Competing Against More Than Arbitrage Bots
+
+The easy explanation for a missed outcome is that another bot was faster. Later evidence made that explanation too simple.
+
+A bounded review of retained Ethereum observations separated several classes of result. Most reviewed cases ended at internal parity or capability boundaries rather than proving competitor advantage. Some were deliberate economic abstentions: the system declined to advance work when refreshed costs exceeded the modeled value. A smaller set reached private relay acceptance and expired without inclusion. Exact ordered replay established one causal invalidator; attribution remained incomplete for the other reviewed cases.
+
+That review did not produce a universal competitor ranking. It did not establish beneficial ownership, complete period profit, hidden payments, private hedges, or the strategy behind every observed transaction. It did show why “they were faster” was not a sufficient causal model.
+
+Different systems can compete with different strategies, execution shapes, and capital structures. One may use a narrow executor where another pays for generic routing. One may hold inventory where another borrows inside a transaction. One may combine several actions where another evaluates a single cyclic route. Even when two transactions touch the same market state, they may not be expressing the same arbitrage race, strategy, or economics.
+
+The useful conclusion was not that I had decoded a competitor's edge. It was that Salus needed a better way to distinguish internal defects, correct abstention, ordering loss, capital-model differences, and strategy mismatch before deciding what to optimize.
+
+## The Actual Competitive Stack
+
+I now use a five-layer model for the problem:
+
+1. **Infrastructure** turns changing state into fresh, bounded, observable work.
+2. **Execution** carries a valid decision through simulation, preflight, submission, inclusion, and settlement.
+3. **Capital** determines which positions can be funded, held, hedged, and unwound—and which costs or risks the system actually bears.
+4. **Strategy** determines which market behavior has positive expected value under those execution and capital constraints.
+5. **Intelligence** compares retained evidence, competitor economics, and capability gaps without confusing inference with fact.
+
+<img src="/assets/writing/speed-wasnt-the-problem/02-competitive-stack.svg" alt="Five competitive layers—Infrastructure, Execution, Capital, Strategy, and Intelligence—showing Salus's original emphasis on the first two and the revised emphasis on validating strategy and intelligence before more optimization." />
+
+*The model is an editorial synthesis, not a claim that every layer is implemented or mature.*
+
+Salus initially put most of its investment into Infrastructure and Execution. That was defensible: without fresh state, deterministic evaluation, and evidence-bearing handoffs, later experiments would have been impossible to trust. But those layers cannot choose the market thesis on their own.
+
+The revised emphasis begins with Strategy and Intelligence. The question is no longer whether the runtime can be made faster in the abstract. It is which strategy has defensible economics in the observed competitive environment, what capital and execution model it requires, and whether the gap from Salus's current capabilities is worth closing.
+
+## What I Changed
+
+First, I stopped treating telemetry as a report added after implementation. Queue wait, service time, utilization, stale work, selection, and outcome classification became design inputs. A fast stage surrounded by missing evidence is not a well-understood stage.
+
+Second, I treated freshness as correctness. State identity has to survive the entire path. A result cannot become current merely because it finished recently; it must still describe the state against which the later decision will act.
+
+Third, I made attempts and outcomes durable enough to review. Failures, abstentions, expiry, and incomplete attribution need stable identities and typed states. Otherwise the only retained stories are the ones that looked successful at the time.
+
+Fourth, I separated opportunity capture from causality. Observing a positive model or a route-touching transaction does not prove why an opportunity appeared or who consumed it. Replay can strengthen a causal conclusion, but association remains association until the required ordered evidence exists.
+
+Finally, I moved strategy economics ahead of another round of performance optimization. Infrastructure work now needs a named strategy question, an evidence gap it closes, and a decision it can change.
+
+## Strategy Evaluation Now Comes Before Optimization
+
+The proposed review sequence is deliberately reversible:
+
+1. Define the strategy question, evidence cutoff, and comparison set.
+2. Validate the evidence lineage and record what remains unavailable.
+3. Estimate economics with ranges and uncertainty rather than invented precision.
+4. Compare capital, execution, settlement, risk, and operating requirements with current capabilities.
+5. Record the capability gaps and choose: continue, defer, reject, or request more evidence.
+6. Only then authorize implementation or optimization as a separate decision.
+
+<img src="/assets/writing/speed-wasnt-the-problem/03-strategy-before-optimization.svg" alt="A review loop from evidence and economics through capability gaps and a human decision, with implementation and optimization outside the loop until separately authorized." />
+
+*Research can change a recommendation without silently changing runtime policy, allocating capital, or starting live operation.*
+
+This is not an automated strategy selector. It is a human-reviewed investment discipline. A lower theoretical return may be the better next experiment when its evidence is stronger, its capital exposure is bounded, or its implementation reuses capabilities Salus already has. A high theoretical return with unknown inventory, inclusion, or settlement economics is not a priority; it is an unanswered research question.
+
+Evidence-first development can slow the first implementation because it asks for a defined decision, evidence boundary, and economic hypothesis before another optimization cycle. It reduces a more expensive risk: spending months making a strategy faster before establishing that it can be economically competitive.
+
+## What Comes Next
+
+The next useful editorial and research work is a bounded competitor-economics study and a strategy matrix. The first would explain what can and cannot be learned from observable execution and capital behavior. The second would compare candidate strategies against Salus's current infrastructure, execution, capital, evidence, and operational capabilities.
+
+Both remain proposed. The separate competitor-economics draft remains under its own technical, claim, and editorial review; this article does not link to it as a public reading destination, authorize the research program, or imply that a strategy decision has already been made. The existing [evidence-grounded AI architecture](/architecture/evidence-grounded-ai-for-trading-systems) describes where probabilistic investigation may eventually help while keeping deterministic safety and execution authority separate. AI or ML does not currently control Salus execution or establish profit.
+
+The practical next step is smaller: use the current evidence to decide which question deserves the next engineering dollar. If a strategy cannot show a plausible positive expected value after realistic capital and execution costs, a faster implementation only reaches the wrong answer sooner.
+
+## Performance Wins Benchmarks. Strategy Wins Markets.
+
+The benchmark was not wasted work. It proved that the evaluator could handle the retained workload, and the architecture made that claim auditable. More importantly, it created the observability and evidence boundaries needed to discover that performance was not sufficient.
+
+That is the lesson I would carry into any trading, fintech, or distributed decision system: optimize the constraint that the evidence identifies, not the one the engineering team is best prepared to improve.
+
+Infrastructure makes a strategy testable. Execution makes a valid decision actionable. Capital changes the economics. Intelligence makes the unknowns visible. But strategy decides whether the system is solving a market problem with positive expected value.
+
+The question I would now ask before another performance push is: **Are we optimizing the thing that actually determines whether we win?**
+
+I built a fast engine. The more important engineering decision was allowing its evidence to change the thesis.
+
+## Engineering Implementation Notes
+
+### A throughput number needs pressure and policy beside it
+
+```rust
+    pub(crate) fn record_queue_snapshot(&self, metric: QueueSnapshotMetric<'_>) {
+        let snapshot = metric.snapshot;
+        let mut fields = Map::new();
+        fields.insert(
+            "event".to_owned(),
+            Value::String("queue_snapshot".to_owned()),
+        );
+        fields.insert("label".to_owned(), Value::String(metric.label.to_owned()));
+        fields.insert("queue".to_owned(), Value::String(snapshot.name.clone()));
+        fields.insert(
+            "overflow_policy".to_owned(),
+            Value::String(queue_overflow_policy_label(&snapshot.overflow_policy).to_owned()),
+        );
+        fields.insert("capacity".to_owned(), json!(snapshot.capacity));
+        fields.insert("current_depth".to_owned(), json!(snapshot.current_depth));
+        fields.insert("peak_depth".to_owned(), json!(snapshot.peak_depth));
+        fields.insert("sent".to_owned(), json!(snapshot.sent_count));
+        fields.insert("dropped".to_owned(), json!(snapshot.dropped_count));
+        fields.insert("blocked".to_owned(), json!(snapshot.blocked_send_count));
+        fields.insert("closed".to_owned(), json!(snapshot.closed_error_count));
+        self.record_event(fields);
+```
+
+The implementation treats a queue snapshot as a structured event: its label,
+policy, capacity, depth, and sent, dropped, blocked, and closed outcomes travel
+together. The invariant is that a throughput figure must retain the pressure
+and loss context needed to interpret it.
+
+That instrumentation has a small recording cost, but it prevents a fast rate
+from hiding a saturated or dropping stage. It is evidence about runtime
+capacity—not commercial competitiveness, after-gas selection, execution, or
+realized profit.
+
+## Go deeper
+
+- Start with the integrated [Salus Work gateway](/work/salus).
+- Read the detailed [route-scaling and freshness story](/writing/mapping-liquidity-to-routes-at-scale).
+- Review [what retained route-evaluation evidence can establish](/research/high-performance-route-evaluation).
+- Follow the [trading-system validation evidence ladder](/research/trading-system-validation-evidence).
+- Apply the reusable [execution-pipeline boundaries](/architecture/trading-system-execution-pipelines).
+- Explore the public-safe [evidence-grounded AI boundary](/architecture/evidence-grounded-ai-for-trading-systems).

@@ -1,0 +1,191 @@
+---
+title: "Capital-Efficient Funding Models"
+description: "Funding authority, availability, fees, atomicity, repayment, failure, and reconciliation."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Capital-Efficient Funding Models
+
+Transaction-scoped funding can reduce the principal an executor must hold before a trade, but it adds availability, fee, repayment, callback, state, and failure constraints that the execution design must make explicit.
+
+## The design problem
+
+An execution path needs assets before it can produce an output. The executor can supply inventory, borrow within the transaction, use maker- or sponsor-authorized resources, or combine these models. Each changes who provides capital, when authority is checked, how fees are calculated, what must be repaid, and which failures consume unreimbursed cost.
+
+The shortest statement of the boundary is:
+
+> Salus does not require upfront trading principal for the modeled transaction structure. It still requires infrastructure, RPC, operational, and gas expenditure, and unsuccessful transactions may incur unreimbursed costs.
+
+That qualification applies to the modeled structure. It is not evidence of inclusion, realized profit, commercial viability, or a universally capital-free system.
+
+## Funding decision model
+
+Choose a funding source across these dimensions:
+
+| Dimension | Question |
+|---|---|
+| Authority | Who permits the assets to be used, and how is that permission bound to the transaction? |
+| Availability | Is the required amount available at the execution state, not merely at discovery time? |
+| Fee | Which token, unit, rounding rule, and quote conversion define funding cost? |
+| Atomicity | Does failure revert the principal movement and every dependent action? |
+| Route coupling | Does the funding source constrain the start token, protocol family, route legs, or callback? |
+| Repayment | Which contract enforces principal plus fee repayment? |
+| Execution cost | Who pays gas, infrastructure, provider, and failed-attempt cost? |
+| Evidence | Which artifacts distinguish modeled funding, preflight, inclusion, repayment, surplus, and reconciliation? |
+
+The cheapest nominal fee may not produce the best execution. A source can require more calldata, introduce another callback, reduce eligible route space, use a stale availability observation, or increase the chance that preflight and inclusion states diverge.
+
+## Funding models
+
+**Requester or inventory funding** uses assets already controlled by the executor or caller. It avoids a borrowing callback and fee but requires capital availability and inventory management. It does not remove gas or opportunity cost.
+
+**Pool flash funding** borrows from a compatible pool and repays principal plus fee during the same transaction. The asset, callback authority, fee, and repayment contract must agree.
+
+**Shared-manager temporary funding** can expose balances through an unlock, take, transfer-back, and settle lifecycle. An observed manager balance is an eligibility input, not guaranteed inclusion-time liquidity.
+
+**Resource-lock or maker-authorized funding** commits assets under signed conditions. It can reduce solver principal for the bounded flow, but allocator, arbiter, mandate, claim, and settlement trust remain explicit.
+
+These models can share an evaluator interface while retaining different execution and authority contracts.
+
+## Funding identity and eligibility
+
+Funding authority is part of the executable plan when changing the source also changes the authorized asset, fee, callback, repayment, or failure contract. Systems should not silently substitute one funding authority for another.
+
+An eligibility observation should carry its time and state provenance. Observed availability supports a bounded planning decision; it does not guarantee later availability or successful execution.
+
+Operational ranking, thresholds, provider behavior, and route-selection policy remain implementation-private.
+
+## Fee and repayment boundaries
+
+Funding fees require named units and rounding. Principal is a liability to
+repay, not revenue or profit; the fee is a cost, and execution costs remain
+separate. The public model intentionally omits operational calculation order,
+thresholds, and strategy policy.
+
+On-chain checks should enforce caller authorization, callback authenticity,
+asset identity, and exact repayment. Off-chain dry-run and preflight reduce
+bad attempts but do not replace contract enforcement.
+
+## Failure and evidence states
+
+Funding evidence should preserve this progression:
+
+1. source metadata attached;
+2. availability observed;
+3. fee modeled;
+4. local candidate accepted;
+5. calldata built;
+6. preflight succeeded or failed;
+7. transaction submitted or withheld;
+8. receipt included-success, included-revert, pending, or unavailable;
+9. repayment and token flows reconciled; and
+10. final costs and realized outcome established.
+
+Atomic revert normally protects borrowed principal from partial settlement, but an included revert still consumes gas. A preflight revert may avoid broadcast cost but does not prove future success. A successful receipt proves EVM completion, not complete token-flow or commercial PnL.
+
+Funding principal and fee, transaction cost, ordering payment, and retained
+profit are separate economic subjects. Private non-inclusion is not an
+execution and may have a different cost boundary from an included revert; the
+latter can consume unreimbursed gas even when state changes are atomic.
+
+## Controls and failure modes
+
+Controls include:
+
+- complete funding metadata before candidate promotion;
+- supported protocol and callback path;
+- fresh availability evidence where the source has a balance constraint;
+- checked fee math and unit conversion;
+- explicit repayment enforcement;
+- no silent fallback to a different funding or public-submission path;
+- stale-state rejection;
+- explicit dry-run, preflight-only, submitted, pending, reverted, and reconciled states; and
+- separation of modeled from realized economics.
+
+Common failures are stale availability, source/route token mismatch, fee-unit confusion, callback spoofing, repayment shortfall, persisted metadata without live balance, successful preflight followed by changed inclusion state, and receipt success reported as profit.
+
+## Trade-offs
+
+Inventory funding is operationally simple but capital intensive. Flash funding is capital efficient but adds fees and callback coupling. Shared-manager funding can expose broad balances but requires correct accounting and current eligibility. Resource locks make authority composable but add actors and settlement trust.
+
+Supporting every model behind one generic abstraction can hide critical differences. Keep common evaluation fields while requiring funding-specific planning and enforcement.
+
+## Applying the pattern
+
+Salus provides a bounded example of funding authority attached to an
+executable plan, fee-aware modeling, preflight, and repayment enforcement.
+Intent Systems Prototypes provides a separate resource-lock and mandate
+example. Neither is a production or profitability claim.
+
+## Engineering Implementation Notes
+
+### A funding source must not conflict with the route it serves
+
+```rust
+fn select_flash_loan_source(
+    route: &RouteCandidate,
+    candidate_index: &FlashLoanCandidateIndex,
+) -> Option<FlashLoanSource> {
+    let start_token = route.path.first()?.clone();
+    let route_component_ids = route
+        .legs
+        .iter()
+        .map(|leg| leg.component_id.clone())
+        .collect::<BTreeSet<_>>();
+    let route_has_v4_pools = route
+        .legs
+        .iter()
+        .any(|leg| is_uniswap_v4_family(&leg.protocol_system));
+    let route_v3_tokens = route
+        .legs
+        .iter()
+        .filter(|leg| leg.protocol_system == "uniswap_v3")
+        .flat_map(|leg| [leg.token_in.clone(), leg.token_out.clone()])
+        .collect::<BTreeSet<_>>();
+
+    candidate_index
+        .candidates_for_start(&start_token)
+        .into_iter()
+        .filter(|candidate| {
+            if route_component_ids.contains(&candidate.component_id) {
+                return false;
+            }
+
+            match candidate.protocol_system.as_str() {
+                "uniswap_v4" => !route_has_v4_pools,
+                "uniswap_v3" => candidate
+                    .other_token
+                    .as_ref()
+                    .is_none_or(|token| !route_v3_tokens.contains(token)),
+                _ => false,
+            }
+        })
+        .map(|candidate| FlashLoanSource {
+            component_id: candidate.component_id,
+            component_address: candidate.component_address,
+            token_address: start_token.clone(),
+            fee_hob: candidate.fee_hob,
+            available_balance: candidate.available_balance,
+            protocol_system: candidate.protocol_system,
+        })
+        .next()
+}
+```
+
+The invariant is route compatibility before economic reasoning. The selector
+builds ordered sets of already-used components and relevant tokens, then filters
+the candidate index so a typed `FlashLoanSource` cannot reuse a conflicting
+route component or violate the protocol-specific composition boundary.
+
+Deterministic ordered structures make the eligibility decision inspectable, but
+the trade-off is intentional narrowness: this returns the first compatible
+source, not a capital, fee, or profitability optimisation. Funding eligibility
+therefore remains distinct from an approved economic or execution decision.
+
+## Related research and architecture
+
+- [Intent Execution Boundaries](/architecture/defi-systems/intents) covers sponsor, allocator, arbiter, and solver authority.
+- [Protocol Simulation Boundaries](/architecture/protocol-simulation-boundaries) owns modeled route output.
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) separates evaluation, preflight, submission, receipt, and outcome.
+- [Salus](/work/salus) provides the governed implementation context.

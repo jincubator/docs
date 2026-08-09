@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1200 680">
+  <title id="title">Affected-route evaluation lifecycle</title>
+  <desc id="desc">A component change flows through affected-route lookup, block-scoped preparation, state coverage, parallel evaluation, selection evidence, and execution handoff. Each stage either narrows work or adds evidence.</desc>
+  <style>
+    .bg{fill:#f4f7fa}.navy{fill:#0d2d4c}.box{fill:#fff;stroke:#3d73df;stroke-width:3}.gate{stroke:#dc961b}.evidence{stroke:#299461}.handoff{stroke:#765bb2}.label{font:700 24px system-ui,sans-serif;fill:#0d2d4c}.small{font:20px system-ui,sans-serif;fill:#41678e}.note{font:700 24px system-ui,sans-serif;fill:#fff}.arrow{fill:none;stroke:#6a829a;stroke-width:5;marker-end:url(#arrow)}
+  </style>
+  <defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0l12 6-12 6z" fill="#6a829a"/></marker></defs>
+  <rect class="bg" width="1200" height="680"/>
+  <text x="60" y="70" class="small" style="font-weight:700;letter-spacing:4px;fill:#17858c">SALUS · AFFECTED-ROUTE LIFECYCLE</text>
+  <text x="60" y="125" class="label" style="font-size:42px">A route is narrowed before it becomes a decision</text>
+  <path class="arrow" d="M205 325h20"/><path class="arrow" d="M385 325h20"/><path class="arrow" d="M565 325h20"/><path class="arrow" d="M745 325h20"/><path class="arrow" d="M925 325h20"/>
+  <rect class="box" x="45" y="215" width="160" height="220" rx="20"/>
+  <text x="125" y="260" text-anchor="middle" class="label"><tspan x="125">Component</tspan><tspan x="125" dy="32">changed</tspan></text>
+  <text x="125" y="350" text-anchor="middle" class="small">state revision</text><text x="125" y="382" text-anchor="middle" class="small">+ identity</text>
+  <rect class="box" x="225" y="215" width="160" height="220" rx="20"/>
+  <text x="305" y="260" text-anchor="middle" class="label"><tspan x="305">Affected</tspan><tspan x="305" dy="32">routes</tspan></text>
+  <text x="305" y="350" text-anchor="middle" class="small">membership</text><text x="305" y="382" text-anchor="middle" class="small">+ filters</text>
+  <rect class="box" x="405" y="215" width="160" height="220" rx="20"/>
+  <text x="485" y="260" text-anchor="middle" class="label"><tspan x="485">Request</tspan><tspan x="485" dy="32">preparation</tspan></text>
+  <text x="485" y="350" text-anchor="middle" class="small">block-scoped</text><text x="485" y="382" text-anchor="middle" class="small">inputs</text>
+  <rect class="box gate" x="585" y="215" width="160" height="220" rx="20"/>
+  <text x="665" y="260" text-anchor="middle" class="label"><tspan x="665">Coverage</tspan><tspan x="665" dy="32">gate</tspan></text>
+  <text x="665" y="350" text-anchor="middle" class="small">all legs have</text><text x="665" y="382" text-anchor="middle" class="small">current state?</text>
+  <rect class="box gate" x="765" y="215" width="160" height="220" rx="20"/>
+  <text x="845" y="260" text-anchor="middle" class="label"><tspan x="845">Parallel</tspan><tspan x="845" dy="32">evaluation</tspan></text>
+  <text x="845" y="350" text-anchor="middle" class="small">exact-input</text><text x="845" y="382" text-anchor="middle" class="small">simulation</text>
+  <rect class="box evidence" x="945" y="215" width="210" height="220" rx="20"/>
+  <text x="1050" y="260" text-anchor="middle" class="label"><tspan x="1050">Selection evidence</tspan><tspan x="1050" dy="32">→ handoff</tspan></text>
+  <text x="1050" y="350" text-anchor="middle" class="small">after-gas gate</text><text x="1050" y="382" text-anchor="middle" class="small">then preflight</text>
+  <rect class="navy" x="60" y="500" width="1080" height="105" rx="22"/>
+  <text x="600" y="543" text-anchor="middle" class="note">Evaluation, selection, submission, settlement, and realized profit</text>
+  <text x="600" y="578" text-anchor="middle" class="note">remain different evidence states.</text>
+</svg>

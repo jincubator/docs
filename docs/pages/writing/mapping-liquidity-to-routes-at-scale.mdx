@@ -1,0 +1,161 @@
+---
+title: "Mapping Liquidity to Routes at Scale"
+description: "How Salus bounds route evaluation under changing liquidity while preserving freshness, observability, and the evidence boundary before profit."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Mapping Liquidity to Routes at Scale
+
+*8 min read*
+
+A large route catalog is useful only if a system can turn a small market-state change into fresh, bounded work. Salus made that translation explicit—and made the stopping point between evaluator capacity and profitable execution equally explicit.
+
+## The state-change problem
+
+Salus is an active Jincubator research and engineering initiative and reference implementation for decentralized trading-system architecture. One of its harder engineering problems begins with a mismatch of scale.
+
+The system needs a durable view of the paths that *could* be evaluated. At the reviewed Ethereum snapshot, that view contained 3,415 graph token nodes, 4,552 retained liquidity components, and 2,401,108 catalog routes with a maximum of four hops. But market state changes component by component and block by block. Rebuilding that universe, or scanning all of it after every update, would spend most of the latency budget rediscovering topology that was already known.
+
+The useful question is narrower: when this component changes, which already-known routes might now produce a different modeled result? That question links durable topology to live evaluation without pretending that topology itself contains a price, a profit, or a trading decision.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/01-topology-boundary.svg" alt="Diagram separating the persisted route universe from the filtered live catalog, changed-component lookup, affected-route scope, and current-state evaluation." />
+
+*The 2,401,108 figure is the persisted maximum-four-hop Ethereum route universe at the reviewed snapshot. The steady-state hot path works on a filtered live catalog and an affected subset; it does not scan all 2.4 million routes for every component update.*
+
+## Why broad reevaluation fails
+
+The first insufficient mental model was “state changed, so evaluate everything.” It is simple, but its work grows with the whole catalog rather than with the affected scope. A second version—put every request into one FIFO queue—only moves the problem. If new blocks arrive faster than old work drains, strictly preserving arrival order can make the evaluator precise about a market state that is no longer decision-useful.
+
+A third failure is semantic rather than computational: reporting a high evaluation rate as if it were a trading outcome. Catalog routes, evaluated route occurrences, positive modeled observations, selected after-gas routes, submissions, receipts, settlements, and realized profit are different evidence states. Compressing them into one “opportunity” counter makes performance easier to market and harder to trust.
+
+Salus therefore separates three concerns: topology establishes what can be recalled; the runtime establishes what is fresh enough to evaluate; the evidence model establishes how far a result actually progressed.
+
+## A durable topology boundary
+
+The durable side of the boundary gives tokens and liquidity components stable identities, constructs a graph, and generates bounded routes. A component-to-route inverted index then records membership in the active catalog. Looking up a changed component can recall known member routes directly instead of rediscovering paths.
+
+That index is topology-only. It does not cache profitability, gas, quotes, execution outcomes, or a promise that every route is currently evaluable. Current state remains separate because coverage, protocol state, and block identity can change long after the route identity was created.
+
+The reviewed implementation includes a bounded topology cache and persisted startup hydration. Broader all-route, LRU, or hybrid cache policies remain planning options, not validated current behavior. This distinction matters: a bounded implemented mechanism should not inherit the claims of a larger future design merely because both use the word “cache.”
+
+The design creates a useful invariant: durable topology can narrow work, but only current state can support a current modeled decision. A catalog identity survives across updates; its economic interpretation does not.
+
+## The affected-route hot path
+
+Once a component changes, the hot path is a sequence of narrowing and evidence-adding stages:
+
+1. Preserve the state revision and changed-component identity.
+2. Recall routes from the component-to-route membership index.
+3. Apply live catalog and route-bound filters.
+4. Prepare requests with the relevant block identity.
+5. Admit only routes whose required state coverage is present.
+6. Evaluate admitted occurrences in parallel against exact inputs.
+7. Record selection evidence separately from evaluation output.
+8. Hand any selected candidate to later freshness, preflight, and execution gates.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/02-route-lifecycle.svg" alt="Diagram of the affected-route evaluation lifecycle from component change through scoped lookup, preparation, coverage, parallel evaluation, selection evidence, and execution handoff." />
+
+*Each stage either narrows the route set or adds evidence. None silently promotes an evaluated route to execution.*
+
+The sequence makes state identity a first-class value. A result derived from one block cannot be refreshed merely by attaching a newer timestamp. If required state is absent, the system has an admission problem. If a newer useful block supersedes queued evaluation work, it has a freshness problem. If a selected candidate cannot pass preflight, it has an execution-gate result. Those outcomes should remain visible rather than collapsing into a generic failure.
+
+## Queue policy belongs to the stage
+
+Queues transport work; the service that understands the domain owns the policy. That split keeps dequeue mechanics thin while making capacity, freshness, ordering, shutdown, and failure decisions explicit.
+
+Evaluation work may favor the newest useful block and coalesce or discard superseded requests. Durable graph or persistence work instead needs to drain or record a visible incomplete outcome. Execution handoff may require bounded ordering because nonce, state, and evidence continuity matter. One global FIFO policy cannot express all three contracts safely.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/03-queue-policy.svg" alt="Diagram showing producer, bounded queue, thin adapter, policy-owning service, and output, with distinct freshness, durability, and execution queue semantics." />
+
+*Backpressure is an observable design signal. Capacity and lifecycle belong to the queue; freshness, ordering, and domain decisions belong to the consuming service.*
+
+The operational measurements follow the same boundary. Queue depth shows pressure. Queue wait and service time separate transport delay from computation. Worker utilization shows how much capacity was active. Stale-work and drop counters reveal whether speed came from silently abandoning work. Shutdown and replay evidence show whether the system can explain what completed and what did not.
+
+This is why a single throughput number is not enough. Two runs can report the same evaluations per second while differing materially in queue delay, coverage, freshness, dropped work, or evidence completeness.
+
+## What the measurements establish
+
+The article uses the current reviewed Salus evidence, not the larger figures in the immutable historical v1 PDFs. The publication manifest retains the exact evidence commit without exposing implementation navigation in the narrative.
+
+A retained Ethereum trace dated July 9, 2026 covered 100 blocks, from 25,495,691 through 25,495,790. It recorded 486,934 route evaluations across 83 completed evaluation services. Using the retained service-time denominator, it recorded 4,554 sustained and 7,528 peak route evaluations per second. In that sample, mean worker utilization was 84.65 percent and recorded route-evaluation queue wait was zero.
+
+<img src="/assets/writing/mapping-liquidity-to-routes-at-scale/04-reviewed-evidence.svg" alt="Evidence card showing the reviewed Ethereum graph size, route universe, retained trace scope, sustained and peak evaluation rates, and the zero-after-gas limitation." />
+
+*These are workload-scoped engineering indicators. They establish graph scale and evaluator capacity for the retained trace—not opportunity recall, execution, settlement, or realized profit.*
+
+The figures answer different questions. Graph nodes and liquidity components describe the retained market model. Catalog routes describe the maximum-four-hop universe at that snapshot. The evaluation count describes completed route occurrences in one trace. The sustained and peak rates describe evaluator service capacity under that measured workload.
+
+Historical v1 publications reported 33,578 sustained and 44,610 peak Ethereum evaluations per second under a different, unreconciled workload. Those releases remain immutable history. Choosing the larger number would erase the workload distinction, so it is not used as a current performance claim here.
+
+## Throughput stops before profit
+
+An evaluation computes a modeled result; it does not prove an executable profit. Economic selection still needs current quotes or exact simulation, fees and gas, freshness, and the transaction's own constraints. Execution adds further gates: preflight, submission, acceptance, receipt, inclusion, finality, settlement, and reconciliation of realized profit.
+
+The latest cited retained runs selected zero after-gas routes. They submitted nothing and do not establish profitable execution. That negative result belongs next to the throughput result because it identifies the evidence boundary: Salus demonstrated that the evaluator could process its retained workload, while the downstream economic gate found no route to advance.
+
+This is not a contradiction. Capacity and economics are independent questions. A system may need more evaluator capacity before it can test economic hypotheses at useful scale, but capacity cannot validate those hypotheses by itself.
+
+## What changed and what remains unresolved
+
+The architectural change was to make scope, freshness, and evidence explicit. Durable membership avoids repeated topology work. Affected-route recall bounds the hot path. Stage-owned queue policies keep newer decision-useful work from disappearing behind stale backlog. Stage-level metrics reveal where time and work were spent. Distinct evidence states prevent a modeled result from being promoted by vocabulary alone.
+
+Several questions remain open. The current retained evidence does not prove complete opportunity recall, profitable after-gas selection, competitive submission, inclusion, finality, settlement, or realized profit. Broader cache policies and some strategy and intelligence capabilities remain proposed. Operational tuning, private routing behavior, gas policy, thresholds, and active strategy details are intentionally outside the public account.
+
+The next useful optimization should therefore follow the next measured bottleneck, not the most impressive available rate. If coverage or freshness prevents admission, more evaluator workers will not fix it. If after-gas selection remains empty, execution throughput is not yet the limiting evidence. If candidates reach submission, the evidence model must continue through receipt and settlement.
+
+## Lessons beyond DeFi
+
+The pattern applies to any stateful system that maintains a large dependency universe while receiving small, frequent changes: incremental build systems, recommendation pipelines, fraud detection, streaming analytics, search indexing, and digital-twin simulations.
+
+Four lessons transfer directly:
+
+- Separate durable identity and membership from live decision state.
+- Index changes to affected work instead of rescanning the universe.
+- Let each stage own freshness, ordering, and failure semantics.
+- Report capacity, selection, action, and outcome as different evidence.
+
+The engineering advantage is not only speed. It is the ability to explain which state caused which bounded work, how fresh that work remained, what the system measured, and exactly where the claim stops.
+
+## Engineering Implementation Notes
+
+### The hot path updates only owned topology
+
+```rust
+fn upsert_component(&mut self, component: &IngestComponent) {
+    self.remove_component(&component.component_id);
+
+    if self.blacklist.contains(&component.component_id) {
+        return;
+    }
+
+    let topology = ActiveComponentTopology {
+        protocol_system: component.protocol_system.clone(),
+        token_addresses: component.token_addresses.clone(),
+    };
+    for edge in component_edges(
+        &component.component_id,
+        &component.protocol_system,
+        &component.token_addresses,
+    ) {
+        let token_in = edge.token_in.clone();
+        self.adjacency.entry(token_in).or_default().push(edge);
+    }
+    sort_adjacency(&mut self.adjacency);
+    self.components
+        .insert(component.component_id.clone(), topology);
+}
+```
+
+This is the implementation boundary behind the article’s topology claim: a
+changed component replaces its own adjacency contribution instead of requiring
+the catalog to be rebuilt as one opaque operation. The code says nothing about
+profitability or execution outcome.
+
+## Go deeper
+
+- Begin with the governed [Salus Work gateway](/work/salus).
+- Review the [route-evaluation evidence and limitations](/research/high-performance-route-evaluation).
+- Examine the reusable [liquidity-state-to-route-graph boundary](/architecture/liquidity-state-to-route-graphs).
+- Apply the [queue ownership and backpressure pattern](/architecture/backpressure-and-queue-ownership).
+- Follow the broader [evidence-aware execution pipeline](/architecture/trading-system-execution-pipelines).

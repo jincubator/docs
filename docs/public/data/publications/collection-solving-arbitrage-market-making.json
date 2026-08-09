@@ -1,40 +1,26 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "artifact": {
     "id": "collection/solving-arbitrage-market-making",
     "type": "collection",
     "title": "Solving, Arbitrage & Market Making"
   },
-  "route": "/articles/solving-arbitrage-market-making",
+  "route": "/writing/solving-arbitrage-market-making",
   "format": "vocs-mdx",
   "presentation": {
     "label": "Article",
-    "reading_time_minutes": 5
-  },
-  "source": {
-    "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "collections/solving-arbitrage-market-making/README.md",
-    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
-    "revision_date": "2026-07-22"
-  },
-  "lifecycle_state": "ready to publish",
-  "publication_status": "not published",
-  "reviews": {
-    "technical": "Approved",
-    "claim": "Approved",
-    "editorial": "Approved"
+    "reading_time_minutes": 6
   },
   "generator": {
-    "name": "knowledge-base-publication",
-    "version": 2
+    "name": "jincubator-publication",
+    "version": 4
   },
   "outputs": [
     {
-      "destination": "docs/pages/articles/solving-arbitrage-market-making.mdx",
+      "destination": "docs/pages/writing/solving-arbitrage-market-making.mdx",
       "media_type": "text/mdx",
-      "sha256": "20d039b0588cda324b672842519838678db90d18be2d2a34fee1614f8d5122a6"
+      "sha256": "4830e65942090ca73c8ed50b9160423f04d9a936e3aa9a2dee28c9866340cda5"
     }
   ],
-  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
-  "publication_date": null
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
 }

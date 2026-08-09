@@ -1,0 +1,159 @@
+---
+title: "What Trading-System Validation Evidence Can Prove"
+description: "A framework for interpreting tests, replay, parity, preflight, submission, receipts, and reconciliation."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# What Trading-System Validation Evidence Can Prove
+
+Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
+
+## The question
+
+What can a trading-system validation result legitimately prove?
+
+“Validated” often hides several different activities: a unit test passed, a replay matched an expected artifact, two implementations agreed on a field, an RPC preflight succeeded, a transaction was accepted by a provider, or a receipt was observed. These events are valuable, but their meanings are not interchangeable.
+
+The research goal is to define an evidence taxonomy that preserves the subject, independence, input provenance, stopping point, and unavailable facts of each validation surface.
+
+## Method
+
+The investigation reviewed Salus validation, replay, analytics, simulation,
+dry-run, preflight, submission, receipt, and parity surfaces at the source
+revision reviewed on 2026-07-29. It classified each surface by:
+
+- system under test;
+- reference or expectation;
+- input provenance;
+- independence from the implementation;
+- equality or tolerance rule;
+- resulting artifact;
+- operational side effects; and
+- claim ceiling.
+
+No new command, live route, transaction, benchmark, or historical parity run was executed. Existing retained measurements selected zero after-gas routes and are not reinterpreted as execution evidence.
+
+## Evidence classes
+
+### Implementation tests
+
+Unit and integration tests can prove that selected functions, crates, contracts, schemas, and command seams satisfy explicit assertions under test inputs. They are strong regression evidence and weak evidence of live external conditions.
+
+### Fixture replay
+
+Replay can prove a bounded transformation for fixed declared inputs and expose regressions. It does not prove that a fixture is complete historical state or that an execution would survive later ordering and liquidity.
+
+### Self-generated analytics
+
+An analytics path can make route coverage, classifications, missing state, and modeled economics inspectable. When it reuses the same evaluator as the runtime, agreement is self-referential rather than independent corroboration.
+
+### Cross-implementation parity
+
+Parity can show agreement or drift on shared fields. It is bounded by route overlap, block alignment, normalization, unavailable fields, and comparison tolerance. Agreement does not prove both implementations are correct; mismatch does not diagnose which one is wrong.
+
+An equal-budget passive comparison can act as a promotion gate for a proposed
+ordering or attribution method. The current retained comparison is useful
+because it withheld promotion: the corpus was small, the latest collection was
+incomplete, and no accepted advantage threshold or live decision authority
+was established.
+
+### Dry-run and calldata validation
+
+Dry-run can prove local candidate shape and guards. Contract tests can prove selected callback, authorization, repayment, and failure behavior in the tested environment. Neither proves current deployed state, live liquidity, inclusion, or profit.
+
+### RPC preflight
+
+Preflight evaluates planned calldata against a provider's state view before broadcast. A success is stronger than local construction but still time-, state-, provider-, and ordering-dependent. It is not a signed submission or receipt.
+
+### Submission and receipt
+
+A provider acceptance or bundle identifier proves a submission boundary. A transaction hash is distinct from a private bundle hash. A receipt proves inclusion and EVM success or revert at a recorded block; it does not by itself prove canonical finality or economic reconciliation.
+
+### Commercial reconciliation
+
+Realized outcome requires authoritative token flows, funding and gas costs, allocation, inventory and cost basis where relevant, finality, and accounting reconciliation. A successful receipt is an input, not the conclusion.
+
+## Findings
+
+Five rules emerged.
+
+1. **Name the subject.** Catalog routes, route evaluations, opportunities, selected routes, submissions, executions, and realized profit are different counts.
+2. **Name the reference.** Expected files and golden fixtures are regression references; independently sourced evidence provides a different kind of corroboration.
+3. **Treat unavailable as a result.** Missing RPC, unmatched blocks, unsupported protocols, absent fields, skipped tests, and filtered routes do not pass.
+4. **State the stopping point.** Dry-run stops before RPC, preflight stops before signing, submission stops before inclusion, and receipt stops before complete reconciliation.
+5. **Advance only with new evidence.** A later claim requires a later artifact rather than optimistic reinterpretation of an earlier one.
+
+This taxonomy also changes how negative results are read. Zero selected after-gas routes is not a failed throughput measurement. It is a valid downstream result that prevents the throughput evidence from becoming a profitability claim.
+
+## Independence and comparison
+
+Validation strength depends partly on independence. A pure function checked against hand-derived values can be a strong local test. A replay compared with an artifact generated by the same code is useful for regression but not independent. A simulator compared with another implementation adds independence only for the fields and state both actually share.
+
+Comparison rules must also be explicit. Exact equality is suitable for identifiers, classifications, and many integer artifacts. Numerical comparisons may require absolute or relative tolerance, rounding rules, unit normalization, and treatment of missing values. A tool that reports mismatches but exits successfully is an observational harness, not an enforcing gate.
+
+## Evidence progression
+
+```text
+code and schema checks
+  -> deterministic fixtures and replay
+  -> bounded independent comparison
+  -> current-state simulation or preflight
+  -> signed submission
+  -> inclusion and receipt
+  -> canonicality and finality
+  -> token-flow and cost reconciliation
+  -> realized outcome
+```
+
+The progression is not necessarily one automated pipeline. It is a claim discipline. A team may stop at replay for a research result or at preflight for a no-broadcast diagnostic, as long as the resulting claim stops there too.
+
+## Limitations
+
+- The taxonomy is derived primarily from one implementation and its historical comparison harness.
+- It does not prescribe a universal CI system or testing framework.
+- It does not establish that every retained Salus validation artifact is complete.
+- External providers, block builders, mempools, and chains introduce behavior that deterministic tests cannot reproduce fully.
+- Operational thresholds, gas-bidding behavior, route selection, opportunity data, and vulnerabilities remain outside this public research.
+- No production readiness, security, execution success, or commercial result is inferred.
+
+## Recommendations
+
+- Put the evidence class and claim ceiling beside every result.
+- Retain source revision, input identity, configuration scope, comparison rule, and unavailable fields.
+- Make no-submit, preflight-only, submission, pending, included-success, included-revert, and reconciled outcomes distinct states.
+- Keep skipped, unsupported, missing, mismatched, and unavailable counts visible.
+- Require an independent review of public claims even when machine validation passes.
+
+## Engineering Implementation Notes
+
+### Conflicting identities fail before comparison
+
+```rust
+if self.block_number == other.block_number && self.block_hash != other.block_hash {
+    return Err(SourceBlockValidationError::ConflictingBlockHash {
+        block_number: self.block_number,
+        left: self.block_hash.clone(),
+        right: other.block_hash.clone(),
+    });
+}
+if self.block_hash == other.block_hash && self.block_number != other.block_number {
+    return Err(SourceBlockValidationError::ConflictingBlockNumber {
+        block_hash: self.block_hash.clone(),
+        left: self.block_number,
+        right: other.block_number,
+    });
+}
+```
+
+Validation treats contradictory identity as a typed failure instead of silently
+selecting one observation. That is why a replay, comparison, or analytical
+result can remain bounded by the integrity of its inputs rather than acquiring
+authority merely because a calculation completed.
+
+## Related work and architecture
+
+- [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence) focuses on the replay subset.
+- [High-Performance Route Evaluation](/research/high-performance-route-evaluation) applies the taxonomy to retained measurements.
+- [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) turns the evidence progression into system boundaries.
+- [Salus](/work/salus) remains the governed Work account.

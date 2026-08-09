@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/defi-protocol-engineering-kanga",
+    "type": "work",
+    "title": "DeFi Protocol Engineering — Kanga"
+  },
+  "route": "/work/defi-protocol-engineering-kanga",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/defi-protocol-engineering-kanga.mdx",
+      "media_type": "text/mdx",
+      "sha256": "906b3be64ea57f6c667273e0d5bec34bfa97a66c864d7c08b35a839dc75439c9"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

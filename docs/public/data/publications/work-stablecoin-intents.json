@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/stablecoin-intents",
+    "type": "work",
+    "title": "Stablecoin Intents"
+  },
+  "route": "/work/stablecoin-intents",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/stablecoin-intents.mdx",
+      "media_type": "text/mdx",
+      "sha256": "bada7478e92c242d8ce3e7a3b9ae87b20121beb25437181c9d48f5407bce7513"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

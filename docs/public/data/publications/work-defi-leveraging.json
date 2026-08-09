@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "work/defi-leveraging",
+    "type": "work",
+    "title": "DeFi Leveraging"
+  },
+  "route": "/work/defi-leveraging",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Work",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/work/defi-leveraging.mdx",
+      "media_type": "text/mdx",
+      "sha256": "fae5534f02bd9b1b6a36326e7fb4446d003a815d2247a08bbf26c7e5be543d8e"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

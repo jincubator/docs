@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "artifact": {
     "id": "architecture/durable-settlement-control-planes",
     "type": "architecture",
@@ -11,30 +11,16 @@
     "label": "Architecture",
     "reading_time_minutes": null
   },
-  "source": {
-    "repository": "https://github.com/jincubator/knowledge-base",
-    "path": "architecture/durable-settlement-control-planes/README.md",
-    "commit": "0c92f9a60c371fe7daa899589ba49ab01aeb880e",
-    "revision_date": "2026-07-22"
-  },
-  "lifecycle_state": "ready to publish",
-  "publication_status": "not published",
-  "reviews": {
-    "technical": "Approved",
-    "claim": "Approved",
-    "editorial": "Approved"
-  },
   "generator": {
-    "name": "knowledge-base-publication",
-    "version": 2
+    "name": "jincubator-publication",
+    "version": 4
   },
   "outputs": [
     {
       "destination": "docs/pages/architecture/financial-infrastructure/settlement.mdx",
       "media_type": "text/mdx",
-      "sha256": "e90ad4d7bf752a65c7a362c55a79caeb107318e4ec4729568412bd2c7a3bd15d"
+      "sha256": "453e809c650d3de770a0389e60e13516d81d433af5f6760d5d6bfcdd61cbcab6"
     }
   ],
-  "provenance_notice": "Generated from the canonical Knowledge Base source; do not edit the distribution copy directly.",
-  "publication_date": null
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
 }

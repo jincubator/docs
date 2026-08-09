@@ -289,11 +289,11 @@ const PRIVATE_PUBLICATION_REFERENCE =
   /(?:johnwhitton\/prep|\/prep\/|evidence_location|private_reviewer_notes|raw_benchmark_logs|sensitive_strategy)/i;
 const EXPECTED_TOP_NAVIGATION = [
   "Work",
+  "Salus",
   "Research",
   "Architecture",
-  "Articles",
-  "Engage",
-  "John Whitton",
+  "Writing",
+  "About",
 ];
 const ABSOLUTE_FILESYSTEM_PATHS = [
   /\bfile:\/\//i,
@@ -519,48 +519,66 @@ function validatePublication(root, spec) {
 
 
 export function validatePublicationByArtifact(root, artifactId) {
-  const spec = PUBLICATIONS.find(({ artifact }) => artifact.id === artifactId);
-  return spec
-    ? validatePublication(root, spec)
+  const manifestPath = path.join(
+    root,
+    "docs/public/data/publications",
+    `${artifactId.replace("/", "-")}.json`,
+  );
+  return fs.existsSync(manifestPath)
+    ? validateReleasePublication(root, manifestPath, artifactId)
     : [`unknown publication artifact: ${artifactId}`];
 }
 
 
 export function validatePublications(root) {
-  const issues = PUBLICATIONS.flatMap((spec) => validatePublication(root, spec));
   const manifestDirectory = path.join(root, "docs/public/data/publications");
-  const registeredManifests = PUBLICATIONS.map(({ manifest }) => manifest).sort();
-  const trackedManifests = fs.existsSync(manifestDirectory)
-    ? fs.readdirSync(manifestDirectory)
-      .filter((name) => name.endsWith(".json"))
-      .map((name) => `docs/public/data/publications/${name}`)
-      .sort()
+  const manifests = fs.existsSync(manifestDirectory)
+    ? fs.readdirSync(manifestDirectory).filter((name) => name.endsWith(".json")).sort()
     : [];
-  if (JSON.stringify(registeredManifests) !== JSON.stringify(trackedManifests))
-    issues.push("publication manifest registry does not match tracked manifests");
-  for (const [field, values] of [
-    ["artifact", PUBLICATIONS.map(({ artifact }) => artifact.id)],
-    ["route", PUBLICATIONS.map(({ route }) => route)],
-    ["page", PUBLICATIONS.map(({ page }) => page)],
-    ["manifest", PUBLICATIONS.map(({ manifest }) => manifest)],
-  ]) {
-    if (new Set(values).size !== values.length)
-      issues.push(`publication registry contains a duplicate ${field}`);
-  }
-  const commits = PUBLICATIONS.flatMap((spec) => {
-    try {
-      const manifest = JSON.parse(
-        fs.readFileSync(path.join(root, spec.manifest), "utf8"),
-      );
-      return typeof manifest.source?.commit === "string"
-        ? [manifest.source.commit]
-        : [];
-    } catch {
-      return [];
-    }
+  const issues = manifests.flatMap((name) => validateReleasePublication(root, path.join(manifestDirectory, name)));
+  if (manifests.length !== 25) issues.push(`expected 25 publication manifests, found ${manifests.length}`);
+  const ids = manifests.flatMap((name) => {
+    try { return [JSON.parse(fs.readFileSync(path.join(manifestDirectory, name), "utf8")).artifact?.id]; } catch { return []; }
   });
-  if (commits.length === PUBLICATIONS.length && new Set(commits).size !== 1)
-    issues.push("publication manifests must identify one Knowledge Base source commit");
+  if (new Set(ids).size !== ids.length) issues.push("publication manifests contain duplicate artifact identities");
+  if (ids.filter((id) => id === "work/salus").length !== 1) issues.push("expected exactly one Salus route");
+  if (ids.includes("collection/portfolio-strategy-competitor-analysis")) issues.push("restricted competitor publication is present");
+  return issues;
+}
+
+function validateReleasePublication(root, manifestPath, expectedArtifactId) {
+  const issues = [];
+  let manifest;
+  try { manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")); } catch { return [`${manifestPath}: manifest is not valid JSON`]; }
+  const subject = path.basename(manifestPath);
+  const fields = ["schema_version", "artifact", "route", "format", "presentation", "generator", "outputs", "provenance_notice"];
+  checkExactKeys(manifest, fields, subject, "manifest", issues);
+  checkExactKeys(manifest.artifact, PUBLICATION_ARTIFACT_FIELDS, subject, "artifact", issues);
+  checkExactKeys(manifest.presentation, PUBLICATION_PRESENTATION_FIELDS, subject, "presentation", issues);
+  checkExactKeys(manifest.generator, PUBLICATION_GENERATOR_FIELDS, subject, "generator", issues);
+  if (expectedArtifactId && manifest.artifact?.id !== expectedArtifactId) issues.push(`${subject} artifact identity is invalid`);
+  if (manifest.schema_version !== 2 || manifest.format !== "vocs-mdx") issues.push(`${subject} schema or format is invalid`);
+  if (manifest.generator?.name !== "jincubator-publication" || manifest.generator?.version !== 4) issues.push(`${subject} generator is invalid`);
+  if (manifest.provenance_notice !== "Generated editorial projection; do not edit the distribution copy directly.") issues.push(`${subject} provenance notice is invalid`);
+  for (const field of ["source", "reviews", "lifecycle_state", "publication_status", "publication_date", "evidence_sources"])
+    if (Object.hasOwn(manifest, field)) issues.push(`${subject} leaks internal ${field}`);
+  const outputs = Array.isArray(manifest.outputs) ? manifest.outputs : [];
+  const page = outputs.find((output) => output.media_type === "text/mdx");
+  if (!page || outputs.filter((output) => output.media_type === "text/mdx").length !== 1) issues.push(`${subject} must contain exactly one MDX output`);
+  for (const output of outputs) {
+    if (!output || typeof output.destination !== "string" || !/^[0-9a-f]{64}$/.test(output.sha256 ?? "")) { issues.push(`${subject} output is invalid`); continue; }
+    const outputPath = path.join(root, output.destination);
+    if (!fs.existsSync(outputPath)) { issues.push(`${subject} output is missing: ${output.destination}`); continue; }
+    const digest = crypto.createHash("sha256").update(fs.readFileSync(outputPath)).digest("hex");
+    if (digest !== output.sha256) issues.push(`${subject} output digest does not match: ${output.destination}`);
+  }
+  if (page) {
+    const text = fs.readFileSync(path.join(root, page.destination), "utf8");
+    if (!text.includes("{/* Generated canonical editorial projection. Do not edit directly. */}")) issues.push(`${subject} generated notice is invalid`);
+    if ((text.match(/^# /gm) ?? []).length !== 1) issues.push(`${subject} MDX must contain one H1`);
+    if (/github\.com\/jincubator\/knowledge-base|\/Users\/|source_commit|KNOWLEDGE BASE REVIEW|Provisional production/i.test(text)) issues.push(`${subject} MDX leaks private or review content`);
+  }
+  if (/github\.com\/jincubator\/knowledge-base|source_commit|KNOWLEDGE BASE REVIEW|Provisional production/i.test(JSON.stringify(manifest))) issues.push(`${subject} manifest leaks private or review content`);
   return issues;
 }
 
@@ -667,15 +685,6 @@ function validateSource(root) {
     JSON.stringify(EXPECTED_TOP_NAVIGATION)
   ) issues.push("vocs.config.ts: primary navigation does not match the approved taxonomy");
 
-  const registryPath = path.join(root, "docs/public/data/rebranding-registry.json");
-  const registry = JSON.parse(fs.readFileSync(registryPath, "utf8"));
-  if (registry.registry_digest !== REGISTRY_DIGEST) issues.push("public registry digest does not match the approved private registry");
-  if (registry.registry_version !== "2026-07-21.1") issues.push("public registry version is not approved");
-  if (registry.facts.length !== 14) issues.push(`public registry contains ${registry.facts.length} facts; expected 14`);
-  const serialized = JSON.stringify(registry);
-  for (const field of ["evidence_location", "private_reviewer_notes", "raw_benchmark_logs", "sensitive_strategy"])
-    if (serialized.includes(field)) issues.push(`public registry leaks ${field}`);
-  for (const label of findForbidden(serialized)) issues.push(`public registry: ${label}`);
   issues.push(...validatePublications(root));
   return issues;
 }
@@ -741,7 +750,7 @@ function validateBuild(root) {
   const htmlDocuments = builtFiles
     .filter((file) => file.endsWith(".html"))
     .map((file) => fs.readFileSync(file, "utf8"));
-  for (const { route } of PUBLICATIONS) {
+  for (const route of ACTIVE_ROUTES.filter((route) => route !== "/")) {
     const routeCount = countCanonicalUrl(htmlDocuments, `${SITE_URL}${route}`);
     if (routeCount !== 1)
       issues.push(`expected exactly one canonical ${route} route, found ${routeCount}`);
