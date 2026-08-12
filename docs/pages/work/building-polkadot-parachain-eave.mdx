@@ -38,8 +38,6 @@ client
 
 <img src="/assets/work/building-polkadot-parachain-eave/eave-parachain-architecture.svg" alt="EAVE Polkadot parachain architecture and evidence boundaries" />
 
-<a href="/assets/work/building-polkadot-parachain-eave/eave-parachain-architecture.svg">Open the full-size EAVE parachain architecture diagram</a>.
-
 The active workspace contained an `eave` binary, command-line handling, node service, RPC composition, Steam and Eave runtime crates, chain-spec code, and generated Steam resources. The service assembled the client and backend, transaction pool, import queue, networking, telemetry, off-chain workers, RPC, relay-side connectivity, and collator or full-node paths.
 
 The Steam runtime was the best-supported active path. Its composition included FRAME system functions, Cumulus parachain support, session and Aura configuration, asset and financial modules, EVM integration, runtime APIs, and message-passing configuration. This describes integration boundaries, not blanket authorship of every pallet. FRAME, Substrate, Cumulus, Polkadot relay behavior, and mixed vendor or forked modules remain upstream or shared dependencies.

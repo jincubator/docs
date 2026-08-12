@@ -46,7 +46,7 @@ export default defineConfig({
         transformIndexHtml(html) {
           return html.replace(
             "</head>",
-            '<script src="/zoom-mermaid.js" defer></script><script src="/zoom-images.js" defer></script></head>',
+            '<script src="/zoom-images.js" defer></script><script src="/zoom-mermaid.js" defer></script></head>',
           );
         },
       },

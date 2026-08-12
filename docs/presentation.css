@@ -5,45 +5,46 @@
  */
 
 :root {
-  --vocs-color-background: #f7f5ef;
-  --vocs-color-background2: #fffefa;
-  --vocs-color-background3: #f1eee6;
-  --vocs-color-background4: #e8e6df;
-  --vocs-color-background5: #dedbd3;
-  --vocs-color-backgroundDark: #f7f5ef;
-  --vocs-color-border: #ccd2d0;
-  --vocs-color-border2: #d9ddda;
-  --vocs-color-heading: #17222d;
-  --vocs-color-title: #17222d;
-  --vocs-color-text: #17222d;
-  --vocs-color-text2: #304c40;
-  --vocs-color-text3: #476457;
-  --vocs-color-textHover: #17222d;
-  --vocs-color-textAccent: #476457;
-  --vocs-color-textAccentHover: #304c40;
-  --vocs-color-backgroundAccent: #476457;
-  --vocs-color-backgroundAccentHover: #304c40;
-  --vocs-color-backgroundAccentText: #fffefa;
-  --vocs-color-codeBlockBackground: #17222d;
-  --vocs-color-codeInlineBackground: #f1eee6;
-  --vocs-color-codeInlineBorder: #d9ddda;
-  --vocs-color-codeInlineText: #304c40;
-  --vocs-fontFamily-default: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --vocs-fontFamily-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --vocs-content-width: min(1120px, 100vw);
-  --vocs-sidebar-width: 280px;
-  --vocs-sidebar-horizontalPadding: 1.25rem;
+  --vocs-color_background: #f7f5ef;
+  --vocs-color_background2: #fffefa;
+  --vocs-color_background3: #f1eee6;
+  --vocs-color_background4: #e8e6df;
+  --vocs-color_background5: #dedbd3;
+  --vocs-color_backgroundDark: #f7f5ef;
+  --vocs-color_border: #ccd2d0;
+  --vocs-color_border2: #d9ddda;
+  --vocs-color_heading: #17222d;
+  --vocs-color_title: #17222d;
+  --vocs-color_text: #17222d;
+  --vocs-color_text2: #304c40;
+  --vocs-color_text3: #476457;
+  --vocs-color_textHover: #17222d;
+  --vocs-color_textAccent: #476457;
+  --vocs-color_textAccentHover: #304c40;
+  --vocs-color_backgroundAccent: #476457;
+  --vocs-color_backgroundAccentHover: #304c40;
+  --vocs-color_backgroundAccentText: #fffefa;
+  --vocs-color_codeBlockBackground: #17222d;
+  --vocs-color_codeInlineBackground: #f1eee6;
+  --vocs-color_codeInlineBorder: #d9ddda;
+  --vocs-color_codeInlineText: #304c40;
+  --vocs-fontFamily_default: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --vocs-fontFamily_mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --vocs-fontWeight_regular: 400;
+  --vocs-content_width: min(1120px, 100vw);
+  --vocs-sidebar_width: 280px;
+  --vocs-sidebar_horizontalPadding: 1.25rem;
 }
 
 html,
 body,
-.vocs_DocsLayout_root {
+.vocs_DocsLayout {
   background: #f7f5ef;
   color: #17222d;
 }
 
 .vocs_DocsLayout_content,
-.vocs_Content_root {
+.vocs_Content {
   background: #f7f5ef;
 }
 
@@ -67,10 +68,10 @@ body,
   box-shadow: none;
 }
 
-.vocs_Content_root h1,
-.vocs_Content_root h2,
-.vocs_Content_root h3,
-.vocs_Content_root h4 {
+.vocs_Content h1,
+.vocs_Content h2,
+.vocs_Content h3,
+.vocs_Content h4 {
   color: #17222d;
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 500;
@@ -78,18 +79,23 @@ body,
   line-height: 1.12;
 }
 
-.vocs_Content_root h1 {
+.vocs_Content h1 {
   font-size: clamp(2.2rem, 4vw, 3.5rem);
 }
 
-.vocs_Content_root h2 {
+.vocs_Content h2 {
   font-size: clamp(1.5rem, 3vw, 2.2rem);
 }
 
-.vocs_Content_root p,
-.vocs_Content_root li,
-.vocs_Content_root td,
-.vocs_Content_root th {
+.vocs_Content > .vocs_H2:not(:first-child) {
+  margin-top: 3rem;
+  padding-top: 1rem;
+}
+
+.vocs_Content p,
+.vocs_Content li,
+.vocs_Content td,
+.vocs_Content th {
   line-height: 1.65;
 }
 
@@ -157,6 +163,17 @@ body,
   outline-offset: 0.35rem;
 }
 
+.vocs_Content .jincubator-mermaid-zoom {
+  cursor: zoom-in;
+  height: auto;
+  max-width: 100%;
+}
+
+.vocs_Content .jincubator-mermaid-zoom:focus-visible {
+  outline: 3px solid #476457;
+  outline-offset: 0.35rem;
+}
+
 .jincubator-image-zoom-dialog {
   background: transparent;
   border: 0;
@@ -178,8 +195,9 @@ body,
   background: rgb(23 34 45 / 88%);
 }
 
-.jincubator-image-zoom-dialog img {
+.jincubator-image-zoom-dialog__content {
   background: #fffefa;
+  cursor: default;
   display: block;
   height: 100%;
   inset: 0;
@@ -202,17 +220,17 @@ body,
   z-index: 1;
 }
 
-.vocs_Content_root pre {
+.vocs_Content pre {
   border: 1px solid #304c40;
   border-radius: 0.65rem;
   box-shadow: none;
 }
 
-.vocs_Content_root table {
+.vocs_Content table {
   border-color: #d9ddda;
 }
 
-.vocs_Content_root th {
+.vocs_Content th {
   background: #fffefa;
 }
 

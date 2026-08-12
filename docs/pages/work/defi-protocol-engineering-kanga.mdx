@@ -42,8 +42,6 @@ trader or liquidity provider
 
 <img src="/assets/work/defi-protocol-engineering-kanga/kanga-amm-incentives-migration.svg" alt="Kanga AMM, incentives, staking, fee conversion, and migration architecture" />
 
-<a href="/assets/work/defi-protocol-engineering-kanga/kanga-amm-incentives-migration.svg">Open the full-size Kanga protocol architecture diagram</a>.
-
 At the liquidity layer, a factory created deterministic pair contracts and recorded token-pair mappings. Each pair managed reserves, cumulative prices, LP mint and burn, constant-product swaps, optional fee minting, and a migration-sensitive first-mint path. A router supplied the user periphery for adding and removing liquidity, native-asset wrapping, path quotes, and exact-input or exact-output swaps.
 
 At the incentive layer, the primary reward contract used the familiar accumulated-reward-per-share model. Each pool stored an LP token, allocation weight, last reward block, and accumulated KANGA per share; each user stored deposited amount and reward debt. Pool updates minted rewards, split a development allocation, and advanced the accumulator. Deposit, withdrawal, harvest, and emergency withdrawal changed user accounting and LP custody.

@@ -33,9 +33,9 @@ Provider-neutral ports isolate signing, chain access, synthetic bank effects, an
 
 The dependency direction is inward: adapters implement application-owned ports, application coordinates domain rules, and the control plane composes those boundaries. A chain response remains evidence consumed by the control plane; it does not replace durable business truth.
 
-<img src="/assets/work/digital-banking/digital-banking-control-plane.svg" alt="Digital Banking control plane from command and policy through reconciliation" />
+The figure below is a source-backed reference architecture distilled from the implementation repository's accepted design, ADRs, current status, and module boundaries. It shows the API, domain/application, durable-delivery, adapter, observation, and reconciliation seams that the reference implementation demonstrates. It is not deployment documentation: the evidence remains local and non-production, and the figure does not assert production custody, public-network operation, or settlement.
 
-<a href="/assets/work/digital-banking/digital-banking-control-plane.svg">Open the full-size Digital Banking control-plane diagram</a>.
+<img src="/assets/work/digital-banking/digital-banking-control-plane.svg" alt="Digital Banking reference architecture from API composition through durable delivery, external evidence, and reconciliation" />
 
 ### Token-operation lifecycle
 

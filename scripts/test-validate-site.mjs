@@ -52,10 +52,20 @@ for (const manifestName of fs.readdirSync("docs/public/data/publications").filte
 }
 assert.equal(publicNavigationRoutes.includes("/writing/portfolio-strategy-competitor-analysis"), false);
 const presentationCss = fs.readFileSync("docs/presentation.css", "utf8");
-for (const token of ["#f7f5ef", "Georgia", ".vocs_DocsLayout_sidebar", "prefers-reduced-motion"]) {
+for (const token of [
+  "#f7f5ef",
+  "Georgia",
+  "--vocs-color_background",
+  ".vocs_Content h1",
+  ".vocs_H2",
+  "margin-top: 3rem",
+  ".vocs_DocsLayout_sidebar",
+  "prefers-reduced-motion",
+]) {
   assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }
 assert.match(config, /zoom-images\.js/);
+assert.match(config, /zoom-images\.js" defer><\/script><script src="\/zoom-mermaid\.js/);
 for (const token of [".vocs_Content .jincubator-image-zoom", ".jincubator-image-zoom__indicator", "cursor: zoom-in"]) {
   assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }
@@ -63,7 +73,7 @@ for (const token of ["width: 100dvw", "height: 100dvh", "max-width: none", "max-
   assert.match(presentationCss, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }
 const imageZoomScript = fs.readFileSync("docs/public/zoom-images.js", "utf8");
-for (const token of ["showModal", "Open the .* at full size", "vocs:route-update", ".vocs_Content", 'event.key === "Escape"', "event.target === image"]) {
+for (const token of ["showModal", "Open the .* at full size", "vocs:route-update", ".vocs_Content", 'event.key === "Escape"', "event.target === media"]) {
   assert.match(imageZoomScript, new RegExp(token));
 }
 const imageZoomTree = {
@@ -81,6 +91,28 @@ const imageZoomTree = {
 remarkImageZoom()(imageZoomTree);
 assert.equal(imageZoomTree.children[0].name, "button");
 assert.equal(imageZoomTree.children[0].attributes.find((attribute) => attribute.name === "aria-label").value, "Open full-size image: Example image");
+
+const zoomImage = fs.readFileSync("docs/public/components/ZoomImage.tsx", "utf8");
+assert.doesNotMatch(zoomImage, /react-medium-image-zoom/);
+assert.match(zoomImage, /className="jincubator-image-zoom"/);
+assert.match(zoomImage, /jincubator-image-zoom__indicator/);
+
+const mermaidZoom = fs.readFileSync("docs/public/zoom-mermaid.js", "utf8");
+assert.match(mermaidZoom, /JincubatorImageZoom/);
+assert.doesNotMatch(mermaidZoom, /console\.log|rm-zoom-img|position: fixed/);
+
+for (const page of [
+  "docs/pages/work/salus.mdx",
+  "docs/pages/work/digital-banking.mdx",
+  "docs/pages/work/building-polkadot-parachain-eave.mdx",
+  "docs/pages/work/defi-protocol-engineering-kanga.mdx",
+]) {
+  assert.doesNotMatch(
+    fs.readFileSync(page, "utf8"),
+    /Open the (?:full-size|runtime|technical).+?(?:at )?full size/i,
+    `${page} must rely on click-to-zoom rather than a redundant full-size link`,
+  );
+}
 for (const [page, key, componentPath] of [
   ["docs/pages/index.mdx", "home", "../components/LandingPage"],
   ["docs/pages/work/index.mdx", "work", "../../components/LandingPage"],
