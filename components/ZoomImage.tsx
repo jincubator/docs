@@ -1,14 +1,19 @@
 import React from "react";
-import Zoom from "react-medium-image-zoom";
-import "react-medium-image-zoom/dist/styles.css";
 
 type Props = React.ImgHTMLAttributes<HTMLImageElement>;
 
-export const ZoomImage = (props: Props) => (
-  <Zoom>
+export const ZoomImage = ({ alt = "", className, style, ...props }: Props) => (
+  <button
+    type="button"
+    className="jincubator-image-zoom"
+    aria-label={`Open full-size image: ${alt || "image"}`}
+  >
     <img
       {...props}
-      style={{ maxWidth: "100%", height: "auto", ...props.style }}
+      alt={alt}
+      className={["jincubator-image-zoom__image", className].filter(Boolean).join(" ")}
+      style={{ maxWidth: "100%", height: "auto", ...style }}
     />
-  </Zoom>
+    <span className="jincubator-image-zoom__indicator" aria-hidden="true" />
+  </button>
 );

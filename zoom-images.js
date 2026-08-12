@@ -28,22 +28,36 @@
     const source = trigger.querySelector("img");
     if (!source) return;
 
+    openZoomSource(trigger, source);
+  }
+
+  function openZoomSource(trigger, source) {
     const dialog = document.createElement("dialog");
     dialog.className = "jincubator-image-zoom-dialog";
-    dialog.setAttribute("aria-label", source.alt || "Full-size image");
+    dialog.setAttribute(
+      "aria-label",
+      source.getAttribute("alt") ||
+        source.getAttribute("aria-label") ||
+        source.querySelector("title")?.textContent ||
+        "Full-size image",
+    );
 
     const close = document.createElement("button");
     close.type = "button";
     close.className = "jincubator-image-zoom-dialog__close";
     close.textContent = "Close full-size image";
 
-    const image = document.createElement("img");
-    image.src = source.currentSrc || source.src;
-    image.alt = source.alt;
+    const media = source.cloneNode(true);
+    media.classList.add("jincubator-image-zoom-dialog__content");
+    media.removeAttribute("id");
+    if (source instanceof HTMLImageElement) {
+      media.src = source.currentSrc || source.src;
+      media.alt = source.alt;
+    }
 
-    dialog.append(close, image);
+    dialog.append(close, media);
     dialog.addEventListener("click", (event) => {
-      if (event.target === dialog || event.target === image) dialog.close();
+      if (event.target === dialog || event.target === media) dialog.close();
     });
     dialog.addEventListener("keydown", (event) => {
       if (event.key === "Escape") dialog.close();
@@ -58,6 +72,8 @@
     dialog.showModal();
     close.focus();
   }
+
+  window.JincubatorImageZoom = { open: openZoomSource };
 
   document.addEventListener("click", (event) => {
     const trigger = event.target.closest(triggerSelector);
