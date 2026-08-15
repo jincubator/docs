@@ -31,6 +31,8 @@ probabilistic software.
 - [Research Proposal: Solvers, Arbitrage & Intent-Based Protocols](/proposals/solving-arbitrage): Over the past eight months, I’ve developed both a solver engine and an intent-based swap protocol integrating Uniswap v4. My work spans arbitrage detection/execution, real-time streaming, solver frameworks, and resource-efficient intent mechanisms. Retained research material is accessible via [Jincubator Research](/research/intro).
 - [Sunrise DEX](/proposals/sunrise): [Link to original W3 Grant Proposal](https://github.com/w3f/Grants-Program/blob/master/applications/sunrise-dex.md)
 - [Prototypes — Compatibility Route](/prototypes/intro): Prototypes now live structurally under [Work](/work/prototypes). The current generated page covers the bounded UHI5 intent-hook and Unite DeFi solver experiments with explicit implementation and maturity limits.
+- [Salus Architecture: An Opinionated Rust Implementation of Web3 Trading and Solving Infrastructure](/salus/architecture): **Draft** — This public working document is under active independent review.
+- [Salus: Modular Trading and Solving Infrastructure for Decentralized Markets](/salus/whitepaper): **Draft** — This public working document is under active independent review.
 - [Building a Polkadot Parachain — EAVE](/work/building-polkadot-parachain-eave): EAVE is a historical case study in translating an emerging-asset venture thesis into a Polkadot parachain design, then separating the architecture that was proposed from the integration that source evidence can actually support.
 - [DeFi Leveraging](/work/defi-leveraging): DeFi Leveraging is a bounded case study in designing leverage-token accounting, automated position rebalancing, and intent-based execution without confusing protocol safety with off-chain strategy.
 - [DeFi Protocol Engineering — Kanga](/work/defi-protocol-engineering-kanga): Kanga is a historical DeFi protocol case study that connects John's documented product and protocol design with a source-backed automated-market-maker, incentive, staking, fee-conversion, and liquidity-migration architecture.
@@ -45,8 +47,6 @@ reference implementation for decentralized trading-system architecture.
 - [High-Performance Route Evaluation](/research/high-performance-route-evaluation): Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
 - [Research](/research/intro): Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
 - [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence): Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
-- [Salus Architecture: An Opinionated Rust Implementation of Web3 Trading and Solving Infrastructure](/salus/architecture): **Draft** — This public working document is under active independent review.
-- [Salus: Modular Trading and Solving Infrastructure for Decentralized Markets](/salus/whitepaper): **Draft** — This public working document is under active independent review.
 - [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale): *8 min read*
 - [Salus: Modular Trading and Solving Infrastructure for Decentralized Markets](/writing/salus-whitepaper): **Draft** — This public working document is under active independent review.
 - [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making): *6 min read*
@@ -138,17 +138,17 @@ last-updated: 2023-02-04
 - [Cryptographic Primitives](/research/primitives/primitives): date: 2023-02-04
 - [Signature Schemes in Consensus Protocols](/research/primitives/signatures): date: 2023-02-05
 - [Weak Subjectivity](/research/primitives/weak-subjectivity): date: 2023-02-04
+- [Trading Systems](/research/trading-systems/intro): Historical research index retained for compatibility. Current research is [High-Performance Route Evaluation](/research/solving/solving).
+- [Axiom](/research/zk/axiom): date: 2023-06-28
+- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
+- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
+- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
 - [Uniswap V4 Intent Hook](/research/solving/intent-management-hook): Historical prototype route. This page preserves the original implementation context; the current reviewed synthesis is [Intent Systems Prototypes](/work/prototypes).
 - [Liquidity-Management Research Notes](/research/solving/liqudity-management)
 - [NEAR FUSION+ Smart Contract Development](/research/solving/near): NEAR Fusion+ is a comprehensive DeFi protocol that migrates 1inch's proven Limit Order Protocol and Cross-Chain Swap functionality to the NEAR blockchain. The system provides two primary capabilities: advanced limit order trading with partial fills and extensible features, and atomic cross-chain swaps secured by time-locked escrow contracts.
 - [Solver Reference-Implementation Notes](/research/solving/reference-implementation)
 - [High-Performance Route Evaluation](/research/solving/solving): Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
 - [Tycho and 1inch Solving](/research/solving/tycho1inchNOL): This historical 2025 route preserves the research entry point for the Tycho and 1inch limit-order prototype. The concise, contribution-scoped record lives at [Unite DeFi Prototype](/proposals/Unite).
-- [Trading Systems](/research/trading-systems/intro): Historical research index retained for compatibility. Current research is [High-Performance Route Evaluation](/research/solving/solving).
-- [Axiom](/research/zk/axiom): date: 2023-06-28
-- [Zero Knowledge Research](/research/zk/intro): date: 2023-02-04
-- [ZK Proof of Stake](/research/zk/zkpos): date: 2023-02-04
-- [zk-SNARKs](/research/zk/zksnarks): date: 2023-02-04
 - [1inch Solver Study](/product/solving/intentsolve/1inch): This historical integration study preserves a bounded view of limit-order monitoring, evaluation, and settlement boundaries. It is not presented as a current deployment or operating strategy.
 - [CoW Swap Solver Study](/product/solving/intentsolve/cowswap): This historical integration study preserves a bounded view of auction monitoring, evaluation, and settlement boundaries. It is not presented as a current deployment or operating strategy.
 - [UniswapX Solver Study](/product/solving/intentsolve/uniswapx): This historical integration study preserves a bounded view of intent monitoring, evaluation, and settlement boundaries. It is not presented as a current deployment or operating strategy.
