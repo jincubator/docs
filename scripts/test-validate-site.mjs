@@ -18,6 +18,7 @@ assert.match(vocsPatch, /getRemarkPlugins\(\{ markdown \}\)/);
 assert.match(vocsPatch, /mathToMarkdown\(\)/);
 assert.match(vocsPatch, /fs\.existsSync\(resolve\(rootDir, `\.\/public\$\{url\}`\)\)/);
 assert.equal(packageJson.devDependencies.globby, "^14.1.0", "Vocs must resolve its ESM globby dependency from the root");
+assert.match(packageJson.scripts.sitedeploy, /--dotfiles/, "Deployment must retain Vocs search and icon assets");
 
 assert.deepEqual(validator.topNavigation(config), expectedNavigation);
 assert.deepEqual(presentation.primaryNavigation, expectedNavigation);

@@ -12,7 +12,7 @@
     "test": "node scripts/test-validate-site.mjs",
     "preview": "vocs preview",
     "predeploy": "vocs build",
-    "sitedeploy": "cp docs/dist/index.html docs/dist/404.html && gh-pages -d docs/dist --nojekyll --cname www.jincubator.com"
+    "sitedeploy": "cp docs/dist/index.html docs/dist/404.html && gh-pages -d docs/dist --dotfiles --nojekyll --cname www.jincubator.com"
   },
   "dependencies": {
     "baseline-browser-mapping": "^2.10.34",
