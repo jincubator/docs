@@ -9,10 +9,7 @@
 
 ## Salus
 
-Salus is an active Jincubator research and engineering initiative and
-reference implementation for decentralized trading-system architecture.
-
-### Start here
+### Modular Trading and Solving Infrastructure for Decentralized Markets
 
 Salus is a Jincubator-owned research and engineering initiative. John Whitton
 designed and built the system boundaries that turn changing decentralized-market
@@ -289,15 +286,15 @@ Choose the path that matches the question:
 
 #### Overview
 
-* **[Salus overview](/salus):** the integrated account of what John built,
-  the Capture–Causality–Execution framing, retained evidence, and current
-  limits. You are here.
 * **[Salus Whitepaper — Draft](/salus/whitepaper):** a self-contained account
   of the system proposition, use-case boundaries, retained evidence, and
   future direction.
 * **[Salus Architecture — Draft](/salus/architecture):**
   the detailed implementation companion covering runtime ownership, freshness,
   guarded execution, and evidence contracts.
+* **[Salus overview](/salus):** the integrated account of what John built,
+  the Capture–Causality–Execution framing, retained evidence, and current
+  limits. You are here.
 
 #### Research
 
@@ -348,11 +345,15 @@ Choose the path that matches the question:
 #### Historical publications
 
 * **Historical Version 1:** the
-  <a href="/images/salus_technical_deep_dive.pdf">Salus Technical Deep Dive (PDF)</a>
+  <a href="/images/salus_technical_deep_dive.pdf">
+    Salus Technical Deep Dive (PDF)
+  </a>
   and
-  <a href="/images/salus_engineering_case_study.pdf">Salus Engineering Case Study (PDF)</a>
-  are immutable Historical Version 1.0 publications from July 2026. Their
-  older metrics and roadmap language are not current claim authority.
+  <a href="/images/salus_engineering_case_study.pdf">
+    Salus Engineering Case Study (PDF)
+  </a>
+  are immutable Historical Version 1.0 publications from July 2026. Their older
+  metrics and roadmap language are not current claim authority.
 
 For broader context, visit [John Whitton’s engineering portfolio](https://portfolio.johnwhitton.com/)
 or [contact John](mailto\:john@johnwhitton.com).
@@ -360,11 +361,6 @@ or [contact John](mailto\:john@johnwhitton.com).
 Current implementation truth remains in the Salus repository. Because that
 repository is private, this page records the immutable reviewed revision but
 does not present it as a visitor destination or copy its living documentation.
-
-
-import { LandingPage } from "../../components/LandingPage";
-
-<LandingPage page="about" />
 
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
@@ -3194,29 +3190,6 @@ finished its work; it does not establish an execution or economic outcome.
 * Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the narrative synthesis.
 
 
-## Partnerships — Legacy Route
-
-Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
-
-Jincubator is John Whitton's independent studio, not a staffed agency or broad venture-fund platform.
-
-Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@johnwhitton.com).
-
-
-## Engage
-
-John takes on selected, clearly bounded conversations involving:
-
-* selected research collaboration;
-* architecture review or technical diligence;
-* a bounded prototype or implementation review;
-* protocol or solver collaboration where responsibilities and evidence boundaries are clear.
-
-Jincubator is not a generic agency service catalog. Scope, contribution, confidentiality, and expected evidence are agreed before work begins.
-
-[Email John](mailto\:john@johnwhitton.com), review [current work](/work/intro), or open the [long-form portfolio](https://portfolio.johnwhitton.com/).
-
-
 import { LandingPage } from "../../components/LandingPage";
 
 <LandingPage page="archive" />
@@ -3262,6 +3235,29 @@ The current reviewed synthesis is [Intent Systems Prototypes](/work/prototypes).
 * [Enterprise architecture](/architecture/enterprise-architecture/intro)
 
 Archive placement preserves routes; it does not endorse current accuracy, activate redirects, or convert historical pages into canonical editorial sources.
+
+
+## Partnerships — Legacy Route
+
+Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
+
+Jincubator is John Whitton's independent studio, not a staffed agency or broad venture-fund platform.
+
+Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@johnwhitton.com).
+
+
+## Engage
+
+John takes on selected, clearly bounded conversations involving:
+
+* selected research collaboration;
+* architecture review or technical diligence;
+* a bounded prototype or implementation review;
+* protocol or solver collaboration where responsibilities and evidence boundaries are clear.
+
+Jincubator is not a generic agency service catalog. Scope, contribution, confidentiality, and expected evidence are agreed before work begins.
+
+[Email John](mailto\:john@johnwhitton.com), review [current work](/work/intro), or open the [long-form portfolio](https://portfolio.johnwhitton.com/).
 
 
 ## Product — Legacy Route
@@ -7574,6 +7570,11 @@ Similar intent lifecycles can use different state primitives. An EVM mapping, ac
 * Apply [Intent Execution Boundaries](/architecture/defi-systems/intents) when separating intent creation, solving, settlement, and proof.
 * Compare the financial evidence model in [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro).
 * See [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) for authority, workflow, finality, and reconciliation patterns.
+
+
+import { LandingPage } from "../../components/LandingPage";
+
+<LandingPage page="about" />
 
 
 import { LandingPage } from "../../components/LandingPage";
@@ -16934,6 +16935,124 @@ summary](https://wiki.polygon.technology/docs/pos/peppermint/)
 [documentations](https://wiki.polygon.technology/docs/maintain/validate/validator-responsibilities/)
 
 
+## Celestia
+
+* date: 2023-06-19
+* last updated: 2023-06-19
+
+### Overview
+
+Celestia[^ov-1] is a modular consensus and data network, built to enable anyone to easily deploy their own blockchain with minimal overhead.
+
+### Cryptographic Primitives
+
+* [whitepaper](https://arxiv.org/pdf/1809.09044.pdf)
+  * 2.2 Merkle Trees and Sparse Merkle Trees
+  * 2.3 Erasure Codes and Reed-Solomon Codes
+  * 5 Data Availability Proofs
+    * 5.1 Strawman 1D Reed-Solomon Availability Scheme
+    * 5.2 2D Reed-Solomon Encoded Merkle Tree Construction
+    * 5.3 Random Sampling and Network Block Recovery
+    * 5.4 Selective Share Disclosure
+    * 5.5 Fraud Proofs of Incorrectly Generated Extended Data
+* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
+* [Implementation celestia-app pkg](https://github.com/celestiaorg/celestia-app/tree/main/pkg)
+
+#### Namespaced Merkle Tree Wrapper
+
+* [code](https://github.com/celestiaorg/celestia-app/tree/main/pkg/wrapper)
+
+### Appendices
+
+### References
+
+* [Learn Modular](https://celestia.org/learn/)
+* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities
+* [Celestia App Specifications](https://celestiaorg.github.io/celestia-app/index.html)
+* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
+* [Rollkit Docs](https://rollkit.dev/docs/intro/)
+* [Rollkit Architecture Design Records](https://github.com/rollkit/rollkit/tree/main/docs/lazy-adr)
+* [Rollkit Dependency Graph](https://github.com/rollkit/rollkit/blob/main/docs/specification/rollkit-dependency-graph.mdx)
+* [Quantum Gravity Bridge](https://github.com/celestiaorg/quantum-gravity-bridge/tree/master)
+
+### Footnotes
+
+[^ov-1]: [Celestia](https://celestia.org/): the first modular blockchan network.
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## Intent-Based Execution
+
+An intent can simplify what a user expresses while moving complexity into authorization, competition, resource control, execution, and settlement boundaries.
+
+### The question
+
+What must an intent system prove between a user's desired outcome and an observed settlement?
+
+Intent interfaces can reduce the choices exposed to a user, but the system still needs an executable mandate, controlled resources, a method for discovering or selecting execution, and evidence that the outcome satisfied the mandate.
+
+### A boundary model
+
+A useful review follows six boundaries:
+
+1. **Expression** — what outcome, limits, expiry, and permitted flexibility did the user authorize?
+2. **Resource control** — which assets or permissions are available, for how long, and to whom?
+3. **Discovery** — how can solvers or fillers propose an execution without gaining excess authority?
+4. **Validation** — which oracle, simulation, or onchain conditions determine acceptability?
+5. **Execution** — what exact payload can move resources, and what prevents replay or substitution?
+6. **Settlement** — what evidence establishes the user outcome, fees, residual value, and failure state?
+
+The label “intent” does not answer these questions. It changes where they are implemented.
+
+### Prototype findings
+
+The UHI5 and Unite DeFi experiments expose complementary parts of the model:
+
+* a delayed Uniswap v4 hook tests how execution can be deferred while another actor seeks a route;
+* limit-order interactions test how a signed order can permit bounded pre- and post-execution behavior;
+* a Tycho-backed executor tests one path from solver-selected route material to multi-DEX execution;
+* oracle-conditioned orders test the difference between price evidence and execution authority; and
+* ERC-6909-oriented resource locking tests how reusable permissions can be separated from immediate custody transfer.
+
+The public prototype records also show the limits of early integration work: intent creation, listener, solver, partner, cross-chain, and production paths can remain planned even when one hook or contract interaction is executable.
+
+### Engineering conclusions
+
+An intent system should:
+
+* make the mandate and permitted solver discretion explicit;
+* bind resource authority to an identity, scope, expiry, and replay rule;
+* distinguish quote, proposal, selection, simulation, submission, and settlement;
+* validate solver output without granting arbitrary-call authority;
+* define who receives residual value and who bears execution costs;
+* preserve a recoverable state when execution is delayed, rejected, reverted, or ambiguous; and
+* record which claims are prototype observations versus protocol goals.
+
+Atomic execution can reduce principal exposure for a bounded flow, but it does not remove infrastructure, RPC, operational, or gas expenditure. Failed transactions may still incur unreimbursed costs.
+
+### Alternatives and counterevidence
+
+Direct user-authored transactions can be simpler when the execution path is known and user choice is acceptable. Traditional order books or request-for-quote systems can make price discovery and counterparty selection more explicit. A general solver network adds value only when its search and competition benefits justify additional authority, availability, privacy, and settlement complexity.
+
+Resource locking can reduce repeated custody movement, but it expands the importance of revocation, expiry, replay, and downstream permission review.
+
+### Limitations and freshness
+
+* The implementation evidence is historical prototype evidence, not a production solver network or audited protocol.
+* The analysis does not assert current behavior for Uniswap, 1inch, Tycho, The Compact, ERC-7683, or other third-party systems beyond the cited prototype context.
+* Seamless material is excluded from the active evidence set because contribution and disclosure boundaries remain unresolved.
+* Private solver strategy, partner plans, opportunity details, and operational configuration are excluded.
+* Revisit the analysis when a prototype supplies a complete intent-to-settlement trace and independently reviewed security boundary.
+
+### Go deeper
+
+* Review the [Intent Systems Prototypes](/work/prototypes).
+* Continue to [Intent Execution Boundaries](/architecture/defi-systems/intents).
+* Read the [2025 Unite DeFi prototype organization](https://github.com/jincubator-united-defi-2025).
+* Browse superseded intent and protocol notes through the [Archive](/archive/intro).
+
+
 ## Horizon Bridge
 
 * date: 2023-02-04
@@ -20646,79 +20765,6 @@ We have summarized the functionality in three areas
   * [succinctlabs](https://github.com/succinctlabs/eth-proof-of-consensus) (circom)
 
 
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## Intent-Based Execution
-
-An intent can simplify what a user expresses while moving complexity into authorization, competition, resource control, execution, and settlement boundaries.
-
-### The question
-
-What must an intent system prove between a user's desired outcome and an observed settlement?
-
-Intent interfaces can reduce the choices exposed to a user, but the system still needs an executable mandate, controlled resources, a method for discovering or selecting execution, and evidence that the outcome satisfied the mandate.
-
-### A boundary model
-
-A useful review follows six boundaries:
-
-1. **Expression** — what outcome, limits, expiry, and permitted flexibility did the user authorize?
-2. **Resource control** — which assets or permissions are available, for how long, and to whom?
-3. **Discovery** — how can solvers or fillers propose an execution without gaining excess authority?
-4. **Validation** — which oracle, simulation, or onchain conditions determine acceptability?
-5. **Execution** — what exact payload can move resources, and what prevents replay or substitution?
-6. **Settlement** — what evidence establishes the user outcome, fees, residual value, and failure state?
-
-The label “intent” does not answer these questions. It changes where they are implemented.
-
-### Prototype findings
-
-The UHI5 and Unite DeFi experiments expose complementary parts of the model:
-
-* a delayed Uniswap v4 hook tests how execution can be deferred while another actor seeks a route;
-* limit-order interactions test how a signed order can permit bounded pre- and post-execution behavior;
-* a Tycho-backed executor tests one path from solver-selected route material to multi-DEX execution;
-* oracle-conditioned orders test the difference between price evidence and execution authority; and
-* ERC-6909-oriented resource locking tests how reusable permissions can be separated from immediate custody transfer.
-
-The public prototype records also show the limits of early integration work: intent creation, listener, solver, partner, cross-chain, and production paths can remain planned even when one hook or contract interaction is executable.
-
-### Engineering conclusions
-
-An intent system should:
-
-* make the mandate and permitted solver discretion explicit;
-* bind resource authority to an identity, scope, expiry, and replay rule;
-* distinguish quote, proposal, selection, simulation, submission, and settlement;
-* validate solver output without granting arbitrary-call authority;
-* define who receives residual value and who bears execution costs;
-* preserve a recoverable state when execution is delayed, rejected, reverted, or ambiguous; and
-* record which claims are prototype observations versus protocol goals.
-
-Atomic execution can reduce principal exposure for a bounded flow, but it does not remove infrastructure, RPC, operational, or gas expenditure. Failed transactions may still incur unreimbursed costs.
-
-### Alternatives and counterevidence
-
-Direct user-authored transactions can be simpler when the execution path is known and user choice is acceptable. Traditional order books or request-for-quote systems can make price discovery and counterparty selection more explicit. A general solver network adds value only when its search and competition benefits justify additional authority, availability, privacy, and settlement complexity.
-
-Resource locking can reduce repeated custody movement, but it expands the importance of revocation, expiry, replay, and downstream permission review.
-
-### Limitations and freshness
-
-* The implementation evidence is historical prototype evidence, not a production solver network or audited protocol.
-* The analysis does not assert current behavior for Uniswap, 1inch, Tycho, The Compact, ERC-7683, or other third-party systems beyond the cited prototype context.
-* Seamless material is excluded from the active evidence set because contribution and disclosure boundaries remain unresolved.
-* Private solver strategy, partner plans, opportunity details, and operational configuration are excluded.
-* Revisit the analysis when a prototype supplies a complete intent-to-settlement trace and independently reviewed security boundary.
-
-### Go deeper
-
-* Review the [Intent Systems Prototypes](/work/prototypes).
-* Continue to [Intent Execution Boundaries](/architecture/defi-systems/intents).
-* Read the [2025 Unite DeFi prototype organization](https://github.com/jincubator-united-defi-2025).
-* Browse superseded intent and protocol notes through the [Archive](/archive/intro).
-
-
 import { ZoomImage } from "../../../public/components/ZoomImage";
 
 ## Overview
@@ -22865,51 +22911,6 @@ A proof construction where one can prove possession of certain information, e.g.
 * [What are zk-SNARKs](https://z.cash/technology/zksnarks/)
 * [Introduction to zk-SNARKs](https://consensys.net/blog/developers/introduction-to-zk-snarks/)
 * [zk-STARKs vs. zk-SNARKs explained](https://cointelegraph.com/explained/zk-starks-vs-zk-snarks-explained)
-
-
-## Celestia
-
-* date: 2023-06-19
-* last updated: 2023-06-19
-
-### Overview
-
-Celestia[^ov-1] is a modular consensus and data network, built to enable anyone to easily deploy their own blockchain with minimal overhead.
-
-### Cryptographic Primitives
-
-* [whitepaper](https://arxiv.org/pdf/1809.09044.pdf)
-  * 2.2 Merkle Trees and Sparse Merkle Trees
-  * 2.3 Erasure Codes and Reed-Solomon Codes
-  * 5 Data Availability Proofs
-    * 5.1 Strawman 1D Reed-Solomon Availability Scheme
-    * 5.2 2D Reed-Solomon Encoded Merkle Tree Construction
-    * 5.3 Random Sampling and Network Block Recovery
-    * 5.4 Selective Share Disclosure
-    * 5.5 Fraud Proofs of Incorrectly Generated Extended Data
-* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
-* [Implementation celestia-app pkg](https://github.com/celestiaorg/celestia-app/tree/main/pkg)
-
-#### Namespaced Merkle Tree Wrapper
-
-* [code](https://github.com/celestiaorg/celestia-app/tree/main/pkg/wrapper)
-
-### Appendices
-
-### References
-
-* [Learn Modular](https://celestia.org/learn/)
-* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities
-* [Celestia App Specifications](https://celestiaorg.github.io/celestia-app/index.html)
-* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
-* [Rollkit Docs](https://rollkit.dev/docs/intro/)
-* [Rollkit Architecture Design Records](https://github.com/rollkit/rollkit/tree/main/docs/lazy-adr)
-* [Rollkit Dependency Graph](https://github.com/rollkit/rollkit/blob/main/docs/specification/rollkit-dependency-graph.mdx)
-* [Quantum Gravity Bridge](https://github.com/celestiaorg/quantum-gravity-bridge/tree/master)
-
-### Footnotes
-
-[^ov-1]: [Celestia](https://celestia.org/): the first modular blockchan network.
 
 
 ## 1inch Solver Study
