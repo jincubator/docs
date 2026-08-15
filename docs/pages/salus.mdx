@@ -35,12 +35,12 @@ Salus is an active reference implementation. Commercial validation remains
 ongoing. Its evidence does not establish a production trading platform or
 profitable after-gas production execution.
 
-**Hiring overview:** read _What John built_, _System architecture at a glance_,
-and _Evidence and limitations_.
-**Founder technical diligence:** read the same overview, then _Execution_ and
+**Hiring overview:** read *What John built*, *System architecture at a glance*,
+and *Evidence and limitations*.
+**Founder technical diligence:** read the same overview, then *Execution* and
 the linked funding models and validation evidence.
-**System-design interview:** follow _Capture_, _Causality_, and _Execution_.
-**Principal-engineer deep dive:** use _Explore Salus_ to enter the focused Research
+**System-design interview:** follow *Capture*, *Causality*, and *Execution*.
+**Principal-engineer deep dive:** use *Explore Salus* to enter the focused Research
 and Architecture pages.
 
 ## What John built
@@ -56,37 +56,34 @@ state, evaluation, evidence, and execution responsibilities.
 
 ## System architecture at a glance
 
-| Stage                     | Responsibility                                                                                              | Evidence boundary                                                        |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| State ingestion           | Normalize changing block and market observations with source identity.                                      | An observation is not current executable state.                          |
-| Read models and topology  | Preserve inspectable current views, graph identity, and bounded route catalogs.                             | Stored topology is not opportunity or outcome authority.                 |
-| Affected-work selection   | Use component indexes and queue ownership to narrow and schedule work.                                      | Admission and ordering do not prove profitable-family recall.            |
-| Evaluation and simulation | Evaluate exact inputs and reject unsupported or invalid paths.                                              | A modeled candidate is not selected, submitted, or executed.             |
-| Causal analysis           | Compare point-in-time observations, retain attribution strength, and abstain when evidence is insufficient. | Correlation or a ranking signal is not a causal or profitable outcome.   |
-| Execution control         | Recheck state and cost, preflight, submit through the configured path, and retain lifecycle evidence.       | Preflight or transport acceptance is not inclusion, finality, or profit. |
+| Stage | Responsibility | Evidence boundary |
+|---|---|---|
+| State ingestion | Normalize changing block and market observations with source identity. | An observation is not current executable state. |
+| Read models and topology | Preserve inspectable current views, graph identity, and bounded route catalogs. | Stored topology is not opportunity or outcome authority. |
+| Affected-work selection | Use component indexes and queue ownership to narrow and schedule work. | Admission and ordering do not prove profitable-family recall. |
+| Evaluation and simulation | Evaluate exact inputs and reject unsupported or invalid paths. | A modeled candidate is not selected, submitted, or executed. |
+| Causal analysis | Compare point-in-time observations, retain attribution strength, and abstain when evidence is insufficient. | Correlation or a ranking signal is not a causal or profitable outcome. |
+| Execution control | Recheck state and cost, preflight, submit through the configured path, and retain lifecycle evidence. | Preflight or transport acceptance is not inclusion, finality, or profit. |
 
 The design choice is deliberately explicit: each owner produces a typed fact
 that the next owner must validate rather than a shared “profitable” flag that
 silently accumulates assumptions.
 
-<img
-  src="/assets/work/salus/salus-runtime-architecture.png"
-  alt="Salus runtime architecture showing external state, configuration boundaries, state and persistence, the runtime hot path, and execution controls."
-/>
+<img src="/assets/work/salus/salus-runtime-architecture.png" alt="Salus runtime architecture showing external state, configuration boundaries, state and persistence, the runtime hot path, and execution controls." />
 
 ## Evidence and limitations
 
 The approved retained evidence records:
 
-| Observation                      | Measured subject                                                      |         Result |
-| -------------------------------- | --------------------------------------------------------------------- | -------------: |
-| Workspace structure              | Cargo workspace members                                               | 13 Rust crates |
-| Walkthrough corpus               | Directory README, index, shared synthesis, and walkthroughs `01`–`13` |       16 files |
-| Ethereum retained graph snapshot | Token nodes                                                           |          3,415 |
-| Ethereum retained graph snapshot | Pool components                                                       |          4,552 |
-| Ethereum retained graph snapshot | Catalog routes with a maximum of four hops                            |      2,401,108 |
-| Base retained runtime run        | Sustained route evaluations per second                                |         16,537 |
-| Base retained runtime run        | Peak route evaluations per second                                     |         38,462 |
+| Observation | Measured subject | Result |
+|---|---|---:|
+| Workspace structure | Cargo workspace members | 13 Rust crates |
+| Walkthrough corpus | Directory README, index, shared synthesis, and walkthroughs `01`–`13` | 16 files |
+| Ethereum retained graph snapshot | Token nodes | 3,415 |
+| Ethereum retained graph snapshot | Pool components | 4,552 |
+| Ethereum retained graph snapshot | Catalog routes with a maximum of four hops | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second | 16,537 |
+| Base retained runtime run | Peak route evaluations per second | 38,462 |
 
 The graph figures describe one retained catalog snapshot. The Base rates
 describe completed route evaluations divided by measured evaluation-service
@@ -207,10 +204,7 @@ implementation manual or operational runbook.
 It is a bounded technical snapshot. It does not establish live transport
 availability, production readiness, inclusion, finality, or realized profit.
 
-<img
-  src="/assets/work/salus/salus-code-walkthrough.png"
-  alt="Salus code walkthrough showing public runtime ownership, route evaluation, execution handoff, persistence, and evidence boundaries."
-/>
+<img src="/assets/work/salus/salus-code-walkthrough.png" alt="Salus code walkthrough showing public runtime ownership, route evaluation, execution handoff, persistence, and evidence boundaries." />
 
 ## Engineering Implementation Notes
 
@@ -349,18 +343,14 @@ Choose the path that matches the question:
 ### Historical publications
 
 - **Historical Version 1:** the
-  <a href="/images/salus_technical_deep_dive.pdf">
-    Salus Technical Deep Dive (PDF)
-  </a>
+  <a href="/images/salus_technical_deep_dive.pdf">Salus Technical Deep Dive (PDF)</a>
   and
-  <a href="/images/salus_engineering_case_study.pdf">
-    Salus Engineering Case Study (PDF)
-  </a>
-  are immutable Historical Version 1.0 publications from July 2026. Their older
-  metrics and roadmap language are not current claim authority.
+  <a href="/images/salus_engineering_case_study.pdf">Salus Engineering Case Study (PDF)</a>
+  are immutable Historical Version 1.0 publications from July 2026. Their
+  older metrics and roadmap language are not current claim authority.
 
 For broader context, visit [John Whitton’s engineering portfolio](https://portfolio.johnwhitton.com/)
-or [contact John](mailto:john@johnwhitton.com).
+  or [contact John](mailto:john@johnwhitton.com).
 
 Current implementation truth remains in the Salus repository. Because that
 repository is private, this page records the immutable reviewed revision but
