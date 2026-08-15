@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "collection/salus-whitepaper",
+    "type": "collection",
+    "title": "Salus: Modular Trading and Solving Infrastructure for Decentralized Markets",
+    "publication_availability": "visible_draft",
+    "compatibility_routes": [
+      "/writing/salus-whitepaper"
+    ]
+  },
+  "route": "/salus/whitepaper",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Article",
+    "reading_time_minutes": 17
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/salus/whitepaper.mdx",
+      "media_type": "text/mdx",
+      "sha256": "43ad6d6e089f6cdeac02ccf665f2820f1ca91bab5372f4bfb1002a682c1b1681"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/salus-modular-trading-and-solving-infrastructure.pdf",
+      "media_type": "application/pdf",
+      "sha256": "16c378561427a429681fb48fff1a7a38397e3aa5219686218b39b74c988a68fb"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/02-affected-route-flow.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "73ba6be24a84010666b17ac8b0f64dfb06f3fb27f4690701c904e3f0971c2eac"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/03-decision-evidence-lifecycle.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "1bf87cf601f697404037f09132eb1112565fc5c811770d409639a2b4ec5490b9"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/04-strategy-evidence-boundaries.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "79238bd78792c08c462a80a2ed6e0b2b31931564d129eabe46971dcfa503a5f9"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/05-evidence-gated-roadmap.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "33fd09d25f4bb45286bc3b35d12ee3ef0429e521b2cef90d2c080a0a944381bb"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/06-route-construction-graph.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "b9ae33f6e03758e55dd5efa10e7ebfc0c31749ca264fe1e136091671132ae4db"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-whitepaper/07-evaluation-to-execution-flow.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "bdc943049082edd5d8b4e6c11be6c9878d8c473b7c3f69bb01fd24f44bdd11a4"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

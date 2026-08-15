@@ -9,18 +9,17 @@
 
 export const presentationTopNav = [
   { text: "Work", link: "/work" },
-  { text: "Salus", link: "/work/salus" },
+  { text: "Salus", link: "/salus" },
   { text: "Research", link: "/research" },
   { text: "Architecture", link: "/architecture" },
   { text: "Writing", link: "/writing" },
-  { text: "About", link: "/about" },
+  { text: "John Whitton ↗", link: "https://johnwhitton.com/" },
 ];
 
 export const primaryNavigation = presentationTopNav.map((item) => item.text);
 
 const workItems = [
   { text: "Overview", link: "/work" },
-  { text: "Salus", link: "/work/salus" },
   { text: "Digital Banking", link: "/work/digital-banking" },
   { text: "DeFi Leveraging", link: "/work/defi-leveraging" },
   { text: "Intent Systems Prototypes", link: "/work/prototypes" },
@@ -28,6 +27,12 @@ const workItems = [
   { text: "Building a Polkadot Parachain — EAVE", link: "/work/building-polkadot-parachain-eave" },
   { text: "DeFi Protocol Engineering — Kanga", link: "/work/defi-protocol-engineering-kanga" },
   { text: "Enterprise SOA", link: "/work/enterprise-soa" },
+];
+
+const salusItems = [
+  { text: "Overview", link: "/salus" },
+  { text: "Whitepaper — Draft", link: "/salus/whitepaper" },
+  { text: "Architecture — Draft", link: "/salus/architecture" },
 ];
 
 const researchItems = [
@@ -54,9 +59,6 @@ const architectureItems = [
 
 const writingItems = [
   { text: "Overview", link: "/writing" },
-  { text: "Solving, Arbitrage & Market Making", link: "/writing/solving-arbitrage-market-making" },
-  { text: "Mapping Liquidity to Routes at Scale", link: "/writing/mapping-liquidity-to-routes-at-scale" },
-  { text: "I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.", link: "/writing/speed-wasnt-the-problem" },
 ];
 
 const archiveItems = [
@@ -183,9 +185,10 @@ const archiveItems = [
 
 export const presentationSidebar = [
   { text: "Work", link: "/work", collapsed: true, items: workItems },
+  { text: "Salus", link: "/salus", collapsed: true, items: salusItems },
   { text: "Research", link: "/research", collapsed: true, items: researchItems },
   { text: "Architecture", link: "/architecture", collapsed: true, items: architectureItems },
   { text: "Writing", link: "/writing", collapsed: true, items: writingItems },
-  { text: "About", link: "/about", collapsed: true, items: [{ text: "Overview", link: "/about" }] },
+  { text: "John Whitton ↗", link: "https://johnwhitton.com/" },
   { text: "Archive", link: "/archive", collapsed: true, items: archiveItems },
 ];

@@ -1,8 +1,7 @@
 diff --git a/_lib/app/components/Link.js b/_lib/app/components/Link.js
-index 4b14984ed59d6e9afacea79475d34917727526aa..8c2fb83690d1548862b53eaecc13fb25290decc3 100644
 --- a/_lib/app/components/Link.js
 +++ b/_lib/app/components/Link.js
-@@ -6,7 +6,7 @@ import { ExternalLink } from './ExternalLink.js';
+@@ -6,7 +6,7 @@
  import * as styles from './Link.css.js';
  import { RouterLink } from './RouterLink.js';
  export const Link = forwardRef((props, ref) => {
@@ -11,7 +10,7 @@ index 4b14984ed59d6e9afacea79475d34917727526aa..8c2fb83690d1548862b53eaecc13fb25
      const { pathname } = useLocation();
      // External links
      if (href?.match(/^(www|https?)/))
-@@ -14,6 +14,6 @@ export const Link = forwardRef((props, ref) => {
+@@ -14,6 +14,6 @@
      // Internal links
      const [before, after] = (href || '').split('#');
      const to = `${before ? before : pathname}${after ? `#${after}` : ''}`;
@@ -19,11 +18,11 @@ index 4b14984ed59d6e9afacea79475d34917727526aa..8c2fb83690d1548862b53eaecc13fb25
 +    return (_jsx(RouterLink, { ...internalProps, ref: ref, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless), to: to }));
  });
  //# sourceMappingURL=Link.js.map
+\ No newline at end of file
 diff --git a/app/components/Link.tsx b/app/components/Link.tsx
-index f9ba180e40781394b9e793f91b612eed0ff523f0..8910f7fa19664329e5a8d3782543aca8c375fe0a 100644
 --- a/app/components/Link.tsx
 +++ b/app/components/Link.tsx
-@@ -16,7 +16,7 @@ type LinkProps = {
+@@ -16,7 +16,7 @@
  }
  
  export const Link = forwardRef((props: LinkProps, ref) => {
@@ -32,7 +31,7 @@ index f9ba180e40781394b9e793f91b612eed0ff523f0..8910f7fa19664329e5a8d3782543aca8
  
    const { pathname } = useLocation()
  
-@@ -41,7 +41,7 @@ export const Link = forwardRef((props: LinkProps, ref) => {
+@@ -41,7 +41,7 @@
    const to = `${before ? before : pathname}${after ? `#${after}` : ''}`
    return (
      <RouterLink
@@ -41,3 +40,69 @@ index f9ba180e40781394b9e793f91b612eed0ff523f0..8910f7fa19664329e5a8d3782543aca8
        ref={ref}
        className={clsx(
          props.className,
+diff --git a/_lib/vite/plugins/llms.js b/_lib/vite/plugins/llms.js
+--- a/_lib/vite/plugins/llms.js
++++ b/_lib/vite/plugins/llms.js
+@@ -3,6 +3,7 @@
+ import { globby } from 'globby';
+ import { directiveToMarkdown } from 'mdast-util-directive';
+ import { gfmToMarkdown } from 'mdast-util-gfm';
++import { mathToMarkdown } from 'mdast-util-math';
+ import { mdxToMarkdown } from 'mdast-util-mdx';
+ import { mdxJsxToMarkdown } from 'mdast-util-mdx-jsx';
+ import { toMarkdown } from 'mdast-util-to-markdown';
+@@ -13,7 +14,6 @@
+ import { visit } from 'unist-util-visit';
+ import { resolveVocsConfig } from '../utils/resolveVocsConfig.js';
+ import { getRemarkPlugins } from './mdx.js';
+-const remarkPlugins = getRemarkPlugins();
+ export async function llms() {
+     let viteConfig;
+     return {
+@@ -26,7 +26,7 @@
+             if (!outDir)
+                 return;
+             const { config } = await resolveVocsConfig();
+-            const { basePath, description, rootDir, title = 'Docs' } = config ?? {};
++            const { basePath, description, markdown, rootDir, title = 'Docs' } = config ?? {};
+             const content = [`# ${title}`, ''];
+             if (description)
+                 content.push(`> ${description}`, '');
+@@ -43,7 +43,7 @@
+                     continue;
+                 const contents = fs.readFileSync(file, 'utf-8');
+                 const parser = unified().use(remarkParse).use(remarkMdx).use(remarkStringify);
+-                for (const plugin of remarkPlugins)
++                for (const plugin of getRemarkPlugins({ markdown }))
+                     parser.use(plugin);
+                 const ast = parser.parse(contents);
+                 // process llms.txt content
+@@ -62,7 +62,7 @@
+                             if (j && i && j <= i)
+                                 return;
+                             found = true;
+-                            description = toMarkdown(n, { extensions: [mdxJsxToMarkdown()] }).trim();
++                            description = toMarkdown(n, { extensions: [mdxJsxToMarkdown(), mathToMarkdown()] }).trim();
+                             return;
+                         });
+                     llmsTxtContent.push(`- [${title}](${basePath}${path})${description ? `: ${description}` : ''}`);
+@@ -84,6 +84,7 @@
+                     extensions: [
+                         directiveToMarkdown(),
+                         gfmToMarkdown(),
++                        mathToMarkdown(),
+                         mdxJsxToMarkdown(),
+                         mdxToMarkdown(),
+                     ],
+diff --git a/_lib/vite/plugins/remark/links.js b/_lib/vite/plugins/remark/links.js
+--- a/_lib/vite/plugins/remark/links.js
++++ b/_lib/vite/plugins/remark/links.js
+@@ -27,6 +27,8 @@
+             if (node.url.startsWith('#'))
+                 return;
+             const [url, after] = (node.url || '').split('#');
++            if (url.startsWith('/') && fs.existsSync(resolve(rootDir, `./public${url}`)))
++                return;
+             const [pagePath, baseDir] = (() => {
+                 if (url.startsWith('.'))
+                     return [resolve(directory, url), directory];

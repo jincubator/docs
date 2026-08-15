@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Flash-loan funding selection and evidence boundary</title>
+  <desc id="desc">A public-safe Salus diagram showing a route and funding asset narrowed through compatible lending components, available liquidity and fee checks, then a guarded execution plan and separate repayment evidence.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto"><path d="M0 0 L11 5.5 L0 11z" fill="#406078"/></marker>
+    <style>
+      .k { font: 700 24px Arial, sans-serif; letter-spacing: 4px; fill: #0f766e; }
+      .t { font: 700 50px Arial, sans-serif; fill: #102a43; }
+      .s { font: 400 28px Arial, sans-serif; fill: #486581; }
+      .h { font: 700 27px Arial, sans-serif; fill: #102a43; }
+      .b { font: 400 20px Arial, sans-serif; fill: #486581; }
+      .l { font: 700 16px Arial, sans-serif; letter-spacing: 1px; fill: #102a43; }
+      .f { font: 600 25px Arial, sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#f4f8fa"/>
+  <text x="70" y="80" class="k">SALUS · FUNDING BOUNDARY</text>
+  <text x="70" y="148" class="t">Funding is selected before it is trusted</text>
+  <text x="70" y="195" class="s">Eligibility narrows a route; it does not establish execution, settlement, or profit.</text>
+  <g fill="#ffffff" stroke-width="5">
+    <rect x="55" y="295" width="220" height="245" rx="22" stroke="#0f766e"/>
+    <rect x="325" y="295" width="220" height="245" rx="22" stroke="#0f766e"/>
+    <rect x="595" y="295" width="220" height="245" rx="22" stroke="#b7791f"/>
+    <rect x="865" y="295" width="220" height="245" rx="22" stroke="#b7791f"/>
+    <rect x="1135" y="295" width="220" height="245" rx="22" stroke="#b7791f"/>
+    <rect x="1405" y="295" width="140" height="245" rx="22" stroke="#6b7280"/>
+  </g>
+  <g stroke="#406078" stroke-width="8" marker-end="url(#arrow)">
+    <path d="M275 417H305"/><path d="M545 417H575"/><path d="M815 417H845"/><path d="M1085 417H1115"/><path d="M1355 417H1385"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="165" y="357" class="h">Route</text><text x="165" y="402" class="b"><tspan x="165">start asset and</tspan><tspan x="165" dy="29">ordered legs</tspan></text><text x="165" y="496" class="l">INPUT</text>
+    <text x="435" y="357" class="h">Candidates</text><text x="435" y="402" class="b"><tspan x="435">compatible source</tspan><tspan x="435" dy="29">and no conflict</tspan></text><text x="435" y="496" class="l">IMPLEMENTED</text>
+    <text x="705" y="357" class="h">Eligibility</text><text x="705" y="402" class="b"><tspan x="705">available liquidity</tspan><tspan x="705" dy="29">and fee condition</tspan></text><text x="705" y="496" class="l">IMPLEMENTED</text>
+    <text x="975" y="357" class="h">Plan</text><text x="975" y="402" class="b"><tspan x="975">selected component,</tspan><tspan x="975" dy="29">amount, repayment</tspan></text><text x="975" y="496" class="l">MODEL CONTEXT</text>
+    <text x="1245" y="357" class="h">Guard</text><text x="1245" y="402" class="b"><tspan x="1245">dry run, preflight,</tspan><tspan x="1245" dy="29">freshness checks</tspan></text><text x="1245" y="496" class="l">VALIDATION LIMITS</text>
+    <text x="1475" y="357" class="h">Evidence</text><text x="1475" y="402" class="b"><tspan x="1475">later receipt</tspan><tspan x="1475" dy="29">and settlement</tspan></text><text x="1475" y="496" class="l">SEPARATE</text>
+  </g>
+  <rect x="70" y="650" width="1460" height="125" rx="22" fill="#102a43"/>
+  <text x="800" y="705" class="f" text-anchor="middle">Selection sorts source-local eligibility; it is not a total-cost or transaction-inclusion optimizer.</text>
+  <text x="800" y="745" class="f" text-anchor="middle">A funding plan can be rejected at every later boundary.</text>
+  <text x="70" y="845" class="b">Jincubator review candidate · public-safe implementation abstraction · no provider, threshold, route, or opportunity data</text>
+</svg>

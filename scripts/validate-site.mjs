@@ -293,7 +293,7 @@ const EXPECTED_TOP_NAVIGATION = [
   "Research",
   "Architecture",
   "Writing",
-  "About",
+  "John Whitton ↗",
 ];
 const ABSOLUTE_FILESYSTEM_PATHS = [
   /\bfile:\/\//i,
@@ -537,13 +537,23 @@ export function validatePublications(root) {
     ? fs.readdirSync(manifestDirectory).filter((name) => name.endsWith(".json")).sort()
     : [];
   const issues = manifests.flatMap((name) => validateReleasePublication(root, path.join(manifestDirectory, name)));
-  if (manifests.length !== 26) issues.push(`expected 26 publication manifests, found ${manifests.length}`);
+  if (manifests.length !== 28) issues.push(`expected 28 publication manifests, found ${manifests.length}`);
   const ids = manifests.flatMap((name) => {
     try { return [JSON.parse(fs.readFileSync(path.join(manifestDirectory, name), "utf8")).artifact?.id]; } catch { return []; }
   });
   if (new Set(ids).size !== ids.length) issues.push("publication manifests contain duplicate artifact identities");
   if (ids.filter((id) => id === "work/salus").length !== 1) issues.push("expected exactly one Salus route");
-  if (ids.includes("collection/portfolio-strategy-competitor-analysis")) issues.push("restricted competitor publication is present");
+  for (const id of [
+    "collection/salus-technology-rust-trading-system",
+    "collection/liquidity-mapping-routing-salus-fynd-tycho",
+    "collection/trading-strategies-and-infrastructure",
+    "collection/salus-strategy-trading-infrastructure-landscape",
+    "collection/solana-trading-infrastructure-landscape",
+    "collection/solana-payment-infrastructure-landscape",
+    "collection/ai-infrastructure-trading-systems",
+    "collection/portfolio-strategy-competitor-analysis",
+    "collection/before-the-model",
+  ]) if (ids.includes(id)) issues.push(`excluded publication is present: ${id}`);
   return issues;
 }
 
@@ -554,13 +564,21 @@ function validateReleasePublication(root, manifestPath, expectedArtifactId) {
   const subject = path.basename(manifestPath);
   const fields = ["schema_version", "artifact", "route", "format", "presentation", "generator", "outputs", "provenance_notice"];
   checkExactKeys(manifest, fields, subject, "manifest", issues);
-  checkExactKeys(manifest.artifact, PUBLICATION_ARTIFACT_FIELDS, subject, "artifact", issues);
+  const artifactFields = [...PUBLICATION_ARTIFACT_FIELDS];
+  if (Object.hasOwn(manifest.artifact ?? {}, "publication_availability")) artifactFields.push("publication_availability");
+  if (Object.hasOwn(manifest.artifact ?? {}, "compatibility_routes")) artifactFields.push("compatibility_routes");
+  checkExactKeys(manifest.artifact, artifactFields, subject, "artifact", issues);
   checkExactKeys(manifest.presentation, PUBLICATION_PRESENTATION_FIELDS, subject, "presentation", issues);
   checkExactKeys(manifest.generator, PUBLICATION_GENERATOR_FIELDS, subject, "generator", issues);
   if (expectedArtifactId && manifest.artifact?.id !== expectedArtifactId) issues.push(`${subject} artifact identity is invalid`);
   if (manifest.schema_version !== 2 || manifest.format !== "vocs-mdx") issues.push(`${subject} schema or format is invalid`);
   if (manifest.generator?.name !== "jincubator-publication" || manifest.generator?.version !== 4) issues.push(`${subject} generator is invalid`);
   if (manifest.provenance_notice !== "Generated editorial projection; do not edit the distribution copy directly.") issues.push(`${subject} provenance notice is invalid`);
+  const availability = manifest.artifact?.publication_availability;
+  if (availability !== undefined && availability !== "visible_draft") issues.push(`${subject} publication availability is invalid`);
+  const compatibilityRoutes = manifest.artifact?.compatibility_routes ?? [];
+  if (!Array.isArray(compatibilityRoutes) || compatibilityRoutes.some((route) => typeof route !== "string" || !route.startsWith("/")))
+    issues.push(`${subject} compatibility routes are invalid`);
   for (const field of ["source", "reviews", "lifecycle_state", "publication_status", "publication_date", "evidence_sources"])
     if (Object.hasOwn(manifest, field)) issues.push(`${subject} leaks internal ${field}`);
   const outputs = Array.isArray(manifest.outputs) ? manifest.outputs : [];
@@ -578,6 +596,13 @@ function validateReleasePublication(root, manifestPath, expectedArtifactId) {
     if (!text.includes("{/* Generated canonical editorial projection. Do not edit directly. */}")) issues.push(`${subject} generated notice is invalid`);
     if ((text.match(/^# /gm) ?? []).length !== 1) issues.push(`${subject} MDX must contain one H1`);
     if (/github\.com\/jincubator\/knowledge-base|\/Users\/|source_commit|KNOWLEDGE BASE REVIEW|Provisional production/i.test(text)) issues.push(`${subject} MDX leaks private or review content`);
+    if (availability === "visible_draft" && !/\*\*Draft\*\*/.test(text)) issues.push(`${subject} visible Draft label is missing`);
+    for (const route of compatibilityRoutes) {
+      const alias = path.join(root, "docs/pages", `${route.slice(1)}.mdx`);
+      if (!fs.existsSync(alias)) issues.push(`${subject} compatibility route is missing: ${route}`);
+      else if (!fs.readFileSync(alias).equals(fs.readFileSync(path.join(root, page.destination))))
+        issues.push(`${subject} compatibility route differs from its canonical projection: ${route}`);
+    }
   }
   if (/github\.com\/jincubator\/knowledge-base|source_commit|KNOWLEDGE BASE REVIEW|Provisional production/i.test(JSON.stringify(manifest))) issues.push(`${subject} manifest leaks private or review content`);
   return issues;
@@ -756,13 +781,13 @@ function validateBuild(root) {
     if (routeCount !== 1)
       issues.push(`expected exactly one canonical ${route} route, found ${routeCount}`);
   }
-  for (const { route, current } of COMPATIBILITY_ROUTES) {
+  for (const { route, current, sameArtifact } of COMPATIBILITY_ROUTES) {
     const file = routeFile(dist, route);
     if (!fs.existsSync(file)) {
       issues.push(`${route}: compatibility route is missing`);
       continue;
     }
-    if (!anchors(fs.readFileSync(file, "utf8")).includes(current))
+    if (!sameArtifact && !anchors(fs.readFileSync(file, "utf8")).includes(current))
       issues.push(`${route}: compatibility route must identify ${current}`);
   }
   for (const file of builtFiles) {

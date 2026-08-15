@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1180" role="img" aria-labelledby="title desc">
+  <title id="title">Salus evaluation to guarded execution handoff</title>
+  <desc id="desc">A gated flow begins with a labelled state change, looks up affected routes, validates the route catalogue and current state, simulates exact inputs, searches bounded amounts, attaches funding and costs, rechecks freshness, then selects or abstains. Guarded handoff is explicitly not execution, settlement, or realized profit.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif;fill:#142b42}.kicker{font-size:20px;font-weight:700;letter-spacing:2px;fill:#087a8f}.title{font-size:42px;font-weight:700}.sub{font-size:20px;fill:#46627b}.stage{fill:#fff;stroke:#5c91b5;stroke-width:2.5}.gate{fill:#eaf7ee;stroke:#54a76d;stroke-width:3}.decision{fill:#fff4e8;stroke:#d98b37;stroke-width:3}.terminal{fill:#f9e9e9;stroke:#b95757;stroke-width:2.5}.handoff{fill:#edf2fb;stroke:#5c78b5;stroke-width:3}.line{stroke:#5c91b5;stroke-width:4;fill:none}.dash{stroke:#b95757;stroke-width:3;fill:none;stroke-dasharray:8 7}.arrow{fill:#5c91b5}.title2{font-size:20px;font-weight:700}.copy{font-size:15px;fill:#46627b}.tiny{font-size:14px;fill:#46627b}.terminalText{font-size:15px;font-weight:700;fill:#8c3838}.footer{fill:#173b56}.footerTitle{font-size:20px;font-weight:700;fill:#fff}.footerCopy{font-size:16px;fill:#dceef4}
+  </style>
+  <rect width="1600" height="1180" fill="#fff"/>
+  <text x="70" y="65" class="kicker">SALUS · APPENDIX B · EVALUATION BOUNDARY</text>
+  <text x="70" y="115" class="title">Every gate can abstain before a guarded handoff</text>
+  <text x="70" y="150" class="sub">Topology recall scopes work. It does not turn a model result into execution, settlement, or realized profit.</text>
+
+  <g data-stage="state-change"><rect x="70" y="215" width="210" height="100" rx="14" class="stage"/><text x="92" y="250" class="title2">1. Labelled</text><text x="92" y="275" class="title2">state change</text><text x="92" y="300" class="copy">block + component delta</text></g>
+  <g data-stage="component-lookup"><rect x="345" y="215" width="210" height="100" rx="14" class="stage"/><text x="367" y="250" class="title2">2. Changed</text><text x="367" y="275" class="title2">components</text><text x="367" y="300" class="copy">extract identities</text></g>
+  <g data-stage="deterministic-union"><rect x="620" y="215" width="250" height="100" rx="14" class="stage"/><text x="642" y="250" class="title2">3. Component → route</text><text x="642" y="275" class="title2">lookup + set union</text><text x="642" y="300" class="copy">deterministic ID dedupe</text></g>
+  <g data-stage="catalog-generation"><rect x="935" y="215" width="230" height="100" rx="14" class="gate"/><text x="957" y="250" class="title2">4. Catalogue</text><text x="957" y="275" class="title2">generation valid?</text><text x="957" y="300" class="copy">cache or index fallback</text></g>
+  <g data-stage="coverage"><rect x="1230" y="215" width="230" height="100" rx="14" class="gate"/><text x="1252" y="250" class="title2">5. Current-state</text><text x="1252" y="275" class="title2">coverage?</text><text x="1252" y="300" class="copy">every leg represented</text></g>
+  <path d="M280 265H345M555 265H620M870 265H935M1165 265H1230" class="line"/><polygon points="337,265 321,257 321,273" class="arrow"/><polygon points="612,265 596,257 596,273" class="arrow"/><polygon points="927,265 911,257 911,273" class="arrow"/><polygon points="1222,265 1206,257 1206,273" class="arrow"/>
+  <g data-outcome="abstain"><path d="M1050 315V355" class="dash"/><rect x="950" y="360" width="200" height="60" rx="12" class="terminal"/><text x="975" y="395" class="terminalText">abstain: stale catalogue</text></g>
+  <g data-outcome="abstain"><path d="M1345 315V355" class="dash"/><rect x="1245" y="360" width="200" height="60" rx="12" class="terminal"/><text x="1265" y="395" class="terminalText">abstain: missing state</text></g>
+
+  <g data-stage="exact-input"><rect x="160" y="500" width="250" height="105" rx="14" class="stage"/><text x="182" y="540" class="title2">6. Exact-input</text><text x="182" y="565" class="title2">per-leg simulation</text><text x="182" y="590" class="copy">checked state transition</text></g>
+  <g data-stage="amount-search"><rect x="480" y="500" width="250" height="105" rx="14" class="stage"/><text x="502" y="540" class="title2">7. Bounded</text><text x="502" y="565" class="title2">amount search</text><text x="502" y="590" class="copy">probe, expand, refine</text></g>
+  <g data-stage="funding-cost"><rect x="800" y="500" width="300" height="105" rx="14" class="decision"/><text x="822" y="540" class="title2">8. Funding and cost</text><text x="822" y="565" class="title2">classification</text><text x="822" y="590" class="copy">fees, gas, external costs</text></g>
+  <g data-stage="freshness"><rect x="1170" y="500" width="250" height="105" rx="14" class="gate"/><text x="1192" y="540" class="title2">9. Freshness</text><text x="1192" y="565" class="title2">recheck</text><text x="1192" y="590" class="copy">state still usable?</text></g>
+  <path d="M410 552H480M730 552H800M1100 552H1170" class="line"/><polygon points="472,552 456,544 456,560" class="arrow"/><polygon points="792,552 776,544 776,560" class="arrow"/><polygon points="1162,552 1146,544 1146,560" class="arrow"/>
+  <g data-outcome="abstain"><path d="M285 605V645" class="dash"/><rect x="170" y="650" width="230" height="60" rx="12" class="terminal"/><text x="190" y="685" class="terminalText">abstain: invalid simulation</text></g>
+  <g data-outcome="abstain"><path d="M605 605V645" class="dash"/><rect x="485" y="650" width="240" height="60" rx="12" class="terminal"/><text x="505" y="685" class="terminalText">abstain: no feasible amount</text></g>
+  <g data-outcome="abstain"><path d="M950 605V645" class="dash"/><rect x="825" y="650" width="250" height="60" rx="12" class="terminal"/><text x="845" y="685" class="terminalText">abstain: funding or cost fails</text></g>
+  <g data-outcome="abstain"><path d="M1295 605V645" class="dash"/><rect x="1180" y="650" width="230" height="60" rx="12" class="terminal"/><text x="1200" y="685" class="terminalText">abstain: stale result</text></g>
+
+  <g data-stage="selection"><rect x="410" y="785" width="300" height="110" rx="14" class="decision"/><text x="435" y="830" class="title2">10. Selection or</text><text x="435" y="855" class="title2">typed abstention</text><text x="435" y="880" class="copy">policy decides if a signal exists</text></g>
+  <g data-stage="handoff"><rect x="900" y="785" width="330" height="110" rx="14" class="handoff"/><text x="925" y="830" class="title2">11. Guarded execution</text><text x="925" y="855" class="title2">handoff</text><text x="925" y="880" class="copy">separate preflight and delivery boundary</text></g>
+  <path d="M710 840H900" class="line"/><polygon points="892,840 876,832 876,848" class="arrow"/>
+  <g data-outcome="abstain"><path d="M560 895V935" class="dash"/><rect x="420" y="940" width="280" height="60" rx="12" class="terminal"/><text x="440" y="975" class="terminalText">abstain: no selected candidate</text></g>
+  <rect x="845" y="940" width="440" height="60" rx="12" fill="#edf2fb" stroke="#5c78b5" stroke-width="2"/><text x="875" y="975" class="terminalText" fill="#38548c">handoff ≠ execution, settlement, or realized profit</text>
+
+  <rect x="70" y="1050" width="1390" height="80" rx="16" class="footer"/>
+  <text x="100" y="1084" class="footerTitle">Scope → lookup → coverage → simulation → bounded search → costs → freshness → selection or abstention → guarded handoff</text>
+  <text x="100" y="1112" class="footerCopy">A topology index narrows known work. It never proves profitability or a transaction outcome.</text>
+</svg>

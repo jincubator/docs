@@ -1,0 +1,1436 @@
+---
+title: "Salus Architecture: An Opinionated Rust Implementation of Web3 Trading and Solving Infrastructure"
+description: "A component-first Rust implementation record for Salus's runtime contracts, bounded concurrency, guarded execution, and evidence model."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Salus Architecture: An Opinionated Rust Implementation of Web3 Trading and Solving Infrastructure
+
+> **Draft** — This public working document is under active independent review.
+
+Salus is a Jincubator-owned Rust implementation for making bounded,
+inspectable decentralized-market decisions from changing state. This document
+maps its public-safe implementation shape from the runtime diagram through
+components, Rust concepts, failure behaviour, validation, and extension seams.
+It does not expose private source locations, provider details, configuration,
+signers, operating thresholds, route identities, or active strategy parameters.
+
+## Overview
+
+Salus takes a labelled market observation through an explicit sequence:
+configuration/readiness, population or warm start, ordered ingestion, topology
+scope, route preparation, fixed-input evaluation, policy selection, guarded
+execution, and later evidence. Each stage owns a narrower question. A catalogue
+route is not an opportunity; a modelled result is not a selection; a selected
+candidate is not a submitted transaction; and a submission is not finality,
+settlement, or realized profit.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/salus-runtime-architecture.png" alt="Canonical Salus runtime architecture showing external data sources, configuration and control, durable state, ingestion, population, the runtime path, guarded execution, and retained evidence." />
+
+*Figure 1. The canonical Salus runtime architecture. The population path builds recoverable topology; the runtime hot path admits, evaluates, and guards current work; persistence, telemetry, replay, and recovery retain independent evidence.*
+
+The diagram is read left to right and top to bottom. External market, replay, protocol, pricing, and transport inputs enter through typed adapters. Configuration validates the control plane before it creates work. Population persists and hydrates topology into a warm catalogue; streaming ingestion updates current state without confusing it with durable topology. The hot path then scopes affected routes, prepares covered requests, evaluates them, selects or abstains, and passes only a guarded handoff to execution. State, observability, replay, and recovery are supporting owners rather than untracked side channels. Generic configuration and credential labels identify a boundary only; they do not reveal values or access material.
+
+The implementation is deliberately modular rather than service-fragmented.
+A public-safe component-to-crate crosswalk is below. A component can own more
+than one crate because a runtime boundary is not identical to a package
+boundary; the private deterministic crosswalk records each crate, module,
+symbol, test/evidence identifier, and status.
+
+| Component | Public-safe crate owners | Role |
+| --- | --- | --- |
+| Runtime Entry | salus-app, salus-runtime | compose commands, readiness, lifecycle, shutdown |
+| Configuration | salus-config, salus-domain | resolve and validate runtime contracts |
+| Ingestion | salus-ingest, salus-adapters, salus-app | receive and normalize ordered updates |
+| Persistence | salus-adapters, salus-indexing, salus-domain | own durable read models and restartable topology |
+| Discovery | salus-graph, salus-indexing, salus-app | own route catalogue and affected-route scope |
+| Evaluation | salus-evaluator, salus-simulation, salus-strategy, salus-domain | calculate exact inputs and classify decisions |
+| Execution | salus-execution, salus-adapters, salus-app | preflight, handoff, receipt and reconciliation boundaries |
+| Shared validation | salus-test-support, salus-runtime | replay, fixtures, retained evidence, and validation contracts |
+
+All thirteen verified workspace crates resolve through at least one row of this
+crosswalk. The design does not claim that package names prove production
+operation. They establish code ownership in the pinned implementation record;
+operational, economic, and security claims need their own evidence.
+
+## Runtime Pipeline
+
+The pipeline begins with configuration and readiness. Validated configuration
+creates a bounded runtime contract; invalid, incomplete, or unsafe input stops
+before market work begins. Population then loads durable topology and warms the
+route catalogue. It improves startup availability but does not reclassify old
+data as a live state frame.
+
+Ingestion applies ordered updates and labels their state context. Discovery
+uses topology plus changed component identities to find known affected routes.
+Route preparation establishes whether every leg has current usable state.
+Evaluation owns fixed-input simulation and bounded amount search. A policy can
+classify a current model result or abstain. Execution receives only a guarded
+candidate, repeats the appropriate freshness/preflight checks, and records an
+attempt or an unresolved outcome. Telemetry and evidence observe every stage
+without owning strategy policy.
+
+| Transition | Owner and contract | Stop or abstain condition | Evidence retained |
+| --- | --- | --- | --- |
+| readiness → warm start | Runtime Entry and Configuration | unresolved configuration or recovery boundary | start/readiness result |
+| warm start → ingestion | Persistence and Ingestion | topology unavailable or generation mismatch | hydration generation |
+| ingestion → scope | Ingestion and Discovery | unordered, incomplete, or unsupported update | source/block identity |
+| scope → preparation | Discovery | no known affected route or scope bound exceeded | route-scope reason |
+| preparation → evaluation | Evaluation | missing route-leg coverage | coverage/rejection record |
+| evaluation → selection | Evaluation and strategy policy | invalid amount, cost gap, stale generation, or model rejection | exact-input result |
+| selection → execution | Execution | authorization, freshness, or preflight failure | guarded handoff record |
+| execution → reconciliation | Execution and evidence | no terminal observation | receipt/finality/settlement classification |
+
+The ordering is intentional. A queue transports work but does not own business
+policy. A cache accelerates a read but does not become a source of truth. A
+later observation can resolve a handoff but cannot rewrite the calculation that
+made the handoff eligible. The pipeline is implemented with validation limits:
+its contracts are reviewable, while a profitable after-gas operating result is
+not established.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/05-module-ownership.svg" alt="Public-safe module ownership showing the direction from domain and adapters through topology and evaluation to guarded evidence." />
+
+*Figure 2. Module ownership keeps topology, calculation, and execution evidence separate. A dependency edge does not grant a downstream component authority over an upstream fact.*
+
+## Core Components
+
+### Runtime Entry
+
+**Purpose and flow position.** Runtime Entry is the composition root. It
+turns a selected command and validated runtime contract into a supervised
+pipeline, selects offline/replay/live boundaries, coordinates shutdown, and
+collects final diagnostics. It is represented by the Runtime Entry node in
+Figure 1 and primarily owned by salus-app with runtime primitives from
+salus-runtime.
+
+**Inputs, state, and output.** Its input is a validated request and resolved
+mode. Its output is a constructed pipeline and an explicit readiness or
+failure result. It owns lifecycle state, not market truth. It delegates durable
+topology to Persistence and current state to Ingestion; it must not create
+hidden copies of either.
+
+**Concurrency and failure behaviour.** Tokio tasks are supervised at this
+boundary. Shutdown closes producers in dependency order, lets drain-required
+work complete where its owner demands it, and emits an incomplete result when
+a terminal evidence contract cannot be satisfied. A task panic, failed
+readiness check, or cancelled runtime is evidence about that lifecycle, not a
+signal to infer execution success.
+
+**simplified adaptation of implemented code**
+
+~~~rust
+// ArbitrageRuntime::new
+let warm_snapshot = warm_state.map(|state| &state.topology.snapshot);
+let runtime_state = warm_snapshot.map_or_else(
+    || StreamRuntimeState::new(chain),
+    StreamRuntimeState::from_snapshot,
+);
+let graph_state = warm_snapshot.map_or_else(
+    || IncrementalGraph::new(chain, pool_blacklist.clone()),
+    |snapshot| IncrementalGraph::from_snapshot(snapshot, pool_blacklist.clone()),
+);
+let graph = graph_state.build_result();
+let route_catalog = InMemoryRouteCatalog::from_persisted_routes(
+    &state.routes.route_summaries,
+    &token_blacklist,
+    route_max_hops,
+)?;
+~~~
+
+**What it does.** The constructor converts one validated initialization value
+into owned stream state, graph state, and a route catalogue. It chooses durable
+hydration when it exists; otherwise it builds the same runtime boundary from
+discovery. Neither branch treats the catalogue as current market state.
+
+**Rust concepts demonstrated.** Destructuring makes the inputs explicit;
+`Option::map_or_else` selects a recovery path without a mutable global; `?`
+returns a typed construction failure to the lifecycle owner. The real
+implementation retains more fields and timings; the adaptation omits those
+details rather than inventing a new startup contract.
+
+**Why this fits the component.** Runtime Entry is the only component allowed
+to compose these owners. Ingestion later changes current state, Persistence
+later supplies durable facts, and Discovery later refreshes membership.
+
+**Performance or correctness property.** Building a warm catalogue avoids
+reconstructing known topology during every run while keeping recovery separate
+from current-state coverage.
+
+**Failure prevented or made observable.** A failed catalogue construction is a
+`Result`, not a partially initialized loop. Missing warm state selects the
+explicit discovery path instead of silently presenting stale data as live.
+
+**Validation and tests.** Runtime construction, readiness, lifecycle, and
+retained-runtime acceptance tests exercise the same boundary.
+
+**Implementation status and limitation.** Implemented with validation limits.
+Startup and shutdown evidence describe lifecycle behaviour, not execution,
+settlement, or realized profit.
+
+### Configuration
+
+**Purpose and flow position.** Configuration turns environment-independent
+intent into a validated runtime contract before pipeline construction. The
+primary owners are salus-config and salus-domain. Public-safe concepts include
+RuntimeConfig, resolution, and typed execution targets; actual endpoint,
+credential, gas, threshold, and target values remain private.
+
+**Inputs, state, and output.** Configuration consumes declared mode, chain and
+feature choices, and locally resolved settings. It produces typed, validated
+values for later owners. It owns neither persistence nor live state. Its
+freshness contract is simple: settings are resolved before use and a later
+stage receives a specific resolved snapshot, not a mutable global.
+
+**verified implementation excerpt**
+
+~~~rust
+fn load_from_path_with(
+    path: impl AsRef<Path>,
+    resolve: fn(&mut AppConfig) -> Result<(), ConfigError>,
+) -> Result<AppConfig, ConfigError> {
+    let path = path.as_ref();
+    let contents = fs::read_to_string(path).map_err(|source| ConfigError::Read {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    let mut config: AppConfig = toml::from_str(&contents).map_err(|source| {
+        ConfigError::ParseFile { path: path.to_path_buf(), source }
+    })?;
+    resolve(&mut config)?;
+    config.validate()?;
+    Ok(config)
+}
+~~~
+
+**What it does.** `load_from_path_with` reads declared configuration,
+deserializes it into `AppConfig`, resolves allowed environment placeholders,
+then validates the completed typed object before returning it.
+
+**Rust concepts demonstrated.** `impl AsRef<Path>` accepts a path-like input
+without a global; `map_err` keeps read and parse failures typed; `?` preserves
+the order of read, parse, resolution, and validation.
+
+**Why this fits the component.** Configuration owns resolution before the
+runtime starts. Later owners receive a validated snapshot rather than a mutable
+configuration service.
+
+**Performance or correctness property.** The work occurs outside the hot path.
+The important property is deterministic validation ordering, not speed.
+
+**Failure prevented or made observable.** Missing, malformed, unresolved, or
+invalid configuration returns `ConfigError` before a live boundary can be
+created. No configured value or endpoint is exposed here.
+
+**Validation and tests.** Configuration loading, resolution, and target
+validation tests cover parsing and fail-closed refusal paths.
+
+**Implementation status and limitation.** Implemented. This establishes a
+typed startup contract; it does not establish that an external connection,
+execution, or economic result will succeed.
+
+### Ingestion
+
+**Purpose and flow position.** Ingestion receives replay or stream observations,
+normalizes them into domain values, and preserves their source/block lineage.
+salus-ingest, salus-adapters, and salus-app share this boundary. The source
+context, normalization, stream handler, and replay state mechanisms prevent a
+transport message from becoming an unlabelled fact.
+
+**Inputs, state, and output.** Input is a state update plus source context.
+Output is an ordered change or an explicit rejection. The stream frame owns
+current live state; Persistence owns a durable representation of topology.
+Ingestion does not promise a complete market universe simply because one
+message is well formed.
+
+**Ordering, recovery, and telemetry.** A block identity, source epoch, and
+normalization result travel with the update. Restarts, reorg-like conditions,
+partial blocks, and unsupported data cause recovery or abstention paths rather
+than silent continuity. Counters and latency records describe what arrived and
+what was discarded; they do not make a provider feed complete.
+
+**verified implementation excerpt**
+
+~~~rust
+pub fn apply_block(&mut self, block: &StreamBlockEvents) -> AppliedStreamBlock {
+    let mut result = AppliedStreamBlock { block_number: block.header.block_number, ..Default::default() };
+    for event in &block.events {
+        match event {
+            StreamEvent::TokenDiscovered(token) => { self.tokens.insert(token.address.clone(), token.clone()); }
+            StreamEvent::ComponentDiscovered { component, .. } => {
+                let previous = self.components.insert(component.component_id.clone(), component.clone());
+                if previous.as_ref().is_none_or(|existing| !components_match_for_route_topology(existing, component)) {
+                    result.topology_changed = true;
+                    result.upserted_components.push(component.clone());
+                }
+            }
+            StreamEvent::ComponentDeleted { component_id } => {
+                if self.components.remove(component_id).is_some() {
+                    result.topology_changed = true;
+                    result.deleted_component_ids.push(component_id.clone());
+                }
+            }
+            StreamEvent::StateUpdated(_) => result.state_update_count += 1,
+            _ => {}
+        }
+    }
+    self.last_block_number = Some(block.header.block_number);
+    result
+}
+~~~
+
+**What it does.** `StreamRuntimeState::apply_block` applies one labelled block
+in order, records topology changes and deletion identities, and returns the
+changed components that downstream scope calculation needs.
+
+**Rust concepts demonstrated.** `match` makes each source event explicit;
+owned values isolate the state frame; `Option::is_none_or` distinguishes a new
+or materially changed component from a repeated observation.
+
+**Why this fits the component.** This is actual ingestion: a source-labelled
+block becomes deterministic domain state before a queue or evaluator consumes it.
+
+**Performance or correctness property.** It emits topology changes only when
+route-relevant membership differs, so Discovery need not rebuild every route.
+
+**Failure prevented or made observable.** Repeated observations do not become
+false topology changes; deletion preserves component identity for later removal.
+
+**Validation and tests.** Stream-state tests cover component discovery,
+deletion, topology-change detection, normalization, and replay ordering.
+
+**Implementation status and limitation.** Implemented with validation limits.
+An ordered, well-formed update is still not a claim of complete market state.
+
+### Persistence
+
+**Purpose and flow position.** Persistence owns durable read models, migrations,
+and restartable topology facts. salus-adapters supplies the storage boundary;
+salus-indexing and salus-domain own typed representations and indexing
+contracts. This component makes topology inspectable and recoverable without
+claiming that persisted values are live execution state.
+
+**Inputs, state, and output.** It receives normalized topology, component,
+route, metadata, and retained-artifact facts. It outputs read models and a
+hydration input for Discovery. The durable store is authoritative for the
+facts it persists; an in-memory cache is not allowed to overwrite it.
+
+**Concurrency and failure behaviour.** Persistence work uses serialized writers
+or bounded queues where ordering and durability matter. A writer failure
+latches a diagnostic and prevents an unrecorded success claim. Replay can
+exercise a read-only representation without granting authority to modify a
+live source.
+
+**verified implementation excerpt**
+
+~~~rust
+async fn load_warm_start_routes(
+    storage: &PostgresStorage,
+) -> Result<WarmStartRouteState, String> {
+    let route_summaries = storage
+        .list_route_summaries()
+        .await
+        .map_err(|error| {
+            format!("Storage error: failed to load warm-start routes: {error}")
+        })?;
+    Ok(WarmStartRouteState {
+        route_count: route_summaries.len(),
+        route_summaries,
+    })
+}
+~~~
+
+**What it does.** A warm-start reader asks storage for owned route summaries,
+adds their count, and returns one durable reconstruction input to Runtime Entry.
+It is deliberately a topology/read-model operation, not per-route evaluation.
+`RouteSummaryView` is the typed durable view carried by that reconstruction
+boundary; the example focuses on the operation that consumes those views.
+
+**Rust concepts demonstrated.** The asynchronous storage call is awaited once;
+`map_err` preserves a contextual failure; the resulting vector is moved into an
+owned `WarmStartRouteState` rather than retaining a database connection.
+
+**Why this fits the component.** Persistence owns durable facts and recovery
+input. Discovery may construct an in-memory catalogue from those facts, while
+Ingestion must still obtain current labelled protocol state separately.
+
+**Performance or correctness property.** One bounded hydration operation keeps
+PostgreSQL off the normal evaluation loop and makes restart state inspectable.
+
+**Failure prevented or made observable.** A storage read error stops hydration
+with a named failure; no empty catalogue is silently substituted as proof that
+no routes exist.
+
+**Validation and tests.** Schema, read-only replay, warm-start, and read-model
+tests validate the adapter boundary and durable reconstruction path.
+
+**Implementation status and limitation.** Implemented with validation limits.
+Persisted summaries support recovery; they do not prove live coverage,
+transaction acceptance, settlement, or realized profit.
+
+### Discovery
+
+**Purpose and flow position.** Discovery owns durable graph identity, route
+catalogue construction, and the transition from a changed component to a
+bounded affected-route set. salus-graph, salus-indexing, and salus-app carry
+this responsibility through graph construction, RouteCatalog, route refresh,
+and a component-to-route scope cache.
+
+#### Directed market graph and durable topology
+
+The market graph is a durable connectivity record, not a pricing model.
+Normalized token identities are graph nodes. A retained component contributes a
+directed `GraphEdge` for each supported ordered input/output pair; each edge
+carries the component and protocol identity needed to construct a later
+`RouteLeg`.
+
+**verified implementation excerpt**
+
+~~~rust
+pub struct GraphEdge {
+    pub component_id: ComponentId,
+    pub protocol_system: ProtocolSystem,
+    pub token_in: Address,
+    pub token_out: Address,
+}
+~~~
+
+The graph builder places those edges under `BTreeMap<Address,
+Vec<GraphEdge>>` adjacency, and sorts each adjacency list by component,
+protocol, and output token. The ordered container makes catalogue construction
+and later merges reproducible. Persistence can hydrate this durable topology
+into a warm catalogue; ingestion still has to supply labelled current protocol
+state for every leg before evaluation. Connectivity therefore establishes known
+paths only. It does not establish a quote, profitability, a selected
+opportunity, or an executable transaction.
+
+#### Bounded cyclic-route construction
+
+`RouteSearchState` owns one search branch: the ordered path, ordered legs,
+intermediate tokens already visited, and components already used. Eligible start
+tokens are collected into ordered sets. From each start, bounded DFS with
+backtracking follows outgoing adjacency. It stops at `max_hops`; it rejects a
+repeated component; it accepts return-to-start only after a prior leg; and it
+rejects a repeated intermediate token. The push/pop pair ensures a rejected or
+completed branch cannot leak membership into its sibling.
+
+**verified implementation excerpt**
+
+~~~rust
+fn dfs(&mut self, start: &Address, current: &Address, state: &mut RouteSearchState) {
+    if state.legs.len() == self.max_hops || route_discovery_cancelled(self.cancellation) {
+        return;
+    }
+
+    for edge in self.graph.adjacency.get(current).into_iter().flat_map(|edges| edges.iter()) {
+        if route_discovery_cancelled(self.cancellation) {
+            break;
+        }
+        if state.used_components.contains(&edge.component_id) {
+            continue;
+        }
+
+        if edge.token_out == *start {
+            if !state.legs.is_empty() {
+                state.push(edge, VisitedTokenMark::Skip);
+                self.routes.push(RouteCandidate {
+                    route_id: route_id(&state.legs, None, None, None),
+                    version: 1,
+                    path: state.path.clone(),
+                    legs: state.legs.clone(),
+                    flash_component_id: None,
+                    flash_token_address: None,
+                    flash_fee_hob: None,
+                    flash_available_balance: None,
+                    flash_protocol: None,
+                    source_block_number: self.graph.source_block_number,
+                });
+                state.pop(edge, VisitedTokenMark::Skip);
+            }
+            continue;
+        }
+
+        if state.visited_tokens.contains(&edge.token_out) {
+            continue;
+        }
+
+        state.push(edge, VisitedTokenMark::Record);
+        self.dfs(start, &edge.token_out, state);
+        state.pop(edge, VisitedTokenMark::Record);
+    }
+}
+~~~
+
+This is a verified implementation excerpt. Its private source pin, locator, and
+the absence of live route identities are recorded in the route-construction
+source matrix. A route leg retains its ordinal position, component identity,
+protocol classification, and ordered token direction. The route identifier is
+a Keccak-256 hash of ordered component encoding, with optional funding fields
+when they are present in the route form. A `BTreeMap` then retains one route per
+identifier in deterministic key order. This is identity-based deduplication,
+not a claim that every rotationally equivalent economic cycle is canonicalized.
+
+The catalogue can grow with graph branching and the hop bound. Its cost is paid
+when durable topology changes rather than on every current-state update. The
+implementation can divide ordered start tokens among bounded workers and sort
+the merged result by route identity. That avoids unbounded coordination, but it
+does not make route discovery cheap or turn a catalogue route into a live
+opportunity.
+
+#### Hydration, indexing, and affected-route scope
+
+**Inputs, state, and output.** Input is a topology generation and a set of
+changed component identities. Output is a deduplicated, bounded route scope
+with a generation reference. The in-memory catalogue owns current runtime
+membership; persisted read models supply hydration. Neither owner stores a
+profitability conclusion.
+
+**Freshness and recovery.** Refreshes publish a new catalogue generation. A
+request prepared against an earlier generation may be rejected rather than
+evaluated late. This is a deliberate correctness choice: a smaller set of
+current work is better than a larger backlog of superseded work.
+
+**verified implementation excerpt**
+
+~~~rust
+pub struct RouteIndex {
+    routes_by_id: BTreeMap<String, RouteCandidate>,
+    route_ids_by_component: BTreeMap<ComponentId, BTreeSet<String>>,
+    route_ids_by_token: BTreeMap<Address, BTreeSet<String>>,
+    route_ids_by_start: BTreeMap<Address, BTreeSet<String>>,
+}
+~~~
+
+**verified implementation excerpt**
+
+~~~rust
+impl RouteIndex {
+    pub fn route_ids_for_components(
+        &self,
+        component_ids: &BTreeSet<ComponentId>,
+    ) -> BTreeSet<String> {
+        let mut route_ids = BTreeSet::new();
+        for component_id in component_ids {
+            if let Some(ids) = self.route_ids_for_component(component_id) {
+                route_ids.extend(ids.iter().cloned());
+            }
+        }
+        route_ids
+    }
+
+    pub fn insert(&mut self, route: RouteCandidate) {
+        // RouteIndex::insert
+        let route_id = route.route_id.clone();
+        let start_token = route.path.first().cloned();
+        for token in route.path.iter().cloned().collect::<BTreeSet<_>>() {
+            self.route_ids_by_token.entry(token).or_default().insert(route_id.clone());
+        }
+        for leg in &route.legs {
+            self.route_ids_by_component
+                .entry(leg.component_id.clone())
+                .or_default()
+                .insert(route_id.clone());
+        }
+        if let Some(component_id) = &route.flash_component_id {
+            self.route_ids_by_component
+                .entry(component_id.clone())
+                .or_default()
+                .insert(route_id.clone());
+        }
+        if let Some(start_token) = start_token {
+            self.route_ids_by_start.entry(start_token).or_default().insert(route_id.clone());
+        }
+        self.routes_by_id.insert(route_id, route);
+    }
+}
+~~~
+
+**What it does.** `RouteIndex::insert` records every route's token, component,
+optional funding component, and start-token memberships. Later,
+`route_ids_for_components` unions only the known impacted route identities.
+
+**Rust concepts demonstrated.** `BTreeMap` and `BTreeSet` provide deterministic
+key and union order. `entry(...).or_default()` creates membership lazily;
+cloning the route identity permits each index to own a stable key.
+
+**Why this fits the component.** Discovery owns the catalogue's membership
+relationship, not current pricing or execution policy. Its output is a bounded
+scope that later components must still cover with current state.
+
+**Performance or correctness property.** The inverted index replaces repeated
+whole-catalogue scans with lookup plus deterministic deduplication. Its cost is
+retained membership memory and the need to remove matching memberships on
+refresh.
+
+**Failure prevented or made observable.** A changed component with no known
+membership produces an empty scope, not a fabricated route. An optional funding
+component is indexed explicitly, so its dependency cannot be silently missed.
+
+**Validation and tests.** Route-index, catalogue, scope-cache, hydration, and
+refresh tests exercise insertion/removal symmetry, capped scope, fallback, and
+generation rejection.
+
+**Implementation status and limitation.** Implemented with validation limits.
+The index accelerates known membership; it does not discover unknown liquidity
+or establish a profitable opportunity.
+
+### Evaluation
+
+**Purpose and flow position.** Evaluation owns exact-input route calculation,
+protocol-state coverage, bounded amount search, and typed classification.
+salus-evaluator provides exact-input and protocol-state contracts;
+salus-simulation, salus-strategy, and salus-domain add simulation, policy, and
+economic representation.
+
+**Inputs, state, and output.** Input is a route, ordered state frame, exact
+input, and generation. Output is either a result with its model context or a
+typed abstention. Evaluation owns neither the external state source nor
+submission authority. Its source of truth is the supplied labelled state and
+the exact input; it must not reach around the request for mutable global state.
+
+**Concurrency, identity, and tests.** Bounded CPU workers own deterministic
+compute. Tokio coordinates I/O and dispatch but does not make CPU-bound work
+unbounded. Results merge deterministically, and a freshness check rejects
+results that no longer match the current generation. Boundary and exact-input
+tests validate arithmetic, missing-state, and rejection paths.
+
+**simplified adaptation of implemented code**
+
+~~~rust
+fn simulate_route(
+    request: &ExactInputEvaluationRequest<'_>,
+    stats: &mut SimulationStats,
+) -> Result<(u128, Vec<u128>), ExactInputRejectionReason> {
+    let mut amount_out = request.input_amount;
+    let mut raw_path_amounts = vec![request.input_amount];
+    for leg in request.legs {
+        let protocol_state = leg.protocol_state.ok_or_else(|| missing_state(leg))?;
+        let result = protocol_state.protocol_sim().get_amount_out(
+            BigUint::from(amount_out), leg.token_in, leg.token_out,
+        ).map_err(|error| ExactInputRejectionReason::ProtocolSimulationFailure {
+            component_id: leg.component_id.to_owned(),
+            protocol_system: leg.protocol_system.to_owned(),
+            detail: error.to_string(),
+        })?;
+        stats.calls += 1;
+        amount_out = result.amount.to_u128().ok_or_else(|| {
+            ExactInputRejectionReason::ProtocolSimulationFailure {
+                component_id: leg.component_id.to_owned(),
+                protocol_system: leg.protocol_system.to_owned(),
+                detail: "simulation output exceeds supported amount range".to_owned(),
+            }
+        })?;
+        raw_path_amounts.push(amount_out);
+    }
+    Ok((amount_out, raw_path_amounts))
+}
+~~~
+
+**What it does.** `simulate_route` carries one exact input through each ordered
+leg, requiring represented protocol state and returning either the complete
+amount path or a typed abstention.
+
+This faithful public-safe adaptation omits the implementation's component-reuse
+state transition and panic-normalization branches. It retains the source-pinned
+contract: each ordered leg requires labelled state, dispatches to the
+protocol-specific simulator, propagates its checked output to the next leg, and
+returns a typed failure instead of a partial quote. The private source matrix
+records the full symbol, source locator, and omissions.
+
+**Rust concepts demonstrated.** Borrowed request and leg values avoid copying
+state; `Result`/`ok_or_else` preserve missing-state, simulation, and range
+failures; the mutable amount is propagated deliberately leg by leg.
+
+**Why this fits the component.** This is the defining evaluator behavior.
+`ExactInputEvaluationRequest` carries the ordered legs, exact input, token
+decimals and quote values, represented fee, funding form, gas term, and state
+frame. Bounded search calls the simulation repeatedly; selection and execution
+remain separate owners.
+
+**Performance or correctness property.** The loop performs one simulator call
+per represented leg and keeps the exact amount path. Bounded amount search can
+reuse that deterministic result without treating a route catalogue as a quote.
+
+**Failure prevented or made observable.** Missing state, protocol simulation
+failure, and an unsupported output range become typed abstentions rather than a
+partial amount presented as an evaluable route.
+
+**Validation and tests.** Exact-input, state-coverage, protocol simulation,
+bounded-search, and retained-evidence tests exercise calculation, rejection,
+cost classification, and finalization boundaries.
+
+**Implementation status and limitation.** Implemented with validation limits.
+A current model result is still not selection, submission, settlement, or
+realized profit.
+
+The rejected alternative is to call an evaluator “profitable” whenever it
+returns a positive output. A modelled result needs cost, freshness, policy, and
+later execution evidence before it can support a stronger statement.
+
+#### Bounded search, not a global-optimum claim
+
+`RouteEvaluationConfig` owns an `AmountSearchConfig`: a feasible start, ceiling,
+tolerance, maximum doubling count, and maximum refinement count. The evaluator
+first validates that domain in the selected token's raw-unit scale, takes an
+initial probe, expands by bounded doubling, then refines the best observed
+region. This is a bounded best-observed candidate, not a claimed mathematical
+global optimum. Monotonicity must not be assumed when fees, rounding, price
+impact, concentrated liquidity, and route composition can create nonlinear or
+invalid regions.
+
+**simplified adaptation of implemented code**
+
+~~~rust
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct Probe {
+    input: u128,
+    gross_profit_quote: i128,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum SearchRejection {
+    InvalidDomain,
+    MissingState,
+    InvalidProbe,
+    SimulationFailure,
+    ArithmeticFailure,
+}
+
+struct AmountSearchConfig {
+    initial_probe: u128,
+    max_amount: u128,
+    tolerance: u128,
+    max_doublings: u32,
+    max_binary_iterations: u32,
+}
+
+#[derive(Default)]
+struct SearchStats {
+    doubling_iterations: u32,
+    binary_iterations: u32,
+    evaluated_probes: u32,
+}
+
+fn probe_route_before_gas(
+    amount: u128,
+    has_current_state: bool,
+    simulate: &impl Fn(u128) -> Result<i128, SearchRejection>,
+    stats: &mut SearchStats,
+) -> Result<Probe, SearchRejection> {
+    if !has_current_state {
+        return Err(SearchRejection::MissingState);
+    }
+    if amount == 0 {
+        return Err(SearchRejection::InvalidProbe);
+    }
+    let gross_profit_quote = simulate(amount)?;
+    stats.evaluated_probes = stats
+        .evaluated_probes
+        .checked_add(1)
+        .ok_or(SearchRejection::ArithmeticFailure)?;
+    Ok(Probe { input: amount, gross_profit_quote })
+}
+
+fn best_pre_gas_probe_index(probes: &[Probe]) -> usize {
+    probes.iter().enumerate().fold(0, |best, (index, candidate)| {
+        let current = &probes[best];
+        if candidate.gross_profit_quote > current.gross_profit_quote
+            || (candidate.gross_profit_quote == current.gross_profit_quote
+                && candidate.input < current.input)
+        {
+            index
+        } else {
+            best
+        }
+    })
+}
+
+fn bounded_best_observed(
+    config: &AmountSearchConfig,
+    has_current_state: bool,
+    simulate: impl Fn(u128) -> Result<i128, SearchRejection>,
+) -> Result<Probe, SearchRejection> {
+    if config.initial_probe == 0
+        || config.initial_probe > config.max_amount
+        || config.tolerance == 0
+    {
+        return Err(SearchRejection::InvalidDomain);
+    }
+    let mut stats = SearchStats::default();
+    let mut probes = vec![probe_route_before_gas(
+        config.initial_probe,
+        has_current_state,
+        &simulate,
+        &mut stats,
+    )?];
+    let mut amount = config.initial_probe;
+
+for iteration in 1..=config.max_doublings {
+    stats.doubling_iterations = iteration - 1;
+    if amount >= config.max_amount {
+        break;
+    }
+    let next = amount.saturating_mul(2).min(config.max_amount);
+    if next == amount {
+        break;
+    }
+    amount = next;
+    stats.doubling_iterations = iteration;
+    let probe = probe_route_before_gas(amount, has_current_state, &simulate, &mut stats)?;
+    if probe.gross_profit_quote <= 0 {
+        break;
+    }
+    probes.push(probe);
+}
+
+let mut best_index = best_pre_gas_probe_index(&probes);
+if probes.iter().any(|probe| probe.gross_profit_quote > 0) && probes.len() > 1 {
+    let mut low = probes[best_index.saturating_sub(1)].input;
+    let mut high = probes[(best_index + 1).min(probes.len() - 1)].input;
+    while high > low.saturating_add(config.tolerance)
+        && stats.binary_iterations < config.max_binary_iterations
+    {
+        let mid = low + ((high - low) / 2);
+        let upper_mid = mid + ((high - mid) / 2);
+        let mid_probe = probe_route_before_gas(mid, has_current_state, &simulate, &mut stats)?;
+        let upper_probe = probe_route_before_gas(
+            upper_mid,
+            has_current_state,
+            &simulate,
+            &mut stats,
+        )?;
+        let mid_score = mid_probe.gross_profit_quote;
+        let upper_score = upper_probe.gross_profit_quote;
+        probes.push(mid_probe);
+        probes.push(upper_probe);
+        stats.binary_iterations += 1;
+        if upper_score > mid_score {
+            low = mid;
+        } else {
+            high = upper_mid;
+        }
+    }
+}
+best_index = best_pre_gas_probe_index(&probes);
+let selected = probes.swap_remove(best_index);
+Ok(selected)
+}
+~~~
+
+This compiling adaptation is reconciled to the source-pinned evaluator helpers,
+but keeps its types local to avoid presenting a partial private excerpt as a
+public API. It validates a raw-unit domain, retains the initial and doubled
+probes, then retains both refinement probes before recomputing the best observed
+candidate and returning it. The `simulate` contract can return a typed
+simulation failure; invalid domain, missing state, invalid probe, and arithmetic
+failure remain typed rejections too. Expansion stops at the ceiling, a
+no-progress amount, a non-positive probe, or the configured iteration limit.
+Refinement stops at the tolerance or its iteration limit. The deterministic
+tie-break prefers the lower input amount when gross scores are equal. Retained
+search statistics record probe and iteration counts; no operating budget or
+performance value is published here.
+
+#### Represented costs and model boundary
+
+The evaluator has a precise, deliberately incomplete cost model. It represents
+the following terms; it does not claim coverage of all external costs.
+
+| Model term | Responsible type or function | Meaning and failure boundary |
+| --- | --- | --- |
+| Input and final output | `ExactInputEvaluationRequest` and `ExactInputEvaluation` | Raw ordered-leg amounts become quote values through explicit token decimals; missing quotes or failed conversion reject the result. |
+| Pool / protocol trading fee | Protocol-specific leg simulation | A pool or protocol fee is included only when the represented per-leg simulator incorporates it in the route transition; it is not the separate Tycho adjustment below. |
+| Route / Tycho fee | `tycho_fee_bps` and `apply_tycho_fee` | This separately adjusts the simulated route output before quote comparison; an invalid value rejects the request. The source does not establish it as the general pool or protocol fee. |
+| Flash-loan or other represented funding fee | `ExactInputFunding` and `funding_fee_quote` | Requester-owned capital has no flash-loan fee. With flash funding, the input obligation is already included in the output-minus-input gross delta and a represented flash fee is then calculated with checked conversion. This is a model, not evidence of a constructed or repaid transaction. |
+| Gas supplied to the evaluator | `gas_cost_quote` | A supplied flat gas term is subtracted through checked arithmetic; it is a model input, not a gas-bidding policy. |
+| Unrepresented external costs | No verified evaluator field | Capital opportunity cost, builder payment, slippage outside the retained state, hedging, failed-attempt cost, and other external costs are not represented by this verified path. A general external-cost term is not currently represented. |
+| Modelled net result | `net_profit_quote` | Gross quote result less the represented funding and gas terms; it is not selection, submission, inclusion, settlement, or realized profit. |
+
+The source-pinned exact-input path calculates funding fee and gas cost with
+checked subtraction. It makes missing funding fee, invalid fee, quote failure,
+and arithmetic overflow typed failures. Policy selection is a later owner, and
+the execution owner rechecks freshness and preflight before any guarded handoff.
+
+#### Bellman–Ford design comparison
+
+Bellman [4] and Ford [5] describe original routing and shortest-path work.
+The later negative-log exchange-cycle abstraction reduces exchange
+relationships to static weights under simplifying assumptions, so it is useful
+mathematical context rather than an execution-grade quote for this system. The
+Whitepaper covers the model; this comparison records the implementation
+boundary.
+
+| Concern | Static Bellman–Ford / negative-log abstraction | Salus implementation |
+| --- | --- | --- |
+| Edge representation | One scalar weight | Amount- and state-dependent protocol transition |
+| Price impact | Not represented by one fixed weight | Exact-input per-leg simulation |
+| Concentrated liquidity | Difficult to flatten safely | Protocol-specific state transition |
+| Fees, rounding, and units | Approximated in weights | Checked at each ordered leg |
+| Invalid regions | Awkward/static | Typed invalid or abstention result |
+| Route universe | Current weighted graph | Bounded durable catalogue |
+| Changed state | Rerun graph calculation | Affected-route lookup then evaluation |
+| Funding and gas | External to cycle detection | Explicit represented terms |
+| Freshness | External | Generation and block-scoped validation |
+| Execution evidence | Absent | Guarded handoff and later evidence |
+
+This is a design-suitability comparison, not a claim that a historical team
+decision rejected Bellman–Ford. The original Bellman routing work remains the
+mathematical reference in the Whitepaper bibliography; the direct primary
+references below make this Architecture article self-contained.
+
+#### Appendix B mathematical-to-Rust crosswalk
+
+| Whitepaper concept | Architecture mapping |
+| --- | --- |
+| $x_i$ | Amount entering or leaving ordered leg `i`; the mutable `amount_out` is carried to the next leg. |
+| $f_i(x_i, s_i)$ | Protocol-specific simulator over the labelled state attached to one `ExactInputEvaluationRequest` leg. |
+| $D$ | The feasible raw-unit domain owned by `AmountSearchConfig`. |
+| $x^*$ | The best policy-eligible modelled candidate observed within bounded search; not a global optimum. |
+| `net(x)` | `net_profit_quote`: quote output less input and represented fee, funding, and gas terms. |
+| $\Delta C$ | Labelled changed-component set supplied to Discovery. |
+| $R(\Delta C)$ | `RouteIndex::route_ids_for_components` deterministic affected-route union. |
+| Route cycle | Ordered `RouteLeg` values returning to their start token within the hop bound. |
+| Invalid / abstain | `ExactInputRejectionReason`, `EvaluationReason`, or later policy rejection. |
+
+### Execution
+
+**Purpose and flow position.** Execution owns preflight, dry-run and submission
+preparation, an ordered handoff, receipt observation, and reconciliation.
+salus-execution supplies core execution and evidence identities;
+salus-adapters supplies protocol/transport adapters; salus-app owns the
+application service and output boundary.
+
+**Inputs, state, and output.** It consumes an authorized current candidate and
+returns a typed preflight, handoff, receipt, terminal, or unresolved outcome.
+It owns execution-attempt lineage and pre-broadcast evidence, not strategy
+selection. Submission context is refreshed before handoff where the contract
+requires it.
+
+**Queue, recovery, and evidence.** The execution stage is bounded and ordered
+because nonce-sensitive or serial handoff work cannot be handled as a generic
+parallel map. A dry-run failure stops the path. A transport acknowledgement
+does not create a settlement record. Restart recovery reconciles retained
+attempts before allowing later work to make an equivalent claim.
+
+**verified implementation excerpt**
+
+~~~rust
+pub fn plan_live_submission(
+    input: &LiveExecutionInput,
+    config: &LiveExecutionConfig,
+    current_block_number: Option<u64>,
+    nonce: u64,
+    planned_calldata: PlannedCalldata,
+) -> Result<LiveSubmissionPlan, Box<LiveExecutionResult>> {
+    if input.candidate.expected_net_profit_quote <= 0 && !input.forced_execution {
+        return Err(Box::new(live_rejected_from_input(
+            input, LiveExecutionReason::NonPositiveExpectedProfit {
+                actual_quote: input.candidate.expected_net_profit_quote,
+            }, current_block_number,
+        )));
+    }
+    let source_block_number = source_block_number(
+        input.batch_source_block_number, input.route_source_block_number,
+    );
+    if let (Some(current), Some(source)) = (current_block_number, source_block_number)
+        && current < source {
+        return Err(Box::new(live_rejected_from_input(
+            input, LiveExecutionReason::ExecutionContextBehindSourceBlock {
+                current_block_number: current, source_block_number: source,
+            }, Some(current),
+        )));
+    }
+    LiveSubmissionPlan::new(input, config, current_block_number, nonce, planned_calldata)
+}
+~~~
+
+**What it does.** `plan_live_submission` refuses a non-positive model result or
+an execution context behind its source block before it creates a guarded plan.
+Later preflight-only, broadcast, pending-receipt, and reconciliation states
+remain independent typed evidence—not settlement or profit.
+`DryRunResult` remains the typed preflight contract for this later boundary.
+
+**Rust concepts demonstrated.** `Option` pattern matching makes block lineage
+explicit; `Result<_, Box<LiveExecutionResult>>` returns a complete rejected
+evidence record; typed reasons prevent acknowledgement becoming success.
+
+**Why this fits the component.** Execution owns serial authority, duplicate
+prevention, preflight, and later reconciliation. It does not alter a strategy
+decision or convert a queue acknowledgement into an external outcome.
+
+**Performance or correctness property.** The plan rejects stale lineage before
+constructing the submission boundary. The later ordered stage preserves attempt
+identity while the transport path remains outside the decision state.
+
+**Failure prevented or made observable.** A non-positive candidate or context
+behind its source block yields a typed rejection. A failed preflight, pending
+receipt, or reconciliation gap remains distinct from submission, settlement,
+or realized profit.
+
+**Validation and tests.** Execution-planning, dry-run, stale-context, receipt,
+reconciliation, and retained-evidence tests retain attempt lineage and
+unresolved states.
+
+**Implementation status and limitation.** Implemented with validation limits.
+Private signers, endpoints, policy values, and transaction details remain
+excluded; this code does not establish a terminal economic outcome.
+
+## Runtime Infrastructure and Rust Models
+
+### Hydration and Route Indexing
+
+Hydration separates durable topology from a warm runtime catalogue. It reads
+stored component, token, graph, route, leg, and metadata facts, constructs
+stable route identity and component membership, then publishes a generation.
+The catalogue can answer which known routes depend on a changed component
+without claiming that every leg has current state.
+
+The persisted PostgreSQL/Diesel read-model boundary is transactional for the
+facts it owns. Warm start rebuilds an `InMemoryRouteCatalog` from route
+summaries, filters routes against the current admissibility contract, and
+assigns a generation. A persisted route-scope cache is optional acceleration:
+`PoolRouteScopeResolver` validates its topology identity and can fall back to
+the catalogue when entries are stale or absent. That means cache freshness is
+measured rather than assumed.
+
+The core data structure is an inverted index: component identity maps to route
+identities; route identity maps to ordered leg metadata. It is an ownership
+model as much as a performance technique. Discovery owns membership; Ingestion
+owns current state; Evaluation owns exact computation. A cache can accelerate
+lookup but must be derivable from its owning data and invalidated with a
+generation boundary.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/02-topology-to-evaluation.svg" alt="Topology, catalogue hydration, changed-component lookup, state coverage, and evaluation are separate authority transitions." />
+
+*Figure 3. Component membership narrows work before current state is checked. The index does not claim a current quote, candidate, or outcome.*
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/07-hydration-cache-authority.svg" alt="Durable topology hydrates a warm catalogue while labelled live state separately grants evaluation coverage." />
+
+*Figure 4. Recovery reconstructs what is known; it does not manufacture a current executable state frame.*
+
+### Queue Ownership, Backpressure, and Freshness
+
+Each queue has an owner, capacity, overflow contract, closure contract, and
+measurement. Freshness queues may coalesce or reject superseded work; durability
+queues drain committed topology or persistence work; execution queues preserve
+bounded serial handoff. The error is not “a queue is full.” The question is
+whether the oldest, newest, or all work remains correct for that stage.
+
+Newest-useful policy is explicit. A newer state can supersede an older
+evaluation request, so a valid completed calculation may be rejected before
+selection. In contrast, a committed persistence mutation must not vanish
+because a later block arrived. Queue depth, wait time, service time, worker
+utilization, stale work, drops, and shutdown behaviour make these distinctions
+observable.
+
+The concrete runtime has distinct `LiveRoutePrepQueue` and
+`LiveRouteEvaluationQueue` owners. A `RoutePrepQueueJob` owns prepared block
+context and hands off a typed `ArbitrageEvaluationRequest`; the evaluation
+queue records its latest block with `AtomicU64`, coalesces when its freshness
+contract permits it, and records closure rather than converting closure into a
+successful result. The execution-stage queue has a different ordered handoff
+contract. Capacity values and operating policy settings remain intentionally
+private; their behavioural boundary does not.
+
+**verified implementation excerpt**
+
+~~~rust
+impl<T> RuntimeQueue<T> {
+    pub fn new(config: QueueConfig) -> Self {
+        let (sender, receiver) = mpsc::channel(config.capacity);
+        let metrics = Arc::new(Mutex::new(QueueMetrics::default()));
+        let monitored_sender = MonitoredSender {
+            inner: sender,
+            config,
+            metrics: Arc::clone(&metrics),
+        };
+        Self {
+            sender: monitored_sender,
+            receiver,
+            metrics,
+        }
+    }
+}
+~~~
+
+**What it does.** `RuntimeQueue::new` creates one bounded channel, one shared
+metrics owner, and one sender/receiver split. Capacity and queue policy are a
+declared contract rather than an incidental task detail.
+
+**Rust concepts demonstrated.** Generics preserve the owner’s payload type;
+`mpsc::channel` bounds transfer; `Arc<Mutex<...>>` shares only queue metrics.
+
+**Why this fits the component.** A queue transports work while its component
+owner defines freshness, durability, or execution policy.
+
+**Performance or correctness property.** Bounded allocation prevents an
+unlimited backlog from becoming hidden memory pressure.
+
+**Failure prevented or made observable.** Capacity, depth, drops, blocked
+sends, and closure are measured rather than inferred from throughput.
+
+**Validation and tests.** Runtime queue tests cover delivery, pressure, drop,
+peak depth, and closed-channel behaviour.
+
+**Implementation status and limitation.** Implemented. The public example
+omits capacity values because their operational tuning is not public evidence.
+
+**verified implementation excerpt**
+
+~~~rust
+impl<T: Send> MonitoredSender<T> {
+    pub async fn send(&self, item: T) -> Result<(), QueueSendError> {
+        match self.config.overflow_policy {
+            QueueOverflowPolicy::BlockProducer => self.send_with_backpressure(item).await,
+            QueueOverflowPolicy::DropNewest => self.try_send_now(item),
+            QueueOverflowPolicy::LatestWins => self.try_send_now(item),
+        }
+    }
+}
+~~~
+
+**What it does.** `MonitoredSender::send` dispatches explicit overflow policy
+instead of treating every full queue as the same failure.
+
+**Rust concepts demonstrated.** The generic item moves once through a `match`;
+the asynchronous branch can apply backpressure while immediate branches return
+a typed policy result.
+
+**Why this fits the component.** Evaluation and execution have different
+correctness needs, so their owners choose policy before sending work.
+
+**Performance or correctness property.** The caller pays backpressure only
+where preserving every item is required; replaceable work can be refused.
+
+**Failure prevented or made observable.** Full and closed queues become
+`QueueSendError`, not silent loss or a successful outcome.
+
+**Validation and tests.** Queue policy tests cover blocked delivery, drops,
+metrics, and closure.
+
+**Implementation status and limitation.** Implemented. `LatestWins` is a
+dispatch contract; stage-specific coalescing and stale checks remain separate.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/03-queue-and-freshness.svg" alt="Queues carry work while stage owners retain freshness, durability, and execution policy." />
+
+*Figure 5. Backpressure is a visible design signal. The correct response to pressure differs for superseded evaluation, committed persistence, and ordered execution work.*
+
+### CPU and Asynchronous I/O Boundaries
+
+Tokio is used for coordination, timers, channels, storage/network interfaces,
+and lifecycle work. Fixed-input evaluation, bounded search, and expensive
+simulation are CPU-owned work. The runtime uses bounded workers or a blocking
+boundary so asynchronous coordination cannot accidentally create unlimited CPU
+contention.
+
+This separation improves failure analysis. If a queue waits, telemetry can
+separate I/O latency, CPU service time, backpressure, and stale work. If an
+evaluation is cancelled or rejected by freshness, the system preserves why.
+The rejected alternative is an all-async runtime whose blocked compute makes
+queueing and cancellation semantics opaque.
+
+`LiveRoutePrepQueue` and `LiveRouteEvaluationQueue` use an `Arc` around narrow
+shared state, a standard mutex for that state, monitored channels for transfer,
+an atomic latest-block marker, and a Tokio task as the single queue-stage
+owner. CPU-heavy evaluation is admitted in bounded work; network, storage, and
+transport work remains asynchronous at its own boundary. Chunking and
+deterministic merge avoid granting any worker authority over the whole runtime.
+
+**simplified adaptation of implemented code**
+
+~~~rust
+fn run_liveness_worker_pool<T, F>(
+    registry: Arc<RouteEvaluationLivenessRegistry>,
+    cancel_flag: Arc<AtomicBool>,
+    worker_count: usize,
+    chunk_count: usize,
+    run_chunk: F,
+) -> Vec<Result<T, String>> {
+    let worker_count = worker_count.min(chunk_count).max(1);
+    let next_chunk_index = AtomicUsize::new(0);
+    let mut results = thread::scope(|scope| {
+        let mut handles = Vec::with_capacity(worker_count);
+        for _ in 0..worker_count {
+            let next_chunk_index = &next_chunk_index;
+            let registry = Arc::clone(&registry);
+            let cancel_flag = Arc::clone(&cancel_flag);
+            handles.push(scope.spawn(move || {
+                let runtime = Builder::new_current_thread().enable_all().build()?;
+                let mut worker_results = Vec::new();
+                loop {
+                    let index = next_chunk_index.fetch_add(1, Ordering::Relaxed);
+                    if index >= chunk_count { break; }
+                    if cancel_flag.load(Ordering::Acquire) {
+                        registry.record_cancelled(index);
+                        continue;
+                    }
+                    registry.record_worker_started(index);
+                    worker_results.push(block_on_chunk(&runtime, run_chunk(index)));
+                }
+                Ok::<_, String>(worker_results)
+            }));
+        }
+        let mut collected = Vec::new();
+        for handle in handles {
+            collected.extend(handle.join().expect("worker stopped")?);
+        }
+        collected
+    });
+    results
+}
+~~~
+
+**What it does.** A fixed number of scoped workers claims chunk identities from
+an atomic counter, observes cancellation between chunks, and returns results
+for deterministic merge.
+
+**Rust concepts demonstrated.** Scoped threads borrow the work description;
+`AtomicUsize` gives each worker one chunk identity; `Arc<AtomicBool>` carries
+cooperative cancellation; each worker creates a current-thread runtime only
+for its owned asynchronous subwork.
+
+**Why this fits the component.** Evaluation is CPU-bound calculation bounded
+separately from Tokio's I/O coordination. No worker owns queue policy or the
+entire runtime.
+
+**Performance or correctness property.** Worker count is capped by chunk count,
+so the runtime does not create more workers than available work. Results are
+merged in a defined order after all workers finish.
+
+**Failure prevented or made observable.** A failed worker, cancellation, or
+unclaimed chunk is represented in the result/registry rather than appearing as
+a completed evaluation.
+
+**Validation and tests.** Bounded worker, liveness, cancellation, chunk timing,
+and deterministic-finalization tests exercise these contracts.
+
+**Implementation status and limitation.** Simplified adaptation of implemented
+code. It demonstrates ownership and cancellation without exposing worker counts,
+route identities, or operational capacity values.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/08-cpu-io-boundary.svg" alt="Asynchronous coordination surrounds bounded CPU evaluation and a separate guarded handoff." />
+
+*Figure 6. Tokio coordinates ownership transfer and I/O; workers own bounded calculation, not global runtime policy.*
+
+### Memory, Allocation, and Synchronization
+
+The runtime favours stable identifiers, shared immutable topology, explicit
+generation values, and narrow mutable owners. Arc-like sharing is useful for
+read-mostly data; atomics are useful for independent facts such as a latest
+observed generation; locks protect small mutable critical sections; channels
+move ownership between stages. The choice follows the data contract, not a
+claim that lock-free code is automatically faster.
+
+Allocation and locality matter where a large catalogue and repeated evaluation
+could otherwise generate unnecessary churn. Bounded batches and deterministic
+merge reduce cross-worker contention. Synchronization must still express a
+failure contract: lock acquisition, task cancellation, channel closure, and
+writer flush behaviour are observable states, not incidental implementation
+details.
+
+#### Synchronization primitive map
+
+| Primitive | Verified use in the reviewed implementation | Why it fits and its boundary |
+| --- | --- | --- |
+| Tokio `mpsc` | Bounded runtime work queues transfer typed preparation and evaluation work. | It bounds transfer, while the owning stage defines freshness and closure; a channel is not business policy. |
+| `AtomicU64` | Latest-block and liveness facts are read across queue and worker boundaries. | Atomics protect independent facts, not compound invariants. |
+| `AtomicBool` | Route-refresh and worker cancellation flags are checked between owned units of work. | Cancellation is cooperative rather than forced interruption. |
+| `AtomicUsize` | Bounded worker chunks and liveness counters record independent progress. | It supports allocation and counting, not a multi-field decision. Public summaries use processed/model-positive counters, not realized-economic counters. |
+| `std::sync::Mutex` | Narrow shared queue and refresh state protects compound state transitions. | Guards protect short compound invariants and must not span `.await`. |
+| Tokio `Mutex` | Mutable asynchronous runtime services are serialized where an async owner needs exclusive access. | It is used only when mutable state must be serialized across asynchronous work, not as a default shared-state wrapper. |
+| Tokio `RwLock` | Quote and funding-cache surfaces expose separate asynchronous reads and writes. | It is appropriate only where that read/write trade-off is justified; it does not make a cache authoritative. |
+| `Arc` | Queue, worker, cache, and cancellation owners share lifetime-managed values. | `Arc` provides shared ownership and lifetime management, not synchronization by itself. |
+| scoped OS worker threads | A liveness worker pool borrows work, claims finite chunks, and joins before returning. | Worker count and chunk allocation remain bounded; no worker owns whole-runtime policy. |
+| `spawn_blocking` | Non-retained route-refresh discovery crosses from async coordination to blocking discovery. | It is a boundary, not permission for unbounded blocking work. |
+| `JoinHandle` | Queue and refresh owners retain task lifecycle and observe join outcome during shutdown. | A handle expresses owned lifecycle, shutdown, and join outcome rather than detached work. |
+| `Notify` | Route refresh wakes an owner that retrieves one application-owned pending slot. | Its freshness and buffering semantics differ from a work queue. |
+| `oneshot` | Retained discovery returns one owned result to its awaiting owner. | It returns one owned result and is not a replacement for a stage queue. |
+
+The primary reviewed work pipeline uses bounded multi-producer,
+single-consumer channels. Route refresh uses `Notify` with an
+application-owned pending slot, while `oneshot` returns an individual discovery
+result. These primitives are not interchangeable: the owner’s delivery,
+buffering, freshness, and shutdown contract determines the choice. This is a
+claim about the reviewed normal work-queue path, not a repository-wide absence
+claim for other primitives.
+
+### Telemetry and Evidence
+
+Telemetry is a dedicated observation path. It records queue pressure, timing,
+worker use, coverage/rejection reasons, lifecycle transitions, and retained
+artifact identities. A telemetry writer has its own loss and shutdown contract;
+a blocked or failed observer must not silently change the decision path it is
+measuring.
+
+Evidence is layered. A topology record explains known membership. A state
+record explains coverage. An evaluation record explains a fixed-input model.
+An execution record explains a handoff/preflight state. Receipt, finality,
+settlement, and economic evidence are later, independent observations. This
+prevents a dashboard, a benchmark, or a single program return from silently
+becoming a commercial claim.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/06-evidence-observability.svg" alt="Queue delay, preparation, compute, handoff, and later outcome observations remain separately measurable." />
+
+*Figure 7. Observability decomposes a bottleneck without promoting a timing observation to commercial proof.*
+
+### Replay, Validation, and Recovery
+
+Replay makes past inputs and selected contracts re-runnable; it is not a time
+machine that proves an external result happened. Validation spans configuration,
+topology, source normalization, coverage, deterministic calculation, dry-run,
+retained artifacts, and later reconciliation. Each layer answers a bounded
+question and has a distinct failure mode.
+
+Recovery begins by identifying what has durable authority and what has only
+runtime authority. Warm topology can be rebuilt from read models. Current live
+state must be reacquired or explicitly declared incomplete. Retained execution
+attempts are reconciled before equivalent later claims are permitted. Shutdown
+records whether a queue drained, was cancelled, or left unresolved work; it
+does not fabricate terminal evidence.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/09-validation-layers.svg" alt="Configuration, topology, replay, dry run, and reconciliation answer different validation questions." />
+
+*Figure 8. A later validation layer adds evidence; it does not erase an earlier limitation.*
+
+## Strategy Extension Models
+
+### Arbitrage
+
+The implemented foundation evaluates exact inputs across known affected routes.
+Its reusable contracts are component scope, route coverage, protocol-state
+simulation, bounded amount search, cost classification, freshness, and guarded
+execution. Atomic funding is an implementation boundary where a transaction
+shape supports it; it does not remove operational or gas costs.
+
+For a route's first asset, the current attachment flow considers at most one
+optional funding component. It rejects a candidate already used by the route,
+applies compatibility filters, and orders eligible candidates by lower fee,
+then the implementation's provider-kind ordering, then component identity.
+This is a deterministic source-local eligibility policy, not a total-cost,
+inclusion, or profitability optimizer. If an observed balance is available,
+the required principal plus rounded fee must fit; repayment and preflight
+checks remain separate. The optional selected component is indexed alongside
+route legs, so refresh and removal preserve affected-route membership.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/10-flash-loan-funding-flow.svg" alt="A route and funding asset are narrowed through compatible lending components, liquidity and fee eligibility, guarded construction, and later evidence." />
+
+*Figure 9. Funding selection narrows an execution plan. It neither establishes that a transaction can land nor that it can settle profitably.*
+
+Arbitrage-specific policy must still decide which represented cost terms are
+required, what model result is sufficient for selection, how freshness is
+enforced, and what independent evidence establishes an outcome. The current
+state is implemented with validation limits. A profitable after-gas production
+outcome is not established.
+
+### Liquidation
+
+Liquidation is an extension model, not a live-bot claim. Morpho is the first
+planned implementation target and Aave is an ecosystem comparison. [1] [2] Both
+illustrate that account/position state, oracle/health semantics, eligibility,
+debt repayment, collateral recovery, funding, routing, competition, and
+settlement accounting are protocol-specific.
+
+The reusable Salus foundation is ingestion, read models, simulation, bounded
+evaluation, funding/execution boundaries, replay, and evidence. The
+liquidation-specific additions are position and oracle adapters, health
+calculation, candidate construction, debt/collateral conversion, accounting,
+and a settlement model. A viable extension would first index accounts and
+positions, join labelled oracle and market state, establish protocol-specific
+health/eligibility, choose debt and collateral under funding and conversion
+constraints, then model gas, incentive, competition, freshness, construction,
+and simulation. Replay, shadow, canary, and live-evidence gates must each pass
+before it could claim an operating capability. It is proposed / future.
+
+## End-to-End Sequences
+
+### Route Construction to Guarded Handoff
+
+1. **Labelled state change — Ingestion / `StreamRuntimeState::apply_block`.** The owner accepts a block-scoped change or records an ordering, decoding, or support rejection. Its evidence is labelled source/state lineage; it does not establish topology membership, a route, or a market result.
+2. **Changed components — Ingestion and Discovery / normalized `ComponentId` set.** The changed-set narrows which durable memberships must be reconsidered. An unsupported or incomplete change abstains before scope calculation; it does not establish current coverage for a route.
+3. **Affected-route union — Discovery / `RouteIndex::route_ids_for_components`.** A deterministic union retrieves known route identities from the component-to-route index. Empty membership is an explicit empty scope, not proof that no external opportunity exists.
+4. **Catalogue generation and current-state coverage — Persistence, route preparation, and `EvaluationLegInput`.** Hydrated topology supplies ordered legs; every live leg then requires represented protocol state. A generation mismatch or missing/unsupported state produces a typed rejection; this does not establish a valid quote.
+5. **Exact-input per-leg simulation — Evaluation / `ExactInputEvaluationRequest` and `simulate_route`.** The ordered state frame and one input produce a checked amount path or an `ExactInputRejectionReason`. A modelled amount path does not establish policy selection or transaction feasibility.
+6. **Bounded amount search — Strategy / `evaluate_route_inner`.** Capped doubling and refinement select the best observed modelled candidate within its domain, or return a typed invalid/non-positive result. It does not establish a global optimum or after-gas commercial result.
+7. **Funding and cost classification — Evaluation / `ExactInputFunding`, `funding_fee_quote`, `gas_cost_quote`, and `net_profit_quote`.** Represented protocol, funding, and supplied gas terms are checked. Missing or unrepresented cost information limits the result; it does not establish all-in economics.
+8. **Freshness recheck — Runtime and Execution / catalogue generation plus source-block lineage.** Superseded work is rejected before policy or handoff. The evidence is a freshness decision, not inclusion or settlement.
+9. **Selection or typed abstention — Strategy / `EvaluationStatus` and `EvaluationReason`.** Policy may select a current, represented candidate or retain its abstention reason. Selection does not establish a submitted transaction.
+10. **Guarded execution handoff — Execution / `plan_live_submission`.** The execution owner repeats its required freshness and preflight checks before retaining a guarded plan or typed rejection. The handoff does not establish broadcast, inclusion, finality, settlement, or realized profit.
+
+Telemetry retains each state, scope, coverage, service, cost, and rejection
+record. The whole trace ends with a guarded handoff or abstention; it does not
+end with a trade.
+
+### Candidate to Execution Evidence
+
+1. Strategy policy receives a current, represented model result.
+2. Execution verifies its handoff contract and repeats required freshness/cost/preflight checks.
+3. A bounded ordered execution owner records dry-run or submission intent.
+4. Submission, if authorized, produces an attempt record rather than a final outcome.
+5. Receipt, finality, settlement, and economic observation are reconciled as separate evidence.
+6. Missing terminal evidence remains unresolved and is visible to recovery.
+
+This sequence protects against the common error of treating an evaluator,
+simulation, or acknowledgement as realized profit.
+
+<img src="/assets/architecture/salus-trading-and-solving-infrastructure/04-execution-evidence-sequence.svg" alt="A guarded execution sequence separates fixed-input evaluation, dry run, submission, reconciliation, and outcome evidence." />
+
+*Figure 10. A submission acknowledgement is an attempt observation, not proof of receipt, finality, settlement, or realized economics.*
+
+### Liquidation Detection to Settlement
+
+1. A planned extension ingests account, position, and oracle/state facts.
+2. A protocol-specific health model tests eligibility and identifies a candidate.
+3. Debt repayment, collateral recovery, funding, routing, and cost models evaluate a bounded scenario.
+4. Competition, freshness, and preflight checks can reject it.
+5. A future execution path would retain a guarded handoff and later settlement/accounting evidence.
+6. Replay, shadow, and canary evidence must establish each boundary before a stronger capability claim.
+
+The current reusable foundations are implemented with validation limits; the
+liquidation-specific path is proposed / future.
+
+## Trade-offs, Failure Modes, and Security
+
+Salus trades a smaller, more explicit system for a short direct path from
+stream to submission. Durable topology costs persistence and hydration work,
+but supports inspection and restart. Bounded queues can reject work, but make
+overload and freshness policy visible. Fixed-input calculations may be slower
+than a coarse heuristic, but preserve units, fees, and invalid-output handling.
+Separating evaluation from execution requires more artifacts, but avoids
+turning a local model into external authority.
+
+Key failure modes include incomplete state coverage, ordering loss, stale
+catalogue generations, unsupported protocol semantics, arithmetic invalidity,
+cost-input gaps, queue pressure, worker failure, persistence failure, preflight
+failure, ambiguous transport, and missing terminal evidence. The response is a
+typed rejection, retry or recovery where the owner permits it, and retained
+diagnostics. It is not silent retry until something resembles success.
+
+Security follows the same ownership principle. Configuration, endpoints,
+credentials, signing, provider choices, gas policy, active strategy parameters,
+route and opportunity identities, and vulnerabilities are excluded from this
+public artifact. Public architecture exposes contracts and failure behaviour
+without providing an operational playbook.
+
+## Future Extension Seams
+
+The component model allows state/data, simulation/routing, and execution planes
+to evolve independently. New protocol adapters should enter through normalized
+state and simulation contracts. New strategy models should supply objective,
+inputs, capital/fee assumptions, authority, abstention, and evidence rules
+without changing the topology owner. New execution targets should preserve
+preflight, lineage, reconciliation, and failure semantics rather than bypassing
+them.
+
+Future seams include expanded protocol simulation, liquidation, intent solving,
+portfolio/inventory models, market making, passive analytics, AI-assisted
+investigation, capital/treasury/custody controls, hedging/exposure, pricing,
+accounting, and operator-control surfaces. Each needs its own source pin,
+validation boundary, and public-safety review. No seam is a delivery
+commitment, live authority, or commercial outcome claim.
+
+## References
+
+1. Morpho Association. [Liquidation](https://docs.morpho.org/developers/borrow/concepts/liquidation/). Accessed 2026-08-14.
+2. Aave Labs. [Health Factor and liquidations](https://aave.com/help/borrowing/liquidations). Accessed 2026-08-14.
+3. John Whitton. [Salus: Modular Trading and Solving Infrastructure for Decentralized Markets](/salus/whitepaper/). Draft, 2026.
+4. Richard Bellman. [On a Routing Problem](https://doi.org/10.1090/qam/102435). *Quarterly of Applied Mathematics* 16(1), 87–90, 1958.
+5. L. R. Ford, Jr. [Network Flow Theory](https://www.rand.org/pubs/papers/P923.html). RAND Corporation Paper P-923, 1956.

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Salus route-construction graph and affected-route lookup</title>
+  <desc id="desc">Four symbolic token nodes are connected by directed component edges. Two bounded cyclic routes share component P-01. A component-to-route index maps a changed P-01 to the affected route IDs R-alpha and R-beta before current-state coverage is checked.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif;fill:#142b42}.kicker{font-size:20px;font-weight:700;letter-spacing:2px;fill:#087a8f}.title{font-size:42px;font-weight:700}.sub{font-size:20px;fill:#46627b}.panel{fill:#f7fbfd;stroke:#b8d1dc;stroke-width:2}.node{fill:#fff;stroke:#1e9db2;stroke-width:4}.edge{fill:none;stroke:#2776b8;stroke-width:5}.edge2{fill:none;stroke:#a36ac7;stroke-width:5}.edge-label{font-size:17px;font-weight:700;fill:#16486e}.node-label{font-size:21px;font-weight:700;text-anchor:middle}.box-title{font-size:23px;font-weight:700}.box-copy{font-size:17px;fill:#36546d}.small{font-size:15px;fill:#46627b}.chip{fill:#e8f4f8;stroke:#91c8d8;stroke-width:1.5}.route{font-size:18px;font-weight:700}.good{fill:#0d7656}.warn{fill:#a9500c}.arrow{fill:#2776b8}.arrow2{fill:#a36ac7}.line{stroke:#7896ad;stroke-width:3;fill:none;stroke-dasharray:8 7}.index{font-family:Menlo,Consolas,monospace;font-size:16px;fill:#203b54}.status{font-size:17px;font-weight:700}.caption{font-size:18px;font-weight:700;fill:#fff}
+  </style>
+  <rect width="1600" height="1080" fill="#ffffff"/>
+  <text x="70" y="65" class="kicker">SALUS · APPENDIX B · DURABLE TOPOLOGY</text>
+  <text x="70" y="115" class="title">A changed component recalls known routes—not a whole catalogue</text>
+  <text x="70" y="150" class="sub">Symbolic topology only. A route is evaluated only after current-state coverage and later decision gates.</text>
+
+  <rect x="55" y="190" width="900" height="600" rx="18" class="panel"/>
+  <text x="85" y="230" class="box-title">1. Directed topology and bounded cyclic routes</text>
+  <text x="85" y="258" class="box-copy">Tokens are nodes. A normalized component supplies a directed edge for each input/output pair.</text>
+
+  <g data-entity="token"><circle cx="250" cy="435" r="64" class="node"/><text x="250" y="428" class="node-label">Token A</text><text x="250" y="456" class="small" text-anchor="middle">start / return</text></g>
+  <g data-entity="token"><circle cx="500" cy="335" r="64" class="node"/><text x="500" y="328" class="node-label">Token B</text><text x="500" y="356" class="small" text-anchor="middle">intermediate</text></g>
+  <g data-entity="token"><circle cx="705" cy="500" r="64" class="node"/><text x="705" y="493" class="node-label">Token C</text><text x="705" y="521" class="small" text-anchor="middle">intermediate</text></g>
+  <g data-entity="token"><circle cx="485" cy="635" r="64" class="node"/><text x="485" y="628" class="node-label">Token D</text><text x="485" y="656" class="small" text-anchor="middle">intermediate</text></g>
+
+  <g data-entity="component-edge" data-component="P-01" data-route="R-alpha R-beta"><path d="M305 413 Q372 365 430 347" class="edge"/><polygon points="430,347 411,340 418,359" class="arrow"/><text x="350" y="355" class="edge-label">P-01 · leg 1</text></g>
+  <g data-entity="component-edge" data-component="P-02" data-route="R-alpha"><path d="M550 367 Q635 410 667 453" class="edge"/><polygon points="667,453 651,440 648,460" class="arrow"/><text x="626" y="395" class="edge-label">P-02 · leg 2</text></g>
+  <g data-entity="component-edge" data-component="P-03" data-route="R-alpha"><path d="M645 520 Q475 585 305 465" class="edge"/><polygon points="305,465 316,482 320,462" class="arrow"/><text x="470" y="560" class="edge-label">P-03 · leg 3</text></g>
+  <g data-entity="component-edge" data-component="P-04" data-route="R-beta"><path d="M500 399 Q495 500 488 570" class="edge2"/><polygon points="488,570 499,551 479,553" class="arrow2"/><text x="525" y="500" class="edge-label">P-04 · leg 2</text></g>
+  <g data-entity="component-edge" data-component="P-05" data-route="R-beta"><path d="M430 625 Q310 565 275 500" class="edge2"/><polygon points="275,500 292,513 294,493" class="arrow2"/><text x="310" y="600" class="edge-label">P-05 · leg 3</text></g>
+
+  <rect x="100" y="710" width="800" height="55" rx="12" class="chip"/>
+  <text x="125" y="744" class="route" data-route="R-alpha">R-alpha = P-01 → P-02 → P-03 → Token A · 3 hops</text>
+  <rect x="100" y="780" width="800" height="55" rx="12" fill="#f3edf8" stroke="#cfb9e0" stroke-width="1.5"/>
+  <text x="125" y="814" class="route" data-route="R-beta">R-beta = P-01 → P-04 → P-05 → Token A · 3 hops</text>
+  <text x="100" y="852" class="small">Hop bound: every branch stops at H; repeated components and intermediate tokens are rejected.</text>
+  <text x="100" y="878" class="small">Ordered legs → stable symbolic route ID → exact-ID deduplication (not a claim of rotation equivalence).</text>
+
+  <rect x="995" y="190" width="550" height="600" rx="18" class="panel"/>
+  <text x="1025" y="230" class="box-title">2. Component-to-route inverted index</text>
+  <text x="1025" y="260" class="small">Durable membership is deterministic and indexable.</text>
+  <rect x="1025" y="290" width="490" height="175" rx="12" fill="#fff" stroke="#b8d1dc" stroke-width="1.5"/>
+  <text x="1050" y="325" class="index">component → route index</text>
+  <text x="1050" y="360" class="index">P-01 → {R-alpha, R-beta}</text>
+  <text x="1050" y="390" class="index">P-02 → {R-alpha}</text>
+  <text x="1050" y="420" class="index">P-04 → {R-beta}</text>
+  <path d="M1270 470 L1270 520" class="line"/><polygon points="1270,530 1262,514 1278,514" fill="#7896ad"/>
+  <rect x="1025" y="545" width="490" height="75" rx="12" fill="#fff4e8" stroke="#e6a65b" stroke-width="2"/>
+  <text x="1050" y="577" class="status" data-component="changed">Changed component: P-01</text>
+  <text x="1050" y="605" class="small">Lookup selects known memberships only.</text>
+  <path d="M1270 625 L1270 670" class="line"/><polygon points="1270,680 1262,664 1278,664" fill="#7896ad"/>
+  <rect x="1025" y="690" width="490" height="70" rx="12" fill="#eaf7ee" stroke="#54a76d" stroke-width="2"/>
+  <text x="1050" y="722" class="status" data-result="affected-routes">Affected routes: {R-alpha, R-beta}</text>
+  <text x="1050" y="748" class="small">Deterministic union and exact-ID deduplication.</text>
+
+  <rect x="55" y="920" width="1490" height="105" rx="16" fill="#173b56"/>
+  <text x="85" y="958" class="caption">Durable topology membership</text>
+  <text x="85" y="990" fill="#dceef4" class="small">Which routes are known and which components they contain.</text>
+  <path d="M670 970 L825 970" stroke="#c3e3ed" stroke-width="4"/><polygon points="845,970 825,960 825,980" fill="#c3e3ed"/>
+  <text x="875" y="958" class="caption">Current-state coverage boundary</text>
+  <text x="875" y="990" fill="#dceef4" class="small">Every leg still needs current compatible state before exact simulation.</text>
+</svg>

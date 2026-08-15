@@ -6,21 +6,54 @@ import path from "node:path";
 
 const validator = await import("./validate-site.mjs");
 const presentation = await import("../docs/presentation-navigation.mjs");
+const routePolicy = await import("../route-policy.js");
 const { remarkImageZoom } = await import("../remark-image-zoom.js");
-const expectedNavigation = ["Work", "Salus", "Research", "Architecture", "Writing", "About"];
+const expectedNavigation = ["Work", "Salus", "Research", "Architecture", "Writing", "John Whitton ↗"];
 const config = fs.readFileSync(path.join(process.cwd(), "vocs.config.ts"), "utf8");
+const vocsPatch = fs.readFileSync(path.join(process.cwd(), "patches/vocs@1.0.13.patch"), "utf8");
+const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
+
+assert.match(vocsPatch, /const \{ basePath, description, markdown, rootDir, title = 'Docs' \} = config \?\? \{\};/);
+assert.match(vocsPatch, /getRemarkPlugins\(\{ markdown \}\)/);
+assert.match(vocsPatch, /mathToMarkdown\(\)/);
+assert.match(vocsPatch, /fs\.existsSync\(resolve\(rootDir, `\.\/public\$\{url\}`\)\)/);
+assert.equal(packageJson.devDependencies.globby, "^14.1.0", "Vocs must resolve its ESM globby dependency from the root");
 
 assert.deepEqual(validator.topNavigation(config), expectedNavigation);
 assert.deepEqual(presentation.primaryNavigation, expectedNavigation);
 assert.match(config, /sidebar:\s*presentationSidebar,/);
 assert.deepEqual(
   presentation.presentationSidebar.map((group) => group.text),
-  ["Work", "Research", "Architecture", "Writing", "About", "Archive"],
+  ["Work", "Salus", "Research", "Architecture", "Writing", "John Whitton ↗", "Archive"],
 );
 for (const group of presentation.presentationSidebar) {
+  if (group.text === "John Whitton ↗") {
+    assert.equal(group.link, "https://johnwhitton.com/");
+    continue;
+  }
   assert.equal(group.collapsed, true, `${group.text} must be collapsible`);
   assert.ok(group.items?.length, `${group.text} must contain navigable items`);
 }
+const workNavigation = presentation.presentationSidebar.find((group) => group.text === "Work");
+assert.equal(workNavigation.items.some((item) => item.link === "/salus"), false);
+const salusNavigation = presentation.presentationSidebar.find((group) => group.text === "Salus");
+assert.deepEqual(salusNavigation.items, [
+  { text: "Overview", link: "/salus" },
+  { text: "Whitepaper — Draft", link: "/salus/whitepaper" },
+  { text: "Architecture — Draft", link: "/salus/architecture" },
+]);
+const writingNavigation = presentation.presentationSidebar.find((group) => group.text === "Writing");
+assert.deepEqual(writingNavigation.items, [{ text: "Overview", link: "/writing" }]);
+assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus"), true);
+assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus/whitepaper"), true);
+assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus/architecture"), true);
+for (const route of ["/work/salus", "/writing/salus-whitepaper", "/architecture/salus-trading-and-solving-infrastructure"]) {
+  assert.equal(routePolicy.COMPATIBILITY_ROUTES.some((entry) => entry.route === route), true);
+}
+assert.equal(
+  routePolicy.COMPATIBILITY_ROUTES.find((entry) => entry.route === "/partnerships/intro").current,
+  "https://johnwhitton.com/",
+);
 const archiveNavigation = presentation.presentationSidebar.find((group) => group.text === "Archive");
 const archiveRoutes = (archiveNavigation.items ?? []).flatMap(function collectArchive(item) {
   return [item.link, ...(item.items ?? []).flatMap(collectArchive)].filter(Boolean);
@@ -46,9 +79,15 @@ for (const family of ["Historical Chains", "Historical Code Reviews", "Historica
 const publicNavigationRoutes = presentation.presentationSidebar.flatMap(function collect(item) {
   return [item.link, ...(item.items ?? []).flatMap(collect)].filter(Boolean);
 });
+const hiddenWritingArtifacts = new Set([
+  "collection/solving-arbitrage-market-making",
+  "collection/mapping-liquidity-to-routes-at-scale",
+  "collection/speed-wasnt-the-problem",
+]);
 for (const manifestName of fs.readdirSync("docs/public/data/publications").filter((name) => name.endsWith(".json"))) {
   const manifest = JSON.parse(fs.readFileSync(path.join("docs/public/data/publications", manifestName), "utf8"));
-  assert.ok(publicNavigationRoutes.includes(manifest.route), `${manifest.artifact.id} must be discoverable in the presentation sidebar`);
+  if (!hiddenWritingArtifacts.has(manifest.artifact.id))
+    assert.ok(publicNavigationRoutes.includes(manifest.route), `${manifest.artifact.id} must be discoverable in the presentation sidebar`);
 }
 assert.equal(publicNavigationRoutes.includes("/writing/portfolio-strategy-competitor-analysis"), false);
 const presentationCss = fs.readFileSync("docs/presentation.css", "utf8");
@@ -132,7 +171,7 @@ assert.equal(validator.readingTimeMinutes("word ".repeat(1_125)), 5);
 assert.deepEqual(validator.validatePublications(process.cwd()), []);
 
 const manifests = fs.readdirSync("docs/public/data/publications").filter((name) => name.endsWith(".json"));
-assert.equal(manifests.length, 26);
+assert.equal(manifests.length, 28);
 assert.equal(manifests.includes("collection-portfolio-strategy-competitor-analysis.json"), false);
 assert.equal(manifests.filter((name) => name === "work-salus.json").length, 1);
 assert.equal(
@@ -146,10 +185,31 @@ assert.equal(salusManifest.schema_version, 2);
 for (const privateField of ["source", "reviews", "lifecycle_state", "publication_status", "publication_date"]) {
   assert.equal(Object.hasOwn(salusManifest, privateField), false, `${privateField} must remain private`);
 }
+assert.equal(salusManifest.route, "/salus");
+assert.deepEqual(salusManifest.artifact.compatibility_routes, ["/work/salus"]);
+for (const [manifestName, route, alias] of [
+  ["collection-salus-whitepaper.json", "/salus/whitepaper", "/writing/salus-whitepaper"],
+  ["architecture-salus-trading-and-solving-infrastructure.json", "/salus/architecture", "/architecture/salus-trading-and-solving-infrastructure"],
+]) {
+  const manifest = JSON.parse(fs.readFileSync(path.join("docs/public/data/publications", manifestName), "utf8"));
+  assert.equal(manifest.route, route);
+  assert.equal(manifest.artifact.publication_availability, "visible_draft");
+  assert.deepEqual(manifest.artifact.compatibility_routes, [alias]);
+  const page = manifest.outputs.find((output) => output.media_type === "text/mdx");
+  assert.match(fs.readFileSync(page.destination, "utf8"), /\*\*Draft\*\*/);
+}
 
-const salusPage = fs.readFileSync("docs/pages/work/salus.mdx", "utf8");
+const salusPage = fs.readFileSync("docs/pages/salus.mdx", "utf8");
 assert.match(salusPage, /Generated canonical editorial projection/);
 assert.doesNotMatch(salusPage, /KNOWLEDGE BASE REVIEW|Provisional production|github\.com\/jincubator\/knowledge-base|\/Users\//i);
+for (const [canonical, alias] of [
+  ["docs/pages/salus.mdx", "docs/pages/work/salus.mdx"],
+  ["docs/pages/salus/whitepaper.mdx", "docs/pages/writing/salus-whitepaper.mdx"],
+  ["docs/pages/salus/architecture.mdx", "docs/pages/architecture/salus-trading-and-solving-infrastructure.mdx"],
+]) assert.deepEqual(fs.readFileSync(alias), fs.readFileSync(canonical), `${alias} must be byte-identical to ${canonical}`);
+
+const landingPage = fs.readFileSync("docs/components/LandingPage.tsx", "utf8");
+assert.match(landingPage, /href: "\/salus"/);
 
 const primitivesPage = fs.readFileSync("docs/pages/research/primitives/intro.mdx", "utf8");
 assert.match(primitivesPage, /^# Cryptographic and Mathematical Primitives$/m);

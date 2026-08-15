@@ -23,7 +23,7 @@ type Landing = {
 
 const artifactCards = {
   salus: {
-    href: "/work/salus",
+    href: "/salus",
     summary: "A system-design case study in turning changing decentralized-market state into bounded, explainable decisions.",
     title: "Salus",
   },
@@ -242,17 +242,9 @@ const landingPages: Record<PageKey, Landing> = {
     promise: "Read concise narratives that connect engineering work, evidence, and architecture without exposing internal editorial taxonomy.",
     introduction: [
       "Writing is the reader-facing home for authored synthesis. Each article has its own through-line and conclusion; it is not a directory assembled from related pages.",
-      "Detailed claims remain owned by the underlying Work, Research, and Architecture sources, while the article provides the most direct reading path.",
+      "The next program advances only through its own evidence, review, and publication decisions. Retained reader routes remain stable without being promoted as an active Writing program.",
     ],
-    sections: [{
-      heading: "Current articles",
-      body: ["These articles connect the wider Salus engineering journey with focused accounts of affected-route evaluation and the evidence-led shift from infrastructure speed to strategy."],
-      cards: [
-        { ...artifactCards.solvingWriting, kicker: "Engineering narrative" },
-        { ...artifactCards.mappingWriting, kicker: "Stateful pipeline deep dive" },
-        { ...artifactCards.lessonsWriting, kicker: "Commercial and engineering lessons learned" },
-      ],
-    }],
+    sections: [],
   },
   about: {
     eyebrow: "About the work",

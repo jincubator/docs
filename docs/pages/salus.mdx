@@ -1,0 +1,360 @@
+---
+title: "Salus — Active Trading-System Research"
+description: "The architecture, engineering contribution, retained results, and limitations of the Salus trading-system reference implementation."
+---
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+# Salus
+
+Salus is an active Jincubator research and engineering initiative and
+reference implementation for decentralized trading-system architecture.
+
+## Start here
+
+Salus is a Jincubator-owned research and engineering initiative. John Whitton
+designed and built the system boundaries that turn changing decentralized-market
+state into bounded, inspectable evaluation work and guarded execution
+decisions. It is a reference implementation, not a customer deployment, fund,
+commercially validated product, or proven-profitable trading system.
+
+The engineering problem is that market state changes while a system is
+ingesting data, updating topology, evaluating routes, simulating outcomes, and
+deciding whether an action is still valid. A result can become stale between
+discovery and execution. A fast evaluator can also appear more successful than
+it is if catalog routes, evaluations, opportunities, submissions, and realized
+outcomes are collapsed into one number.
+
+Salus addresses that engineering problem by separating three responsibilities:
+
+1. **Capture** turns external state into bounded, inspectable graph and
+   route-evaluation work.
+2. **Causality** preserves identity and evidence about why an observed
+   opportunity changed, including when attribution remains unresolved.
+3. **Execution** applies freshness, cost, simulation, submission, and outcome
+   gates without treating an earlier modeled result as proof of a later event.
+
+Salus is an active reference implementation. Commercial validation remains
+ongoing. Its evidence does not establish a production trading platform or
+profitable after-gas production execution.
+
+**Hiring overview:** read *What John built*, *System architecture at a glance*,
+and *Evidence and limitations*.
+**Founder technical diligence:** read the same overview, then *Execution* and
+the linked funding models and validation evidence.
+**System-design interview:** follow *Capture*, *Causality*, and *Execution*.
+**Principal-engineer deep dive:** use *Explore Salus* to enter the focused Research
+and Architecture pages.
+
+## What John built
+
+John Whitton leads and implements Salus as a Jincubator research and
+engineering initiative. The supported contribution spans the Rust system,
+component boundaries, walkthrough corpus, deterministic test and replay
+surfaces, controlled execution path, and retained measurement workflow.
+
+The reviewed implementation includes a 13-crate Rust workspace and a
+16-document walkthrough corpus. Its principal flow is organized as explicit
+state, evaluation, evidence, and execution responsibilities.
+
+## System architecture at a glance
+
+| Stage | Responsibility | Evidence boundary |
+|---|---|---|
+| State ingestion | Normalize changing block and market observations with source identity. | An observation is not current executable state. |
+| Read models and topology | Preserve inspectable current views, graph identity, and bounded route catalogs. | Stored topology is not opportunity or outcome authority. |
+| Affected-work selection | Use component indexes and queue ownership to narrow and schedule work. | Admission and ordering do not prove profitable-family recall. |
+| Evaluation and simulation | Evaluate exact inputs and reject unsupported or invalid paths. | A modeled candidate is not selected, submitted, or executed. |
+| Causal analysis | Compare point-in-time observations, retain attribution strength, and abstain when evidence is insufficient. | Correlation or a ranking signal is not a causal or profitable outcome. |
+| Execution control | Recheck state and cost, preflight, submit through the configured path, and retain lifecycle evidence. | Preflight or transport acceptance is not inclusion, finality, or profit. |
+
+The design choice is deliberately explicit: each owner produces a typed fact
+that the next owner must validate rather than a shared “profitable” flag that
+silently accumulates assumptions.
+
+<img src="/assets/work/salus/salus-runtime-architecture.png" alt="Salus runtime architecture showing external state, configuration boundaries, state and persistence, the runtime hot path, and execution controls." />
+
+## Evidence and limitations
+
+The approved retained evidence records:
+
+| Observation | Measured subject | Result |
+|---|---|---:|
+| Workspace structure | Cargo workspace members | 13 Rust crates |
+| Walkthrough corpus | Directory README, index, shared synthesis, and walkthroughs `01`–`13` | 16 files |
+| Ethereum retained graph snapshot | Token nodes | 3,415 |
+| Ethereum retained graph snapshot | Pool components | 4,552 |
+| Ethereum retained graph snapshot | Catalog routes with a maximum of four hops | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second | 16,537 |
+| Base retained runtime run | Peak route evaluations per second | 38,462 |
+
+The graph figures describe one retained catalog snapshot. The Base rates
+describe completed route evaluations divided by measured evaluation-service
+time for the retained July 2026 workload. They are not end-to-end throughput,
+opportunity, submission, execution, or profit rates.
+
+The cited retained runs selected zero after-gas routes. No new live benchmark
+was run for this migration.
+
+Current limits are explicit:
+
+- profitable after-gas production execution has not been established;
+- commercial validation remains ongoing;
+- retained observations do not establish opportunity recall or current live
+  performance;
+- catalog routes, evaluations, opportunities, selected routes, preflights,
+  submissions, transport acceptance, inclusion, finality, and realized profit
+  are different facts;
+- current Causality evidence is small and inconclusive, and its latest
+  collection is incomplete;
+- live adaptive fee policy, a gas canary, and complete finality/settlement
+  evidence remain absent or unauthorized; and
+- provider configuration, gas-bidding logic, thresholds, route-selection and
+  ranking details, opportunity identities or values, active strategy
+  parameters, vulnerabilities, and private evidence are excluded.
+
+Salus does not require upfront trading principal for the modeled transaction
+structure. It still requires infrastructure, RPC, operational, and gas
+expenditure, and unsuccessful transactions may incur unreimbursed costs.
+
+## Capture
+
+Capture begins with heterogeneous liquidity state and separates relatively
+stable topology from block-scoped change. Deterministic graph construction and
+route catalogs make the workload inspectable. Component-to-route indexes then
+scope evaluation to affected work instead of rediscovering the entire topology
+for every update.
+
+Bounded queues carry typed work, while domain owners decide freshness,
+coalescing, cancellation, retry, and shutdown. This matters because a perfectly
+ordered queue can still deliver stale work, and a larger queue can preserve
+more invalid work rather than more value.
+
+The route evaluator uses exact inputs and explicit simulation coverage.
+Retained performance evidence is scoped to its workload and measurement
+boundary. Current state-change-aware ordering research remains passive and
+test-only: its latest evidence did not meet the accepted performance,
+liveness, and dataset gates, so it has no live policy or submission authority.
+
+The reusable design questions are explained in:
+
+- [From Liquidity State to Route Graphs](/architecture/liquidity-state-to-route-graphs);
+- [Backpressure and Queue Ownership](/architecture/backpressure-and-queue-ownership);
+- [Protocol Simulation Boundaries](/architecture/protocol-simulation-boundaries); and
+- [High-Performance Route Evaluation](/research/high-performance-route-evaluation).
+
+## Causality
+
+When an opportunity changes, “the market moved” is not a sufficient
+explanation. Salus distinguishes a route-family identity, an episode, an
+observation, and its source state. Comparisons can then describe whether a
+state change created, removed, revealed, preserved, or left an effect
+unresolved without pretending that every associated change caused the
+outcome.
+
+The current implementation includes passive state-change facts, deterministic
+comparison, leakage-aware offline evidence, typed abstention, and an
+equal-budget comparison against the current ordering. The result is useful
+negative engineering evidence: the small committed corpus did not support a
+threshold or promotion, the latest collection was incomplete, and the current
+default behavior remains unchanged.
+
+That boundary is the important public lesson. A causal hypothesis earns
+authority only after identity, comparison budget, evidence integrity,
+attribution strength, performance, and liveness gates pass. Salus has not
+reached that point, so no separate public Causality Research article is
+created in this iteration.
+
+## Execution
+
+Execution starts only after evaluation has produced a candidate. It preserves
+the candidate’s source-state identity, recalculates the economic boundary,
+checks freshness, performs the required preflight and private-path simulation,
+and records what happened after handoff.
+
+The current implementation includes:
+
+- checked gas and transaction-cost arithmetic;
+- deterministic recommend, skip, or insufficient-evidence decisions in
+  offline/shadow form;
+- stale-state and canonicality checks before submission;
+- private submission with durable pre-broadcast evidence and bounded
+  reconciliation;
+- typed preflight, transport, expiry, receipt, and revert outcomes; and
+- restart behavior that separates a durable prior attempt from permission to
+  submit again.
+
+The live adaptive fee policy is not implemented, and no live gas canary is
+authorized. Preflight can reject a transaction that is already invalid at the
+checked state, but it cannot guarantee later inclusion or success. Private
+transport can reduce public exposure, but acceptance by that transport is not
+proof of ordering, inclusion, finality, or realized profit. An included revert
+may still consume gas.
+
+[Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines)
+owns the reusable architecture. Current provider configuration, bidding logic,
+accounts, thresholds, replacement tactics, and exploitable failure behavior
+remain private implementation material.
+
+## Technical code walkthrough
+
+The architecture overview shows the responsibilities a reader needs for a
+first pass. This technical drill-down maps those responsibilities to the
+reviewed codebase shape—runtime entry, state and read models, route evaluation,
+execution handoff, persistence, and evidence—without turning the page into an
+implementation manual or operational runbook.
+
+It is a bounded technical snapshot. It does not establish live transport
+availability, production readiness, inclusion, finality, or realized profit.
+
+<img src="/assets/work/salus/salus-code-walkthrough.png" alt="Salus code walkthrough showing public runtime ownership, route evaluation, execution handoff, persistence, and evidence boundaries." />
+
+## Engineering Implementation Notes
+
+### Overload, freshness, and task ownership are one runtime contract
+
+```rust
+    pub fn new(config: QueueConfig) -> Self {
+        let (sender, receiver) = mpsc::channel(config.capacity);
+        let metrics = Arc::new(Mutex::new(QueueMetrics::default()));
+        let monitored_sender = MonitoredSender {
+            inner: sender,
+            config,
+            metrics: Arc::clone(&metrics),
+        };
+
+        Self {
+            sender: monitored_sender,
+            receiver,
+            metrics,
+        }
+    }
+
+    pub fn split(self) -> (MonitoredSender<T>, mpsc::Receiver<T>, SharedQueueMetrics) {
+        (self.sender, self.receiver, self.metrics)
+```
+
+The invariant is that overload and stage ownership must be explicit. A reusable
+queue constructs a bounded Tokio MPSC channel from declared capacity, then
+shares its metrics through `Arc<Mutex<_>>` while moving the sender and receiver
+to their respective owners. Capacity, overflow policy, and counters therefore
+travel with the transport instead of becoming an accidental property of a
+worker loop.
+
+```rust
+    pub(super) fn new(worker_context: RouteEvaluationWorkerContext, block_limit: usize) -> Self {
+        let keep_previous_blocks = worker_context
+            .evaluation_controls
+            .evaluate_routes_for_previous_blocks;
+        let queue_capacity = route_eval_queue_capacity(block_limit, keep_previous_blocks);
+        let queue: RuntimeQueue<QueuedRouteEvaluationRequest> =
+            RuntimeQueue::new(QueueConfig::new(
+                "live_route_evaluation",
+                queue_capacity,
+                QueueOverflowPolicy::BlockProducer,
+            ));
+        let (sender, mut receiver, _) = queue.split();
+        let adapter = Arc::new(QueueStageAdapter::new("live_route_evaluation_adapter"));
+        let shared_state = Arc::new(StdMutex::new(RouteEvaluationSharedState::default()));
+        let latest_block_number = Arc::new(AtomicU64::new(0));
+        let adapter_task = Arc::clone(&adapter);
+        let shared_state_task = Arc::clone(&shared_state);
+        let latest_block_number_task = Arc::clone(&latest_block_number);
+        let runtime_metrics = worker_context.runtime_metrics.clone();
+        let runtime_metrics_task = runtime_metrics.clone();
+        let handle = salus_runtime::spawn_named("live-route-evaluation", async move {
+            loop {
+                let queued_request = match receiver.recv().await {
+                    Some(request) => request,
+                    None => {
+                        adapter_task.record_closed_receive();
+                        break;
+                    }
+```
+
+The live stage then combines that ownership with shared mutable bookkeeping, a
+retained `JoinHandle`, and an `AtomicU64` latest-block marker. Newer blocks are
+published with atomic ordering, and workers use the marker to reject stale work
+at their freshness boundary. The trade-off is deliberate: a bounded queue may
+block a producer or discard work according to policy, but it makes pressure,
+freshness, and stage lifecycle observable. None of those mechanisms makes a
+catalog route an opportunity, a selected after-gas route, a submission, or a
+commercial result.
+
+## Explore Salus
+
+Choose the path that matches the question:
+
+### Overview
+
+- **[Salus overview](/salus):** the integrated account of what John built,
+  the Capture–Causality–Execution framing, retained evidence, and current
+  limits. You are here.
+- **[Salus Whitepaper — Draft](/salus/whitepaper):** a self-contained account
+  of the system proposition, use-case boundaries, retained evidence, and
+  future direction.
+- **[Salus Architecture — Draft](/salus/architecture):**
+  the detailed implementation companion covering runtime ownership, freshness,
+  guarded execution, and evidence contracts.
+
+### Research
+
+- **[High-Performance Route Evaluation](/research/high-performance-route-evaluation):**
+  interpret the retained graph, catalog, and evaluation measurements without
+  treating throughput as execution or profit.
+- **[Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence):**
+  understand what repeatability establishes and which historical facts remain
+  absent.
+- **[Trading-System Validation Evidence](/research/trading-system-validation-evidence):**
+  distinguish the claims supported by tests, replay, analytics, preflight,
+  submission, receipts, reconciliation, and settlement.
+
+### Architecture
+
+- **[Trading-System Execution Pipelines](/architecture/trading-system-execution-pipelines):**
+  separate observed state, decisions, simulation, submission, and outcomes.
+- **[Liquidity State to Route Graphs](/architecture/liquidity-state-to-route-graphs):**
+  turn heterogeneous changing state into deterministic topology and catalogs.
+- **[Backpressure and Queue Ownership](/architecture/backpressure-and-queue-ownership):**
+  make capacity, freshness, overflow, retry, and shutdown explicit ownership
+  decisions.
+- **[Inspectable Trading Read Models](/architecture/inspectable-trading-read-models):**
+  accelerate recovery without mistaking current views for history or outcome
+  authority.
+- **[Protocol Simulation Boundaries](/architecture/protocol-simulation-boundaries):**
+  preserve coverage, provenance, mutation, and failure semantics across
+  heterogeneous protocols.
+- **[Capital-Efficient Funding Models](/architecture/capital-efficient-funding-models):**
+  compare funding authority, cost, repayment, and failure exposure without
+  implying free or profitable execution.
+- **[Evidence-Grounded AI for Trading Systems](/architecture/evidence-grounded-ai-for-trading-systems):**
+  bound predictive and investigative assistance outside deterministic safety
+  and execution authority.
+
+### Writing
+
+- **[Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale):**
+  follow one changed liquidity component through affected-route recall, queue
+  policy, retained evaluator evidence, and the boundary before profit.
+- **[Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making):**
+  follow the longer engineering journey from protocol research to a reviewable
+  end-to-end system.
+- **[I Built a Fast Arbitrage Engine. Speed Wasn't the Problem.](/writing/speed-wasnt-the-problem):**
+  examine how successful infrastructure work exposed a strategy and commercial
+  validation problem, and why evidence now precedes further optimization.
+
+### Historical publications
+
+- **Historical Version 1:** the
+  <a href="/images/salus_technical_deep_dive.pdf">Salus Technical Deep Dive (PDF)</a>
+  and
+  <a href="/images/salus_engineering_case_study.pdf">Salus Engineering Case Study (PDF)</a>
+  are immutable Historical Version 1.0 publications from July 2026. Their
+  older metrics and roadmap language are not current claim authority.
+
+For broader context, visit [John Whitton’s engineering portfolio](https://portfolio.johnwhitton.com/)
+  or [contact John](mailto:john@johnwhitton.com).
+
+Current implementation truth remains in the Salus repository. Because that
+repository is private, this page records the immutable reviewed revision but
+does not present it as a visitor destination or copy its living documentation.

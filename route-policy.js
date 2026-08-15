@@ -1,7 +1,9 @@
 export const ACTIVE_ROUTES = Object.freeze([
   "/",
   "/work",
-  "/work/salus",
+  "/salus",
+  "/salus/whitepaper",
+  "/salus/architecture",
   "/work/digital-banking",
   "/work/defi-leveraging",
   "/work/prototypes",
@@ -34,10 +36,13 @@ export const ACTIVE_ROUTES = Object.freeze([
 ]);
 
 export const COMPATIBILITY_ROUTES = Object.freeze([
+  { route: "/work/salus", current: "/salus", sameArtifact: true },
+  { route: "/writing/salus-whitepaper", current: "/salus/whitepaper", sameArtifact: true },
+  { route: "/architecture/salus-trading-and-solving-infrastructure", current: "/salus/architecture", sameArtifact: true },
   { route: "/prototypes/intro", current: "/work/prototypes" },
   { route: "/product/intro", current: "/work" },
   { route: "/proposals/intro", current: "/work/prototypes" },
-  { route: "/partnerships/intro", current: "/about" },
+  { route: "/partnerships/intro", current: "https://johnwhitton.com/" },
 ]);
 
 const HISTORICAL_CONTEXT_EXEMPT_ROUTES = new Set([
