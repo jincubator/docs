@@ -18,6 +18,11 @@ export function remarkImageZoom() {
         }
 
         const alt = attributeValue(node.attributes, "alt") || "image";
+        node.attributes.push({
+          type: "mdxJsxAttribute",
+          name: "className",
+          value: "jincubator-image-zoom__image",
+        });
         parent.children[index] = {
           type: node.type,
           name: "button",

@@ -118,6 +118,7 @@ body,
   cursor: zoom-in;
   padding: 0;
   position: relative;
+  width: 100%;
 }
 
 .vocs_Content .jincubator-image-zoom__image {
@@ -125,6 +126,17 @@ body,
   height: auto;
   margin: 0;
   max-width: 100%;
+  width: 100%;
+}
+
+.vocs_Content mjx-container:not([display="true"]) > svg {
+  display: inline;
+}
+
+.vocs_Content mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .vocs_Content .jincubator-image-zoom__indicator {

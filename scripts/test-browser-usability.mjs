@@ -23,6 +23,8 @@ const baseUrl = await new Promise((resolve, reject) => {
 });
 const pdfPath = "/assets/writing/salus-whitepaper/salus-modular-trading-and-solving-infrastructure.pdf";
 const imagePath = "/assets/work/salus/salus-runtime-architecture.png";
+const routeFigurePath = "/assets/writing/salus-whitepaper/06-route-construction-graph.svg";
+const appendixAnchor = "#appendix-b--mathematical-models-and-route-evaluation";
 const searchIndexPath = `/.vocs/${fs.readdirSync("docs/dist/.vocs").find((name) => name.startsWith("search-index-") && name.endsWith(".json"))}`;
 
 const contrast = (first, second) => {
@@ -91,6 +93,79 @@ try {
   assert.equal(new URL(page.url()).pathname, "/salus/whitepaper/", "native PDF handling must not enter the SPA not-found route");
   assert.equal(await page.getByText("Page Not Found", { exact: true }).count(), 0);
 
+  await page.goto(`${baseUrl}/salus/whitepaper/${appendixAnchor}`, { waitUntil: "domcontentloaded" });
+  const routeFigure = page.locator(`img[src="${routeFigurePath}"]`);
+  const figureCaption = page.getByText(/^Figure 4\. A symbolic, bounded route catalogue\./);
+  assert.equal(await routeFigure.count(), 1, "Figure 4 must have one public image element");
+  const figure = await routeFigure.evaluate((image) => {
+    const caption = [...document.querySelectorAll("p")].find((paragraph) => paragraph.textContent?.startsWith("Figure 4."));
+    const imageRect = image.getBoundingClientRect();
+    const captionRect = caption?.getBoundingClientRect();
+    const imageStyle = getComputedStyle(image);
+    const buttonStyle = getComputedStyle(image.closest("button"));
+    return {
+      alt: image.alt,
+      complete: image.complete,
+      naturalHeight: image.naturalHeight,
+      naturalWidth: image.naturalWidth,
+      height: imageRect.height,
+      width: imageRect.width,
+      beforeCaption: imageRect.bottom <= (captionRect?.top ?? -1),
+      styles: {
+        buttonDisplay: buttonStyle.display,
+        buttonHeight: buttonStyle.height,
+        buttonWidth: buttonStyle.width,
+        imageDisplay: imageStyle.display,
+        imageHeight: imageStyle.height,
+        imageWidth: imageStyle.width,
+      },
+    };
+  });
+  assert.match(figure.alt, /directed graph of four symbolic token nodes/i);
+  assert.equal(figure.complete, true, "Figure 4 must load at the Appendix B anchor");
+  assert.ok(figure.naturalWidth > 0 && figure.naturalHeight > 0, "Figure 4 must have natural dimensions");
+  assert.ok(figure.width > 0 && figure.height > 0, `Figure 4 must have displayed dimensions: ${JSON.stringify(figure)}`);
+  assert.equal(figure.beforeCaption, true, "Figure 4 must render above its caption");
+  assert.equal(await figureCaption.count(), 1);
+
+  const figureButton = routeFigure.locator("xpath=ancestor::button[1]");
+  await figureButton.focus();
+  await figureButton.click();
+  assert.equal(await page.locator("dialog.jincubator-image-zoom-dialog[open]").count(), 1, "Figure 4 must open in the full-size zoom dialog");
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator("dialog.jincubator-image-zoom-dialog[open]").count(), 0, "Escape must close Figure 4 zoom");
+  assert.equal(await figureButton.evaluate((button) => document.activeElement === button), true, "zoom close must restore focus to Figure 4");
+
+  const fixedInput = await page.locator("p", { hasText: "Fixed-input route evaluation" }).evaluate((paragraph) => ({
+    display: [...paragraph.querySelectorAll("mjx-container > svg")].map((svg) => getComputedStyle(svg).display),
+    inlineMathCount: paragraph.querySelectorAll("mjx-container:not([display])").length,
+    text: paragraph.textContent,
+  }));
+  assert.match(fixedInput.text, /Fixed-input route evaluation\. For ordered route input .*sequential evaluation is:/s, "the fixed-input sentence must remain one semantic paragraph");
+  assert.equal(fixedInput.inlineMathCount, 3, "the fixed-input sentence must retain x₀, sᵢ, and fᵢ as inline mathematics");
+  assert.deepEqual(fixedInput.display, ["inline", "inline", "inline"], "inline MathJax SVGs must remain inline");
+  assert.ok(await page.locator('mjx-container[display="true"]').count() > 0, "display equations must remain distinct blocks");
+  assert.equal(await page.locator('mjx-container[display="true"]').first().evaluate((math) => getComputedStyle(math).display), "block");
+
+  await page.goto(`${baseUrl}/salus/whitepaper/`, { waitUntil: "domcontentloaded" });
+  const appendixLink = page.locator(`a[href="/salus/whitepaper${appendixAnchor}"]`).first();
+  assert.equal(await appendixLink.count(), 1, "the Whitepaper Appendix B heading must expose its anchor link");
+  await appendixLink.click({ force: true });
+  await page.waitForURL((url) => url.hash === appendixAnchor);
+  assert.ok(await routeFigure.evaluate((image) => image.getBoundingClientRect().width > 0), "client-side Appendix B navigation must retain Figure 4");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const narrowMath = await page.evaluate(() => ({ page: document.documentElement.scrollWidth, viewport: window.innerWidth }));
+  assert.ok(narrowMath.page <= narrowMath.viewport, "Appendix B mathematics must not create page-level overflow at 390px");
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  await page.goto(`${baseUrl}/salus/architecture/`, { waitUntil: "domcontentloaded" });
+  assert.equal(
+    await page.locator('mjx-container:not([display="true"]) > svg').first().evaluate((math) => getComputedStyle(math).display),
+    "inline",
+    "the shared inline-math fix must also preserve Salus Architecture notation",
+  );
+
   await page.goto(`${baseUrl}/salus/whitepaper/`, { waitUntil: "domcontentloaded" });
   const salusLinks = page.locator('a[href="/salus"]');
   assert.ok(await salusLinks.count() >= 2, "top navigation and sidebar must expose Salus");
@@ -103,10 +178,10 @@ try {
   await page.goto(`${baseUrl}/work/salus/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByText("Page Not Found", { exact: true }).count(), 0, "legacy Salus alias must remain valid");
 
-  for (const [asset, type] of [[pdfPath, "application/pdf"], [imagePath, "image/png"], [searchIndexPath, "application/json"]]) {
+  for (const [asset, type] of [[pdfPath, /application\/pdf/], [imagePath, /image\/png/], [routeFigurePath, /image\/svg\+xml/], [searchIndexPath, /application\/json/]]) {
     const response = await fetch(`${baseUrl}${asset}`);
     assert.equal(response.status, 200, `${asset} must be served`);
-    assert.match(response.headers.get("content-type") ?? "", new RegExp(type));
+    assert.match(response.headers.get("content-type") ?? "", type);
   }
   assert.deepEqual(consoleIssues, [], "the reviewed pages must not emit console warnings or errors");
 } finally {

@@ -164,6 +164,11 @@ const imageZoomTree = {
 remarkImageZoom()(imageZoomTree);
 assert.equal(imageZoomTree.children[0].name, "button");
 assert.equal(imageZoomTree.children[0].attributes.find((attribute) => attribute.name === "aria-label").value, "Open full-size image: Example image");
+assert.equal(
+  imageZoomTree.children[0].children[0].attributes.find((attribute) => attribute.name === "className")?.value,
+  "jincubator-image-zoom__image",
+  "MDX images must receive the same zoom-image class as HTML images",
+);
 
 const zoomImage = fs.readFileSync("docs/public/components/ZoomImage.tsx", "utf8");
 assert.doesNotMatch(zoomImage, /react-medium-image-zoom/);
@@ -232,6 +237,25 @@ for (const [manifestName, route, alias] of [
   const page = manifest.outputs.find((output) => output.media_type === "text/mdx");
   assert.match(fs.readFileSync(page.destination, "utf8"), /\*\*Draft\*\*/);
 }
+
+const whitepaperManifest = JSON.parse(fs.readFileSync("docs/public/data/publications/collection-salus-whitepaper.json", "utf8"));
+const figurePath = "assets/writing/salus-whitepaper/06-route-construction-graph.svg";
+assert.equal(
+  whitepaperManifest.outputs.filter((output) => output.destination === `docs/public/${figurePath}`).length,
+  1,
+  "the Figure 4 SVG must be projected exactly once",
+);
+assert.equal(fs.existsSync(`docs/public/${figurePath}`), true, "the Figure 4 SVG must be deployable");
+assert.match(
+  fs.readFileSync("docs/pages/salus/whitepaper.mdx", "utf8"),
+  /<img src="\/assets\/writing\/salus-whitepaper\/06-route-construction-graph\.svg" alt="A public-safe directed graph/,
+  "the Whitepaper must retain the Figure 4 public asset reference",
+);
+assert.match(
+  fs.readFileSync("docs/pages/salus/whitepaper.mdx", "utf8"),
+  /For ordered route input \$x_0\$, route-specific\s+protocol state \$s_i\$, and leg function \$f_i\$, sequential evaluation is:/,
+  "the fixed-input variables must remain valid inline Markdown mathematics",
+);
 
 const salusPage = fs.readFileSync("docs/pages/salus.mdx", "utf8");
 assert.match(salusPage, /Generated canonical editorial projection/);
