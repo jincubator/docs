@@ -1,1 +1,0 @@
-import{u as r,j as n}from"./index-Cqvlv1P0.js";import{L as a}from"./LandingPage-De8a3mIA.js";const u={title:"About",description:"John Whitton and the Jincubator engineering work."};function e(t){return n.jsx(a,{page:"about"})}function c(t={}){const{wrapper:o}={...r(),...t.components};return o?n.jsx(o,{...t,children:n.jsx(e,{...t})}):e()}export{c as default,u as frontmatter};

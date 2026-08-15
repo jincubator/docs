@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "architecture/salus-trading-and-solving-infrastructure",
+    "type": "architecture",
+    "title": "Salus Architecture: An Opinionated Rust Implementation of Web3 Trading and Solving Infrastructure",
+    "publication_availability": "visible_draft",
+    "compatibility_routes": [
+      "/architecture/salus-trading-and-solving-infrastructure"
+    ]
+  },
+  "route": "/salus/architecture",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Architecture",
+    "reading_time_minutes": null
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/salus/architecture.mdx",
+      "media_type": "text/mdx",
+      "sha256": "17cc0ed9c33f02d4e6924beabe3c8546981fe9c928bf83ef5c8f927105df071e"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/salus-runtime-architecture.png",
+      "media_type": "image/png",
+      "sha256": "5466faa4cc47a8d45d59d8a1f1e51c7cea51ccfcc1edb3f1c21c7886888de231"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/02-topology-to-evaluation.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "08c300b5b7f46adedc8b54e463b7e7efec158865767c9fa4e3f359194c0f6df5"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/03-queue-and-freshness.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "e82b9a1025890aaba80ae7093c4650ae1fa9ea56638847c65cc6e6ebe8c7afc2"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/04-execution-evidence-sequence.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "5749f8f5cf2669b920e15c01e4f013363d6f77b2defa218570d0def07c7f6a2a"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/05-module-ownership.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "ecf069d113f9cd3ef4b872c393566c457747bbdf5f4f41ec6e47fda4353cecc8"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/06-evidence-observability.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "1e1f8fea58aa2e194500151a57d5e921a0a0970c91671d57d4cfd4a624223b2b"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/07-hydration-cache-authority.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "b4976d92a18fea7dd6acf9f1837d4b6de46190bd3dc9b6e531b02619f733d9ac"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/08-cpu-io-boundary.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "e88cdbe4d9ed6f6683a1c482a8f4dafa0fd720e91954cb9510acc8bf15e7ec57"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/09-validation-layers.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "4cef7a5c4ea430e77ccc626347e984c1fdc4b829200623e7db2422f5ebdd3321"
+    },
+    {
+      "destination": "docs/public/assets/architecture/salus-trading-and-solving-infrastructure/10-flash-loan-funding-flow.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "da82f935f09f68d5af59cbc206f4bc35a4885bdf793503494b68893624101675"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}

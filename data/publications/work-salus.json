@@ -3,9 +3,12 @@
   "artifact": {
     "id": "work/salus",
     "type": "work",
-    "title": "Salus"
+    "title": "Salus",
+    "compatibility_routes": [
+      "/work/salus"
+    ]
   },
-  "route": "/work/salus",
+  "route": "/salus",
   "format": "vocs-mdx",
   "presentation": {
     "label": "Work",
@@ -17,9 +20,9 @@
   },
   "outputs": [
     {
-      "destination": "docs/pages/work/salus.mdx",
+      "destination": "docs/pages/salus.mdx",
       "media_type": "text/mdx",
-      "sha256": "4581fd893611d55e8ba3896078221ce857a927cdd3f837c464ae819737bb3dff"
+      "sha256": "9956bec9b207d83a2c37d32c59df45d134ee8c84674a93ce52e5401ca3238ba8"
     },
     {
       "destination": "docs/public/assets/work/salus/salus-runtime-architecture.png",
