@@ -5,14 +5,14 @@
  */
 
 :root {
-  --vocs-color_background: #f7f5ef;
-  --vocs-color_background2: #fffefa;
-  --vocs-color_background3: #f1eee6;
-  --vocs-color_background4: #e8e6df;
-  --vocs-color_background5: #dedbd3;
-  --vocs-color_backgroundDark: #f7f5ef;
-  --vocs-color_border: #ccd2d0;
-  --vocs-color_border2: #d9ddda;
+  --vocs-color_background: #ffffff;
+  --vocs-color_background2: #f8faf9;
+  --vocs-color_background3: #f1f4f2;
+  --vocs-color_background4: #e9eeeb;
+  --vocs-color_background5: #dfe5e1;
+  --vocs-color_backgroundDark: #ffffff;
+  --vocs-color_border: #d9dedb;
+  --vocs-color_border2: #cbd4cf;
   --vocs-color_heading: #17222d;
   --vocs-color_title: #17222d;
   --vocs-color_text: #17222d;
@@ -23,11 +23,13 @@
   --vocs-color_textAccentHover: #304c40;
   --vocs-color_backgroundAccent: #476457;
   --vocs-color_backgroundAccentHover: #304c40;
-  --vocs-color_backgroundAccentText: #fffefa;
+  --vocs-color_backgroundAccentText: #ffffff;
   --vocs-color_codeBlockBackground: #17222d;
-  --vocs-color_codeInlineBackground: #f1eee6;
-  --vocs-color_codeInlineBorder: #d9ddda;
+  --vocs-color_codeInlineBackground: #f1f4f2;
+  --vocs-color_codeInlineBorder: #d9dedb;
   --vocs-color_codeInlineText: #304c40;
+  --jincubator-code-foreground: #adbac7;
+  --jincubator-code-comment: #8a98a6;
   --vocs-fontFamily_default: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --vocs-fontFamily_mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --vocs-fontWeight_regular: 400;
@@ -39,24 +41,24 @@
 html,
 body,
 .vocs_DocsLayout {
-  background: #f7f5ef;
+  background: #ffffff;
   color: #17222d;
 }
 
 .vocs_DocsLayout_content,
 .vocs_Content {
-  background: #f7f5ef;
+  background: #ffffff;
 }
 
 .vocs_DocsLayout_gutterLeft,
 .vocs_DocsLayout_gutterTop,
 .vocs_Sidebar_logoWrapper,
 .vocs_Sidebar_footer {
-  background: #f7f5ef;
+  background: #ffffff;
 }
 
 .vocs_DocsLayout_gutterLeft {
-  border-right: 1px solid #ccd2d0;
+  border-right: 1px solid #d9dedb;
 }
 
 .vocs_DocsLayout_sidebar {
@@ -64,7 +66,7 @@ body,
 }
 
 .vocs_DocsLayout_gutterTop {
-  border-bottom: 1px solid #ccd2d0;
+  border-bottom: 1px solid #d9dedb;
   box-shadow: none;
 }
 
@@ -128,7 +130,7 @@ body,
 .vocs_Content .jincubator-image-zoom__indicator {
   align-items: center;
   background: rgb(23 34 45 / 90%);
-  border: 2px solid #fffefa;
+  border: 2px solid #ffffff;
   border-radius: 999px;
   bottom: 0.8rem;
   box-shadow: 0 0.2rem 0.8rem rgb(23 34 45 / 30%);
@@ -141,7 +143,7 @@ body,
 }
 
 .vocs_Content .jincubator-image-zoom__indicator::before {
-  border: 2px solid #fffefa;
+  border: 2px solid #ffffff;
   border-radius: 50%;
   content: "";
   height: 0.72rem;
@@ -149,7 +151,7 @@ body,
 }
 
 .vocs_Content .jincubator-image-zoom__indicator::after {
-  background: #fffefa;
+  background: #ffffff;
   content: "";
   height: 2px;
   position: absolute;
@@ -196,7 +198,7 @@ body,
 }
 
 .jincubator-image-zoom-dialog__content {
-  background: #fffefa;
+  background: #ffffff;
   cursor: default;
   display: block;
   height: 100%;
@@ -207,8 +209,8 @@ body,
 }
 
 .jincubator-image-zoom-dialog__close {
-  background: #fffefa;
-  border: 1px solid #ccd2d0;
+  background: #ffffff;
+  border: 1px solid #d9dedb;
   border-radius: 0.4rem;
   color: #17222d;
   cursor: pointer;
@@ -226,12 +228,29 @@ body,
   box-shadow: none;
 }
 
+/* The site keeps a light shell but intentionally uses a dark Shiki surface. */
+.vocs_Content pre.shiki {
+  color: var(--jincubator-code-foreground) !important;
+}
+
+.vocs_Content pre.shiki span:not(.line) {
+  color: var(--shiki-dark) !important;
+}
+
+.vocs_Content pre.shiki span[style*="--shiki-dark:#768390"] {
+  color: var(--jincubator-code-comment) !important;
+}
+
+.vocs_Content .vocs_CodeBlock .has-focused > code > .line:not(.focused) {
+  opacity: 1;
+}
+
 .vocs_Content table {
-  border-color: #d9ddda;
+  border-color: #d9dedb;
 }
 
 .vocs_Content th {
-  background: #fffefa;
+  background: #f8faf9;
 }
 
 .vocs_Sidebar_navigation {
@@ -264,7 +283,7 @@ body,
 }
 
 .vocs_Sidebar_levelInset {
-  border-left-color: #ccd2d0;
+  border-left-color: #d9dedb;
 }
 
 .jincubator-landing {
@@ -308,8 +327,8 @@ body,
 }
 
 .jincubator-landing__card {
-  background: #fffefa;
-  border: 1px solid #ccd2d0;
+  background: #ffffff;
+  border: 1px solid #d9dedb;
   border-radius: 0.65rem;
   color: inherit;
   display: flex;

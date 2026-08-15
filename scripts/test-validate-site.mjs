@@ -93,7 +93,40 @@ for (const manifestName of fs.readdirSync("docs/public/data/publications").filte
 assert.equal(publicNavigationRoutes.includes("/writing/portfolio-strategy-competitor-analysis"), false);
 const presentationCss = fs.readFileSync("docs/presentation.css", "utf8");
 for (const token of [
-  "#f7f5ef",
+  "--vocs-color_background: #ffffff",
+  "--vocs-color_background2: #f8faf9",
+  "--vocs-color_border: #d9dedb",
+  "background: #ffffff",
+]) {
+  assert.ok(presentationCss.includes(token), `missing white baseline token: ${token}`);
+}
+assert.doesNotMatch(presentationCss, /#f7f5ef|#fffefa/);
+const hexContrast = (first, second) => {
+  const luminance = (hex) => {
+    const channels = [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16) / 255);
+    return channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+      .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+  };
+  return (Math.max(luminance(first), luminance(second)) + 0.05) / (Math.min(luminance(first), luminance(second)) + 0.05);
+};
+
+for (const token of [
+  "--jincubator-code-foreground: #adbac7",
+  "--jincubator-code-comment: #8a98a6",
+  "pre.shiki span:not(.line)",
+  "var(--shiki-dark) !important",
+]) {
+  assert.ok(presentationCss.includes(token), `missing syntax palette token: ${token}`);
+}
+for (const color of ["#adbac7", "#8a98a6", "#f47067", "#dcbdfb", "#f69d50", "#6cb6ff", "#96d0ff"]) {
+  assert.ok(hexContrast(color, "#17222d") >= 4.5, `${color} must meet AA contrast on the code surface`);
+}
+assert.match(vocsPatch, /staticAssetPattern/);
+assert.match(vocsPatch, /if \(href\?\.match\(staticAssetPattern\)\)/);
+assert.match(vocsPatch, /href: href/);
+
+for (const token of [
+  "#ffffff",
   "Georgia",
   "--vocs-color_background",
   ".vocs_Content h1",

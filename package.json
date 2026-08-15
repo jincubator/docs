@@ -9,7 +9,8 @@
     "vocsbuild": "vocs build && node scripts/validate-site.mjs",
     "validate": "node scripts/validate-site.mjs",
     "validate:external": "node scripts/validate-site.mjs --external",
-    "test": "node scripts/test-validate-site.mjs",
+    "test": "node scripts/test-validate-site.mjs && bun run test:browser",
+    "test:browser": "vocs build && node scripts/test-browser-usability.mjs",
     "preview": "vocs preview",
     "predeploy": "vocs build",
     "sitedeploy": "cp docs/dist/index.html docs/dist/404.html && gh-pages -d docs/dist --dotfiles --nojekyll --cname www.jincubator.com"

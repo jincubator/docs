@@ -1,27 +1,42 @@
 diff --git a/_lib/app/components/Link.js b/_lib/app/components/Link.js
 --- a/_lib/app/components/Link.js
 +++ b/_lib/app/components/Link.js
-@@ -6,7 +6,7 @@
+@@ -5,15 +5,19 @@
+ import { ExternalLink } from './ExternalLink.js';
  import * as styles from './Link.css.js';
  import { RouterLink } from './RouterLink.js';
++const staticAssetPattern = /\.[a-z0-9]+(?:[?#]|$)/i;
  export const Link = forwardRef((props, ref) => {
 -    const { hideExternalIcon, href, variant = 'accent' } = props;
 +    const { hideExternalIcon, href, variant = 'accent', ...internalProps } = props;
      const { pathname } = useLocation();
      // External links
      if (href?.match(/^(www|https?)/))
-@@ -14,6 +14,6 @@
+         return (_jsx(ExternalLink, { ...props, ref: ref, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless), hideExternalIcon: hideExternalIcon }));
++    // Static files must use a document navigation rather than the SPA router.
++    if (href?.match(staticAssetPattern))
++        return (_jsx("a", { ...internalProps, ref: ref, href: href, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless) }));
      // Internal links
      const [before, after] = (href || '').split('#');
      const to = `${before ? before : pathname}${after ? `#${after}` : ''}`;
 -    return (_jsx(RouterLink, { ...props, ref: ref, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless), to: to }));
 +    return (_jsx(RouterLink, { ...internalProps, ref: ref, className: clsx(props.className, styles.root, variant === 'accent' && styles.accent, variant === 'styleless' && styles.styleless), to: to }));
  });
- //# sourceMappingURL=Link.js.map
+-//# sourceMappingURL=Link.js.map
 \ No newline at end of file
++//# sourceMappingURL=Link.js.map
 diff --git a/app/components/Link.tsx b/app/components/Link.tsx
 --- a/app/components/Link.tsx
 +++ b/app/components/Link.tsx
+@@ -5,7 +5,7 @@
+ import { ExternalLink } from './ExternalLink.js'
+ import * as styles from './Link.css.js'
+ import { RouterLink, type RouterLinkProps } from './RouterLink.js'
+-
++const staticAssetPattern = /\.[a-z0-9]+(?:[?#]|$)/i
+ type LinkProps = {
+   children: React.ReactNode
+   className?: string
 @@ -16,7 +16,7 @@
  }
  
@@ -31,7 +46,28 @@ diff --git a/app/components/Link.tsx b/app/components/Link.tsx
  
    const { pathname } = useLocation()
  
-@@ -41,7 +41,7 @@
+@@ -35,13 +35,27 @@
+         hideExternalIcon={hideExternalIcon}
+       />
+     )
+-
++  // Static files must use a document navigation rather than the SPA router.
++  if (href?.match(staticAssetPattern))
++    return (
++      <a
++        {...internalProps}
++        ref={ref}
++        href={href}
++        className={clsx(
++          props.className,
++          styles.root,
++          variant === 'accent' && styles.accent,
++          variant === 'styleless' && styles.styleless,
++        )}
++      />
++    )
+   // Internal links
+   const [before, after] = (href || '').split('#')
    const to = `${before ? before : pathname}${after ? `#${after}` : ''}`
    return (
      <RouterLink
