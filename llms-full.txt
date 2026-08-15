@@ -367,53 +367,6 @@ import { LandingPage } from "../../components/LandingPage";
 <LandingPage page="about" />
 
 
-import { LandingPage } from "../../components/LandingPage";
-
-<LandingPage page="archive" />
-
-
-## Archive
-
-The Archive preserves research and implementation history without presenting it as current canonical work. Individual pages may contain superseded assumptions, old interfaces, incomplete plans, or historical measurements; their original dates and context govern.
-
-### Proposals and prototypes
-
-* [Historical proposals](/proposals/intro)
-* [Unite DeFi prototype](/proposals/Unite)
-* [UHI5 intent-hook submission](/proposals/UHI5)
-* [Harmony/Kanga hackathon record](/proposals/Harmony)
-* [Legacy Product entry point](/product/intro)
-
-The current reviewed synthesis is [Intent Systems Prototypes](/work/prototypes).
-
-### Historical research
-
-* [Chains](/research/chains/intro)
-* [Bridges](/research/bridge/intro)
-* [Zero-knowledge research](/research/zk/intro)
-* [Cryptographic primitives](/research/primitives/intro)
-* [Code reviews](/research/code/intro)
-* [Distributed-systems index](/research/distributed-systems/intro)
-* [Historical AI taxonomy placeholder](/research/ai-engineering/intro)
-
-### Historical architecture and independent studies
-
-* [Trading-system overview](/architecture/trading-systems/intro)
-* [Salus architecture presentation](/architecture/trading-systems/salus)
-* [Trading-system evolution](/architecture/trading-systems/evolution)
-* [FalconX independent study](/architecture/trading-systems/falconx)
-* [Financial-infrastructure overview](/architecture/financial-infrastructure/intro)
-* [Financial platform engineering](/architecture/financial-infrastructure/platform-engineering)
-* [Circle independent study](/architecture/financial-infrastructure/circle)
-* [DeFi systems overview](/architecture/defi-systems/intro)
-* [Protocol architecture](/architecture/defi-systems/protocol)
-* [Kanga architecture](/architecture/defi-systems/kanga)
-* [EAVE parachain architecture](/architecture/distributed-systems/eave)
-* [Enterprise architecture](/architecture/enterprise-architecture/intro)
-
-Archive placement preserves routes; it does not endorse current accuracy, activate redirects, or convert historical pages into canonical editorial sources.
-
-
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
 ## Backpressure and Queue Ownership
@@ -3241,6 +3194,15 @@ finished its work; it does not establish an execution or economic outcome.
 * Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the narrative synthesis.
 
 
+## Partnerships — Legacy Route
+
+Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
+
+Jincubator is John Whitton's independent studio, not a staffed agency or broad venture-fund platform.
+
+Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@johnwhitton.com).
+
+
 ## Engage
 
 John takes on selected, clearly bounded conversations involving:
@@ -3255,13 +3217,51 @@ Jincubator is not a generic agency service catalog. Scope, contribution, confide
 [Email John](mailto\:john@johnwhitton.com), review [current work](/work/intro), or open the [long-form portfolio](https://portfolio.johnwhitton.com/).
 
 
-## Partnerships — Legacy Route
+import { LandingPage } from "../../components/LandingPage";
 
-Jincubator's current collaboration path is [Engage](/engage/intro). It covers selected research collaboration, architecture review or technical diligence, bounded prototype or implementation review, and protocol or solver collaboration where responsibilities are clear.
+<LandingPage page="archive" />
 
-Jincubator is John Whitton's independent studio, not a staffed agency or broad venture-fund platform.
 
-Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@johnwhitton.com).
+## Archive
+
+The Archive preserves research and implementation history without presenting it as current canonical work. Individual pages may contain superseded assumptions, old interfaces, incomplete plans, or historical measurements; their original dates and context govern.
+
+### Proposals and prototypes
+
+* [Historical proposals](/proposals/intro)
+* [Unite DeFi prototype](/proposals/Unite)
+* [UHI5 intent-hook submission](/proposals/UHI5)
+* [Harmony/Kanga hackathon record](/proposals/Harmony)
+* [Legacy Product entry point](/product/intro)
+
+The current reviewed synthesis is [Intent Systems Prototypes](/work/prototypes).
+
+### Historical research
+
+* [Chains](/research/chains/intro)
+* [Bridges](/research/bridge/intro)
+* [Zero-knowledge research](/research/zk/intro)
+* [Cryptographic primitives](/research/primitives/intro)
+* [Code reviews](/research/code/intro)
+* [Distributed-systems index](/research/distributed-systems/intro)
+* [Historical AI taxonomy placeholder](/research/ai-engineering/intro)
+
+### Historical architecture and independent studies
+
+* [Trading-system overview](/architecture/trading-systems/intro)
+* [Salus architecture presentation](/architecture/trading-systems/salus)
+* [Trading-system evolution](/architecture/trading-systems/evolution)
+* [FalconX independent study](/architecture/trading-systems/falconx)
+* [Financial-infrastructure overview](/architecture/financial-infrastructure/intro)
+* [Financial platform engineering](/architecture/financial-infrastructure/platform-engineering)
+* [Circle independent study](/architecture/financial-infrastructure/circle)
+* [DeFi systems overview](/architecture/defi-systems/intro)
+* [Protocol architecture](/architecture/defi-systems/protocol)
+* [Kanga architecture](/architecture/defi-systems/kanga)
+* [EAVE parachain architecture](/architecture/distributed-systems/eave)
+* [Enterprise architecture](/architecture/enterprise-architecture/intro)
+
+Archive placement preserves routes; it does not endorse current accuracy, activate redirects, or convert historical pages into canonical editorial sources.
 
 
 ## Product — Legacy Route
@@ -3269,6 +3269,13 @@ Review the [engagement boundary](/engage/intro) or [contact John](mailto\:john@j
 This route remains for compatibility. Current evidence-bearing work now lives under [Work](/work/intro): [Salus](/work/salus), [Digital Banking](/work/digital-banking), and [Intent Systems Prototypes](/work/prototypes).
 
 The former Product section mixed active research, prototypes, historical designs, and unsupported maturity language. Its detailed routes remain accessible as historical material through the [Archive](/archive/intro); none is current canonical editorial authority.
+
+
+## Prototypes — Compatibility Route
+
+Prototypes now live structurally under [Work](/work/prototypes). The current generated page covers the bounded UHI5 intent-hook and Unite DeFi solver experiments with explicit implementation and maturity limits.
+
+This legacy route remains available for existing links. Dated proposals, hackathons, and superseded experiments remain in the [Archive](/archive/intro). No redirect is active.
 
 
 ## Kanga Finance: Harmony Hackathon 2021
@@ -3972,13 +3979,6 @@ For a more comprehensive Sunrise Protocol Vision please read the following
 **Here is an overview of the Sunrise Order Book design**
 
 ![Sunrise Reference Protocols](https://raw.githubusercontent.com/sunriseprotocol/wiki/main/assets/Sunrise%20Limit%20Orders%20Detailed.png "Sunrise Order Book Design")
-
-
-## Prototypes — Compatibility Route
-
-Prototypes now live structurally under [Work](/work/prototypes). The current generated page covers the bounded UHI5 intent-hook and Unite DeFi solver experiments with explicit implementation and maturity limits.
-
-This legacy route remains available for existing links. Dated proposals, hackathons, and superseded experiments remain in the [Archive](/archive/intro). No redirect is active.
 
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
@@ -5964,6 +5964,458 @@ outcome.
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
+## Deterministic Replay as Engineering Evidence
+
+Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
+
+### The question
+
+When does deterministic replay constitute credible engineering evidence?
+
+A replay is valuable because it turns an observed or constructed state into a repeatable input for evaluation, regression testing, and dry-run materialization. The same command can be run after a code change and its outputs compared. That does not mean the replay reconstructs everything that happened in a live market or proves what would have happened on-chain.
+
+The distinction matters most when a replay result is used to support a claim. “This evaluator returns the same result for this retained input” is narrower than “this was the market state,” which is narrower than “this route could have been included,” which is narrower again than “this execution would have produced realized profit.”
+
+### Method
+
+The investigation reviewed the current Salus replay walkthrough and the
+implementation surfaces it described at the source revision reviewed on
+2026-07-29. It compared seven input and output boundaries:
+
+1. code revision;
+2. replay payload;
+3. configuration and blacklists;
+4. persisted route, component, and token read models;
+5. pricing and gas inputs;
+6. generated evaluation or dry-run artifacts; and
+7. live execution evidence that replay does not produce.
+
+No new live benchmark, historical reconstruction, transaction, or execution test was run. The method is a source-bounded evidence analysis, not an empirical comparison of multiple replay systems.
+
+### Evidence boundary
+
+Current replay is a family of bounded workflows rather than a single self-contained historical runtime. It can rebuild route read models from a fixture, evaluate one or more retained batches, construct local dry-run candidates, and feed a non-submitting analytics path.
+
+The retained replay payload is only one part of the input. Evaluation may also depend on current database read models, token and component metadata, route summaries and legs, configuration, blacklists, gas defaults, and code behavior. Unless those dependencies are pinned and retained together, repeating the JSON payload alone does not reproduce the original decision environment.
+
+Two replay forms expose different limits:
+
+* reserve-snapshot replay supports a bounded approximation for retained fixtures;
+* decoded protocol-state replay exercises protocol-specific simulators and rejects a route when only some legs have decoded state.
+
+Both forms can support regression evidence. Neither becomes canonical live-state authority merely because it carries a block number. Strong historical claims also require block identity, source provenance, completeness, ordering, relevant configuration, and an explanation of how mutable external data was captured.
+
+### Findings
+
+Replay supports four useful classes of claim.
+
+**Deterministic transformation.** Given the same complete declared inputs and code, a pipeline can demonstrate that it derives the same normalized state, route evaluation, classification, or output artifact.
+
+**Regression detection.** A changed output can expose a code, schema, configuration, or dependency change. The comparison is strongest when the producer, inputs, expected output, and allowed tolerances are explicit.
+
+**Boundary validation.** Replay can confirm that malformed, unsupported, incomplete, or stale inputs fail in the expected way. Negative results are evidence when they remain visible.
+
+**Local candidate construction.** Dry-run workflows can test whether an evaluation artifact can become a structurally valid execution candidate without signing, preflight, broadcast, receipt, or token-flow effects.
+
+Case-specific point-in-time reconstruction can also explain why one observed
+decision changed when selected inputs changed. That is bounded causal
+evidence, not a reusable canonical-chain replay backend: it remains limited by
+the retained route universe, source identity, ordering, configuration, and
+unavailable state.
+
+Replay does not by itself establish:
+
+* that the retained input was complete or canonical live state;
+* that route catalogs and market state described the same historical instant;
+* that a quote survived later ordering, latency, or liquidity changes;
+* that calldata would pass RPC preflight;
+* that a transaction was signed, submitted, included, or finalized; or
+* that receipt gas, token flows, funding, and settlement reconciled to realized profit.
+
+### What must be retained
+
+A reviewable replay package should identify:
+
+* producer and schema version;
+* code revision;
+* source chain and block identity;
+* state authority and completeness;
+* route-universe identity;
+* configuration and policy inputs that affect the result;
+* token, component, pricing, gas, and funding inputs;
+* expected outputs and comparison rules; and
+* unavailable facts that prevent a stronger interpretation.
+
+Content addressing can prove that retained bytes did not change. It cannot prove that those bytes were complete, authoritative, or independently obtained. Provenance and evidence class must therefore travel alongside hashes.
+
+### Limitations
+
+* This research uses one evolving implementation as its primary case.
+* It does not compare replay products or establish a universal storage format.
+* Several current replay paths still join retained payloads with mutable storage or configuration.
+* A deterministic result can remain self-referential when the same code produces both the subject and expected output.
+* Historical route truth, state root, transaction ordering, reorg handling, and finality are not inferred when they are absent.
+* No live result is converted into replay evidence by this page.
+
+### Implications
+
+Teams should state replay claims in the form “fixed inputs X under revision Y produced result Z through boundary B.” If an input was not retained, name it as unavailable rather than allowing a default to impersonate history.
+
+Replay should sit inside a validation portfolio. Unit tests prove local invariants; replay proves bounded transformation; independent comparisons can corroborate selected fields; preflight tests a later state view; submission and receipt evidence establish operational progress; reconciliation establishes financial outcome. No layer should inherit the meaning of the next.
+
+### Engineering Implementation Notes
+
+#### Replay begins with a typed source identity
+
+```rust
+pub struct SourceBlockIdentityV1 {
+    pub schema_version: u16,
+    pub chain: ChainName,
+    pub chain_id: u64,
+    pub block_number: u64,
+    pub block_hash: String,
+    pub parent_hash: Option<String>,
+    pub block_timestamp_unix_seconds: Option<i64>,
+    pub state_root: SourceBlockStateRootV1,
+}
+```
+
+Replay input is not represented as an unqualified block number. The identity
+binds chain, height, hash, parent, time, and state-root availability so a
+replay result can state what it was evaluated against and refuse a weaker
+substitute.
+
+### Related work and architecture
+
+* [Salus](/work/salus) provides the bounded Work context.
+* [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) provides the evidence taxonomy applied here.
+* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) defines the measured subjects that replay must not conflate.
+* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places replay inside a larger observed-state-to-outcome sequence.
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## High-Performance Route Evaluation
+
+Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
+
+### The question
+
+How should an engineer read a high-throughput route-evaluation result? A rate alone is ambiguous. It may describe catalog construction, one evaluation service, a complete block-to-decision path, or a synthetic loop. It also says nothing by itself about whether an economically useful opportunity was selected.
+
+The useful question is narrower: what did a retained workload measure, at which revision, and how far along the decision path did the evidence reach?
+
+### A measurement model
+
+Salus separates several quantities that are easy to collapse into one headline:
+
+* **Token nodes** and **pool components** describe a retained market graph.
+* **Catalog routes** are bounded paths available for later evaluation.
+* **Route evaluations** are completed evaluations of catalog routes against a retained workload.
+* **Opportunities** are candidates produced by economic analysis.
+* **Selected after-gas routes** have passed a later cost-aware selection gate.
+* **Submitted transactions**, **executions**, and **realized profit** are subsequent operational outcomes.
+
+The units form an evidence sequence, not interchangeable names for “performance.” A system can maintain a large catalog and evaluate it quickly while selecting no route after costs. That result can still demonstrate evaluator capacity, but it cannot establish profitable execution.
+
+### Retained observations
+
+The reviewed implementation snapshot was committed on 2026-07-20 and inspected
+on 2026-07-21. Its retained July 9 evidence records:
+
+| Observation               | Measured subject                       |    Result |
+| ------------------------- | -------------------------------------- | --------: |
+| Ethereum graph snapshot   | Token nodes                            |     3,415 |
+| Ethereum graph snapshot   | Pool components                        |     4,552 |
+| Ethereum bounded catalog  | Routes with a maximum of four hops     | 2,401,108 |
+| Base retained runtime run | Sustained route evaluations per second |    16,537 |
+| Base retained runtime run | Peak route evaluations per second      |    38,462 |
+
+The sustained rate divides completed route evaluations by measured evaluation-service time across the retained Base run. The peak is the highest reported observed rate within that run. These are route-evaluation rates, not transaction or profitability rates. No new live benchmark was run for this migration.
+
+### What the evidence establishes
+
+The retained measurements establish that the pinned implementation built and stored a multi-million-route bounded Ethereum catalog and processed a retained Base route-evaluation workload at the reported sustained and peak rates. The graph, catalog, and evaluator figures are separately named, which makes the result inspectable and repeatable against the retained evidence.
+
+For engineering review, the important property is not the largest number. It is the ability to state which stage produced each number and to preserve enough provenance to revisit the claim when the implementation or workload changes.
+
+### What it does not establish
+
+The latest cited retained runs selected zero after-gas routes. The measurements therefore do not establish opportunity recall, selected economic value, submitted transactions, successful execution, realized profit, current live performance, or commercial validation.
+
+They also do not support comparing Salus with another system unless the workloads, hardware, timing boundaries, graph filters, route definitions, and evaluation semantics are made comparable. A higher rate can reflect a narrower evaluation boundary rather than a better end-to-end system.
+
+Provider configuration, operational thresholds, route-selection details, opportunity identities or values, gas-bidding behavior, active strategy parameters, and vulnerabilities are outside this public analysis.
+
+The current state-change-aware ordering experiment is passive, test-only
+evidence. Its latest retained run did not satisfy the performance, liveness,
+or dataset gates required for promotion, so it establishes neither a current
+ranking advantage nor live selection or submission authority. It also does
+not supersede the retained throughput measurements above.
+
+### Engineering implications
+
+Performance reports for route evaluators should publish a measurement contract before a headline:
+
+1. identify the implementation revision and observation date;
+2. define graph, catalog, evaluation, selection, and execution units separately;
+3. state the measured timing boundary and retained workload;
+4. place zero or negative downstream results next to throughput figures;
+5. record what evidence would be needed to advance the claim.
+
+This structure makes evaluator capacity useful without asking it to prove an economic or operational outcome it did not measure.
+
+### Non-submitting analytics boundary
+
+An offline or live-state analytics command can hydrate a route universe, apply
+available state, evaluate routes, and write inspectable summaries without
+entering execution. That boundary is useful for route coverage, missing-state
+diagnosis, and evaluation analysis.
+
+Its output remains sensitive to the route universe, state source, pricing and
+gas inputs, strategy configuration, and supported protocol state. A
+current-catalog universe is not a historical route snapshot. A block number is
+not a complete block identity. An artifact labelled “profitable routes” is a
+modeled subset, not an execution queue or realized-profit record.
+
+The Salus Analyse CARB walkthrough is consolidated here because it applies the
+same measurement question: what was evaluated, with which state, and where did
+the evidence stop? Its command and artifact details remain implementation
+documentation rather than a separate public Research page.
+
+### Engineering Implementation Notes
+
+#### A candidate carries its state boundary
+
+```rust
+if state.used_components.contains(&edge.component_id) {
+    continue;
+}
+
+if edge.token_out == *start {
+    if !state.legs.is_empty() {
+        state.push(edge, VisitedTokenMark::Skip);
+        self.routes.push(RouteCandidate {
+            route_id: route_id(&state.legs, None, None, None),
+            version: 1,
+            path: state.path.clone(),
+            legs: state.legs.clone(),
+            flash_component_id: None,
+            flash_token_address: None,
+            flash_fee_hob: None,
+            flash_available_balance: None,
+            flash_protocol: None,
+            source_block_number: self.graph.source_block_number,
+        });
+        state.pop(edge, VisitedTokenMark::Skip);
+    }
+    continue;
+}
+```
+
+The invariant is a state boundary: one candidate cannot reuse a component, and
+the temporary search state must return to its prior shape after each branch.
+`push` extends the candidate and records the visitation rule; `pop` restores
+that state after a closed route has been copied into the catalog. The route also
+carries its source block, keeping topology-derived catalog construction distinct
+from later current-state evaluation.
+
+The trade-off is a bounded copy at the point a cycle becomes a durable catalog
+entry, rather than cloning every partial traversal. That supports reproducible
+route construction and independent evaluation measurements. It is not evidence
+of an executable opportunity.
+
+### Go deeper
+
+* See [Salus as governed Work](/work/salus) for the bounded engineering contribution and its limitations.
+* Use [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) for the evidence taxonomy applied to the retained measurements.
+* Continue to [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) for the reusable system boundary behind these measurement stages.
+* Read [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) for the focused narrative connecting component changes, affected-route scope, freshness, and current evaluator evidence.
+* Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the concise narrative synthesis.
+
+
+import { LandingPage } from "../../components/LandingPage";
+
+<LandingPage page="research" />
+
+
+## Research
+
+Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
+
+### High-Performance Route Evaluation
+
+[High-Performance Route Evaluation](/research/solving/solving) explains what retained Salus graph, catalog, and evaluator measurements establish—and why throughput is not execution or profit.
+
+### Durable Financial Settlement
+
+[Durable Financial Settlement](/research/financial-infrastructure/settlement/intro) distinguishes business intent, authority, submission, native effects, accounting, finality, and reconciliation.
+
+### Intent-Based Execution
+
+[Intent-Based Execution](/research/defi-protocol-engineering/intro) uses bounded prototypes to trace the authority and evidence between a user's mandate and observed settlement.
+
+Historical chains, bridges, zero-knowledge notes, primitives, code reviews, public-source dossiers, superseded protocol material, and lightweight AI taxonomy placeholders remain accessible through the [Archive](/archive/intro).
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
+## What Trading-System Validation Evidence Can Prove
+
+Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
+
+### The question
+
+What can a trading-system validation result legitimately prove?
+
+“Validated” often hides several different activities: a unit test passed, a replay matched an expected artifact, two implementations agreed on a field, an RPC preflight succeeded, a transaction was accepted by a provider, or a receipt was observed. These events are valuable, but their meanings are not interchangeable.
+
+The research goal is to define an evidence taxonomy that preserves the subject, independence, input provenance, stopping point, and unavailable facts of each validation surface.
+
+### Method
+
+The investigation reviewed Salus validation, replay, analytics, simulation,
+dry-run, preflight, submission, receipt, and parity surfaces at the source
+revision reviewed on 2026-07-29. It classified each surface by:
+
+* system under test;
+* reference or expectation;
+* input provenance;
+* independence from the implementation;
+* equality or tolerance rule;
+* resulting artifact;
+* operational side effects; and
+* claim ceiling.
+
+No new command, live route, transaction, benchmark, or historical parity run was executed. Existing retained measurements selected zero after-gas routes and are not reinterpreted as execution evidence.
+
+### Evidence classes
+
+#### Implementation tests
+
+Unit and integration tests can prove that selected functions, crates, contracts, schemas, and command seams satisfy explicit assertions under test inputs. They are strong regression evidence and weak evidence of live external conditions.
+
+#### Fixture replay
+
+Replay can prove a bounded transformation for fixed declared inputs and expose regressions. It does not prove that a fixture is complete historical state or that an execution would survive later ordering and liquidity.
+
+#### Self-generated analytics
+
+An analytics path can make route coverage, classifications, missing state, and modeled economics inspectable. When it reuses the same evaluator as the runtime, agreement is self-referential rather than independent corroboration.
+
+#### Cross-implementation parity
+
+Parity can show agreement or drift on shared fields. It is bounded by route overlap, block alignment, normalization, unavailable fields, and comparison tolerance. Agreement does not prove both implementations are correct; mismatch does not diagnose which one is wrong.
+
+An equal-budget passive comparison can act as a promotion gate for a proposed
+ordering or attribution method. The current retained comparison is useful
+because it withheld promotion: the corpus was small, the latest collection was
+incomplete, and no accepted advantage threshold or live decision authority
+was established.
+
+#### Dry-run and calldata validation
+
+Dry-run can prove local candidate shape and guards. Contract tests can prove selected callback, authorization, repayment, and failure behavior in the tested environment. Neither proves current deployed state, live liquidity, inclusion, or profit.
+
+#### RPC preflight
+
+Preflight evaluates planned calldata against a provider's state view before broadcast. A success is stronger than local construction but still time-, state-, provider-, and ordering-dependent. It is not a signed submission or receipt.
+
+#### Submission and receipt
+
+A provider acceptance or bundle identifier proves a submission boundary. A transaction hash is distinct from a private bundle hash. A receipt proves inclusion and EVM success or revert at a recorded block; it does not by itself prove canonical finality or economic reconciliation.
+
+#### Commercial reconciliation
+
+Realized outcome requires authoritative token flows, funding and gas costs, allocation, inventory and cost basis where relevant, finality, and accounting reconciliation. A successful receipt is an input, not the conclusion.
+
+### Findings
+
+Five rules emerged.
+
+1. **Name the subject.** Catalog routes, route evaluations, opportunities, selected routes, submissions, executions, and realized profit are different counts.
+2. **Name the reference.** Expected files and golden fixtures are regression references; independently sourced evidence provides a different kind of corroboration.
+3. **Treat unavailable as a result.** Missing RPC, unmatched blocks, unsupported protocols, absent fields, skipped tests, and filtered routes do not pass.
+4. **State the stopping point.** Dry-run stops before RPC, preflight stops before signing, submission stops before inclusion, and receipt stops before complete reconciliation.
+5. **Advance only with new evidence.** A later claim requires a later artifact rather than optimistic reinterpretation of an earlier one.
+
+This taxonomy also changes how negative results are read. Zero selected after-gas routes is not a failed throughput measurement. It is a valid downstream result that prevents the throughput evidence from becoming a profitability claim.
+
+### Independence and comparison
+
+Validation strength depends partly on independence. A pure function checked against hand-derived values can be a strong local test. A replay compared with an artifact generated by the same code is useful for regression but not independent. A simulator compared with another implementation adds independence only for the fields and state both actually share.
+
+Comparison rules must also be explicit. Exact equality is suitable for identifiers, classifications, and many integer artifacts. Numerical comparisons may require absolute or relative tolerance, rounding rules, unit normalization, and treatment of missing values. A tool that reports mismatches but exits successfully is an observational harness, not an enforcing gate.
+
+### Evidence progression
+
+```text
+code and schema checks
+  -> deterministic fixtures and replay
+  -> bounded independent comparison
+  -> current-state simulation or preflight
+  -> signed submission
+  -> inclusion and receipt
+  -> canonicality and finality
+  -> token-flow and cost reconciliation
+  -> realized outcome
+```
+
+The progression is not necessarily one automated pipeline. It is a claim discipline. A team may stop at replay for a research result or at preflight for a no-broadcast diagnostic, as long as the resulting claim stops there too.
+
+### Limitations
+
+* The taxonomy is derived primarily from one implementation and its historical comparison harness.
+* It does not prescribe a universal CI system or testing framework.
+* It does not establish that every retained Salus validation artifact is complete.
+* External providers, block builders, mempools, and chains introduce behavior that deterministic tests cannot reproduce fully.
+* Operational thresholds, gas-bidding behavior, route selection, opportunity data, and vulnerabilities remain outside this public research.
+* No production readiness, security, execution success, or commercial result is inferred.
+
+### Recommendations
+
+* Put the evidence class and claim ceiling beside every result.
+* Retain source revision, input identity, configuration scope, comparison rule, and unavailable fields.
+* Make no-submit, preflight-only, submission, pending, included-success, included-revert, and reconciled outcomes distinct states.
+* Keep skipped, unsupported, missing, mismatched, and unavailable counts visible.
+* Require an independent review of public claims even when machine validation passes.
+
+### Engineering Implementation Notes
+
+#### Conflicting identities fail before comparison
+
+```rust
+if self.block_number == other.block_number && self.block_hash != other.block_hash {
+    return Err(SourceBlockValidationError::ConflictingBlockHash {
+        block_number: self.block_number,
+        left: self.block_hash.clone(),
+        right: other.block_hash.clone(),
+    });
+}
+if self.block_hash == other.block_hash && self.block_number != other.block_number {
+    return Err(SourceBlockValidationError::ConflictingBlockNumber {
+        block_hash: self.block_hash.clone(),
+        left: self.block_number,
+        right: other.block_number,
+    });
+}
+```
+
+Validation treats contradictory identity as a typed failure instead of silently
+selecting one observation. That is why a replay, comparison, or analytical
+result can remain bounded by the integrity of its inputs rather than acquiring
+authority merely because a calculation completed.
+
+### Related work and architecture
+
+* [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence) focuses on the replay subset.
+* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) applies the taxonomy to retained measurements.
+* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) turns the evidence progression into system boundaries.
+* [Salus](/work/salus) remains the governed Work account.
+
+
+{/* Generated canonical editorial projection. Do not edit directly. */}
+
 ## Building a Polkadot Parachain — EAVE
 
 EAVE is a historical case study in translating an emerging-asset venture thesis into a Polkadot parachain design, then separating the architecture that was proposed from the integration that source evidence can actually support.
@@ -7122,458 +7574,6 @@ Similar intent lifecycles can use different state primitives. An EVM mapping, ac
 * Apply [Intent Execution Boundaries](/architecture/defi-systems/intents) when separating intent creation, solving, settlement, and proof.
 * Compare the financial evidence model in [Durable Financial Settlement](/research/financial-infrastructure/settlement/intro).
 * See [Durable Settlement Control Planes](/architecture/financial-infrastructure/settlement) for authority, workflow, finality, and reconciliation patterns.
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## Deterministic Replay as Engineering Evidence
-
-Replay can make an engineering result repeatable, but only within the inputs, state, code, and external dependencies actually retained. This research asks what a deterministic replay can legitimately prove.
-
-### The question
-
-When does deterministic replay constitute credible engineering evidence?
-
-A replay is valuable because it turns an observed or constructed state into a repeatable input for evaluation, regression testing, and dry-run materialization. The same command can be run after a code change and its outputs compared. That does not mean the replay reconstructs everything that happened in a live market or proves what would have happened on-chain.
-
-The distinction matters most when a replay result is used to support a claim. “This evaluator returns the same result for this retained input” is narrower than “this was the market state,” which is narrower than “this route could have been included,” which is narrower again than “this execution would have produced realized profit.”
-
-### Method
-
-The investigation reviewed the current Salus replay walkthrough and the
-implementation surfaces it described at the source revision reviewed on
-2026-07-29. It compared seven input and output boundaries:
-
-1. code revision;
-2. replay payload;
-3. configuration and blacklists;
-4. persisted route, component, and token read models;
-5. pricing and gas inputs;
-6. generated evaluation or dry-run artifacts; and
-7. live execution evidence that replay does not produce.
-
-No new live benchmark, historical reconstruction, transaction, or execution test was run. The method is a source-bounded evidence analysis, not an empirical comparison of multiple replay systems.
-
-### Evidence boundary
-
-Current replay is a family of bounded workflows rather than a single self-contained historical runtime. It can rebuild route read models from a fixture, evaluate one or more retained batches, construct local dry-run candidates, and feed a non-submitting analytics path.
-
-The retained replay payload is only one part of the input. Evaluation may also depend on current database read models, token and component metadata, route summaries and legs, configuration, blacklists, gas defaults, and code behavior. Unless those dependencies are pinned and retained together, repeating the JSON payload alone does not reproduce the original decision environment.
-
-Two replay forms expose different limits:
-
-* reserve-snapshot replay supports a bounded approximation for retained fixtures;
-* decoded protocol-state replay exercises protocol-specific simulators and rejects a route when only some legs have decoded state.
-
-Both forms can support regression evidence. Neither becomes canonical live-state authority merely because it carries a block number. Strong historical claims also require block identity, source provenance, completeness, ordering, relevant configuration, and an explanation of how mutable external data was captured.
-
-### Findings
-
-Replay supports four useful classes of claim.
-
-**Deterministic transformation.** Given the same complete declared inputs and code, a pipeline can demonstrate that it derives the same normalized state, route evaluation, classification, or output artifact.
-
-**Regression detection.** A changed output can expose a code, schema, configuration, or dependency change. The comparison is strongest when the producer, inputs, expected output, and allowed tolerances are explicit.
-
-**Boundary validation.** Replay can confirm that malformed, unsupported, incomplete, or stale inputs fail in the expected way. Negative results are evidence when they remain visible.
-
-**Local candidate construction.** Dry-run workflows can test whether an evaluation artifact can become a structurally valid execution candidate without signing, preflight, broadcast, receipt, or token-flow effects.
-
-Case-specific point-in-time reconstruction can also explain why one observed
-decision changed when selected inputs changed. That is bounded causal
-evidence, not a reusable canonical-chain replay backend: it remains limited by
-the retained route universe, source identity, ordering, configuration, and
-unavailable state.
-
-Replay does not by itself establish:
-
-* that the retained input was complete or canonical live state;
-* that route catalogs and market state described the same historical instant;
-* that a quote survived later ordering, latency, or liquidity changes;
-* that calldata would pass RPC preflight;
-* that a transaction was signed, submitted, included, or finalized; or
-* that receipt gas, token flows, funding, and settlement reconciled to realized profit.
-
-### What must be retained
-
-A reviewable replay package should identify:
-
-* producer and schema version;
-* code revision;
-* source chain and block identity;
-* state authority and completeness;
-* route-universe identity;
-* configuration and policy inputs that affect the result;
-* token, component, pricing, gas, and funding inputs;
-* expected outputs and comparison rules; and
-* unavailable facts that prevent a stronger interpretation.
-
-Content addressing can prove that retained bytes did not change. It cannot prove that those bytes were complete, authoritative, or independently obtained. Provenance and evidence class must therefore travel alongside hashes.
-
-### Limitations
-
-* This research uses one evolving implementation as its primary case.
-* It does not compare replay products or establish a universal storage format.
-* Several current replay paths still join retained payloads with mutable storage or configuration.
-* A deterministic result can remain self-referential when the same code produces both the subject and expected output.
-* Historical route truth, state root, transaction ordering, reorg handling, and finality are not inferred when they are absent.
-* No live result is converted into replay evidence by this page.
-
-### Implications
-
-Teams should state replay claims in the form “fixed inputs X under revision Y produced result Z through boundary B.” If an input was not retained, name it as unavailable rather than allowing a default to impersonate history.
-
-Replay should sit inside a validation portfolio. Unit tests prove local invariants; replay proves bounded transformation; independent comparisons can corroborate selected fields; preflight tests a later state view; submission and receipt evidence establish operational progress; reconciliation establishes financial outcome. No layer should inherit the meaning of the next.
-
-### Engineering Implementation Notes
-
-#### Replay begins with a typed source identity
-
-```rust
-pub struct SourceBlockIdentityV1 {
-    pub schema_version: u16,
-    pub chain: ChainName,
-    pub chain_id: u64,
-    pub block_number: u64,
-    pub block_hash: String,
-    pub parent_hash: Option<String>,
-    pub block_timestamp_unix_seconds: Option<i64>,
-    pub state_root: SourceBlockStateRootV1,
-}
-```
-
-Replay input is not represented as an unqualified block number. The identity
-binds chain, height, hash, parent, time, and state-root availability so a
-replay result can state what it was evaluated against and refuse a weaker
-substitute.
-
-### Related work and architecture
-
-* [Salus](/work/salus) provides the bounded Work context.
-* [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) provides the evidence taxonomy applied here.
-* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) defines the measured subjects that replay must not conflate.
-* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) places replay inside a larger observed-state-to-outcome sequence.
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## High-Performance Route Evaluation
-
-Route-evaluation throughput is useful evidence only when the measured subject, workload, revision, and stopping point are explicit. This analysis interprets retained Salus measurements without treating catalog size or evaluator speed as evidence of execution or profit.
-
-### The question
-
-How should an engineer read a high-throughput route-evaluation result? A rate alone is ambiguous. It may describe catalog construction, one evaluation service, a complete block-to-decision path, or a synthetic loop. It also says nothing by itself about whether an economically useful opportunity was selected.
-
-The useful question is narrower: what did a retained workload measure, at which revision, and how far along the decision path did the evidence reach?
-
-### A measurement model
-
-Salus separates several quantities that are easy to collapse into one headline:
-
-* **Token nodes** and **pool components** describe a retained market graph.
-* **Catalog routes** are bounded paths available for later evaluation.
-* **Route evaluations** are completed evaluations of catalog routes against a retained workload.
-* **Opportunities** are candidates produced by economic analysis.
-* **Selected after-gas routes** have passed a later cost-aware selection gate.
-* **Submitted transactions**, **executions**, and **realized profit** are subsequent operational outcomes.
-
-The units form an evidence sequence, not interchangeable names for “performance.” A system can maintain a large catalog and evaluate it quickly while selecting no route after costs. That result can still demonstrate evaluator capacity, but it cannot establish profitable execution.
-
-### Retained observations
-
-The reviewed implementation snapshot was committed on 2026-07-20 and inspected
-on 2026-07-21. Its retained July 9 evidence records:
-
-| Observation               | Measured subject                       |    Result |
-| ------------------------- | -------------------------------------- | --------: |
-| Ethereum graph snapshot   | Token nodes                            |     3,415 |
-| Ethereum graph snapshot   | Pool components                        |     4,552 |
-| Ethereum bounded catalog  | Routes with a maximum of four hops     | 2,401,108 |
-| Base retained runtime run | Sustained route evaluations per second |    16,537 |
-| Base retained runtime run | Peak route evaluations per second      |    38,462 |
-
-The sustained rate divides completed route evaluations by measured evaluation-service time across the retained Base run. The peak is the highest reported observed rate within that run. These are route-evaluation rates, not transaction or profitability rates. No new live benchmark was run for this migration.
-
-### What the evidence establishes
-
-The retained measurements establish that the pinned implementation built and stored a multi-million-route bounded Ethereum catalog and processed a retained Base route-evaluation workload at the reported sustained and peak rates. The graph, catalog, and evaluator figures are separately named, which makes the result inspectable and repeatable against the retained evidence.
-
-For engineering review, the important property is not the largest number. It is the ability to state which stage produced each number and to preserve enough provenance to revisit the claim when the implementation or workload changes.
-
-### What it does not establish
-
-The latest cited retained runs selected zero after-gas routes. The measurements therefore do not establish opportunity recall, selected economic value, submitted transactions, successful execution, realized profit, current live performance, or commercial validation.
-
-They also do not support comparing Salus with another system unless the workloads, hardware, timing boundaries, graph filters, route definitions, and evaluation semantics are made comparable. A higher rate can reflect a narrower evaluation boundary rather than a better end-to-end system.
-
-Provider configuration, operational thresholds, route-selection details, opportunity identities or values, gas-bidding behavior, active strategy parameters, and vulnerabilities are outside this public analysis.
-
-The current state-change-aware ordering experiment is passive, test-only
-evidence. Its latest retained run did not satisfy the performance, liveness,
-or dataset gates required for promotion, so it establishes neither a current
-ranking advantage nor live selection or submission authority. It also does
-not supersede the retained throughput measurements above.
-
-### Engineering implications
-
-Performance reports for route evaluators should publish a measurement contract before a headline:
-
-1. identify the implementation revision and observation date;
-2. define graph, catalog, evaluation, selection, and execution units separately;
-3. state the measured timing boundary and retained workload;
-4. place zero or negative downstream results next to throughput figures;
-5. record what evidence would be needed to advance the claim.
-
-This structure makes evaluator capacity useful without asking it to prove an economic or operational outcome it did not measure.
-
-### Non-submitting analytics boundary
-
-An offline or live-state analytics command can hydrate a route universe, apply
-available state, evaluate routes, and write inspectable summaries without
-entering execution. That boundary is useful for route coverage, missing-state
-diagnosis, and evaluation analysis.
-
-Its output remains sensitive to the route universe, state source, pricing and
-gas inputs, strategy configuration, and supported protocol state. A
-current-catalog universe is not a historical route snapshot. A block number is
-not a complete block identity. An artifact labelled “profitable routes” is a
-modeled subset, not an execution queue or realized-profit record.
-
-The Salus Analyse CARB walkthrough is consolidated here because it applies the
-same measurement question: what was evaluated, with which state, and where did
-the evidence stop? Its command and artifact details remain implementation
-documentation rather than a separate public Research page.
-
-### Engineering Implementation Notes
-
-#### A candidate carries its state boundary
-
-```rust
-if state.used_components.contains(&edge.component_id) {
-    continue;
-}
-
-if edge.token_out == *start {
-    if !state.legs.is_empty() {
-        state.push(edge, VisitedTokenMark::Skip);
-        self.routes.push(RouteCandidate {
-            route_id: route_id(&state.legs, None, None, None),
-            version: 1,
-            path: state.path.clone(),
-            legs: state.legs.clone(),
-            flash_component_id: None,
-            flash_token_address: None,
-            flash_fee_hob: None,
-            flash_available_balance: None,
-            flash_protocol: None,
-            source_block_number: self.graph.source_block_number,
-        });
-        state.pop(edge, VisitedTokenMark::Skip);
-    }
-    continue;
-}
-```
-
-The invariant is a state boundary: one candidate cannot reuse a component, and
-the temporary search state must return to its prior shape after each branch.
-`push` extends the candidate and records the visitation rule; `pop` restores
-that state after a closed route has been copied into the catalog. The route also
-carries its source block, keeping topology-derived catalog construction distinct
-from later current-state evaluation.
-
-The trade-off is a bounded copy at the point a cycle becomes a durable catalog
-entry, rather than cloning every partial traversal. That supports reproducible
-route construction and independent evaluation measurements. It is not evidence
-of an executable opportunity.
-
-### Go deeper
-
-* See [Salus as governed Work](/work/salus) for the bounded engineering contribution and its limitations.
-* Use [What Trading-System Validation Evidence Can Prove](/research/trading-system-validation-evidence) for the evidence taxonomy applied to the retained measurements.
-* Continue to [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) for the reusable system boundary behind these measurement stages.
-* Read [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) for the focused narrative connecting component changes, affected-route scope, freshness, and current evaluator evidence.
-* Read [Solving, Arbitrage & Market Making](/writing/solving-arbitrage-market-making) for the concise narrative synthesis.
-
-
-import { LandingPage } from "../../components/LandingPage";
-
-<LandingPage page="research" />
-
-
-## Research
-
-Current Research answers bounded engineering questions from reviewed sources. It stays separate from implementation truth and from historical notes whose freshness or evidence boundary is no longer current.
-
-### High-Performance Route Evaluation
-
-[High-Performance Route Evaluation](/research/solving/solving) explains what retained Salus graph, catalog, and evaluator measurements establish—and why throughput is not execution or profit.
-
-### Durable Financial Settlement
-
-[Durable Financial Settlement](/research/financial-infrastructure/settlement/intro) distinguishes business intent, authority, submission, native effects, accounting, finality, and reconciliation.
-
-### Intent-Based Execution
-
-[Intent-Based Execution](/research/defi-protocol-engineering/intro) uses bounded prototypes to trace the authority and evidence between a user's mandate and observed settlement.
-
-Historical chains, bridges, zero-knowledge notes, primitives, code reviews, public-source dossiers, superseded protocol material, and lightweight AI taxonomy placeholders remain accessible through the [Archive](/archive/intro).
-
-
-{/* Generated canonical editorial projection. Do not edit directly. */}
-
-## What Trading-System Validation Evidence Can Prove
-
-Trading systems need layered validation because no single test, replay, comparison, preflight, receipt, or metric spans the path from code correctness to realized economic outcome.
-
-### The question
-
-What can a trading-system validation result legitimately prove?
-
-“Validated” often hides several different activities: a unit test passed, a replay matched an expected artifact, two implementations agreed on a field, an RPC preflight succeeded, a transaction was accepted by a provider, or a receipt was observed. These events are valuable, but their meanings are not interchangeable.
-
-The research goal is to define an evidence taxonomy that preserves the subject, independence, input provenance, stopping point, and unavailable facts of each validation surface.
-
-### Method
-
-The investigation reviewed Salus validation, replay, analytics, simulation,
-dry-run, preflight, submission, receipt, and parity surfaces at the source
-revision reviewed on 2026-07-29. It classified each surface by:
-
-* system under test;
-* reference or expectation;
-* input provenance;
-* independence from the implementation;
-* equality or tolerance rule;
-* resulting artifact;
-* operational side effects; and
-* claim ceiling.
-
-No new command, live route, transaction, benchmark, or historical parity run was executed. Existing retained measurements selected zero after-gas routes and are not reinterpreted as execution evidence.
-
-### Evidence classes
-
-#### Implementation tests
-
-Unit and integration tests can prove that selected functions, crates, contracts, schemas, and command seams satisfy explicit assertions under test inputs. They are strong regression evidence and weak evidence of live external conditions.
-
-#### Fixture replay
-
-Replay can prove a bounded transformation for fixed declared inputs and expose regressions. It does not prove that a fixture is complete historical state or that an execution would survive later ordering and liquidity.
-
-#### Self-generated analytics
-
-An analytics path can make route coverage, classifications, missing state, and modeled economics inspectable. When it reuses the same evaluator as the runtime, agreement is self-referential rather than independent corroboration.
-
-#### Cross-implementation parity
-
-Parity can show agreement or drift on shared fields. It is bounded by route overlap, block alignment, normalization, unavailable fields, and comparison tolerance. Agreement does not prove both implementations are correct; mismatch does not diagnose which one is wrong.
-
-An equal-budget passive comparison can act as a promotion gate for a proposed
-ordering or attribution method. The current retained comparison is useful
-because it withheld promotion: the corpus was small, the latest collection was
-incomplete, and no accepted advantage threshold or live decision authority
-was established.
-
-#### Dry-run and calldata validation
-
-Dry-run can prove local candidate shape and guards. Contract tests can prove selected callback, authorization, repayment, and failure behavior in the tested environment. Neither proves current deployed state, live liquidity, inclusion, or profit.
-
-#### RPC preflight
-
-Preflight evaluates planned calldata against a provider's state view before broadcast. A success is stronger than local construction but still time-, state-, provider-, and ordering-dependent. It is not a signed submission or receipt.
-
-#### Submission and receipt
-
-A provider acceptance or bundle identifier proves a submission boundary. A transaction hash is distinct from a private bundle hash. A receipt proves inclusion and EVM success or revert at a recorded block; it does not by itself prove canonical finality or economic reconciliation.
-
-#### Commercial reconciliation
-
-Realized outcome requires authoritative token flows, funding and gas costs, allocation, inventory and cost basis where relevant, finality, and accounting reconciliation. A successful receipt is an input, not the conclusion.
-
-### Findings
-
-Five rules emerged.
-
-1. **Name the subject.** Catalog routes, route evaluations, opportunities, selected routes, submissions, executions, and realized profit are different counts.
-2. **Name the reference.** Expected files and golden fixtures are regression references; independently sourced evidence provides a different kind of corroboration.
-3. **Treat unavailable as a result.** Missing RPC, unmatched blocks, unsupported protocols, absent fields, skipped tests, and filtered routes do not pass.
-4. **State the stopping point.** Dry-run stops before RPC, preflight stops before signing, submission stops before inclusion, and receipt stops before complete reconciliation.
-5. **Advance only with new evidence.** A later claim requires a later artifact rather than optimistic reinterpretation of an earlier one.
-
-This taxonomy also changes how negative results are read. Zero selected after-gas routes is not a failed throughput measurement. It is a valid downstream result that prevents the throughput evidence from becoming a profitability claim.
-
-### Independence and comparison
-
-Validation strength depends partly on independence. A pure function checked against hand-derived values can be a strong local test. A replay compared with an artifact generated by the same code is useful for regression but not independent. A simulator compared with another implementation adds independence only for the fields and state both actually share.
-
-Comparison rules must also be explicit. Exact equality is suitable for identifiers, classifications, and many integer artifacts. Numerical comparisons may require absolute or relative tolerance, rounding rules, unit normalization, and treatment of missing values. A tool that reports mismatches but exits successfully is an observational harness, not an enforcing gate.
-
-### Evidence progression
-
-```text
-code and schema checks
-  -> deterministic fixtures and replay
-  -> bounded independent comparison
-  -> current-state simulation or preflight
-  -> signed submission
-  -> inclusion and receipt
-  -> canonicality and finality
-  -> token-flow and cost reconciliation
-  -> realized outcome
-```
-
-The progression is not necessarily one automated pipeline. It is a claim discipline. A team may stop at replay for a research result or at preflight for a no-broadcast diagnostic, as long as the resulting claim stops there too.
-
-### Limitations
-
-* The taxonomy is derived primarily from one implementation and its historical comparison harness.
-* It does not prescribe a universal CI system or testing framework.
-* It does not establish that every retained Salus validation artifact is complete.
-* External providers, block builders, mempools, and chains introduce behavior that deterministic tests cannot reproduce fully.
-* Operational thresholds, gas-bidding behavior, route selection, opportunity data, and vulnerabilities remain outside this public research.
-* No production readiness, security, execution success, or commercial result is inferred.
-
-### Recommendations
-
-* Put the evidence class and claim ceiling beside every result.
-* Retain source revision, input identity, configuration scope, comparison rule, and unavailable fields.
-* Make no-submit, preflight-only, submission, pending, included-success, included-revert, and reconciled outcomes distinct states.
-* Keep skipped, unsupported, missing, mismatched, and unavailable counts visible.
-* Require an independent review of public claims even when machine validation passes.
-
-### Engineering Implementation Notes
-
-#### Conflicting identities fail before comparison
-
-```rust
-if self.block_number == other.block_number && self.block_hash != other.block_hash {
-    return Err(SourceBlockValidationError::ConflictingBlockHash {
-        block_number: self.block_number,
-        left: self.block_hash.clone(),
-        right: other.block_hash.clone(),
-    });
-}
-if self.block_hash == other.block_hash && self.block_number != other.block_number {
-    return Err(SourceBlockValidationError::ConflictingBlockNumber {
-        block_hash: self.block_hash.clone(),
-        left: self.block_number,
-        right: other.block_number,
-    });
-}
-```
-
-Validation treats contradictory identity as a typed failure instead of silently
-selecting one observation. That is why a replay, comparison, or analytical
-result can remain bounded by the integrity of its inputs rather than acquiring
-authority merely because a calculation completed.
-
-### Related work and architecture
-
-* [Deterministic Replay as Engineering Evidence](/research/deterministic-replay-as-engineering-evidence) focuses on the replay subset.
-* [High-Performance Route Evaluation](/research/high-performance-route-evaluation) applies the taxonomy to retained measurements.
-* [Designing Evidence-Aware Trading-System Pipelines](/architecture/trading-system-execution-pipelines) turns the evidence progression into system boundaries.
-* [Salus](/work/salus) remains the governed Work account.
 
 
 import { LandingPage } from "../../components/LandingPage";
@@ -20646,51 +20646,6 @@ We have summarized the functionality in three areas
   * [succinctlabs](https://github.com/succinctlabs/eth-proof-of-consensus) (circom)
 
 
-## Celestia
-
-* date: 2023-06-19
-* last updated: 2023-06-19
-
-### Overview
-
-Celestia[^ov-1] is a modular consensus and data network, built to enable anyone to easily deploy their own blockchain with minimal overhead.
-
-### Cryptographic Primitives
-
-* [whitepaper](https://arxiv.org/pdf/1809.09044.pdf)
-  * 2.2 Merkle Trees and Sparse Merkle Trees
-  * 2.3 Erasure Codes and Reed-Solomon Codes
-  * 5 Data Availability Proofs
-    * 5.1 Strawman 1D Reed-Solomon Availability Scheme
-    * 5.2 2D Reed-Solomon Encoded Merkle Tree Construction
-    * 5.3 Random Sampling and Network Block Recovery
-    * 5.4 Selective Share Disclosure
-    * 5.5 Fraud Proofs of Incorrectly Generated Extended Data
-* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
-* [Implementation celestia-app pkg](https://github.com/celestiaorg/celestia-app/tree/main/pkg)
-
-#### Namespaced Merkle Tree Wrapper
-
-* [code](https://github.com/celestiaorg/celestia-app/tree/main/pkg/wrapper)
-
-### Appendices
-
-### References
-
-* [Learn Modular](https://celestia.org/learn/)
-* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities
-* [Celestia App Specifications](https://celestiaorg.github.io/celestia-app/index.html)
-* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
-* [Rollkit Docs](https://rollkit.dev/docs/intro/)
-* [Rollkit Architecture Design Records](https://github.com/rollkit/rollkit/tree/main/docs/lazy-adr)
-* [Rollkit Dependency Graph](https://github.com/rollkit/rollkit/blob/main/docs/specification/rollkit-dependency-graph.mdx)
-* [Quantum Gravity Bridge](https://github.com/celestiaorg/quantum-gravity-bridge/tree/master)
-
-### Footnotes
-
-[^ov-1]: [Celestia](https://celestia.org/): the first modular blockchan network.
-
-
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
 ## Intent-Based Execution
@@ -22314,269 +22269,6 @@ Footnotes
 [^3]: It is unknown whether this mechanism can deal with other types of long-range attacks, if any, in general
 
 
-## Trading Systems
-
-> Historical research index retained for compatibility. Current research is [High-Performance Route Evaluation](/research/solving/solving).
-
-Trading Systems is the primary research domain for solving, arbitrage, execution, market data, and market-making infrastructure.
-
-This domain reframes earlier solver work as part of a broader professional discipline. The retained research focuses on route evaluation, liquidity discovery, simulation, execution gating, Tycho-backed market data, and the evolution from solver infrastructure toward Salus-style trading products.
-
-### Historical focus
-
-* Solver and arbitrage infrastructure
-* Route evaluation and profitability checks
-* Execution and replay validation
-* Tycho, 1inch, and liquidity-source integration
-* Market-data-driven product development
-
-### Existing Research
-
-* [High Performance Route Evaluation](/research/solving/solving)
-* [No Liquidity Solving with Tycho and 1inch](/research/solving/tycho1inchNOL)
-* [1inch NEAR Contract Development](/research/solving/near)
-
-### Architecture View
-
-For the latest system-design view, see:
-
-* [Solver Architecture](/architecture/trading-systems/solver)
-* [Salus Architecture](/architecture/trading-systems/salus)
-* [Trading Systems Evolution](/architecture/trading-systems/evolution)
-* [Reference Architecture: FalconX](/architecture/trading-systems/falconx)
-
-Trading Systems overlaps with [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro) where solver infrastructure interacts with protocols, intents, hooks, and liquidity systems.
-
-
-## Axiom
-
-* date: 2023-06-28
-* last updated: 2023-02-04
-
-### Overview
-
-Axiom[^ov-1] is a ZK coprocessor for Ethereum which provides smart contracts trustless access to all on-chain data and arbitrary expressive compute over it.
-
-### References
-
-* [Website](https://www.axiom.xyz/)
-* [Documentation](https://docs.axiom.xyz/)
-* [Company Profile LinkedIn](https://www.linkedin.com/company/axiom-xyz/about/)
-* [Uniswap Grant](https://hackmd.io/@yisun/H1e6U42Ps) [tweet](https://twitter.com/UniswapFND/status/1617895640415207424?lang=en)
-* [Intrinsic technologies builder](https://gen.xyz/blog/axiomxyz)
-* [Github Repos](https://github.com/axiom-crypto)
-  * [https://github.com/axiom-crypto/axiom-v1-contracts](https://github.com/axiom-crypto/axiom-v1-contracts) (uses [foundry](https://book.getfoundry.sh/), solidity and [yul](https://medium.com/@jtriley15/yul-vs-solidity-contract-comparison-2b6d9e9dc833))
-  * [https://github.com/axiom-crypto/axiom-eth](https://github.com/axiom-crypto/axiom-eth) (written in rust)
-  * [https://github.com/axiom-crypto/axiom-apps](https://github.com/axiom-crypto/axiom-apps) (uniswap)
-  * [https://github.com/axiom-crypto/halo2-lib](https://github.com/axiom-crypto/halo2-lib) (rust zk)
-* [@axiomhq npm packages](https://www.npmjs.com/search?q=%40axiomhq)
-* Yi is part of the Delendum Telegram Group @yisun and Presented at [Eth Denver](https://twitter.com/axiom_xyz/status/1630960864479027200)
-* [Yi Sun, Reflection and Introspection in Blockchains](https://www.youtube.com/watch?v=05uv3hsH6oA)
-* [Delendum Research Workshop Slides](https://drive.google.com/drive/folders/15Ih1B4Pjr-oorAa33qlAgVH5klCHwSG3)
-
-### Footnotes
-
-Overview
-
-[^ov-1]: [Axiom](https://www.axiom.xyz/): The ZK Coprocessor for Ethereum
-
-
-## Zero Knowledge Research
-
-* date: 2023-02-04
-* last updated: 2023-02-04
-
-### Overview
-
-Here we do a deep dive on Zero Knowledge
-
-* Approach
-* Emerging Use Cases
-* Proof Systems
-* Efficient Signatures
-* Proof Aggregation
-* Tokenomics
-
-### Learning Material
-
-#### Foundational
-
-* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics/dp/1493917102)
-* [Introduction to Applied Linear Algebra](https://www.amazon.com/Introduction-Applied-Linear-Algebra-Matrices/dp/1316518965)
-* [Calculus I - Differentiation and Integration](https://www.amazon.com/Calculus-Differentiation-Integration-Hamilton-Education-ebook/dp/B07BPHW4VL)
-* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics-ebook/dp/B00PULZOCI/): the mathematics behind the theory of public key cryptosystems and digital signature schemes.
-* [Cryptography Algorithms](https://www.amazon.com/Next-generation-Cryptography-Algorithms-Explained-implementation/dp/1789617138)
-* [Number Theory](https://crypto.stanford.edu/pbc/notes/numbertheory/)
-* [zkSNARKs in a nutshell](https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell)
-* [Quadratic Arithmetic Programs: from Zero to Hero](https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649)
-* [Exploring Elliptic Curve Pairings](https://medium.com/@VitalikButerin/exploring-elliptic-curve-pairings-c73c1864e627)
-* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
-* [The MoonMath Manual to zk-SNARKs](https://leastauthority.com/static/publications/MoonMath080822.pdf)
-* [Elliptic Curve Cryptography: a gentle introduction](https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/)
-* [Exploring Elliptic Curve Pairings](https://vitalik.ca/general/2017/01/14/exploring_ecp.html)
-* [KZG polynomial commitments](https://dankradfeist.de/ethereum/2020/06/16/kate-polynomial-commitments.html)
-* [plookup](https://eprint.iacr.org/2020/315.pdf): A simplified polynomial protocol for
-  lookup tables.
-* [Casting out Primes](https://blog.polygon.technology/wp-content/uploads/2022/10/casting-3.pdf): a nondeterministic method for bignum arithmetic. It is inspired by the “casting out nines” technique, where some identity is checked modulo 9, providing a probabilistic result.
-
-#### Zero Knowledge
-
-Research Articles
-
-* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities. *Light clients, also known as Simple Payment Verification (SPV) clients, are nodes which only download a small portion of the data in a blockchain, and use indirect means to verify that a given chain is valid.* \* Research Papers (Zero Knowledge Related)
-* [zkBridge: Trustless Cross-chain Bridges Made Practical](https://rdi.berkeley.edu/zkp/zkBridge/uploads/paper.pdf)
-* [Caulk: Lookup Arguments in Sublinear Time](https://eprint.iacr.org/2022/621.pdf): position-hiding linkability for vector commitment schemes: one can prove in zero knowledge that one or m values that comprise commitment cm all belong to the vector of size N committed to in C.
-* [HyperPlonk: Plonk with Linear-Time Prover and High-Degree Custom Gates](https://eprint.iacr.org/2022/1355.pdf)
-* [SLONK—a simple universal SNARK](https://ethresear.ch/t/slonk-a-simple-universal-snark/6420): a simplification to PLONK called SLONK. We replace the permutation argument (the “P” in PLONK) in favour of a shift argument (the “S” in SLONK). We get a universal SNARK with the smallest known proof size and verification time.
-* [Kate commitments from the Lagrange basis without FFTs](https://notes.ethereum.org/T0ZVaaywQAqP4jegqO3asg?view): how to commit, evaluate and open polynomials in the Lagrange basis without FFTs. This is the first part in a series (see part 1, part 2, part 3) showing how to do PLONK-style universal SNARKs without FFTs
-* [Hadamard checks from the Lagrange basis without FFTs](https://notes.ethereum.org/Il4z42lmQtaUYFigsjsk2Q?view): how to prove Hadamard relations between polynomials in the Lagrange basis without FFTs. This is the second part (see part 1, part 2, part 3) in a series showing how to do PLONK-style universal SNARKs without FFTs.
-* [PLONK-style SNARKs without FFTs](https://notes.ethereum.org/DLRqK9V7RIOsTZkab8Hm_Q?view): how to do PLONK-style universal SNARKs without FFTs. This is part 3 in a series (part 1, part 2, part 3).
-* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
-* [Plonky2: Fast Recursive Arguments with PLONK and FRI](https://github.com/mir-protocol/plonky2/blob/main/plonky2/plonky2.pdf)
-
-articles and learning resources
-
-* [Bridging the Multichain Universe with Zero Knowledge Proofs](https://medium.com/@ingonyama/bridging-the-multichain-universe-with-zero-knowledge-proofs-6157464fbc86)
-* [awesome-zkml](https://github.com/worldcoin/awesome-zkml)
-* [https://learn.0xparc.org/](https://learn.0xparc.org/): ZK Learning Resources
-* [Delendum ZKP Knowledge base](https://kb.delendum.xyz/)
-* [https://appliedzkp.org](https://appliedzkp.org/): Privacy and Scaling Exploration
-* [https://zkp.science/](https://zkp.science/): Zero-Knowledge Proofs
-* [https://starkware.co/stark-101/](https://starkware.co/stark-101/): Stark 101: write a STARK prover from scratch
-* [https://docs.starkware.co/starkex/index.html](https://docs.starkware.co/starkex/index.html): - Starkware StarkeEx
-* [Noir](https://docs.aztec.network/developers/noir) Noir is a Domain Specific Language for developing ZK-provable programs. (Rust based)
-  * [article](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9)
-  * [tweet](https://twitter.com/aztecnetwork/status/1578082456212643840)
-  * [Grants](https://aztec.network/grants/)
-* [Arkworks](https://github.com/arkworks-rs)
-* [zkrepl.dev](https://zkrepl.dev/)
-* [succinct](https://blog.succinct.xyz/)
-* [ZK BATCH ECDSA](https://blog.succinct.xyz/post/2022/10/03/batch-ecdsa/)
-* [Batch ECDSA Verification](https://github.com/puma314/batch-ecdsa)
-* [Bringing IBC to Ethereum using ZK-Snarks](https://ethresear.ch/t/bringing-ibc-to-ethereum-using-zk-snarks/13634)
-* [MINA docs](https://docs.minaprotocol.com/)
-
-implementation articles
-
-* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
-* [Succinct Towards the endgame of blockchain interoperability with proof of consensus](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus)
-
-#### Codebases
-
-* [Circom](https://github.com/iden3/circom) a novel domain-specific language for defining arithmetic circuits that can be used to generate zero-knowledge proofs
-
-* [DarkForest](https://github.com/darkforest-eth) zkSNARK space warfare
-  * [Awesome List](https://github.com/snowtigersoft/awesome-darkforest)
-  * [Our front end code (the game is open source!)](https://github.com/darkforest-eth/client/tree/master/src/Frontend)
-  * [Twitter](https://twitter.com/darkforest_eth)
-
-* [Discord](https://discord.gg/2u2TN6v8r6)
-  * [Team Blog](http://blog.zkga.me/)
-    * [Dark Forest v0.6](https://blog.zkga.me/announcing-v6)
-    * [Exploiting DF v0.5 Artifact Minting](https://blog.zkga.me/artifact-minting-exploit)
-    * [v0.5 Plugins Contest Winners](https://blog.zkga.me/v5-plugins-contest-winners)
-    * [Zero-Knowledge Proofs for Engineers](https://blog.zkga.me/intro-to-zksnarks)
-    * [Announcing Dark Forest](https://blog.zkga.me/announcing-darkforest)
-    * [The Strongest Crypto Gaming Thesis: Why we're building Dark Forest](https://gubsheep.mirror.xyz/nsteOfjATPSKH0J8lRD0j2iynmvv_C8i8eb483UzcTM)
-  * [Community plugins](http://plugins.zkga.me/)
-  * [Community-run wiki](http://dfwiki.net/)
-  * Player-made content
-    * [Dark Forest GPU universe explorer](https://www.longrocklabs.com/articles/the-exploration-era-begins/)
-    * [Getting started with Dark Forest](https://www.youtube.com/watch?v=keY4a9cKmgg)
-    * [Setting up a remote miner](https://www.youtube.com/watch?v=Kus4fWNg3zo)
-    * [Dark Forest battle timelapse](https://www.youtube.com/watch?v=o9A-cfDanTY)
-
-* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s): Re-implement an ecc circuits with halo2
-
-* [plonky2](https://github.com/mir-protocol/plonky2): a SNARK implementation based on techniques from PLONK and FRI. It has since expanded to include tools such as Starky, a highly performant STARK implementation.
-  * [plonky2-solidity-verifier](https://github.com/polymerdao/plonky2-solidity-verifier)
-  * [plonky2-circom](https://github.com/polymerdao/plonky2-circom): Plonky2 verifier in Circom
-  * [plonky2-ed25519](https://github.com/polymerdao/plonky2-ed25519): SNARK verification circuits of a digital signature scheme Ed25519 implemented with Plonky2.
-  * [plonky2-sha256](https://github.com/polymerdao/plonky2-sha256): SNARK circuits of a cryptographic hash function SHA-256 implemented with Plonky2.
-  * [plonky2-sha512](https://github.com/polymerdao/plonky2-sha512): SNARK circuits of a cryptographic hash function SHA-512 implemented with Plonky2.
-  * [plonky2-pairing](https://github.com/polymerdao/plonky2-pairing)
-
-#### Presentations
-
-* [Devcon VI](https://archive.devcon.org/archive/playlists/devcon-6/)
-* [Light Client After the Merge](https://archive.devcon.org/archive/watch/6/light-clients-after-the-merge/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=ZHNrAXf3RDE)
-* [What to Know about Zero Knowledge](https://archive.devcon.org/archive/watch/6/what-to-know-about-zero-knowledge/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Application ShowCase](https://archive.devcon.org/archive/watch/6/zk-application-showcase/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Badges: How to prove that you donated to Gitcoin grants](https://archive.devcon.org/archive/watch/6/zk-badges/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Security Self Led Session](https://archive.devcon.org/archive/watch/6/zk-security-self-led-session/?playlist=Devcon%206\&tab=YouTube)
-* [zkEVM Vs EVM: Full Equivalence?](https://archive.devcon.org/archive/watch/6/zkevm-vs-evm-full-equivalence/?playlist=Devcon%206\&tab=YouTube)
-* [ZK Application Design Patterns](https://archive.devcon.org/archive/watch/6/zk-application-design-patterns/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=-PUKinjbLR8)
-* [Applied ZK SLS presentations](https://www.notion.so/360fcd3f2a824759b1373ddeef5bf564)
-
-#### Additional Information
-
-* Review [ENS Bridging Strategy](https://medium.com/the-ethereum-name-service/mvp-of-ens-on-l2-with-optimism-demo-video-how-to-try-it-yourself-b44c390cbd67) and [repo](https://github.com/ensdomains/l2gateway-demo/)
-
-* [Succinct](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus) [\$600K](https://forum.gnosis.io/t/gip-57-should-gnosis-dao-support-research-of-a-zksnark-enabled-light-client-and-bridge/5421) [tweet](https://twitter.com/succinctlabs/status/1572299292177481729) [Demo](https://www.zkbridge.wtf/) [github](https://github.com/succinctlabs) [video](https://youtu.be/Ct6H5GcnA0A?t=15554) built using [circom](https://docs.circom.io/)
-
-* [circom](https://docs.circom.io/)
-
-* [Arkworks](https://github.com/arkworks-rs/), [tutorial](https://github.com/arkworks-rs/r1cs-tutorial/), [twitter](https://twitter.com/arkworks_rs), [video](https://youtu.be/Ct6H5GcnA0A?t=7429)
-
-* [Aztec.network](http://Aztec.network) [Noir](https://aztec.network/noir) [intro](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9), [github](https://github.com/noir-lang/noir), [twitter](https://twitter.com/aztecnetwork), [docs](https://noir-lang.github.io/book/index.html)
-
-* [GNark](https://github.com/ConsenSys/gnark)
-
-* [ElectronLabs](https://electronlabs.org/)
-
-* [ZKU](https://zku.one/) [Learning](https://www.notion.so/Learning-50b5a6ecc45b46248323f0e552b6885f)
-
-* Review [matter-labs knowledge base](https://github.com/matter-labs/awesome-zero-knowledge-proofs#learn)
-
-* [zkSNARKS explained like you're someone who knows some math and some coding](https://www.reddit.com/r/zkTech/comments/tfjvrj/zksnarks_explained_like_youre_someone_who_knows/)
-
-* [The Halo2 Book](https://zcash.github.io/halo2/concepts/proofs.html)
-
-* [A survey of elliptic curves for proof systems](https://eprint.iacr.org/2022/586.pdf)
-
-* zkEVM
-  * [zkSync Era](https://era.zksync.io/docs/dev/)
-  * [Polygon zkEVM](https://wiki.polygon.technology/docs/zkEVM/develop/)
-  * [zkSync zkEVM](https://docs.zksync.io/zkevm/)
-  * [ConsenSys zkEVM](https://docs.zkevm.consensys.net/overview)
-
-
-## ZK Proof of Stake
-
-* date: 2023-02-04
-* last updated: 2023-02-04
-
-### Overview
-
-Here we review how zero knowledge primitives can be applied to confirm Proof of Stake Consensus.
-
-### References
-
-* [Paths toward single-slot finality](https://notes.ethereum.org/@vbuterin/single_slot_finality): A look at how to improve Ethereum’s LMD GHOST + Casper FFG consensus.
-* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
-* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s/tree/pairing): Re-implement an ecc circuits with halo2
-* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
-
-
-## zk-SNARKs
-
-* date: 2023-02-04
-* last updated: 2023-02-04
-
-### Overview
-
-Zero-Knowledge Succinct Non-Interactive Argument of Knowledge
-
-A proof construction where one can prove possession of certain information, e.g. a secret key, without revealing that information, and without any interaction between the prover and verifier.
-
-### References
-
-* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
-* [What are zk-SNARKs](https://z.cash/technology/zksnarks/)
-* [Introduction to zk-SNARKs](https://consensys.net/blog/developers/introduction-to-zk-snarks/)
-* [zk-STARKs vs. zk-SNARKs explained](https://cointelegraph.com/explained/zk-starks-vs-zk-snarks-explained)
-
-
 ## Uniswap V4 Intent Hook
 
 > Historical prototype route. This page preserves the original implementation context; the current reviewed synthesis is [Intent Systems Prototypes](/work/prototypes).
@@ -22910,6 +22602,314 @@ This historical 2025 route preserves the research entry point for the Tycho and 
 The bounded design used approved order funds during atomic settlement, which could remove the solver's need to pre-fund trading principal. Infrastructure, data/RPC, operational, and transaction-gas costs still exist; reverted, unsuccessful, or non-included attempts may leave unreimbursed costs.
 
 No current deployment, commercial validation, repeatable profit, or production-success claim is made.
+
+
+## Trading Systems
+
+> Historical research index retained for compatibility. Current research is [High-Performance Route Evaluation](/research/solving/solving).
+
+Trading Systems is the primary research domain for solving, arbitrage, execution, market data, and market-making infrastructure.
+
+This domain reframes earlier solver work as part of a broader professional discipline. The retained research focuses on route evaluation, liquidity discovery, simulation, execution gating, Tycho-backed market data, and the evolution from solver infrastructure toward Salus-style trading products.
+
+### Historical focus
+
+* Solver and arbitrage infrastructure
+* Route evaluation and profitability checks
+* Execution and replay validation
+* Tycho, 1inch, and liquidity-source integration
+* Market-data-driven product development
+
+### Existing Research
+
+* [High Performance Route Evaluation](/research/solving/solving)
+* [No Liquidity Solving with Tycho and 1inch](/research/solving/tycho1inchNOL)
+* [1inch NEAR Contract Development](/research/solving/near)
+
+### Architecture View
+
+For the latest system-design view, see:
+
+* [Solver Architecture](/architecture/trading-systems/solver)
+* [Salus Architecture](/architecture/trading-systems/salus)
+* [Trading Systems Evolution](/architecture/trading-systems/evolution)
+* [Reference Architecture: FalconX](/architecture/trading-systems/falconx)
+
+Trading Systems overlaps with [DeFi Protocol Engineering](/research/defi-protocol-engineering/intro) where solver infrastructure interacts with protocols, intents, hooks, and liquidity systems.
+
+
+## Axiom
+
+* date: 2023-06-28
+* last updated: 2023-02-04
+
+### Overview
+
+Axiom[^ov-1] is a ZK coprocessor for Ethereum which provides smart contracts trustless access to all on-chain data and arbitrary expressive compute over it.
+
+### References
+
+* [Website](https://www.axiom.xyz/)
+* [Documentation](https://docs.axiom.xyz/)
+* [Company Profile LinkedIn](https://www.linkedin.com/company/axiom-xyz/about/)
+* [Uniswap Grant](https://hackmd.io/@yisun/H1e6U42Ps) [tweet](https://twitter.com/UniswapFND/status/1617895640415207424?lang=en)
+* [Intrinsic technologies builder](https://gen.xyz/blog/axiomxyz)
+* [Github Repos](https://github.com/axiom-crypto)
+  * [https://github.com/axiom-crypto/axiom-v1-contracts](https://github.com/axiom-crypto/axiom-v1-contracts) (uses [foundry](https://book.getfoundry.sh/), solidity and [yul](https://medium.com/@jtriley15/yul-vs-solidity-contract-comparison-2b6d9e9dc833))
+  * [https://github.com/axiom-crypto/axiom-eth](https://github.com/axiom-crypto/axiom-eth) (written in rust)
+  * [https://github.com/axiom-crypto/axiom-apps](https://github.com/axiom-crypto/axiom-apps) (uniswap)
+  * [https://github.com/axiom-crypto/halo2-lib](https://github.com/axiom-crypto/halo2-lib) (rust zk)
+* [@axiomhq npm packages](https://www.npmjs.com/search?q=%40axiomhq)
+* Yi is part of the Delendum Telegram Group @yisun and Presented at [Eth Denver](https://twitter.com/axiom_xyz/status/1630960864479027200)
+* [Yi Sun, Reflection and Introspection in Blockchains](https://www.youtube.com/watch?v=05uv3hsH6oA)
+* [Delendum Research Workshop Slides](https://drive.google.com/drive/folders/15Ih1B4Pjr-oorAa33qlAgVH5klCHwSG3)
+
+### Footnotes
+
+Overview
+
+[^ov-1]: [Axiom](https://www.axiom.xyz/): The ZK Coprocessor for Ethereum
+
+
+## Zero Knowledge Research
+
+* date: 2023-02-04
+* last updated: 2023-02-04
+
+### Overview
+
+Here we do a deep dive on Zero Knowledge
+
+* Approach
+* Emerging Use Cases
+* Proof Systems
+* Efficient Signatures
+* Proof Aggregation
+* Tokenomics
+
+### Learning Material
+
+#### Foundational
+
+* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics/dp/1493917102)
+* [Introduction to Applied Linear Algebra](https://www.amazon.com/Introduction-Applied-Linear-Algebra-Matrices/dp/1316518965)
+* [Calculus I - Differentiation and Integration](https://www.amazon.com/Calculus-Differentiation-Integration-Hamilton-Education-ebook/dp/B07BPHW4VL)
+* [An Introduction to Mathematical Cryptography](https://www.amazon.com/Introduction-Mathematical-Cryptography-Undergraduate-Mathematics-ebook/dp/B00PULZOCI/): the mathematics behind the theory of public key cryptosystems and digital signature schemes.
+* [Cryptography Algorithms](https://www.amazon.com/Next-generation-Cryptography-Algorithms-Explained-implementation/dp/1789617138)
+* [Number Theory](https://crypto.stanford.edu/pbc/notes/numbertheory/)
+* [zkSNARKs in a nutshell](https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell)
+* [Quadratic Arithmetic Programs: from Zero to Hero](https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649)
+* [Exploring Elliptic Curve Pairings](https://medium.com/@VitalikButerin/exploring-elliptic-curve-pairings-c73c1864e627)
+* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
+* [The MoonMath Manual to zk-SNARKs](https://leastauthority.com/static/publications/MoonMath080822.pdf)
+* [Elliptic Curve Cryptography: a gentle introduction](https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/)
+* [Exploring Elliptic Curve Pairings](https://vitalik.ca/general/2017/01/14/exploring_ecp.html)
+* [KZG polynomial commitments](https://dankradfeist.de/ethereum/2020/06/16/kate-polynomial-commitments.html)
+* [plookup](https://eprint.iacr.org/2020/315.pdf): A simplified polynomial protocol for
+  lookup tables.
+* [Casting out Primes](https://blog.polygon.technology/wp-content/uploads/2022/10/casting-3.pdf): a nondeterministic method for bignum arithmetic. It is inspired by the “casting out nines” technique, where some identity is checked modulo 9, providing a probabilistic result.
+
+#### Zero Knowledge
+
+Research Articles
+
+* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities. *Light clients, also known as Simple Payment Verification (SPV) clients, are nodes which only download a small portion of the data in a blockchain, and use indirect means to verify that a given chain is valid.* \* Research Papers (Zero Knowledge Related)
+* [zkBridge: Trustless Cross-chain Bridges Made Practical](https://rdi.berkeley.edu/zkp/zkBridge/uploads/paper.pdf)
+* [Caulk: Lookup Arguments in Sublinear Time](https://eprint.iacr.org/2022/621.pdf): position-hiding linkability for vector commitment schemes: one can prove in zero knowledge that one or m values that comprise commitment cm all belong to the vector of size N committed to in C.
+* [HyperPlonk: Plonk with Linear-Time Prover and High-Degree Custom Gates](https://eprint.iacr.org/2022/1355.pdf)
+* [SLONK—a simple universal SNARK](https://ethresear.ch/t/slonk-a-simple-universal-snark/6420): a simplification to PLONK called SLONK. We replace the permutation argument (the “P” in PLONK) in favour of a shift argument (the “S” in SLONK). We get a universal SNARK with the smallest known proof size and verification time.
+* [Kate commitments from the Lagrange basis without FFTs](https://notes.ethereum.org/T0ZVaaywQAqP4jegqO3asg?view): how to commit, evaluate and open polynomials in the Lagrange basis without FFTs. This is the first part in a series (see part 1, part 2, part 3) showing how to do PLONK-style universal SNARKs without FFTs
+* [Hadamard checks from the Lagrange basis without FFTs](https://notes.ethereum.org/Il4z42lmQtaUYFigsjsk2Q?view): how to prove Hadamard relations between polynomials in the Lagrange basis without FFTs. This is the second part (see part 1, part 2, part 3) in a series showing how to do PLONK-style universal SNARKs without FFTs.
+* [PLONK-style SNARKs without FFTs](https://notes.ethereum.org/DLRqK9V7RIOsTZkab8Hm_Q?view): how to do PLONK-style universal SNARKs without FFTs. This is part 3 in a series (part 1, part 2, part 3).
+* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
+* [Plonky2: Fast Recursive Arguments with PLONK and FRI](https://github.com/mir-protocol/plonky2/blob/main/plonky2/plonky2.pdf)
+
+articles and learning resources
+
+* [Bridging the Multichain Universe with Zero Knowledge Proofs](https://medium.com/@ingonyama/bridging-the-multichain-universe-with-zero-knowledge-proofs-6157464fbc86)
+* [awesome-zkml](https://github.com/worldcoin/awesome-zkml)
+* [https://learn.0xparc.org/](https://learn.0xparc.org/): ZK Learning Resources
+* [Delendum ZKP Knowledge base](https://kb.delendum.xyz/)
+* [https://appliedzkp.org](https://appliedzkp.org/): Privacy and Scaling Exploration
+* [https://zkp.science/](https://zkp.science/): Zero-Knowledge Proofs
+* [https://starkware.co/stark-101/](https://starkware.co/stark-101/): Stark 101: write a STARK prover from scratch
+* [https://docs.starkware.co/starkex/index.html](https://docs.starkware.co/starkex/index.html): - Starkware StarkeEx
+* [Noir](https://docs.aztec.network/developers/noir) Noir is a Domain Specific Language for developing ZK-provable programs. (Rust based)
+  * [article](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9)
+  * [tweet](https://twitter.com/aztecnetwork/status/1578082456212643840)
+  * [Grants](https://aztec.network/grants/)
+* [Arkworks](https://github.com/arkworks-rs)
+* [zkrepl.dev](https://zkrepl.dev/)
+* [succinct](https://blog.succinct.xyz/)
+* [ZK BATCH ECDSA](https://blog.succinct.xyz/post/2022/10/03/batch-ecdsa/)
+* [Batch ECDSA Verification](https://github.com/puma314/batch-ecdsa)
+* [Bringing IBC to Ethereum using ZK-Snarks](https://ethresear.ch/t/bringing-ibc-to-ethereum-using-zk-snarks/13634)
+* [MINA docs](https://docs.minaprotocol.com/)
+
+implementation articles
+
+* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
+* [Succinct Towards the endgame of blockchain interoperability with proof of consensus](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus)
+
+#### Codebases
+
+* [Circom](https://github.com/iden3/circom) a novel domain-specific language for defining arithmetic circuits that can be used to generate zero-knowledge proofs
+
+* [DarkForest](https://github.com/darkforest-eth) zkSNARK space warfare
+  * [Awesome List](https://github.com/snowtigersoft/awesome-darkforest)
+  * [Our front end code (the game is open source!)](https://github.com/darkforest-eth/client/tree/master/src/Frontend)
+  * [Twitter](https://twitter.com/darkforest_eth)
+
+* [Discord](https://discord.gg/2u2TN6v8r6)
+  * [Team Blog](http://blog.zkga.me/)
+    * [Dark Forest v0.6](https://blog.zkga.me/announcing-v6)
+    * [Exploiting DF v0.5 Artifact Minting](https://blog.zkga.me/artifact-minting-exploit)
+    * [v0.5 Plugins Contest Winners](https://blog.zkga.me/v5-plugins-contest-winners)
+    * [Zero-Knowledge Proofs for Engineers](https://blog.zkga.me/intro-to-zksnarks)
+    * [Announcing Dark Forest](https://blog.zkga.me/announcing-darkforest)
+    * [The Strongest Crypto Gaming Thesis: Why we're building Dark Forest](https://gubsheep.mirror.xyz/nsteOfjATPSKH0J8lRD0j2iynmvv_C8i8eb483UzcTM)
+  * [Community plugins](http://plugins.zkga.me/)
+  * [Community-run wiki](http://dfwiki.net/)
+  * Player-made content
+    * [Dark Forest GPU universe explorer](https://www.longrocklabs.com/articles/the-exploration-era-begins/)
+    * [Getting started with Dark Forest](https://www.youtube.com/watch?v=keY4a9cKmgg)
+    * [Setting up a remote miner](https://www.youtube.com/watch?v=Kus4fWNg3zo)
+    * [Dark Forest battle timelapse](https://www.youtube.com/watch?v=o9A-cfDanTY)
+
+* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s): Re-implement an ecc circuits with halo2
+
+* [plonky2](https://github.com/mir-protocol/plonky2): a SNARK implementation based on techniques from PLONK and FRI. It has since expanded to include tools such as Starky, a highly performant STARK implementation.
+  * [plonky2-solidity-verifier](https://github.com/polymerdao/plonky2-solidity-verifier)
+  * [plonky2-circom](https://github.com/polymerdao/plonky2-circom): Plonky2 verifier in Circom
+  * [plonky2-ed25519](https://github.com/polymerdao/plonky2-ed25519): SNARK verification circuits of a digital signature scheme Ed25519 implemented with Plonky2.
+  * [plonky2-sha256](https://github.com/polymerdao/plonky2-sha256): SNARK circuits of a cryptographic hash function SHA-256 implemented with Plonky2.
+  * [plonky2-sha512](https://github.com/polymerdao/plonky2-sha512): SNARK circuits of a cryptographic hash function SHA-512 implemented with Plonky2.
+  * [plonky2-pairing](https://github.com/polymerdao/plonky2-pairing)
+
+#### Presentations
+
+* [Devcon VI](https://archive.devcon.org/archive/playlists/devcon-6/)
+* [Light Client After the Merge](https://archive.devcon.org/archive/watch/6/light-clients-after-the-merge/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=ZHNrAXf3RDE)
+* [What to Know about Zero Knowledge](https://archive.devcon.org/archive/watch/6/what-to-know-about-zero-knowledge/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Application ShowCase](https://archive.devcon.org/archive/watch/6/zk-application-showcase/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Badges: How to prove that you donated to Gitcoin grants](https://archive.devcon.org/archive/watch/6/zk-badges/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Security Self Led Session](https://archive.devcon.org/archive/watch/6/zk-security-self-led-session/?playlist=Devcon%206\&tab=YouTube)
+* [zkEVM Vs EVM: Full Equivalence?](https://archive.devcon.org/archive/watch/6/zkevm-vs-evm-full-equivalence/?playlist=Devcon%206\&tab=YouTube)
+* [ZK Application Design Patterns](https://archive.devcon.org/archive/watch/6/zk-application-design-patterns/?playlist=Devcon%206\&tab=YouTube) [video](https://www.youtube.com/watch?v=-PUKinjbLR8)
+* [Applied ZK SLS presentations](https://www.notion.so/360fcd3f2a824759b1373ddeef5bf564)
+
+#### Additional Information
+
+* Review [ENS Bridging Strategy](https://medium.com/the-ethereum-name-service/mvp-of-ens-on-l2-with-optimism-demo-video-how-to-try-it-yourself-b44c390cbd67) and [repo](https://github.com/ensdomains/l2gateway-demo/)
+
+* [Succinct](https://blog.succinct.xyz/post/2022/09/20/proof-of-consensus) [\$600K](https://forum.gnosis.io/t/gip-57-should-gnosis-dao-support-research-of-a-zksnark-enabled-light-client-and-bridge/5421) [tweet](https://twitter.com/succinctlabs/status/1572299292177481729) [Demo](https://www.zkbridge.wtf/) [github](https://github.com/succinctlabs) [video](https://youtu.be/Ct6H5GcnA0A?t=15554) built using [circom](https://docs.circom.io/)
+
+* [circom](https://docs.circom.io/)
+
+* [Arkworks](https://github.com/arkworks-rs/), [tutorial](https://github.com/arkworks-rs/r1cs-tutorial/), [twitter](https://twitter.com/arkworks_rs), [video](https://youtu.be/Ct6H5GcnA0A?t=7429)
+
+* [Aztec.network](http://Aztec.network) [Noir](https://aztec.network/noir) [intro](https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9), [github](https://github.com/noir-lang/noir), [twitter](https://twitter.com/aztecnetwork), [docs](https://noir-lang.github.io/book/index.html)
+
+* [GNark](https://github.com/ConsenSys/gnark)
+
+* [ElectronLabs](https://electronlabs.org/)
+
+* [ZKU](https://zku.one/) [Learning](https://www.notion.so/Learning-50b5a6ecc45b46248323f0e552b6885f)
+
+* Review [matter-labs knowledge base](https://github.com/matter-labs/awesome-zero-knowledge-proofs#learn)
+
+* [zkSNARKS explained like you're someone who knows some math and some coding](https://www.reddit.com/r/zkTech/comments/tfjvrj/zksnarks_explained_like_youre_someone_who_knows/)
+
+* [The Halo2 Book](https://zcash.github.io/halo2/concepts/proofs.html)
+
+* [A survey of elliptic curves for proof systems](https://eprint.iacr.org/2022/586.pdf)
+
+* zkEVM
+  * [zkSync Era](https://era.zksync.io/docs/dev/)
+  * [Polygon zkEVM](https://wiki.polygon.technology/docs/zkEVM/develop/)
+  * [zkSync zkEVM](https://docs.zksync.io/zkevm/)
+  * [ConsenSys zkEVM](https://docs.zkevm.consensys.net/overview)
+
+
+## ZK Proof of Stake
+
+* date: 2023-02-04
+* last updated: 2023-02-04
+
+### Overview
+
+Here we review how zero knowledge primitives can be applied to confirm Proof of Stake Consensus.
+
+### References
+
+* [Paths toward single-slot finality](https://notes.ethereum.org/@vbuterin/single_slot_finality): A look at how to improve Ethereum’s LMD GHOST + Casper FFG consensus.
+* [zkPoS: End-to-End Trustless](https://hyperoracle.medium.com/zkpos-end-to-end-trustless-65edccd87c5a): HyperOracle article on how zkPoS provides the ability of proving the consensus with ZK.
+* [halo2ecc-s](https://github.com/DelphinusLab/halo2ecc-s/tree/pairing): Re-implement an ecc circuits with halo2
+* [An efficient verifiable state for zk-EVM and beyondfrom the Anemoi hash function](https://eprint.iacr.org/2022/1487.pdf)
+
+
+## zk-SNARKs
+
+* date: 2023-02-04
+* last updated: 2023-02-04
+
+### Overview
+
+Zero-Knowledge Succinct Non-Interactive Argument of Knowledge
+
+A proof construction where one can prove possession of certain information, e.g. a secret key, without revealing that information, and without any interaction between the prover and verifier.
+
+### References
+
+* [Zk-SNARKs: Under the Hood](https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6)
+* [What are zk-SNARKs](https://z.cash/technology/zksnarks/)
+* [Introduction to zk-SNARKs](https://consensys.net/blog/developers/introduction-to-zk-snarks/)
+* [zk-STARKs vs. zk-SNARKs explained](https://cointelegraph.com/explained/zk-starks-vs-zk-snarks-explained)
+
+
+## Celestia
+
+* date: 2023-06-19
+* last updated: 2023-06-19
+
+### Overview
+
+Celestia[^ov-1] is a modular consensus and data network, built to enable anyone to easily deploy their own blockchain with minimal overhead.
+
+### Cryptographic Primitives
+
+* [whitepaper](https://arxiv.org/pdf/1809.09044.pdf)
+  * 2.2 Merkle Trees and Sparse Merkle Trees
+  * 2.3 Erasure Codes and Reed-Solomon Codes
+  * 5 Data Availability Proofs
+    * 5.1 Strawman 1D Reed-Solomon Availability Scheme
+    * 5.2 2D Reed-Solomon Encoded Merkle Tree Construction
+    * 5.3 Random Sampling and Network Block Recovery
+    * 5.4 Selective Share Disclosure
+    * 5.5 Fraud Proofs of Incorrectly Generated Extended Data
+* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
+* [Implementation celestia-app pkg](https://github.com/celestiaorg/celestia-app/tree/main/pkg)
+
+#### Namespaced Merkle Tree Wrapper
+
+* [code](https://github.com/celestiaorg/celestia-app/tree/main/pkg/wrapper)
+
+### Appendices
+
+### References
+
+* [Learn Modular](https://celestia.org/learn/)
+* [Fraud and Data Availability Proofs](https://arxiv.org/pdf/1809.09044.pdf): Maximising Light Client Security and Scaling Blockchains with Dishonest Majorities
+* [Celestia App Specifications](https://celestiaorg.github.io/celestia-app/index.html)
+* [Celestia App Architecture](https://github.com/celestiaorg/celestia-app/tree/main/docs/architecture)
+* [Rollkit Docs](https://rollkit.dev/docs/intro/)
+* [Rollkit Architecture Design Records](https://github.com/rollkit/rollkit/tree/main/docs/lazy-adr)
+* [Rollkit Dependency Graph](https://github.com/rollkit/rollkit/blob/main/docs/specification/rollkit-dependency-graph.mdx)
+* [Quantum Gravity Bridge](https://github.com/celestiaorg/quantum-gravity-bridge/tree/master)
+
+### Footnotes
+
+[^ov-1]: [Celestia](https://celestia.org/): the first modular blockchan network.
 
 
 ## 1inch Solver Study
