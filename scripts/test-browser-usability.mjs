@@ -188,6 +188,15 @@ try {
     assert.ok(dimensions.width > 0 && dimensions.height > 0, "low-latency SVG figure must load");
   }
   await page.setViewportSize({ width: 390, height: 844 });
+  const mobileArticleFigures = await articleFigures.evaluateAll((images) => images.map((image) => {
+    const box = image.getBoundingClientRect();
+    return { width: box.width, height: box.height, display: getComputedStyle(image).display };
+  }));
+  assert.equal(mobileArticleFigures.length, 5, "the low-latency article must retain five figures at 390px");
+  for (const figure of mobileArticleFigures) {
+    assert.notEqual(figure.display, "none", "a low-latency SVG figure must remain visible at 390px");
+    assert.ok(figure.width > 0 && figure.height > 0, "a low-latency SVG figure must have a visible 390px layout");
+  }
   const narrowArticle = await page.evaluate(() => ({ page: document.documentElement.scrollWidth, viewport: window.innerWidth }));
   assert.ok(narrowArticle.page <= narrowArticle.viewport, "low-latency article must not overflow at 390px");
   await page.setViewportSize({ width: 1280, height: 900 });
