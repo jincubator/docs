@@ -244,6 +244,19 @@ for (const [manifestName, route, alias] of [
   assert.match(fs.readFileSync(page.destination, "utf8"), /\*\*Draft\*\*/);
 }
 
+const lowLatencyManifest = JSON.parse(fs.readFileSync(
+  "docs/public/data/publications/collection-salus-low-latency-trading.json",
+  "utf8",
+));
+assert.equal(lowLatencyManifest.route, "/writing/salus-low-latency-trading");
+assert.equal(Object.hasOwn(lowLatencyManifest.artifact, "publication_availability"), false);
+const lowLatencyPage = lowLatencyManifest.outputs.find((output) => output.media_type === "text/mdx");
+const lowLatencyText = fs.readFileSync(lowLatencyPage.destination, "utf8");
+assert.doesNotMatch(lowLatencyText, /\*\*Draft\*\*/);
+assert.match(lowLatencyText, /Figure 2\. Salus separates asynchronous state coordination/);
+assert.match(lowLatencyText, /Figure 3\. New market state drives admission control/);
+assert.match(lowLatencyText, /Figure 4\. Changed components resolve through the in-memory route index/);
+
 const whitepaperManifest = JSON.parse(fs.readFileSync("docs/public/data/publications/collection-salus-whitepaper.json", "utf8"));
 const figurePath = "assets/writing/salus-whitepaper/06-route-construction-graph.svg";
 assert.equal(

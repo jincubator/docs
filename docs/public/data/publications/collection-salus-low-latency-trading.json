@@ -3,8 +3,7 @@
   "artifact": {
     "id": "collection/salus-low-latency-trading",
     "type": "collection",
-    "title": "Async Concurrency in Rust for Low Latency Trading Systems",
-    "publication_availability": "visible_draft"
+    "title": "Async Concurrency in Rust for Low Latency Trading Systems"
   },
   "route": "/writing/salus-low-latency-trading",
   "format": "vocs-mdx",
@@ -20,7 +19,7 @@
     {
       "destination": "docs/pages/writing/salus-low-latency-trading.mdx",
       "media_type": "text/mdx",
-      "sha256": "ed7001a3ed49d3f20b6ef051a10904e8fa03a0f12a687699d02b47de46742ccd"
+      "sha256": "2257bb117e2a11c0c42334d1140c0b3b7f74c5b7d8ede352a70cad06f954c991"
     },
     {
       "destination": "docs/public/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg",

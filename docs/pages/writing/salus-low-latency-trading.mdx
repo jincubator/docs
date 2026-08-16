@@ -7,8 +7,6 @@ description: "How Salus uses bounded queues, freshness controls, deterministic C
 
 # Async Concurrency in Rust for Low Latency Trading Systems
 
-> **Draft** — This public working document is under active independent review.
-
 *20 min read*
 
 ## Problem
@@ -78,7 +76,7 @@ Guarded Execution Handoff
 
 <img src="/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg" alt="Low-latency runtime pipeline: asynchronous state coordination narrows work before bounded CPU evaluation and guarded handoff." />
 
-*Figure 2. Changed liquidity state narrows the durable route catalogue before current-state evaluation.*
+*Figure 2. Salus separates asynchronous state coordination, bounded admission, CPU-heavy evaluation, freshness, and guarded execution into explicit runtime stages.*
 
 ## 2. Synchronization and Primitive Mapping
 
@@ -130,7 +128,7 @@ If the frame is found to be obsolete, workers signal a cooperative `AtomicBool` 
 {/* Figure 3 source asset: evaluation-to-execution lifecycle SVG */}
 <img src="/assets/writing/salus-low-latency-trading/03-freshness-and-cancellation.svg" alt="Freshness and stale-work cancellation: new state controls admission, pending replacement, running work cancellation, and final-result authority." />
 
-*Figure 3. Evaluation, freshness, selection and guarded execution remain separate evidence boundaries.*
+*Figure 3. New market state drives admission control, pending-work replacement, cooperative cancellation, and a final stale-result guard.*
 
 ## 5. Authoritative Specifications & Reference Architecture
 
@@ -157,7 +155,7 @@ The related public working documents provide the broader system and architecture
 > work per unit time, and freshness is whether the answer is still commercially
 > valid when it completes.
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** The warm runtime builds an in-memory route catalog;
+**Source-draft implementation description (pending separately authorized implementation verification).** The warm runtime builds an in-memory route catalog;
 the component-to-route index limits a block to relevant known routes rather
 than querying PostgreSQL per route. Route preparation and evaluation are bounded
 and freshness-aware. The core entry points are
@@ -183,6 +181,8 @@ correctness and capacity concern.
 ### Pipeline model
 
 <img src="/assets/writing/salus-low-latency-trading/02-changed-component-to-evaluation.svg" alt="Changed component to evaluation: changed components resolve through an in-memory index before bounded admission and evaluation." />
+
+*Figure 4. Changed components resolve through the in-memory route index before bounded preparation, coverage validation, and evaluation.*
 
 ```text
 Tycho / blockchain stream
@@ -220,7 +220,7 @@ and configuration can stop work before evaluation.
 | Execution | External I/O + lifecycle state | Bounded `execution_stage` | Dedupe, retry, external latency |
 | Metrics | Serialization + file I/O | Independent bounded writer | Never stall the hot path |
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** The concrete catalogue is described in Salus’s
+**Source-draft implementation description (pending separately authorized implementation verification).** The concrete catalogue is described in Salus’s
 queue walkthrough
 and its route-evaluation flow in
 `process_queued_route_evaluation_request`.
@@ -598,7 +598,7 @@ and shutdown semantics where the business meaning requires them.
 | `DropNewest` | `try_send`; full channel returns `DroppedByPolicy` and records a drop | a new item is safely disposable, such as best-effort diagnostics | the producer must make loss visible if the record is required for an evidence claim |
 | `LatestWins` | generic sender also uses nonblocking `try_send` | only as a labelled policy; app code supplies replacement semantics | it is **not** a generic drop-oldest implementation in `RuntimeQueue` |
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** True newest-pending replacement lives in
+**Source-draft implementation description (pending separately authorized implementation verification).** True newest-pending replacement lives in
 `LiveRouteRefreshQueue::enqueue`: one pending job is replaced, while affected start tokens and changed
 components are merged. Route prep and evaluation coalesce buffered receiver
 work and use latest-block checks. This distinction avoids a subtle but important
@@ -627,7 +627,7 @@ CPU completes commercially useless work
 
 ## 10. Current queue inventory
 
-The source draft records the following capacity and policy facts for the reviewed implementation. They remain pending independent Technical and Claim Review. “Normal” means freshness-first current-block operation; replay or previous-block analysis can intentionally change the behavior.
+The source draft records the following capacity and policy facts for the reviewed implementation. They remain pending separately authorized implementation verification. “Normal” means freshness-first current-block operation; replay or previous-block analysis can intentionally change the behavior.
 
 | Queue | Capacity / policy | Role | Freshness / lifecycle |
 | --- | --- | --- | --- |
@@ -655,7 +655,7 @@ Source locations remain internal; the technical queue roles, policies, and lifec
 > the discard, but we do not let obsolete evaluation consume the next block’s
 > budget.
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** `begin_block` publishes the maximum observed block
+**Source-draft implementation description (pending separately authorized implementation verification).** `begin_block` publishes the maximum observed block
 with `AtomicU64::fetch_max(..., Ordering::AcqRel)`. Hot evaluation checks load
 it with `Ordering::Acquire`; stale chunks set a shared `AtomicBool` cancel flag.
 The queue worker performs a further stale test after compute and before
@@ -689,7 +689,7 @@ scoped operating-system (OS) worker threads, each with a current-thread Tokio ru
         deterministic result merge
 ```
 
-**Source-draft implementation description (pending independent Technical and Claim Review).**
+**Source-draft implementation description (pending separately authorized implementation verification).**
 `route_eval_parallelism`,
 `route_eval_chunks`,
 and
@@ -704,7 +704,7 @@ choice, not a universal optimal range.
 
 ## 13. Telemetry architecture deep dive
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** `RuntimeMetricsRecorder` creates event maps,
+**Source-draft implementation description (pending separately authorized implementation verification).** `RuntimeMetricsRecorder` creates event maps,
 envelopes them with schema/run/chain/mode fields, serializes them as JSONL, and
 passes the line to `RuntimeMetricsWriter`. The writer owns a bounded
 `runtime_metrics_jsonl` queue with `DropNewest`, a named standard thread,
@@ -800,8 +800,7 @@ The subsequent changes were targeted rather than a wholesale rewrite:
 
 ## 16. Retained Performance Evidence
 
-Every number below is attached to its original retained workload. It is a
-study aid, not a production service-level objective or universal Salus capacity.
+Every number below is attached to its original retained workload. These are workload-specific engineering measurements, not production service-level objectives or universal Salus capacity claims.
 
 | Retained measurement | Workload / profile | What it supports | What it does **not** support |
 | --- | --- | --- | --- |
@@ -852,7 +851,7 @@ network, or exchange/relay boundary. They need different remedies.
 > A high routes-per-second figure is not useful if work waits too long, is
 > expensive because of search breadth, or becomes stale before selection.
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** The retained statistics contract defines sustained
+**Source-draft implementation description (pending separately authorized implementation verification).** The retained statistics contract defines sustained
 evaluations per second as completed routes divided by completed route-evaluation
 service time; the report separately carries per-block and runtime statistics.
 The retained statistics contract records this denominator separately from wall-clock progress.
@@ -865,7 +864,7 @@ and the fraction of work that survives freshness checks.
 
 ## 19. Memory, allocation, and locality
 
-**Source-draft implementation description (pending independent Technical and Claim Review).** The performance strategy is primarily to avoid
+**Source-draft implementation description (pending separately authorized implementation verification).** The performance strategy is primarily to avoid
 unnecessary work and payload expansion rather than claim a magic zero-copy
 pipeline:
 
@@ -904,7 +903,7 @@ heap peaks where retained evidence did not measure them.
 | `spawn_blocking` | blocking route discovery and other blocking boundaries | moves bounded blocking work off Tokio executor workers |
 | `JoinHandle` | queue workers and writer lifecycle | gives owners an explicit shutdown/join result rather than detached work |
 
-**Source-draft implementation note (pending independent Technical and Claim Review).** The normal queue pipeline does not use a
+**Source-draft implementation note (pending separately authorized implementation verification).** The normal queue pipeline does not use a
 `Semaphore` or `broadcast` as its primary work-queue mechanism; route-refresh
 uses `Notify` with its app-owned pending slot, and `oneshot` returns individual
 blocking discovery results. Read the current

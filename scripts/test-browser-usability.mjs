@@ -180,7 +180,10 @@ try {
 
   await page.goto(`${baseUrl}/writing/salus-low-latency-trading/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Async Concurrency in Rust for Low Latency Trading Systems" }).count(), 1);
-  assert.equal(await page.getByText(/Draft.*under active independent review/i).count(), 1);
+  assert.equal(await page.getByText(/Draft.*under active independent review/i).count(), 0);
+  assert.equal(await page.getByText(/Figure 2\. Salus separates asynchronous state coordination/).count(), 1);
+  assert.equal(await page.getByText(/Figure 3\. New market state drives admission control/).count(), 1);
+  assert.equal(await page.getByText(/Figure 4\. Changed components resolve through the in-memory route index/).count(), 1);
   const articleFigures = page.locator('img[src^="/assets/writing/salus-low-latency-trading/"]');
   assert.equal(await articleFigures.count(), 5, "the low-latency article must retain its five SVG figures");
   for (const figure of await articleFigures.all()) {
