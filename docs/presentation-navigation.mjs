@@ -22,11 +22,14 @@ const salusItems = [
   { text: "Overview", link: "/salus" },
   { text: "Whitepaper — Draft", link: "/salus/whitepaper" },
   { text: "Architecture — Draft", link: "/salus/architecture" },
+  {
+    text: "Low Latency Trading — Draft",
+    link: "/writing/salus-low-latency-trading",
+  },
 ];
 
 const workItems = [
   { text: "Overview", link: "/work" },
-  { text: "Trading - Salus", link: "/salus" },
   { text: "Digital Banking", link: "/work/digital-banking" },
   { text: "DeFi Leveraging", link: "/work/defi-leveraging" },
   { text: "Intent Systems Prototypes", link: "/work/prototypes" },
@@ -106,7 +109,13 @@ const architectureItems = [
   },
 ];
 
-const writingItems = [{ text: "Overview", link: "/writing" }];
+const writingItems = [
+  { text: "Overview", link: "/writing" },
+  {
+    text: "Salus Low Latency Trading — Draft",
+    link: "/writing/salus-low-latency-trading",
+  },
+];
 
 const archiveItems = [
   { text: "Archive overview", link: "/archive" },

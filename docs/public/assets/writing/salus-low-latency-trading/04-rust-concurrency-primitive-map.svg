@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Rust concurrency primitive map</title><desc id="desc">A map associates channels, atomics, locks, shared ownership, and bounded workers with their appropriate responsibilities.</desc>
+  <defs><style>.bg{fill:#f6f8fb}.h{font:700 48px Arial,sans-serif;fill:#102b46}.k{font:700 18px Arial,sans-serif;fill:#087f8f}.b{fill:#fff;stroke:#4e7fe3;stroke-width:3}.g{fill:#eef8ef;stroke:#3b9d63;stroke-width:3}.y{fill:#fff4dc;stroke:#e6a62f;stroke-width:3}.t{font:700 22px Arial,sans-serif;fill:#102b46}.s{font:400 17px Arial,sans-serif;fill:#496783}</style></defs>
+  <rect class="bg" width="1600" height="900"/><text x="80" y="80" class="k">SALUS · RUST OWNERSHIP MODEL</text><text x="80" y="142" class="h">Choose a primitive by the fact it owns.</text><text x="80" y="185" class="s">The goal is explicit ownership and bounded contention—not maximum primitive variety.</text>
+  <g>
+    <rect x="90" y="260" width="430" height="165" rx="18" class="b"/><text x="125" y="305" class="t">Tokio mpsc</text><text x="125" y="340" class="s">Bounded ownership transfer</text><text x="125" y="375" class="s">Stage work moves without shared mutation.</text>
+    <rect x="585" y="260" width="430" height="165" rx="18" class="g"/><text x="620" y="305" class="t">Atomics</text><text x="620" y="340" class="s">Latest state and cancellation</text><text x="620" y="375" class="s">One independent, hot fact.</text>
+    <rect x="1080" y="260" width="430" height="165" rx="18" class="y"/><text x="1115" y="305" class="t">Mutex / RwLock</text><text x="1115" y="340" class="s">Compound mutable invariant</text><text x="1115" y="375" class="s">Use a short, named critical section.</text>
+    <rect x="335" y="510" width="430" height="165" rx="18" class="g"/><text x="370" y="555" class="t">Arc + JoinHandle</text><text x="370" y="590" class="s">Shared lifetime and task ownership</text><text x="370" y="625" class="s">No detached, unowned background work.</text>
+    <rect x="835" y="510" width="430" height="165" rx="18" class="y"/><text x="870" y="555" class="t">Scoped workers / spawn_blocking</text><text x="870" y="590" class="s">Bounded CPU or blocking work</text><text x="870" y="625" class="s">Protect async I/O coordination capacity.</text>
+  </g>
+  <rect x="100" y="750" width="1400" height="75" rx="18" fill="#102b46"/><text x="800" y="797" text-anchor="middle" style="font:700 27px Arial,sans-serif;fill:#fff">Atomic for one fact. Lock for an invariant. Channel when ownership moves.</text>
+</svg>

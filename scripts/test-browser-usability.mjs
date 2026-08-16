@@ -178,6 +178,20 @@ try {
   await page.goto(`${baseUrl}/work/salus/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByText("Page Not Found", { exact: true }).count(), 0, "legacy Salus alias must remain valid");
 
+  await page.goto(`${baseUrl}/writing/salus-low-latency-trading/`, { waitUntil: "domcontentloaded" });
+  assert.equal(await page.getByRole("heading", { level: 1, name: "Async Concurrency in Rust for Low-Latency Trading Systems" }).count(), 1);
+  assert.equal(await page.getByText(/Draft.*under active independent review/i).count(), 1);
+  const articleFigures = page.locator('img[src^="/assets/writing/salus-low-latency-trading/"]');
+  assert.equal(await articleFigures.count(), 5, "the low-latency article must retain its five SVG figures");
+  for (const figure of await articleFigures.all()) {
+    const dimensions = await figure.evaluate((image) => ({ width: image.naturalWidth, height: image.naturalHeight }));
+    assert.ok(dimensions.width > 0 && dimensions.height > 0, "low-latency SVG figure must load");
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  const narrowArticle = await page.evaluate(() => ({ page: document.documentElement.scrollWidth, viewport: window.innerWidth }));
+  assert.ok(narrowArticle.page <= narrowArticle.viewport, "low-latency article must not overflow at 390px");
+  await page.setViewportSize({ width: 1280, height: 900 });
+
   for (const [asset, type] of [[pdfPath, /application\/pdf/], [imagePath, /image\/png/], [routeFigurePath, /image\/svg\+xml/], [searchIndexPath, /application\/json/]]) {
     const response = await fetch(`${baseUrl}${asset}`);
     assert.equal(response.status, 200, `${asset} must be served`);

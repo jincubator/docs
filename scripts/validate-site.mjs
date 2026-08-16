@@ -288,8 +288,8 @@ const PUBLICATIONS = [
 const PRIVATE_PUBLICATION_REFERENCE =
   /(?:johnwhitton\/prep|\/prep\/|evidence_location|private_reviewer_notes|raw_benchmark_logs|sensitive_strategy)/i;
 const EXPECTED_TOP_NAVIGATION = [
-  "Work",
   "Salus",
+  "Work",
   "Research",
   "Architecture",
   "Writing",
@@ -537,7 +537,7 @@ export function validatePublications(root) {
     ? fs.readdirSync(manifestDirectory).filter((name) => name.endsWith(".json")).sort()
     : [];
   const issues = manifests.flatMap((name) => validateReleasePublication(root, path.join(manifestDirectory, name)));
-  if (manifests.length !== 28) issues.push(`expected 28 publication manifests, found ${manifests.length}`);
+  if (manifests.length !== 29) issues.push(`expected 29 publication manifests, found ${manifests.length}`);
   const ids = manifests.flatMap((name) => {
     try { return [JSON.parse(fs.readFileSync(path.join(manifestDirectory, name), "utf8")).artifact?.id]; } catch { return []; }
   });

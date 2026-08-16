@@ -8,7 +8,7 @@ const validator = await import("./validate-site.mjs");
 const presentation = await import("../docs/presentation-navigation.mjs");
 const routePolicy = await import("../route-policy.js");
 const { remarkImageZoom } = await import("../remark-image-zoom.js");
-const expectedNavigation = ["Work", "Salus", "Research", "Architecture", "Writing", "John Whitton ↗"];
+const expectedNavigation = ["Salus", "Work", "Research", "Architecture", "Writing", "John Whitton ↗"];
 const config = fs.readFileSync(path.join(process.cwd(), "vocs.config.ts"), "utf8");
 const vocsPatch = fs.readFileSync(path.join(process.cwd(), "patches/vocs@1.0.13.patch"), "utf8");
 const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
@@ -25,7 +25,7 @@ assert.deepEqual(presentation.primaryNavigation, expectedNavigation);
 assert.match(config, /sidebar:\s*presentationSidebar,/);
 assert.deepEqual(
   presentation.presentationSidebar.map((group) => group.text),
-  ["Work", "Salus", "Research", "Architecture", "Writing", "John Whitton ↗", "Archive"],
+  ["Salus", "Work", "Research", "Architecture", "Writing", "John Whitton ↗", "Archive"],
 );
 for (const group of presentation.presentationSidebar) {
   if (group.text === "John Whitton ↗") {
@@ -42,12 +42,17 @@ assert.deepEqual(salusNavigation.items, [
   { text: "Overview", link: "/salus" },
   { text: "Whitepaper — Draft", link: "/salus/whitepaper" },
   { text: "Architecture — Draft", link: "/salus/architecture" },
+  { text: "Low Latency Trading — Draft", link: "/writing/salus-low-latency-trading" },
 ]);
 const writingNavigation = presentation.presentationSidebar.find((group) => group.text === "Writing");
-assert.deepEqual(writingNavigation.items, [{ text: "Overview", link: "/writing" }]);
+assert.deepEqual(writingNavigation.items, [
+  { text: "Overview", link: "/writing" },
+  { text: "Salus Low Latency Trading — Draft", link: "/writing/salus-low-latency-trading" },
+]);
 assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus"), true);
 assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus/whitepaper"), true);
 assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus/architecture"), true);
+assert.equal(routePolicy.ACTIVE_ROUTES.includes("/writing/salus-low-latency-trading"), true);
 for (const route of ["/work/salus", "/writing/salus-whitepaper", "/architecture/salus-trading-and-solving-infrastructure"]) {
   assert.equal(routePolicy.COMPATIBILITY_ROUTES.some((entry) => entry.route === route), true);
 }
@@ -210,7 +215,8 @@ assert.equal(validator.readingTimeMinutes("word ".repeat(1_125)), 5);
 assert.deepEqual(validator.validatePublications(process.cwd()), []);
 
 const manifests = fs.readdirSync("docs/public/data/publications").filter((name) => name.endsWith(".json"));
-assert.equal(manifests.length, 28);
+assert.equal(manifests.length, 29);
+assert.equal(manifests.includes("collection-salus-low-latency-trading.json"), true);
 assert.equal(manifests.includes("collection-portfolio-strategy-competitor-analysis.json"), false);
 assert.equal(manifests.filter((name) => name === "work-salus.json").length, 1);
 assert.equal(

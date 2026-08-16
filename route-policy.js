@@ -1,9 +1,9 @@
 export const ACTIVE_ROUTES = Object.freeze([
   "/",
-  "/work",
   "/salus",
   "/salus/whitepaper",
   "/salus/architecture",
+  "/work",
   "/work/digital-banking",
   "/work/defi-leveraging",
   "/work/prototypes",
@@ -31,6 +31,7 @@ export const ACTIVE_ROUTES = Object.freeze([
   "/writing/solving-arbitrage-market-making",
   "/writing/mapping-liquidity-to-routes-at-scale",
   "/writing/speed-wasnt-the-problem",
+  "/writing/salus-low-latency-trading",
   "/about",
   "/archive",
 ]);

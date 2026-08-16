@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Low-latency runtime pipeline</title>
+  <desc id="desc">A pipeline separates asynchronous state coordination from bounded CPU-heavy route evaluation and guarded execution handoff.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#58718d"/></marker>
+    <style>
+      .bg{fill:#f6f8fb}.title{font:700 48px Arial,sans-serif;fill:#102b46}.sub{font:400 24px Arial,sans-serif;fill:#496783}.lane{fill:#eaf6f8;stroke:#43aebb;stroke-width:3}.cpu{fill:#fff4dc;stroke:#e6a62f;stroke-width:3}.box{fill:#fff;stroke:#4e7fe3;stroke-width:3}.guard{fill:#eef8ef;stroke:#3b9d63;stroke-width:3}.label{font:700 21px Arial,sans-serif;fill:#102b46}.small{font:400 17px Arial,sans-serif;fill:#496783}.arrow{stroke:#58718d;stroke-width:4;marker-end:url(#arrow)}.tag{font:700 16px Arial,sans-serif;fill:#087f8f}
+    </style>
+  </defs>
+  <rect class="bg" width="1600" height="900"/>
+  <text x="80" y="88" class="tag">SALUS · CONCURRENCY ARCHITECTURE</text>
+  <text x="80" y="148" class="title">Bound I/O coordination; bound CPU evaluation.</text>
+  <text x="80" y="190" class="sub">Each boundary narrows, owns, or validates work before it can advance.</text>
+  <rect x="70" y="245" width="1460" height="210" rx="24" class="lane"/>
+  <text x="105" y="285" class="label">ASYNC COORDINATION · STATE AND OWNERSHIP</text>
+  <g>
+    <rect x="105" y="320" width="190" height="95" rx="16" class="box"/><text x="200" y="360" text-anchor="middle" class="label">State stream</text><text x="200" y="390" text-anchor="middle" class="small">ordered updates</text>
+    <line x1="300" y1="368" x2="365" y2="368" class="arrow"/>
+    <rect x="370" y="320" width="205" height="95" rx="16" class="box"/><text x="472" y="360" text-anchor="middle" class="label">Canonical state</text><text x="472" y="390" text-anchor="middle" class="small">topology + live state</text>
+    <line x1="580" y1="368" x2="645" y2="368" class="arrow"/>
+    <rect x="650" y="320" width="220" height="95" rx="16" class="box"/><text x="760" y="360" text-anchor="middle" class="label">Affected scope</text><text x="760" y="390" text-anchor="middle" class="small">known route recall</text>
+    <line x1="875" y1="368" x2="940" y2="368" class="arrow"/>
+    <rect x="945" y="320" width="230" height="95" rx="16" class="box"/><text x="1060" y="360" text-anchor="middle" class="label">Bounded admission</text><text x="1060" y="390" text-anchor="middle" class="small">coverage + freshness</text>
+    <line x1="1180" y1="368" x2="1245" y2="368" class="arrow"/>
+    <rect x="1250" y="320" width="235" height="95" rx="16" class="box"/><text x="1367" y="360" text-anchor="middle" class="label">Evaluation queue</text><text x="1367" y="390" text-anchor="middle" class="small">explicit pressure</text>
+  </g>
+  <line x1="1367" y1="420" x2="1367" y2="520" class="arrow"/>
+  <rect x="70" y="520" width="1460" height="220" rx="24" class="cpu"/>
+  <text x="105" y="560" class="label">BOUNDED CPU EVALUATION · DETERMINISTIC WORK</text>
+  <g>
+    <rect x="250" y="595" width="250" height="100" rx="16" class="box"/><text x="375" y="637" text-anchor="middle" class="label">Coordinator</text><text x="375" y="667" text-anchor="middle" class="small">deterministic chunks</text>
+    <line x1="505" y1="645" x2="600" y2="645" class="arrow"/>
+    <rect x="605" y="595" width="260" height="100" rx="16" class="cpu"/><text x="735" y="637" text-anchor="middle" class="label">Worker pool</text><text x="735" y="667" text-anchor="middle" class="small">bounded CPU work</text>
+    <line x1="870" y1="645" x2="965" y2="645" class="arrow"/>
+    <rect x="970" y="595" width="250" height="100" rx="16" class="guard"/><text x="1095" y="637" text-anchor="middle" class="label">Finalization</text><text x="1095" y="667" text-anchor="middle" class="small">merge + freshness</text>
+    <line x1="1225" y1="645" x2="1320" y2="645" class="arrow"/>
+    <rect x="1325" y="595" width="160" height="100" rx="16" class="guard"/><text x="1405" y="637" text-anchor="middle" class="label">Handoff</text><text x="1405" y="667" text-anchor="middle" class="small">guarded</text>
+  </g>
+  <rect x="80" y="790" width="1440" height="65" rx="16" fill="#102b46"/>
+  <text x="800" y="832" text-anchor="middle" style="font:700 25px Arial,sans-serif;fill:#fff">Async coordination moves and validates work; bounded workers spend CPU only on work that remains useful.</text>
+</svg>
