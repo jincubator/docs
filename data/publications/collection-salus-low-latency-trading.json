@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "artifact": {
+    "id": "collection/salus-low-latency-trading",
+    "type": "collection",
+    "title": "Async Concurrency in Rust for Low Latency Trading Systems"
+  },
+  "route": "/writing/salus-low-latency-trading",
+  "format": "vocs-mdx",
+  "presentation": {
+    "label": "Article",
+    "reading_time_minutes": 20
+  },
+  "generator": {
+    "name": "jincubator-publication",
+    "version": 4
+  },
+  "outputs": [
+    {
+      "destination": "docs/pages/writing/salus-low-latency-trading.mdx",
+      "media_type": "text/mdx",
+      "sha256": "2257bb117e2a11c0c42334d1140c0b3b7f74c5b7d8ede352a70cad06f954c991"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "7ba87da5746b7637241726cfb81944bdba13a41f314f6b2e8a7ee1c91669a7e8"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-low-latency-trading/02-changed-component-to-evaluation.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "f06e081a32fc8b8d9ae7cc7ed0ffe491683027b9d5532c4fe76bdc594d482fbe"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-low-latency-trading/03-freshness-and-cancellation.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "14897924bec9cdc9f5a6c89b45e2b000cbd50a4661871b15ad8fcb9e61cc8a19"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-low-latency-trading/04-rust-concurrency-primitive-map.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "6f3dc5b7626f8c5f9d826edca8fb832a0d02e261df754815685548b63d778fd7"
+    },
+    {
+      "destination": "docs/public/assets/writing/salus-low-latency-trading/05-latency-attribution.svg",
+      "media_type": "image/svg+xml",
+      "sha256": "e76fd55ed76cabda52d7d26a96405e83347e2992c2db2d61b4214789805b3f35"
+    }
+  ],
+  "provenance_notice": "Generated editorial projection; do not edit the distribution copy directly."
+}
