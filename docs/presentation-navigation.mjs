@@ -23,7 +23,7 @@ const salusItems = [
   { text: "Whitepaper — Draft", link: "/salus/whitepaper" },
   { text: "Architecture — Draft", link: "/salus/architecture" },
   {
-    text: "Low Latency Trading — Draft",
+    text: "Low Latency Trading",
     link: "/writing/salus-low-latency-trading",
   },
 ];
@@ -112,7 +112,7 @@ const architectureItems = [
 const writingItems = [
   { text: "Overview", link: "/writing" },
   {
-    text: "Salus Low Latency Trading — Draft",
+    text: "Salus Low Latency Trading",
     link: "/writing/salus-low-latency-trading",
   },
 ];

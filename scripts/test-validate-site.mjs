@@ -42,12 +42,12 @@ assert.deepEqual(salusNavigation.items, [
   { text: "Overview", link: "/salus" },
   { text: "Whitepaper — Draft", link: "/salus/whitepaper" },
   { text: "Architecture — Draft", link: "/salus/architecture" },
-  { text: "Low Latency Trading — Draft", link: "/writing/salus-low-latency-trading" },
+  { text: "Low Latency Trading", link: "/writing/salus-low-latency-trading" },
 ]);
 const writingNavigation = presentation.presentationSidebar.find((group) => group.text === "Writing");
 assert.deepEqual(writingNavigation.items, [
   { text: "Overview", link: "/writing" },
-  { text: "Salus Low Latency Trading — Draft", link: "/writing/salus-low-latency-trading" },
+  { text: "Salus Low Latency Trading", link: "/writing/salus-low-latency-trading" },
 ]);
 assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus"), true);
 assert.equal(routePolicy.ACTIVE_ROUTES.includes("/salus/whitepaper"), true);

@@ -1,114 +1,922 @@
 ---
-title: "Async Concurrency in Rust for Low-Latency Trading Systems"
+title: "Async Concurrency in Rust for Low Latency Trading Systems"
 description: "How Salus uses bounded queues, freshness controls, deterministic CPU work, and latency attribution in a stateful trading-system runtime."
 ---
 
 {/* Generated canonical editorial projection. Do not edit directly. */}
 
-# Async Concurrency in Rust for Low-Latency Trading Systems
+# Async Concurrency in Rust for Low Latency Trading Systems
 
 > **Draft** — This public working document is under active independent review.
 
-*11 min read*
+*20 min read*
 
-## Overview
+## Problem
 
-Low-latency trading systems operate on inputs that can change while work is still in flight. Market state can move while a runtime ingests data, updates topology, prepares candidates, simulates outcomes, and decides whether an action remains valid. A result can be computationally correct for its source state and still be useless when it completes.
+Low-latency trading systems operate on inputs that can change while work is still in flight. Market state may move while a runtime is ingesting data, updating topology, preparing candidates, simulating outcomes, and deciding whether an action remains valid. A result can therefore be computationally correct for its source state and still be useless by the time it completes.
 
-Salus is a Jincubator-owned research and engineering initiative. John Whitton designed and built its stateful runtime boundaries to turn changing decentralized-market state into bounded, inspectable evaluation work and guarded execution decisions. The concurrency problem is not simply how to run more tasks. It is how to preserve latency, useful throughput, freshness, and correctness at the same time.
+The engineering problem is not simply **how to execute more work concurrently**. It is how to preserve four properties at the same time:
 
-This article describes the public-safe design: asynchronous coordination for input and external I/O, bounded CPU-heavy evaluation, explicit queue ownership, and a rule that stale work must not quietly become authoritative. It does not establish a production trading platform, profitable execution, or commercial validation.
+- **latency** — complete a useful decision quickly;
+- **throughput** — process enough useful work to keep pace with the market;
+- **freshness** — prevent superseded work from consuming the next decision budget; and
+- **correctness** — retain explicit state, ownership, and execution boundaries while concurrency increases.
 
-<img src="/assets/work/salus/salus-runtime-architecture.png" alt="Salus runtime architecture: external market state enters a bounded runtime hot path, while persistence, configuration, execution, and observability retain separate ownership." />
+Unbounded task creation or queue growth can make headline throughput look better while increasing queue age, memory pressure, tail latency, and stale completion. In a trading runtime, overload policy is therefore part of the decision architecture rather than an implementation detail.
 
-## The low-latency runtime pipeline
+## Salus Overview
 
-The runtime narrows work before it spends CPU. A state update changes a small part of a larger known topology; it should not trigger a database query for every route or a fresh scan of the full route universe. Durable membership narrows the candidate scope, bounded preparation decides what is ready to evaluate, and a separate CPU-bound stage performs deterministic work.
+Salus is a Jincubator-owned research and engineering initiative and reference implementation. John Whitton designed and built its Rust-based modular trading and solving infrastructure to turn changing decentralized-market state into bounded, inspectable evaluation work and guarded execution decisions. The system separates durable topology from live state, maintains an in-memory catalogue of known routes, maps changed liquidity components directly to affected routes, evaluates those routes against block-scoped state, and preserves a distinct execution and evidence lifecycle.
 
-<img src="/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg" alt="Low-latency runtime pipeline from state ingestion through affected-route resolution, bounded admission, evaluation workers, finalization, and guarded execution handoff." />
+The concurrency architecture follows the same separation of responsibilities. Tokio coordinates asynchronous input/output (I/O), streams, timers, and bounded channels. CPU-heavy route simulation is moved into a bounded worker model. Small independent freshness facts use atomics; compound lifecycle state uses short locks; channels transfer ownership between stages; and queue policies make overload visible instead of hiding it as an unbounded backlog.
 
-Tokio-style async coordination owns streams, timers, channels, and external I/O; bounded workers own numerical evaluation. Moving CPU-heavy work into unbounded async tasks would make the scheduler itself the overload policy. A bounded worker model makes that policy inspectable.
+<img src="/assets/work/salus/salus-runtime-architecture.png" alt="Salus runtime architecture: external market state enters a bounded runtime hot path, while persistence, execution, configuration, and observability retain separate ownership." />
 
-| Boundary | Responsibility | Failure it avoids |
-| --- | --- | --- |
-| Input and coordination | Receive state and transfer owned work through bounded channels. | Input bursts consuming unlimited memory or executor capacity. |
-| Topology and route scope | Recall known affected routes from in-memory membership. | Rebuilding or scanning an entire catalog for a local change. |
-| Evaluation | Process a bounded, deterministic set of current-state requests. | CPU fan-out obscuring queue delay, cancellation, and ownership. |
-| Finalization and handoff | Recheck freshness before later execution gates. | A completed calculation being mistaken for a current decision or outcome. |
+*Figure 1. Salus runtime architecture: external market state enters a bounded runtime hot path, while persistence, execution, configuration, and observability retain separate ownership.*
 
-## From a changed component to evaluation
-
-Durable topology and live decision state have different jobs. The topology answers which known routes mention a changed component. Live state answers whether those routes have enough current coverage to evaluate. The first is an indexing question; the second is an admission and freshness question.
-
-<img src="/assets/writing/salus-low-latency-trading/02-changed-component-to-evaluation.svg" alt="Changed component to evaluation: a block update resolves affected routes through an optional hot cache or authoritative in-memory index, then applies a candidate budget, coverage check, and bounded evaluation queue." />
-
-Use a component-to-route index to recall the affected portion of a known catalog. Do not make every changed component mean “query durable storage for every route,” and do not make it mean “scan the complete route universe.” A cache may accelerate a lookup, but the in-memory catalog remains the runtime authority; a stale or missing acceleration path must not silently become a different source of route truth.
-
-## Hydration, indexing, and route authority
-
-Hydration and indexing solve different problems. Hydration moves durable topology and route state into memory before normal block-critical operation. Indexing makes the affected portion of that in-memory catalogue directly reachable when a component changes.
+At a high level:
 
 ```text
-durable topology and routes
-        ↓ startup hydration
-in-memory topology and route catalogue
-        ↓ component-to-route index
-changed component → bounded affected route IDs
+market / blockchain state
+        ↓
+normalize and update in-memory state
+        ↓
+changed component → affected route lookup
+        ↓
+bounded preparation and admission
+        ↓
+bounded evaluation queue
+        ↓
+deterministic CPU worker chunks
+        ↓
+freshness check and finalization
+        ↓
+guarded execution handoff
 ```
 
-The supplied design describes a durable store for tokens, protocol components, ordered route legs, route summaries, and topology metadata. The runtime hydrates that material once, reconstructs a validated in-memory route catalogue, then builds component-to-route membership. It does not need a database query for every route on every changed block.
+This article focuses on the concurrency decisions behind that runtime: bounded queues, freshness-aware cancellation, CPU/I/O separation, synchronization primitives, telemetry, and the component-to-route index that prevents the hot path from repeatedly scanning the full route universe.
 
-| Concern | Runtime role | Why it is separate |
-| --- | --- | --- |
-| Hydration | Restore durable topology and known routes at startup. | Avoids normal-path database reads. |
-| Route index | Map each component to the known routes that reference it. | Avoids full-catalogue scans. |
-| Live coverage | Decide whether a candidate has sufficient current state to evaluate. | Prevents durable topology from being mistaken for current decision state. |
-| Optional cache | Accelerate a validated hot subset. | Never becomes independent route authority. |
+---
 
-The source-shaped catalogue uses deterministic maps and sets for route identity and membership:
+## 1. The Low-Latency Pipeline
+
+Salus decouples asynchronous I/O coordination from CPU-heavy numerical simulation. The pipeline enforces strict data-plane isolation so that volatile market surges do not backlog central processing engines.
+
+```text
+Blockchain Stream (Tycho)
+        ↓ Ingestion
+In-Memory Route Catalog (Inverted Index)
+        ↓ Bounded Admission
+Live Evaluation Queue (Freshness Guard)
+        ↓ Deterministic Chunking (64–256 routes)
+Bounded OS Worker Pool (Capped at 16 Threads)
+        ↓ Reconciled Merge
+Guarded Execution Handoff
+```
+
+---
+
+<img src="/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg" alt="Low-latency runtime pipeline: asynchronous state coordination narrows work before bounded CPU evaluation and guarded handoff." />
+
+*Figure 2. Changed liquidity state narrows the durable route catalogue before current-state evaluation.*
+
+## 2. Synchronization and Primitive Mapping
+
+In a high-throughput systems environment, synchronization must align directly with data semantics. Salus enforces a strict engineering hierarchy for memory coordination:
+
+* **Atomics (`AtomicU64`, `AtomicBool`):** Used exclusively for independent, monotonic facts (like the latest observed block number or worker cancellation flags) that require hot, lock-free status checks.
+* **Standard Mutex (`std::sync::Mutex`):** Confined to narrow, compound invariants (like work-queue metadata and state counters) requiring multi-field updates. Guards protect short critical sections and never span an `.await` boundary.
+* **Asynchronous Primitives (`Tokio Mutex / RwLock`):** Reserved for cross-await resource serialization and read-heavy price/gas cache surfaces.
+* **Bounded Channels (`Tokio MPSC`):** The primary mechanism for explicit ownership transfer across isolated runtime stages.
+
+---
+
+<img src="/assets/writing/salus-low-latency-trading/04-rust-concurrency-primitive-map.svg" alt="Rust concurrency primitive map: channels transfer bounded work, atomics carry independent freshness facts, locks protect compound invariants, Arc shares ownership, and bounded workers own CPU-heavy evaluation." />
+
+## 3. Explicit Queue Overflow Contracts
+
+A full queue is a critical system signal. Salus rejects default unbounded allocation patterns, replacing them with explicit capacity contracts matching the business logic of the stage:
 
 ```rust
+// Implemented queue policy dispatch in salus-runtime
+impl<T: Send> MonitoredSender<T> {
+    pub async fn send(&self, item: T) -> Result<(), QueueSendError> {
+        match self.config.overflow_policy {
+            QueueOverflowPolicy::BlockProducer => {
+                self.send_with_backpressure(item).await
+            }
+            QueueOverflowPolicy::DropNewest => self.try_send_now(item),
+            QueueOverflowPolicy::LatestWins => self.try_send_now(item),
+        }
+    }
+}
+```
+
+### Strategic Stage Inventory
+1. **`live_route_prep` (Capacity: 4):** Employs `DropNewest` during normal blocks. If ingestion outpaces compute, stale evaluation candidates are discarded before request materialization.
+2. **`live_route_evaluation` (Capacity: 4):** Employs `BlockProducer` upstream pressure. Once admitted, work is batched and executed deterministically on an OS thread pool rather than flooding an async executor.
+3. **`runtime_metrics_jsonl` (Capacity: 1024):** Employs non-blocking `DropNewest`. Diagnostic telemetry is shed under extreme writer pressure to protect the hot path from file I/O latency.
+
+---
+
+## 4. Freshness and Cooperative Cancellation
+
+When a newer block generation arrives mid-evaluation, the runtime publishes the block height lock-free via `AtomicU64::fetch_max`. Scoped worker chunks sample this marker at regular evaluation intervals.
+
+If the frame is found to be obsolete, workers signal a cooperative `AtomicBool` cancel flag, aborting computation immediately. Stale results are purged by a post-compute guard before they can ever influence final engine selection.
+
+---
+
+{/* Figure 3 source asset: evaluation-to-execution lifecycle SVG */}
+<img src="/assets/writing/salus-low-latency-trading/03-freshness-and-cancellation.svg" alt="Freshness and stale-work cancellation: new state controls admission, pending replacement, running work cancellation, and final-result authority." />
+
+*Figure 3. Evaluation, freshness, selection and guarded execution remain separate evidence boundaries.*
+
+## 5. Authoritative Specifications & Reference Architecture
+
+The related public working documents provide the broader system and architecture context without exposing private implementation sources:
+
+* [**Salus Whitepaper — Draft**](/salus/whitepaper)
+* [**Salus Architecture — Draft**](/salus/architecture)
+
+## 6. How Salus achieves low latency and high throughput
+
+### Quick overview
+
+> Salus keeps durable PostgreSQL data outside the route-evaluation hot path.
+> It hydrates stable topology and route indexes into memory, resolves changed
+> components directly to affected routes, and admits a bounded amount of work
+> before expensive simulation. Bounded queues make overload explicit, while
+> latest-block semantics stop obsolete market work from monopolising central
+> processing unit (CPU) capacity. Tokio coordinates asynchronous Input/Output
+> (I/O); CPU-heavy evaluation is partitioned into
+> deterministic chunks on a bounded worker pool. The system measures queue wait,
+> service time, throughput, worker utilisation, and stale work, with metrics
+> written through a separate dropping writer queue. The goal is not raw routes
+> per second: latency is how fast one decision completes, throughput is useful
+> work per unit time, and freshness is whether the answer is still commercially
+> valid when it completes.
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** The warm runtime builds an in-memory route catalog;
+the component-to-route index limits a block to relevant known routes rather
+than querying PostgreSQL per route. Route preparation and evaluation are bounded
+and freshness-aware. The core entry points are
+`ArbitrageRuntime`,
+`LiveRoutePrepQueue`,
+and
+`LiveRouteEvaluationQueue`.
+
+**General interpretation.** These goals differ:
+
+```text
+Latency    = time until one useful, block-scoped decision completes.
+Throughput = useful work completed per unit time.
+Freshness  = whether completed work still represents the current opportunity.
+```
+
+A system can have high throughput while creating long queue waits and finishing
+work that is no longer useful. Salus therefore treats freshness as a first-class
+correctness and capacity concern.
+
+## 7. End-to-end runtime pipeline
+
+### Pipeline model
+
+<img src="/assets/writing/salus-low-latency-trading/02-changed-component-to-evaluation.svg" alt="Changed component to evaluation: changed components resolve through an in-memory index before bounded admission and evaluation." />
+
+```text
+Tycho / blockchain stream
+        ↓
+canonical block and state ingestion
+        ↓
+in-memory graph and topology update
+        ↓
+changed-component → known-route resolution
+        ↓
+route preparation, coverage, admission, and request construction
+        ↓
+live route-evaluation queue
+        ↓
+evaluation coordinator
+        ↓
+deterministic route chunks → bounded scoped CPU workers
+        ↓
+deterministic result merge and finalization
+        ↓
+selection → execution-stage handoff → external submission / receipt work
+```
+
+This is a guide to the actual owner boundaries, not a claim that every block
+takes every path. Empty blocks, unavailable state, admission caps, stale work,
+and configuration can stop work before evaluation.
+
+| Stage | Work | Concurrency boundary | Primary concern |
+| --- | --- | --- | --- |
+| Ingestion | Async I/O + state application | Bounded stream stages | Ordering and input bursts |
+| Graph / topology | In-memory mutation | Owner-local state → typed jobs | Avoid unnecessary rebuilds |
+| Route lookup | Indexed memory lookup | Bounded candidate scope | Prevent scope explosion |
+| Route preparation | Metadata + request construction | `live_route_prep` | Freshness and admission |
+| Evaluation | CPU-heavy simulation | `live_route_evaluation` → bounded workers | CPU saturation and stale work |
+| Execution | External I/O + lifecycle state | Bounded `execution_stage` | Dedupe, retry, external latency |
+| Metrics | Serialization + file I/O | Independent bounded writer | Never stall the hot path |
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** The concrete catalogue is described in Salus’s
+queue walkthrough
+and its route-evaluation flow in
+`process_queued_route_evaluation_request`.
+
+### 7.1 Hydration and Component-to-Route Index
+
+### The two separate optimisations
+
+Hydration and indexing solve different problems:
+
+```text
+PostgreSQL durable topology and routes
+        ↓ startup load
+in-memory topology and route catalogue
+        ↓ index construction
+changed component → directly relevant route IDs
+```
+
+Hydration removes database reads from normal block-critical route selection.
+The index removes full route-universe scans from that same path. Loading all
+routes into memory without the index would still leave the runtime repeatedly
+inspecting every route; an index without durable hydration would still need a
+database query or a full reconstruction at the wrong time.
+
+### What Salus persists and why
+
+`PostgresStorage`
+owns an asynchronous Diesel connection pool and runs pending migrations when it
+connects. PostgreSQL is the durable/recovery authority; the runtime does not ask
+it to decide which routes to evaluate for every block.
+
+| Durable data | Runtime purpose |
+| --- | --- |
+| Tokens — `tokens` / `TokenSeed` | Rebuild token views in the deterministic market snapshot. |
+| Protocol components — `protocol_components` / `ProtocolComponentSeed` | Rebuild component topology and live-state owners. |
+| Component-token order — `component_tokens` | Preserve token ordering while reconstructing a component. |
+| Route summaries — `route_summaries` / `RouteSeed` | Rebuild known route candidates. |
+| Ordered route legs — `route_legs` | Reconstruct route component membership and order. |
+| Topology metadata — `graph_metadata` / `GraphMetadataSeed` | Validate graph identity, source block, route count, and persisted cache data. |
+| Optional route-scope acceleration — `pool_route_scope_entries` | Seed validated hot-component memberships without replacing the runtime catalogue as authority. |
+
+The corresponding warm-start readers are `fetch_tokens`, `fetch_protocol_components`,
+`fetch_route_summaries`, `fetch_latest_graph_metadata`, and
+`load_route_scope_component_entries`. Keeping these implementation names in prose
+avoids turning the table into a horizontally scrolling source map.
+
+Route persistence is transactional: route replacement writes summaries, ordered
+legs, normalized component-to-route scope rows, and refreshed materialised
+component entries together in
+`insert_routes`.
+`RouteReconstructionState` validates a complete persisted token/component
+topology before **missing-route reconstruction**: it requires the graph’s route
+count and route tables to be empty, so discovery does not overwrite partial or
+completed route state
+(`validate_recoverable`).
+
+### Startup hydration, step by step
+
+```text
+PostgresStorage::connect / migrations
+        ↓
+load tokens + components + graph metadata
+        ↓
+DeterministicMarketSnapshot
+        ↓
+load route summaries + ordered route legs
+        ↓
+ArbitrageRuntime builds graph, live state, and InMemoryRouteCatalog
+        ↓
+RouteIndex builds component → sorted route-ID memberships
+        ↓
+optional persisted hot-cache validation and hydration
+        ↓
+runtime accepts stream blocks
+```
+
+| Step | Runtime action | Purpose |
+| ---: | --- | --- |
+| 1 | `PostgresStorage::connect` | Establish the migrated durable store. |
+| 2 | `load_warm_start_topology` | Reconstruct tokens, components, and graph metadata. |
+| 3 | `load_warm_start_routes` | Load the persisted route universe once. |
+| 4 | `load_warm_start_state` | Hand topology and routes to runtime orchestration. |
+| 5 | `ArbitrageRuntime::new` | Build in-memory graph, component map, and live-state owners. |
+| 6 | `InMemoryRouteCatalog::from_persisted_routes` | Reconstitute validated route candidates. |
+| 7 | `RouteIndex::from_routes` | Build direct component-to-route membership lookup. |
+| 8 | `build_pool_route_scope_cache` | Validate and optionally hydrate hot-component acceleration. |
+
+The warm-start reads are `async` and await Diesel-backed storage methods; they
+are not wrapped in `spawn_blocking`. The later route-refresh **discovery** path
+can use `tokio::task::spawn_blocking`
+(`discover_route_refresh_batch_blocking`)
+because that is CPU/blocking discovery work, not normal Diesel warm-start I/O.
+
+### The authoritative component-to-route index
+
+The runtime owner is
+`InMemoryRouteCatalog`.
+It holds an `Arc<RouteIndex>` and a monotonic catalogue generation. The index
+is not a separately maintained SQL result: it is constructed when routes are
+inserted into the catalogue.
+
+`RouteIndex`
+stores, among other indexes:
+
+```rust
+// Production shape, simplified to the relevant fields.
 struct RouteIndex {
     routes_by_id: BTreeMap<String, RouteCandidate>,
     route_ids_by_component: BTreeMap<ComponentId, BTreeSet<String>>,
 }
 ```
 
-Each route leg contributes its route ID to the relevant component membership. The affected scope is the deterministic union of those memberships, bounded before downstream preparation. The illustration below is intentionally small, but preserves the runtime reasoning:
+For every route leg—and for an optional flash component—
+`RouteIndex::insert`
+adds the route ID to that component’s `BTreeSet`. The tree set gives deterministic
+sorted membership and deduplicates an ID if a route references the same
+component more than once. Removal reverses the same memberships and removes an
+empty component entry
+(`RouteIndex::remove`).
 
-```text
-R1: components P1, P2       R2: components P1, P3, P4
-R3: components P5, P6
+**Simplified teaching example.** This mirrors the production insertion idea but
+omits its token and start-token indexes:
 
-P1 → {R1, R2}      P4 → {R2}
-changed P1 + P4 → {R1, R2}
+```rust
+use std::collections::{BTreeMap, BTreeSet};
+
+type ComponentId = String;
+type RouteId = String;
+
+fn index_route(
+    component_to_routes: &mut BTreeMap<ComponentId, BTreeSet<RouteId>>,
+    route_id: &str,
+    route_components: impl IntoIterator<Item = ComponentId>,
+) {
+    for component_id in route_components {
+        component_to_routes
+            .entry(component_id)
+            .or_default()
+            .insert(route_id.to_owned());
+    }
+}
 ```
 
-Only `R1` and `R2` proceed. `R3` is not inspected for that change. This replaces the naive shape—changed components × every route × every route leg—with bounded component lookups plus a union of known affected IDs.
+The catalogue’s
+`component_route_scope`
+looks up every changed component, unions IDs into another `BTreeSet`, and checks
+the configured candidate cap and preparation time budget while it is building
+that scope. The result is a deterministic bounded route-candidate set, not an
+unlimited expansion.
 
-### Startup and refresh flow
-
-The supplied article separates startup hydration from topology refresh. Startup reconstructs the catalogue before stream blocks are accepted. A later topology change can enqueue a latest-pending refresh, merge affected scope, replace only the impacted route population, and advance a catalogue generation.
+### From a changed pool to evaluation work
 
 ```text
-connect durable store → hydrate topology → load route summaries and legs
-→ build InMemoryRouteCatalog → build RouteIndex → validate optional hot cache
-→ accept stream blocks
+Tycho block/state update
+        ↓
+ArbitrageRuntime::prepare_block records changed_component_ids
+        ↓
+PoolRouteScopeResolver
+        ↓
+optional hot-cache hit, or authoritative RouteIndex fallback
+        ↓
+BTreeSet union of affected route IDs, with cap and preparation budget
+        ↓
+pre-coverage route preparation and admission
+        ↓
+state-coverage validation / evaluation request construction
+        ↓
+bounded live evaluation queue
 ```
 
-`InMemoryRouteCatalog` and `RouteIndex` are the runtime authority. A cache entry is tagged with the catalogue generation; on a miss or stale generation, `PoolRouteScopeResolver::resolve_component_route_scope` falls back to the catalogue. This prevents an optimisation from silently becoming a different source of truth.
+`ArbitrageRuntime::prepare_block`
+collects material component changes from stream metadata, live state, and the
+incremental graph. It sends that `BTreeSet<ComponentId>` to
+`component_route_scope_for_components`,
+which resolves the affected route IDs. The stream handler then prepares the
+existing routes and enqueues evaluation work
+(`handle_block`).
+Coverage is checked before the request becomes useful evaluation work
+(`prepare_existing_routes_for_evaluation`);
+admission controls limit the pre-coverage candidate population
+(`admit_pre_coverage_candidates`).
 
-These implementation names and the source draft’s startup/refresh detail are retained for Technical and Claim Review in this visible Draft. They have not been independently rechecked against the private repository in this pass.
+For three changed pools, the runtime does **not** execute three database queries
+or three complete route scans. It looks up three component keys and unions their
+known memberships. A `BTreeMap` lookup and each `BTreeSet` insertion are
+logarithmic in their respective collections, so a precise cost includes those
+tree factors. Practically, the work scales with the changed components and the
+referenced affected route IDs, rather than the product of changed components,
+all routes, and route-leg length:
 
-## Bounded queues are capacity contracts
+```text
+Naive:  O(changed_components × total_routes × route_length)
 
-A queue declares what happens when producers create work faster than a stage can usefully consume it. An unbounded queue can make a throughput chart look healthy while queue age, memory use, tail latency, and stale completions grow.
+Index:  component-map lookups + BTreeSet union of affected route references
+        (bounded by the candidate cap / preparation budget)
+```
 
-## Queue code deep dive
+This is the important architectural claim: **Salus selects work from the
+affected portion of the topology instead of repeatedly scanning the complete
+route universe.**
 
-These excerpts focus on the ownership, performance, and failure semantics relevant to the runtime architecture.
+### Simplified illustrative example
 
-### Bounded generic queue construction
+This is not production topology; it shows the same inverted-index reasoning.
+
+```text
+R1: WETH → USDC → WETH          components: P1, P2
+R2: WETH → USDC → cbBTC → WETH  components: P1, P3, P4
+R3: WETH → DAI → WETH           components: P5, P6
+
+P1 → {R1, R2}     P2 → {R1}     P3 → {R2}
+P4 → {R2}         P5 → {R3}     P6 → {R3}
+
+Block changes P1 and P4:
+P1 → {R1, R2}
+P4 → {R2}
+union → {R1, R2}
+```
+
+Only `R1` and `R2` enter the bounded downstream path; `R3` is never inspected
+for that block. The actual implementation additionally considers an optional
+flash component and then applies coverage/admission rules before evaluation.
+
+### Authority, optional cache, and generation safety
+
+The hierarchy is deliberately narrower than “database cache equals runtime
+truth”:
+
+```text
+PostgreSQL
+  durable persisted topology and route recovery authority
+        ↓ warm start
+InMemoryRouteCatalog / RouteIndex
+  authoritative runtime route membership and generation
+        ↓ optional acceleration
+PoolRouteScopeCache
+  configured hot-component memberships tagged with catalogue generation
+```
+
+`PoolRouteScopeCache` can be hydrated from the catalogue or from the persisted
+materialised component entries. The PostgreSQL option is accepted only when its
+`RouteScopeTopologyIdentity` matches the expected graph key, source block, and
+route count. Its IDs are filtered to current catalogue route IDs; without a hot
+limit their union must cover the catalogue, while a configured hot subset is
+also checked for per-component agreement with the catalogue
+(`build_pool_route_scope_cache`).
+Cache entries carry the current catalogue generation. On a cache miss or stale
+generation,
+`PoolRouteScopeResolver::resolve_component_route_scope`
+falls back to `InMemoryRouteCatalog::component_route_scope`; configured
+startup validation can instead fail if its fallback mode requires that. An
+optimisation therefore never becomes an independent source of route truth.
+
+### Topology changes and refreshes
+
+Startup data is not treated as immutable. A topology-changing block can enqueue
+a `live_route_refresh` job with changed components and affected start tokens.
+The queue keeps one latest pending job, merges its scope, and replaces obsolete
+pending refresh work
+(`LiveRouteRefreshQueue::enqueue`).
+
+Discovery produces new route candidates for affected starts. Applying a completed
+refresh calls
+`InMemoryRouteCatalog::replace_for_starts`:
+it removes the old affected routes, inserts the refreshed candidates, and
+increments the catalogue generation. The same completion refreshes already
+cached affected component entries from that catalogue
+(`refresh_existing_components_from_catalog`).
+The index is therefore updated through insertion/removal, rather than silently
+continuing to point at an old route population. Persisting the refreshed routes
+is a separate durable-storage job; normal block selection still reads memory.
+
+### What the retained measurement does—and does not—measure
+
+The retained Ethereum route review used **2,401,108 persisted routes** and
+recorded affected component-scope lookup at **12 ms p50** and **42 ms p99**
+under that documented workload
+(route-review evidence).
+It measures the runtime architectural path—changed components, indexed route
+memberships, and bounded affected scope—not database startup hydration.
+The cited retained evidence does not establish a startup hydration latency or
+memory figure, so this article does not estimate one.
+
+## 8. Synchronization Types in the Salus Runtime
+
+The practical rule is: **use an atomic for one independent fact, a lock for a compound invariant, and a channel when ownership of work should move.** The examples below are compact Salus-shaped examples; comments identify the concrete responsibility each type serves.
+
+```rust
+use std::{sync::{Arc, Mutex as StdMutex, atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering}}, thread};
+use tokio::{sync::{mpsc, Mutex as TokioMutex, RwLock as TokioRwLock, Notify, oneshot}, task::JoinHandle};
+
+// Tokio mpsc — bounded ownership transfer. Salus: prep/evaluation/execution.
+let (tx, mut rx) = mpsc::channel::<EvaluationJob>(4);
+let worker: JoinHandle<()> = tokio::spawn(async move {
+    while let Some(job) = rx.recv().await { process(job).await; }
+});
+
+// AtomicU64 — one monotonic freshness fact. Salus: latest observed block.
+let latest_block = Arc::new(AtomicU64::new(0));
+latest_block.fetch_max(block_number, Ordering::AcqRel);
+let current = latest_block.load(Ordering::Acquire);
+
+// AtomicBool — cooperative cancellation. Salus: stale evaluation chunks.
+let cancelled = Arc::new(AtomicBool::new(false));
+if source_block < current { cancelled.store(true, Ordering::Release); }
+if cancelled.load(Ordering::Acquire) { return; }
+
+// AtomicUsize — independent progress/work claiming. Salus: chunk indexes.
+let next_chunk = AtomicUsize::new(0);
+let chunk_index = next_chunk.fetch_add(1, Ordering::Relaxed);
+
+// std::sync::Mutex — short compound invariant. Salus: queue/in-flight state.
+let state = Arc::new(StdMutex::new(QueueState::default()));
+{ let mut s = state.lock().expect("queue state"); s.queued -= 1; s.in_flight += 1; }
+// Guard is released before any .await.
+
+// Tokio Mutex — protected mutation that genuinely spans async work.
+// Salus: asynchronous execution/service boundaries.
+let execution = Arc::new(TokioMutex::new(ExecutionState::default()));
+{ let mut s = execution.lock().await; submit_using_nonce(s.nonce).await?; s.nonce += 1; }
+
+// Tokio RwLock — read-heavy async cache. Salus: price/gas/balance caches.
+let gas_price = Arc::new(TokioRwLock::new(None::<u128>));
+if let Some(v) = *gas_price.read().await { use_cached_price(v); }
+*gas_price.write().await = Some(new_price);
+
+// Arc — shared ownership without deep-copying. Salus: handles/metrics/liveness.
+let cancel = Arc::new(AtomicBool::new(false));
+let worker_cancel = Arc::clone(&cancel);
+
+// Scoped OS thread — bounded CPU ownership. Salus: numerical evaluation.
+thread::scope(|scope| { scope.spawn(|| evaluate_cpu_chunk()); });
+
+// spawn_blocking — explicit blocking/CPU boundary. Salus: route discovery.
+let routes = tokio::task::spawn_blocking(|| discover_routes()).await??;
+
+// JoinHandle — explicit lifecycle. Salus: queue workers/writer tasks.
+let handle: JoinHandle<()> = tokio::spawn(async { run_queue_worker().await });
+handle.await?;
+
+// Notify — signal app-owned pending work. Salus: route-refresh wakeup.
+let ready = Arc::new(Notify::new()); ready.notify_one(); ready.notified().await;
+
+// oneshot — one request/one result. Salus: blocking-discovery result handoff.
+let (result_tx, result_rx) = oneshot::channel();
+result_tx.send(discovery_result)?; let result = result_rx.await?;
+```
+
+The important distinction is semantic rather than syntactic. `AtomicU64` fits the latest block because it is one independent monotonic fact. Queued requests, in-flight work, counters, and cancellation metadata form a compound invariant and belong behind a clear owner or short mutex. Channels are preferable when ownership should move instead of mutation being shared.
+
+## 9. Queueing architecture deep dive
+
+### Generic transport
+
+`salus-runtime` owns generic transport rather than route or execution policy:
+
+- `QueueConfig`
+  gives every queue a name, finite capacity, and overflow policy.
+- `RuntimeQueue<T>`
+  constructs a bounded Tokio Multiple Producer, Single Consumer (MPSC) channel
+  and returns a `MonitoredSender`, receiver, and shared metrics state.
+- `MonitoredSender`
+  records current/peak depth, sends, drops, blocked sends, and closed-channel
+  errors. It turns an operational failure into a typed `QueueSendError`.
+
+The generic layer deliberately does **not** decide whether a route remains
+commercially useful. App-owned queues add coalescing, stale checks, cancellation,
+and shutdown semantics where the business meaning requires them.
+
+### Overflow-policy semantics
+
+| Policy | Current generic behavior | Appropriate when | Important caveat |
+| --- | --- | --- | --- |
+| `BlockProducer` | awaits channel capacity; records a blocked send once full | lost work would violate an ordered or durable stage contract | it propagates pressure upstream; it is not a licence to block an unrelated hot path forever |
+| `DropNewest` | `try_send`; full channel returns `DroppedByPolicy` and records a drop | a new item is safely disposable, such as best-effort diagnostics | the producer must make loss visible if the record is required for an evidence claim |
+| `LatestWins` | generic sender also uses nonblocking `try_send` | only as a labelled policy; app code supplies replacement semantics | it is **not** a generic drop-oldest implementation in `RuntimeQueue` |
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** True newest-pending replacement lives in
+`LiveRouteRefreshQueue::enqueue`: one pending job is replaced, while affected start tokens and changed
+components are merged. Route prep and evaluation coalesce buffered receiver
+work and use latest-block checks. This distinction avoids a subtle but important
+implementation error: an enum label alone does not implement freshness.
+
+### Why bounded queues matter
+
+> A bounded queue is a capacity contract. If producers outpace consumers, an
+> unbounded queue turns the mismatch into memory growth and queue age. In a
+> market system, the delayed result can be perfectly computed but no longer
+> useful. A finite queue forces an explicit choice to wait, drop, coalesce,
+> replace, or reject. That makes queue policy part of business semantics, not a
+> hidden implementation detail.
+
+```text
+producer rate > consumer rate
+        ↓
+queue depth and wait grow
+        ↓
+block/state moves on
+        ↓
+old work becomes stale
+        ↓
+CPU completes commercially useless work
+```
+
+## 10. Current queue inventory
+
+The source draft records the following capacity and policy facts for the reviewed implementation. They remain pending independent Technical and Claim Review. “Normal” means freshness-first current-block operation; replay or previous-block analysis can intentionally change the behavior.
+
+| Queue | Capacity / policy | Role | Freshness / lifecycle |
+| --- | --- | --- | --- |
+| `tycho_live_trigger_fan_in` | 128 · `BlockProducer` | Ordered trigger intake | Downstream owns canonical ordering |
+| `stream_graph_stage` | 512 · `BlockProducer` | Graph-stage handoff | FIFO stage adapter |
+| `stream_route_stage` | 512 · `BlockProducer` | Route-stage handoff | FIFO stage adapter |
+| `live_graph_persist` | 1 · `BlockProducer` | Graph persistence | Drains on close |
+| `live_route_refresh` | one pending slot · latest wins | Topology refresh | Replaces pending work and merges scope |
+| `live_route_persist` | 4 · `BlockProducer` | Route persistence | Drains on close |
+| `live_route_prep` | 4 normal · `DropNewest` | Candidate preparation | Coalesces/purges stale work |
+| `live_route_evaluation` | 4 normal · `BlockProducer` | Expensive evaluation | Latest-block checks prevent stale finalization |
+| `execution_stage` | 256 · `BlockProducer` | Execution handoff | Dedupe and retry state |
+| `runtime_metrics_jsonl` | 1024 default · `DropNewest` | Diagnostics | Drops rather than blocking evaluation |
+
+Source locations remain internal; the technical queue roles, policies, and lifecycle distinctions are retained here for review.
+
+## 11. Freshness-first processing
+
+### Why deliberately discard valid work?
+
+> The computation can be valid for the block that produced it and still be
+> commercially irrelevant once a newer block changes the market. Discarding
+> that stale work is not data corruption; it preserves CPU and queue capacity
+> for the newest decision. We retain typed lifecycle and telemetry evidence of
+> the discard, but we do not let obsolete evaluation consume the next block’s
+> budget.
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** `begin_block` publishes the maximum observed block
+with `AtomicU64::fetch_max(..., Ordering::AcqRel)`. Hot evaluation checks load
+it with `Ordering::Acquire`; stale chunks set a shared `AtomicBool` cancel flag.
+The queue worker performs a further stale test after compute and before
+finalization, so a completed old result cannot become selection input. See
+`begin_block`,
+`route_evaluation_abort_reason_from_latest`,
+the chunk stale check,
+and the post-compute discard.
+
+The independent latest-block fact belongs in an atomic. Compound queue state—
+request IDs, queued/in-flight maps, cancellation metadata, and counters—lives
+behind a short `std::sync::Mutex`. This follows the practical rule: use an
+atomic for one independent fact, a lock for a compound invariant, and a channel
+when ownership of work should move.
+
+## 12. CPU and asynchronous I/O separation
+
+Tokio is valuable for coordinating stream I/O, channels, timers, and async
+dependencies. It is not an excuse to run unlimited CPU simulation on executor
+workers. Route evaluation selects bounded parallelism from available CPUs,
+capped at **16**. Requests below **256 routes** use one worker; larger requests
+are split into deterministic chunks, with chunk sizes clamped to **64–256**.
+
+```text
+evaluation coordinator
+        ↓
+ chunk 1   chunk 2   chunk 3 ...
+    ↓         ↓         ↓
+scoped operating-system (OS) worker threads, each with a current-thread Tokio runtime
+    \         |         /
+        deterministic result merge
+```
+
+**Source-draft implementation description (pending independent Technical and Claim Review).**
+`route_eval_parallelism`,
+`route_eval_chunks`,
+and
+`run_liveness_worker_pool`
+implement this model. Each scoped worker builds a current-thread Tokio runtime
+for futures within the chunk, but the pool itself is bounded OS threads.
+
+**General interpretation.** Chunks that are too small create coordination
+overhead; chunks that are too large reduce load balancing and make cooperative
+cancellation less responsive. The 64–256 range is a current implementation
+choice, not a universal optimal range.
+
+## 13. Telemetry architecture deep dive
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** `RuntimeMetricsRecorder` creates event maps,
+envelopes them with schema/run/chain/mode fields, serializes them as JSONL, and
+passes the line to `RuntimeMetricsWriter`. The writer owns a bounded
+`runtime_metrics_jsonl` queue with `DropNewest`, a named standard thread,
+drop/close state, and final-flush status. The source draft records a default
+writer capacity of 1024; private configuration names and output locations are
+intentionally not rendered.
+
+```text
+runtime instrumentation call site
+        ↓
+RuntimeMetricsRecorder::record_…
+        ↓
+JSON serialization + try_send
+        ↓
+bounded DropNewest runtime_metrics_jsonl queue
+        ↓
+standard writer thread + blocking_recv
+        ↓
+runtime_metrics.jsonl + writer health / final flush status
+```
+
+The rule is deliberately asymmetric:
+
+> Diagnostic runtime metrics may be dropped under extreme writer pressure rather
+> than block the latency-sensitive evaluation path. Durable execution and
+> correctness evidence has a different contract: its completeness and writer
+> health are checked explicitly, and loss can make a retained evidence package
+> incomplete.
+
+The named recorder, sender, and writer responsibilities are retained without exposing private source locations.
+
+**Shutdown behavior.** Dropping the sender closes the queue; the writer drains
+with `blocking_recv`, flushes the file, joins its thread, and records whether
+shutdown/final flush succeeded. A recorder cannot `finish` while other `Arc`
+owners remain. That makes lifecycle loss diagnosable rather than silently
+ignoring it.
+
+## 14. Telemetry event model
+
+Salus does not infer performance from one average. It records distinct events
+and fields so an operator can separate admission, queueing, CPU, and external
+latency.
+
+| Signal | Current event / field examples | What it tells us | What it distinguishes |
+| --- | --- | --- | --- |
+| Queue depth and pressure | `queue_snapshot`: `current_depth`, `peak_depth`, `sent`, `dropped`, `blocked`, `closed` | whether a stage is accumulating or applying producer pressure | producer/consumer imbalance vs a slow external dependency |
+| Evaluation queue lifecycle | `route_evaluation_queue_lifecycle`: `queue_wait_ms`, `coalesced_*`, `purged_*`, capacity, peak | whether latest-block policy is doing useful work | normal compute vs avoidable historical backlog |
+| Route prep completion | `route_prep_queue_completion`: candidate/staged counts, hydration, request-build and handoff time | where work enters the expensive path | broad scope or metadata/hydration pressure vs evaluation CPU |
+| Evaluation service | `route_evaluation_service`: queue, compute, finalization, service time, routes, workers, utilisation | per-block route-evaluation decomposition | backlog vs CPU simulation vs finalization |
+| Chunk timing | `route_evaluation_chunk_timing`: chunk routes, pricing, input build, strategy, total | local hot-loop shape and chunk balance | pricing/quote work vs strategy/protocol-simulation work |
+| Search effort | `route_evaluation_search`: amount probes, gate savings, binary/doubling iterations, protocol calls | how route complexity changes cost | more routes vs more work per route |
+| Stages and selection | `route_evaluation_stages`: evaluated, profitable, selected, selection/execution time | conversion from compute to selected work | evaluator output vs selection/execution bottleneck |
+| Refresh | `route_refresh_queue_event`: queue wait, coalesced jobs, pending/in-flight blocks | whether topology refresh is falling behind | replaceable refresh pressure vs route evaluation pressure |
+| Execution timing | `live_execution_timing`: `eval_to_submit_ms`, `eval_to_broadcast_ms`, RPC and receipt timings | whether latency is internal or external | evaluation delay vs provider/relay/network delay |
+
+The source draft identifies these as distinct event boundaries. Private source-file locations are intentionally not rendered in this public projection.
+
+### Diagnostic interpretations
+
+| Observed combination | Likely interpretation | Next reading / action |
+| --- | --- | --- |
+| Queue wait rises while service time is stable | admission, producer rate, or worker-capacity pressure | inspect prep/evaluation depth, caps, and worker utilisation |
+| Service time rises with high worker utilisation | CPU/evaluation bottleneck | inspect chunk timing, amount-search breadth, protocol simulation, allocations |
+| `eval_to_submit` stays low while submission RPC rises | external provider/network bottleneck | inspect execution timing and provider behavior; do not “optimise” evaluator code first |
+| Throughput rises but stale/purged completion rises too | capacity is being spent on superseded work | review latest-block policy, caps, freshness checks, and chunk granularity |
+| Metrics drops occur | observability is degraded, not proof that production work failed | record writer status; determine whether the evidence profile treats loss as incomplete |
+
+## 15. How telemetry drove the architecture
+
+**Retained historical engineering story.** The original problem was not simply
+that the evaluator was slow. Route scope, coverage, request build, and queue
+admission could create work faster than useful evaluation capacity. The first
+response was instrumentation: separate queue depth/wait, preparation, compute,
+worker utilisation, stale work, and execution timing. That made the performance
+constraint observable instead of guessing from a single end-to-end number.
+
+The subsequent changes were targeted rather than a wholesale rewrite:
+
+1. **Bounded admission** caps the work allowed into expensive preparation and
+   evaluation.
+2. **Component-to-route lookup** and startup hydration avoid scanning the
+   persisted route universe or querying PostgreSQL per route.
+3. **Freshness-first queues** coalesce/purge replaceable work and reject stale
+   results from selection.
+4. **Bounded deterministic workers** separate CPU numerical work from I/O
+   coordination.
+5. **Block-scoped reuse** shares pricing and state context instead of rebuilding
+   it for every route.
+6. **Targeted caches and search gates** reduce repeated quote, fee, and
+   amount-probe work without changing decision authority.
+7. **External-latency attribution** prevents a network/RPC issue from being
+   misdiagnosed as evaluator CPU work.
+
+## 16. Retained Performance Evidence
+
+Every number below is attached to its original retained workload. It is a
+study aid, not a production service-level objective or universal Salus capacity.
+
+| Retained measurement | Workload / profile | What it supports | What it does **not** support |
+| --- | --- | --- | --- |
+| 2,401,108 persisted four-hop Ethereum routes; 3,415 graph tokens; 4,552 components | retained Ethereum topology snapshot | why full-universe scanning is the wrong steady-state operation | current live route count, heap usage, or universal graph size |
+| affected component-scope lookup: 12 ms p50, 42 ms p99 | retained Ethereum route review | indexed in-memory scope lookup stayed small beside numerical evaluation | an end-to-end latency guarantee or a database benchmark |
+| 1,690,260 routes, 100/100 completed evaluation blocks, 33,578.21 active routes/sec, 503.38 ms average evaluation-service time, zero stale/discarded evaluations | 2026-07-08 Ethereum no-throttle trace | workload-specific active evaluator throughput and health under that profile | universal capacity, block-cadence readiness, or all-chain behavior |
+| 4 ms evaluation-to-submit; 252 ms evaluation-to-broadcast; 246 ms submission RPC | retained forced-route trace | most observed broadcast delay in that trace was external submission RPC | general live trading latency or execution quality |
+| earlier one-batch pilot: combined p95 1,046.319 ms to 119.080 ms across different windows; later qualifying 42-batch collection: combined p95 22,270 us, 0.850974% of 2.617 s evaluator-service p95 | separate retained HL-CARB runs | the qualifying collection met its stated overhead gate | a directly comparable end-to-end reduction between those runs, production selection authority, or a universal ranking cost |
+
+Sources: Ethereum route review,
+performance hardening,
+the earlier HL-CARB pilot,
+and HL-CARB capture closeout.
+
+## 17. Latency decomposition
+
+```text
+End-to-end decision latency
+= queue wait
++ preparation / request build
++ evaluation compute
++ result finalization and selection
++ execution handoff
++ external submission / network / receipt wait
+```
+
+<img src="/assets/writing/salus-low-latency-trading/05-latency-attribution.svg" alt="Latency attribution: end-to-end decision latency separates queue wait, preparation, CPU evaluation, finalization, handoff, and external waiting." />
+
+**General interpretation.** Service time is work once the service starts;
+queue time is time spent waiting to start; external wait belongs to a provider,
+network, or exchange/relay boundary. They need different remedies.
+
+| Case | Evidence | Likely issue | First response |
+| --- | --- | --- | --- |
+| A | queue wait ↑; evaluation service time stable | admission/backpressure/worker capacity | inspect stage caps, producer rate, and freshness policy |
+| B | evaluation service time ↑; CPU and worker utilisation ↑ | compute path | profile chunks, simulation, pricing, amount-search breadth, and allocation |
+| C | evaluation-to-submit low; submission RPC high | external network/provider | measure and improve the boundary, retry/reconcile safely; do not blame CPU workers |
+| D | throughput high; stale completion high | wrong workload scheduling policy | reduce obsolete work via admission, coalescing, and latest-state cancellation |
+
+## 18. Throughput deep dive
+
+### Throughput measurement
+
+> I measured throughput as total evaluated routes divided by total
+> route-evaluation service time, then reported it alongside queue wait, worker
+> utilisation, chunk count, route complexity, stale/discarded work, and latency
+> percentiles. That separates active evaluator speed from wall-clock progress.
+> A high routes-per-second figure is not useful if work waits too long, is
+> expensive because of search breadth, or becomes stale before selection.
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** The retained statistics contract defines sustained
+evaluations per second as completed routes divided by completed route-evaluation
+service time; the report separately carries per-block and runtime statistics.
+The retained statistics contract records this denominator separately from wall-clock progress.
+
+Wall-clock throughput can be lower than active evaluator throughput because it
+includes input cadence, preparation, empty blocks, admission, external waits,
+or periods with no completed evaluation service. Even active throughput changes
+with route complexity, protocol simulation, pricing, search breadth, CPU count,
+and the fraction of work that survives freshness checks.
+
+## 19. Memory, allocation, and locality
+
+**Source-draft implementation description (pending independent Technical and Claim Review).** The performance strategy is primarily to avoid
+unnecessary work and payload expansion rather than claim a magic zero-copy
+pipeline:
+
+- persistent topology and route summaries hydrate into an in-memory catalog;
+- a component-to-route index resolves affected known routes directly;
+- route evaluation chunking holds `&RouteSummaryView` references and preserves
+  deterministic order rather than cloning each route into every worker;
+- a block-scoped pricing seed creates shared per-block context;
+- `LiveProtocolState` wraps immutable protocol simulation handles in `Arc`, so
+  copying an owned request does not deep-copy every simulator;
+- deterministic `BTreeMap`/`BTreeSet` structures make route ordering and
+  replay artifacts stable; and
+- candidate admission, queue capacities, and route caps bound how much data can
+  reach allocation-heavy processing.
+
+The retained source description uses these ownership boundaries without exposing private source locations.
+
+**General interpretation.** These choices reduce database load, repeated graph
+work, serialization, allocation pressure, and cache misses. They do not prove
+that allocation is irrelevant; the route review explicitly records unknown
+heap peaks where retained evidence did not measure them.
+
+## 20. Synchronization primitive map
+
+| Primitive | Current Salus use | Why it fits |
+| --- | --- | --- |
+| Tokio `mpsc` | typed bounded stage work, including prep/evaluation/execution | transfers ownership, expresses finite capacity, and supports async coordination |
+| `AtomicU64` | latest block publication and monotonic generations | a single independent fact is readable in hot stale checks without queue-state locking |
+| `AtomicBool` | cooperative cancellation and one-time lifecycle flags | cheaply shares a cancellation signal across chunks/tasks |
+| `AtomicUsize` | chunk allocation and processed/profitable counters | independent monotonically changing counters |
+| `std::sync::Mutex` | queue metrics, queued/in-flight metadata, writer state | maintains compound invariants with short non-`await` guards |
+| Tokio `Mutex` | asynchronous execution runtime and services crossing `.await` | serializes mutable async state safely where a guard spans async work |
+| Tokio `RwLock` | read-heavy price/gas/flash-balance cache surfaces | supports a read-heavy cache when its measured trade-off is justified |
+| `Arc` | shared metrics, queue state, liveness registry, immutable protocol handles | clear shared ownership/lifetime without deep-copying state |
+| Scoped OS worker thread | bounded CPU evaluation pool | prevents CPU fan-out from becoming unlimited Tokio task fan-out |
+| `spawn_blocking` | blocking route discovery and other blocking boundaries | moves bounded blocking work off Tokio executor workers |
+| `JoinHandle` | queue workers and writer lifecycle | gives owners an explicit shutdown/join result rather than detached work |
+
+**Source-draft implementation note (pending independent Technical and Claim Review).** The normal queue pipeline does not use a
+`Semaphore` or `broadcast` as its primary work-queue mechanism; route-refresh
+uses `Notify` with its app-owned pending slot, and `oneshot` returns individual
+blocking discovery results. Read the current
+queue architecture table
+before generalising this inventory.
+
+## 21. Queue code deep dive
+
+These excerpts focus on the ownership, performance, and failure semantics
+relevant to the runtime architecture.
+
+### 21.1 Bounded generic queue construction
 
 ```rust
 pub fn new(config: QueueConfig) -> Self {
@@ -121,9 +929,19 @@ pub fn new(config: QueueConfig) -> Self {
 }
 ```
 
-`RuntimeQueue::new` is the supplied source’s representative queue constructor. It makes capacity explicit and gives senders shared pressure metrics without exposing the receiver as shared mutable state. The excerpt is intentionally limited to ownership and failure semantics; it is not an operating-configuration disclosure.
+**What it does.** Creates a typed bounded MPSC channel and shares one metrics
+object with senders.
 
-### Policy dispatch is explicit
+**Why / performance property.** Capacity is explicit at construction, so memory
+and queue age cannot grow without a declared bound. Sender metrics observe
+pressure without exposing the receiver as shared mutable state.
+
+**Failure prevented.** An invisible unbounded backlog and unobservable queue
+saturation.
+
+**Code reference.** `RuntimeQueue::new`.
+
+### 21.2 Policy dispatch is explicit
 
 ```rust
 pub async fn send(&self, item: T) -> Result<(), QueueSendError> {
@@ -135,205 +953,178 @@ pub async fn send(&self, item: T) -> Result<(), QueueSendError> {
 }
 ```
 
-`MonitoredSender::send` makes overflow behavior part of the queue contract and maps full or closed states to typed outcomes. A freshness-oriented evaluation stage may replace pending obsolete work; a durable evidence stage must record an explicit incomplete outcome instead. `LatestWins` still needs application-owned replacement semantics; it is not a generic drop-oldest implementation.
+**What it does.** Makes overflow behavior part of the queue contract and maps
+full/closed conditions to typed outcomes.
 
-| Work kind | Appropriate pressure policy | Why |
-| --- | --- | --- |
-| Fresh evaluation work | Coalesce, replace, or reject superseded pending work. | Newer state can make older calculations commercially irrelevant. |
-| Durable topology or evidence work | Drain, retry, or record an explicit incomplete outcome. | Dropping committed state would remove a required record. |
-| Execution handoff | Keep ownership, deduplication, and outcome tracking explicit. | Handoff order and lifecycle evidence matter beyond raw speed. |
-| Diagnostics | Shed best-effort events before file or network I/O stalls the hot path. | Observability loss is visible but does not become an evaluator bottleneck. |
+**Why / performance property.** A caller cannot accidentally treat every queue
+as unlimited or use blocking semantics for a best-effort diagnostic path.
 
-### Queue architecture and stage-specific overflow
+**Failure prevented.** Hidden drops or hot-path stalls caused by an implicit
+overflow policy. `LatestWins` needs app-owned replacement/coalescing; it is not
+a generic drop-oldest queue.
 
-The generic transport layer establishes finite capacity, typed errors, and metrics. It does not decide whether work remains commercially useful; application-owned stages supply coalescing, replacement, stale checks, cancellation, and shutdown semantics.
+**Code reference.** `MonitoredSender::send`.
 
-| Policy | Source-shaped behavior | Appropriate boundary | Important limit |
-| --- | --- | --- | --- |
-| `QueueOverflowPolicy::BlockProducer` | Wait for capacity and record producer pressure. | Ordered or durable work where loss would violate the stage contract. | It must not indefinitely block an unrelated hot path. |
-| `QueueOverflowPolicy::DropNewest` | Nonblocking send returns a typed dropped result. | Best-effort diagnostics or safely disposable work. | A required evidence record must make loss explicit. |
-| `QueueOverflowPolicy::LatestWins` | A labelled nonblocking policy; application code owns replacement. | Replaceable pending refresh or newest-useful work. | It is not a generic drop-oldest queue. |
-
-The distinction matters. In the source design, `LiveRouteRefreshQueue::enqueue` owns one replaceable pending refresh and merges changed scope. A `LatestWins` enum label by itself does not implement freshness.
-
-## Freshness-first processing
-
-Backpressure limits new admission. Freshness decides whether already admitted work still deserves CPU. A computation can be valid for its source block and commercially irrelevant by the time it completes; retaining a typed discard record is not the same as allowing obsolete work to consume the next decision budget.
+### 21.3 Latest block is a lock-free independent fact
 
 ```rust
-latest_block_number.fetch_max(block_number, Ordering::AcqRel);
-let latest = latest_block_number.load(Ordering::Acquire);
-
-if source_block < latest {
-    cancel_flag.store(true, Ordering::Release);
+pub async fn begin_block(&self, block_number: u64) -> RouteEvaluationBlockRollover {
+    self.latest_block_number
+        .fetch_max(block_number, Ordering::AcqRel);
+    match self.shared_state.try_lock() {
+        Ok(mut shared_state) => shared_state.begin_block(block_number, self.keep_previous_blocks),
+        Err(TryLockError::WouldBlock) => RouteEvaluationBlockRollover::default(),
+        Err(TryLockError::Poisoned(_)) => panic!("route evaluation shared state mutex poisoned"),
+    }
 }
 ```
 
-The source architecture applies three separate controls:
+**What it does.** Publishes the newest block independently, then attempts
+best-effort cleanup of compound queue metadata.
 
-1. A monotonic `AtomicU64` publishes the newest block independently of queue bookkeeping.
-2. An `AtomicBool` enables cooperative cancellation at safe worker boundaries.
-3. A post-compute stale guard prevents an old result from becoming selection input or execution handoff.
+**Why / performance property.** Hot workers can read one monotonic freshness
+fact without blocking ingestion on bookkeeping. The queue map remains coherent
+under a mutex where multiple fields must change together.
 
-Compound state—queued and in-flight work, request identities, counters, and cancellation metadata—remains owned behind a short lock. The source uses `latest_block_number.fetch_max` specifically because the latest block is one independent monotonic fact; it does not use atomics as a substitute for compound lifecycle ownership.
+**Failure prevented.** A slow metadata lock delaying latest-block visibility or
+stale compute continuing solely because cleanup is temporarily busy.
 
-## CPU and asynchronous I/O separation
+**Code reference.** `LiveRouteEvaluationQueue::begin_block`.
 
-Tokio coordinates streams, channels, timers, and asynchronous dependencies. It is not a CPU-scaling mechanism. The supplied architecture divides a bounded request into deterministic chunks, gives chunk ownership to a bounded operating-system worker pool, and merges results deterministically after workers join.
-
-```text
-evaluation coordinator
-       ↓
-deterministic chunks
-       ↓
-bounded scoped OS workers, each with a current-thread async runtime
-       ↓
-deterministic merge, freshness check, and finalization
-```
-
-`run_liveness_worker_pool` is the source-shaped worker owner. Its important properties are bounded parallelism, explicit join ownership, ordered result merge, and cooperative cancellation. It avoids treating unbounded `tokio::spawn` fan-out as an overload policy.
-
-The source draft records concrete worker caps and chunk sizes. Those values are deliberately retained as a Technical and Claim Review item rather than being restated as a public universal tuning recommendation in this Draft.
-
-## Freshness controls in the runtime
-
-Backpressure controls whether new work enters a stage. It does not itself stop old work that is already queued or running. A freshness-aware system therefore uses several mechanisms with different responsibilities.
-
-<img src="/assets/writing/salus-low-latency-trading/03-freshness-and-cancellation.svg" alt="Freshness and cancellation: a newer block updates an atomic latest-state marker, which permits admission control, replacement of pending work, cooperative cancellation, and a final stale-result guard." />
-
-- **Backpressure** controls new admission when a bounded stage is full.
-- **Coalescing or replacement** removes redundant pending work where the domain permits newest-useful semantics.
-- **Cooperative cancellation** lets running CPU work stop at a safe boundary after its source state is superseded.
-- **A post-compute guard** prevents an obsolete result from becoming a selected or handed-off decision.
-
-An atomic latest-state marker works well for one independent monotonic fact. A compound queue lifecycle remains an owned invariant.
-
-## Rust primitives should match the ownership model
-
-The useful Rust question is not “which primitive is fastest?” It is “what fact is being shared, and should ownership move instead?”
-
-<img src="/assets/writing/salus-low-latency-trading/04-rust-concurrency-primitive-map.svg" alt="Rust concurrency primitive map: channels transfer bounded work, atomics carry independent freshness facts, locks protect compound invariants, Arc shares ownership, and bounded workers own CPU-heavy evaluation." />
-
-| Primitive | Public responsibility | Boundary |
-| --- | --- | --- |
-| Tokio `mpsc` | Bounded ownership transfer between runtime stages. | A channel carries work; it does not decide domain policy. |
-| `AtomicU64` / `AtomicBool` | Latest-state publication and cooperative cancellation. | One independent fact, checked without locking a whole queue. |
-| `std::sync::Mutex` | Short synchronous compound invariants. | A guard must not span an async wait. |
-| Tokio `Mutex` / `RwLock` | Mutable resources that genuinely require async coordination. | Use only where lifetime and contention justify it. |
-| `Arc` | Shared ownership of immutable handles, metrics, or liveness facts. | Shares ownership without copying an entire state graph. |
-| Scoped workers / `spawn_blocking` | Explicit bounded CPU or blocking boundaries. | CPU work must not silently consume async I/O capacity. |
-
-**Use an atomic for one independent fact, a lock for a compound invariant, and a channel when ownership of work moves.**
-
-### Annotated primitive examples
-
-The source draft shows the same rule at the call sites rather than only as a primitive map:
+### 21.4 Bounded CPU worker ownership
 
 ```rust
-// Bounded ownership transfer between stages.
-let (sender, mut receiver) = mpsc::channel::<EvaluationJob>(capacity);
-
-// Independent monotonic freshness publication.
-latest_block_number.fetch_max(block_number, Ordering::AcqRel);
-
-// Independent worker-chunk claim.
-let chunk_index = next_chunk.fetch_add(1, Ordering::Relaxed);
-
-// Short compound queue-state transition; no async wait under the guard.
-let mut state = queue_state.lock().expect("queue state");
-state.queued -= 1;
-state.in_flight += 1;
+let worker_count = worker_count.min(chunk_count).max(1);
+let next_chunk_index = AtomicUsize::new(0);
+thread::scope(|scope| {
+    let mut worker_handles = Vec::with_capacity(worker_count);
+    for _ in 0..worker_count {
+        let next_chunk_index = &next_chunk_index;
+        let registry = Arc::clone(&registry);
+        let cancel_flag = Arc::clone(&cancel_flag);
+        worker_handles.push(scope.spawn(move || {
+            let runtime = match Builder::new_current_thread().enable_all().build() {
+                Ok(runtime) => runtime,
+                Err(error) => return vec![Err(format!("worker runtime: {error}"))],
+            };
+            let mut worker_results = Vec::new();
+            loop {
+                let chunk_index = next_chunk_index.fetch_add(1, Ordering::Relaxed);
+                if chunk_index >= chunk_count {
+                    break;
+                }
+                if cancel_flag.load(Ordering::Acquire) {
+                    registry.record_cancelled(chunk_index);
+                    continue;
+                }
+                registry.record_worker_started(chunk_index);
+                let result = block_on_chunk(&runtime, (run_chunk)(chunk_index), &registry, chunk_index);
+                // Record completion/failure, then retain this chunk result.
+                worker_results.push(result);
+            }
+            worker_results
+        }));
+    }
+});
 ```
 
-This is a compact, source-shaped excerpt, not a source-path reference. It illustrates why a channel transfers work, an atomic publishes one independent fact, and a lock preserves a multi-field invariant. A Tokio `Mutex` or `RwLock` is reserved for mutable state that genuinely spans asynchronous coordination; `Arc` shares handles and liveness facts without deep-copying a graph.
+**What it does.** Uses scoped OS worker threads, a bounded work count, and a
+current-thread Tokio runtime per CPU worker for the async parts of a chunk.
 
-## Measure where latency occurs
+**Why / performance property.** It limits CPU parallelism, retains join
+ownership, and keeps route ordering/merge logic deterministic.
 
-Throughput is not one number and latency is not one timer. Queue wait, preparation, evaluation, finalization, handoff, and external network waits have different causes and therefore different remedies.
+**Failure prevented.** Unlimited `tokio::spawn` fan-out, executor starvation,
+and detached workers outliving the request owner.
 
-<img src="/assets/writing/salus-low-latency-trading/05-latency-attribution.svg" alt="Latency attribution: end-to-end decision latency decomposes into internal queue wait, preparation, CPU evaluation, finalization, execution handoff, and external network or receipt wait." />
+**Code reference.** `run_liveness_worker_pool`. The excerpt shows the repeated claim loop and cancellation path; it abbreviates result-state accounting, the liveness watchdog, and post-join reconciliation.
 
-| Observation | Likely boundary | First question |
-| --- | --- | --- |
-| Queue wait rises while evaluation service time is steady. | Admission rate, worker availability, or stale-work policy. | Is the system admitting more work than the current state makes useful? |
-| Service time rises alongside worker utilization. | CPU evaluation, simulation, pricing, or allocation path. | Which bounded chunk or computation became more expensive? |
-| Internal handoff is low while network wait rises. | Provider, relay, network, or receipt boundary. | Why would evaluator optimization improve an external wait? |
-| Throughput rises while stale completions rise. | Scheduling and freshness policy. | Is capacity being spent on superseded work? |
+## 22. Telemetry code deep dive
 
-## Throughput, allocation, and locality
-
-The source defines active evaluator throughput as completed routes divided by route-evaluation service time, and records it alongside queue wait, worker utilisation, chunk count, route complexity, stale or discarded work, and latency percentiles. That prevents a single routes-per-second figure from being read as wall-clock readiness, execution quality, or commercial outcome.
-
-The performance strategy is primarily to avoid unnecessary work and payload expansion: hydrate known topology once, look up affected routes directly, retain ordered references rather than clone every route per worker, share block-scoped context, and bound candidate admission before allocation-heavy processing. Deterministic maps and sets help keep ordering and replay evidence stable; they do not prove that allocation or memory pressure is irrelevant.
-
-### Source-draft retained measurements
-
-The source draft contains additional historical observations. They are retained here as **source-draft measurements pending independent Technical and Claim Review**, not as current or universal capacity claims.
-
-| Source-draft observation | What it can support | What it cannot support |
-| --- | --- | --- |
-| 2,401,108 persisted four-hop routes; 3,415 graph tokens; 4,552 components | Why full-universe scans are the wrong steady-state path for that retained snapshot. | Current live route count, heap use, or universal graph scale. |
-| Affected component scope: 12 ms p50 and 42 ms p99 | The indexed lookup path under the stated retained review workload. | Startup hydration latency or an end-to-end decision guarantee. |
-| 33,578.21 active routes/s in a dated Ethereum trace | Workload-specific evaluator throughput and health under that profile. | Cross-chain capacity, selection, execution, or profitable outcome. |
-| 4 ms evaluation-to-submit; 252 ms evaluation-to-broadcast; 246 ms submission RPC in a retained forced-route trace | The cited trace attributed most observed broadcast delay to an external RPC boundary. | General live trading latency or execution quality. |
-
-These values require separately authorized implementation and evidence review before any future publication decision. They do not change the already approved public boundary: retained runs selected zero after-gas routes, and no claim of profitable after-gas production execution is made.
-
-## Telemetry architecture and event model
-
-Instrumentation should make pressure visible without turning file or network I/O into a dependency of evaluation. A useful event records the queue and decision boundary at the time it was observed: depth, queue age, service time, worker utilisation, stale or discarded work, and whether evidence retention completed.
-
-The recorder owns event construction; a bounded diagnostic handoff owns best-effort delivery; a separate writer owns slow I/O and its final flush result. If a diagnostic event is shed under pressure, that loss must itself be observable. A successful queue or telemetry record does not establish that a trading decision was selected, submitted, included, settled, or profitable.
-
-```text
-instrumentation → RuntimeMetricsRecorder → JSON event → bounded writer queue
-→ writer thread → retained line + writer-health/final-flush result
-```
-
-| Signal | What it separates |
-| --- | --- |
-| Queue depth, wait, sends, drops, and blocked sends | producer/consumer imbalance from a slow external dependency |
-| Preparation, evaluation, and finalization time | scope/admission work from CPU work |
-| Chunk timing and worker utilisation | local hot-loop shape from queue backlog |
-| Evaluation-to-submit, RPC, and receipt timing | internal decision delay from external network delay |
-| Refresh queue coalescing and pending/in-flight state | replaceable topology pressure from evaluation pressure |
-
-`record_queue_snapshot` is the source-shaped event boundary: it serializes a point-in-time queue snapshot while a separate writer owns blocking file I/O. Source names, exact writer capacity, configuration keys, and file locations remain outside this public projection pending separately authorized implementation review.
-
-## Telemetry code deep dive
+### 22.1 One queue snapshot event carries the pressure facts
 
 ```rust
 fields.insert("capacity".to_owned(), json!(snapshot.capacity));
 fields.insert("current_depth".to_owned(), json!(snapshot.current_depth));
 fields.insert("peak_depth".to_owned(), json!(snapshot.peak_depth));
+fields.insert("sent".to_owned(), json!(snapshot.sent_count));
+fields.insert("dropped".to_owned(), json!(snapshot.dropped_count));
+fields.insert("blocked".to_owned(), json!(snapshot.blocked_send_count));
+```
 
-match writer.try_send(line) {
+**Producer behavior.** An instrumentation call turns a queue snapshot into a
+versioned JSON event rather than querying live state later.
+
+**Ownership / queue behavior.** The recorder owns serialization; the writer
+owns file I/O. `queue_snapshot` is diagnostic data, so it uses the bounded
+metrics writer’s nonblocking send behavior.
+
+**Failure policy.** A diagnostic line can drop under pressure; the line itself
+does not block evaluation.
+
+**Code reference.** `record_queue_snapshot`.
+
+### 22.2 Recorder serialization and nonblocking handoff
+
+```rust
+match self.inner.writer.try_send(line) {
     Ok(()) => true,
-    Err(QueueSendError::DroppedByPolicy { .. }) => false,
-    Err(QueueSendError::Closed { .. }) => false,
+    Err(QueueSendError::DroppedByPolicy { .. }) => {
+        self.inner.writer.log_queue_drop_once();
+        false
+    }
+    Err(QueueSendError::Closed { queue_name }) => {
+        self.disable_once(format!("writer_queue_closed queue={queue_name}"));
+        false
+    }
 }
 ```
 
-The design is intentionally asymmetric: diagnostic data may be shed to protect the latency-sensitive evaluation path, while durable execution and correctness evidence has a separate completeness contract. A writer close or flush failure is observable; it is not silently treated as retained evidence.
+**Producer behavior.** The recorder serializes a complete event, attempts a
+nonblocking enqueue, and turns writer failure into explicit writer health.
 
-## What the retained evidence establishes
+**Blocking risk.** There is no await on the metrics writer queue. File latency
+cannot directly park the route-evaluation hot path.
 
-The approved public Salus record establishes bounded engineering capacity, not trading outcomes. One retained Ethereum topology snapshot contained 3,415 graph tokens, 4,552 pool components, and 2,401,108 maximum-four-hop catalog routes. The current public gateway also records bounded Base evaluation measurements of 16,537 sustained and 38,462 peak route evaluations per second for its retained workload.
+**Failure policy.** Full means `DropNewest` and a once-only warning; a closed
+writer disables metrics rather than pretending later rows were retained.
 
-Those are workload-scoped implementation observations. They do not establish opportunity recall, selected after-gas routes, submitted transactions, inclusion, settlement, or realized profit. The cited retained runs selected zero after-gas routes. Commercial validation remains ongoing, and profitable after-gas production execution has not been established.
+**Code reference.** `RuntimeMetricsRecorder::send_runtime_event`.
 
-The supplied source draft contributes the implementation names, code-shaped excerpts, and historical measurements retained in this visible Draft. They remain pending independent Technical and Claim Review because this pass does not include private implementation verification. They do not broaden the article's conclusion or its trading-outcome boundary.
+### 22.3 Writer thread drains and flushes after closure
 
-## The engineering lesson
+```rust
+while let Some(line) = receiver.blocking_recv() {
+    write_runtime_metrics_line(&mut file, &state, &line);
+}
+if let Err(error) = file.flush() {
+    disable_runtime_metrics_state(&state, format!("flush_error error={error}"));
+} else {
+    state.lock().expect("runtime metrics mutex not poisoned")
+        .final_flush_succeeded = Some(true);
+}
+```
 
-Low-latency concurrency is an ownership problem before it is a task-count problem. Bounded queues expose overload. Freshness rules stop obsolete work from monopolising the next decision budget. Atomics make narrow hot facts cheap; locks preserve compound invariants; channels move work between owners; and bounded CPU workers protect I/O coordination.
+**Producer behavior.** Senders own no file handle; closing the last sender
+starts orderly writer completion.
 
-The most useful question is not “how many tasks can the runtime start?” It is: **what work is still valid, who owns it, what happens under saturation, and can the system explain where the latency went?**
+**Ownership / queue behavior.** One standard thread owns blocking file I/O and
+drains its Tokio receiver. Writer state records bytes, drops, close, and flush
+outcome.
 
-## Go deeper
+**Failure policy.** A write/flush failure disables the diagnostic writer and is
+observable. Evidence profiles decide separately whether a failure makes a
+retained package incomplete.
 
-- [Salus](/salus) is the project gateway and evidence boundary.
-- [Salus Whitepaper — Draft](/salus/whitepaper) gives the longer system proposition and current limitations.
-- [Salus Architecture — Draft](/salus/architecture) is the implementation companion for runtime ownership, freshness, guarded execution, and evidence contracts.
-- [Mapping Liquidity to Routes at Scale](/writing/mapping-liquidity-to-routes-at-scale) explains the durable topology and affected-route premise in more depth.
-- [Backpressure and Queue Ownership](/architecture/backpressure-and-queue-ownership) extracts the reusable queue design pattern.
+**Code reference.** `runtime_metrics_writer_loop` and `RuntimeMetricsWriter::shutdown`.
+
+## 23. Conclusion
+
+Low-latency concurrency is an ownership problem before it is a task-count problem. Bounded queues expose overload; freshness rules prevent obsolete work from consuming the next decision budget; atomics keep narrow hot facts cheap; locks preserve compound invariants; channels transfer ownership; and bounded CPU workers protect asynchronous I/O coordination.
+
+The most useful question is not **how many tasks can I run?** but **what work is still valid, who owns it, what happens under saturation, and can I prove where the latency went?**
+
+### Further reading
+- [Salus overview](/salus)
+- [Salus whitepaper](/salus/whitepaper)
+- [Salus architecture](/salus/architecture)
