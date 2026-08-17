@@ -11,11 +11,15 @@ description: "How Salus uses bounded queues, freshness controls, deterministic C
 
 ## Overview
 
-This article looks at a fundamental challenge in modern trading systems: **markets change quickly, while the systems analysing them have a finite amount of time and computing capacity to decide what is still worth acting on**. The examples use Rust and decentralized finance (DeFi), but the principles apply much more broadly to trading platforms and distributed systems built in any language.
+This article looks at a fundamental challenge in modern trading systems: **markets change quickly, while the systems analysing them have a finite amount of time and computing capacity to decide what is still worth acting on**.
 
-The case study is **Salus**, a modular trading and solving infrastructure project I built for decentralized markets. Salus continuously processes changing market conditions, identifies potentially relevant trading routes, evaluates them, and determines which opportunities are still valid before passing them toward execution. The business challenge is not simply doing more work faster—it is **prioritising the right work, avoiding effort on opportunities that have already disappeared, and understanding where time is being spent when decisions are delayed**.
+The business challenge is not simply doing more work faster—it is **prioritising the right work, avoiding effort on opportunities that have already disappeared, and understanding where time is being spent when decisions are delayed**.
+
+The case study is **Salus**, a modular trading and solving infrastructure project I built for decentralized markets. Salus continuously processes changing market conditions, identifies potentially relevant trading routes, evaluates them, and determines which opportunities are still valid before passing them toward execution.
 
 This article goes into the engineering behind that solution in detail, including concurrency, queues, state management, simulation, performance, and observability. It is intentionally designed as a **reference document you can return to when tackling difficult performance and concurrency problems**, whether you are building trading infrastructure, financial systems, or other high-performance distributed applications.
+
+The examples use Rust and decentralized finance (DeFi), but the principles apply much more broadly to trading platforms and distributed systems built in any language.
 
 You do not need to be building a DeFi arbitrage system to use these patterns. The central question throughout the article is much more general:
 
@@ -928,8 +932,9 @@ before generalising this inventory.
 
 ## 21. Queue code deep dive
 
-These excerpts focus on the ownership, performance, and failure semantics
-relevant to the runtime architecture.
+These excerpts show how the queue and worker decisions described earlier
+appear in code. The focus is the workload-specific reason for each
+choice rather than a generic catalogue of failure modes.
 
 ### 21.1 Bounded generic queue construction
 
@@ -944,15 +949,13 @@ pub fn new(config: QueueConfig) -> Self {
 }
 ```
 
-**What it does.** Creates a typed bounded MPSC channel and shares one metrics
-object with senders.
+**What it does.** Creates a typed bounded Multiple Producer, Single
+Consumer (MPSC) queue with shared pressure metrics.
 
-**Why / performance property.** Capacity is explicit at construction, so memory
-and queue age cannot grow without a declared bound. Sender metrics observe
-pressure without exposing the receiver as shared mutable state.
-
-**Failure prevented.** An invisible unbounded backlog and unobservable queue
-saturation.
+**Why:** Salus needs queue capacity to be explicit. If producers outrun
+consumers, the system should expose backpressure or apply a deliberate
+drop policy rather than accumulate an ever-growing backlog of
+increasingly stale work.
 
 **Code reference.** `RuntimeQueue::new`.
 
@@ -968,15 +971,15 @@ pub async fn send(&self, item: T) -> Result<(), QueueSendError> {
 }
 ```
 
-**What it does.** Makes overflow behavior part of the queue contract and maps
-full/closed conditions to typed outcomes.
+**What it does.** Makes overflow behavior part of the queue contract and
+returns typed full/closed outcomes.
 
-**Why / performance property.** A caller cannot accidentally treat every queue
-as unlimited or use blocking semantics for a best-effort diagnostic path.
-
-**Failure prevented.** Hidden drops or hot-path stalls caused by an implicit
-overflow policy. `LatestWins` needs app-owned replacement/coalescing; it is not
-a generic drop-oldest queue.
+**Why:** Different Salus stages value queued work differently. Durable
+or ordered work may need backpressure, while replaceable diagnostics or
+stale market work may be dropped. Making that policy explicit prevents a
+generic queue implementation from silently deciding the business
+semantics. `LatestWins` still requires application-owned replacement or
+coalescing; the enum alone does not implement drop-oldest behavior.
 
 **Code reference.** `MonitoredSender::send`.
 
@@ -994,15 +997,13 @@ pub async fn begin_block(&self, block_number: u64) -> RouteEvaluationBlockRollov
 }
 ```
 
-**What it does.** Publishes the newest block independently, then attempts
-best-effort cleanup of compound queue metadata.
+**What it does.** Publishes the newest block independently, then
+attempts best-effort cleanup of compound queue metadata.
 
-**Why / performance property.** Hot workers can read one monotonic freshness
-fact without blocking ingestion on bookkeeping. The queue map remains coherent
-under a mutex where multiple fields must change together.
-
-**Failure prevented.** A slow metadata lock delaying latest-block visibility or
-stale compute continuing solely because cleanup is temporarily busy.
+**Why:** Workers need to know immediately when their evaluation has
+become stale. That freshness decision should not wait for an unrelated
+metadata lock, while the multi-field queue state still needs a mutex to
+remain coherent.
 
 **Code reference.** `LiveRouteEvaluationQueue::begin_block`.
 
@@ -1043,20 +1044,25 @@ thread::scope(|scope| {
 });
 ```
 
-**What it does.** Uses scoped OS worker threads, a bounded work count, and a
-current-thread Tokio runtime per CPU worker for the async parts of a chunk.
+**What it does.** Runs route-evaluation chunks on a fixed number of
+owned operating-system (OS) workers, with a current-thread Tokio runtime
+available for asynchronous work inside each chunk.
 
-**Why / performance property.** It limits CPU parallelism, retains join
-ownership, and keeps route ordering/merge logic deterministic.
+**Why:** Route simulation is CPU-bound. Creating a Tokio task per route
+would increase contention without creating more CPU capacity, so Salus
+bounds parallelism, lets workers claim finite chunks, checks
+cancellation between chunks, and merges the results deterministically.
 
-**Failure prevented.** Unlimited `tokio::spawn` fan-out, executor starvation,
-and detached workers outliving the request owner.
-
-**Code reference.** `run_liveness_worker_pool`. The excerpt shows the repeated claim loop and cancellation path; it abbreviates result-state accounting, the liveness watchdog, and post-join reconciliation.
+**Code reference.** `run_liveness_worker_pool`. The excerpt shows chunk
+claiming and cancellation; the full implementation also records liveness
+and reconciles results after the workers join.
 
 ## 22. Telemetry code deep dive
 
-### 22.1 One queue snapshot event carries the pressure facts
+The telemetry path follows the same principle: measure the hot path
+without allowing measurement itself to become the bottleneck.
+
+### 22.1 One queue snapshot captures pressure
 
 ```rust
 fields.insert("capacity".to_owned(), json!(snapshot.capacity));
@@ -1067,19 +1073,16 @@ fields.insert("dropped".to_owned(), json!(snapshot.dropped_count));
 fields.insert("blocked".to_owned(), json!(snapshot.blocked_send_count));
 ```
 
-**Producer behavior.** An instrumentation call turns a queue snapshot into a
-versioned JSON event rather than querying live state later.
+**What it does.** Captures queue capacity, depth, sends, drops, and
+blocked sends as one versioned event.
 
-**Ownership / queue behavior.** The recorder owns serialization; the writer
-owns file I/O. `queue_snapshot` is diagnostic data, so it uses the bounded
-metrics writer’s nonblocking send behavior.
-
-**Failure policy.** A diagnostic line can drop under pressure; the line itself
-does not block evaluation.
+**Why:** Salus needs to distinguish a slow evaluator from a
+producer/consumer mismatch. Recording the pressure facts together makes
+that diagnosis possible without querying mutable queue state later.
 
 **Code reference.** `record_queue_snapshot`.
 
-### 22.2 Recorder serialization and nonblocking handoff
+### 22.2 Recorder handoff is nonblocking
 
 ```rust
 match self.inner.writer.try_send(line) {
@@ -1095,18 +1098,17 @@ match self.inner.writer.try_send(line) {
 }
 ```
 
-**Producer behavior.** The recorder serializes a complete event, attempts a
-nonblocking enqueue, and turns writer failure into explicit writer health.
+**What it does.** Serializes a complete metrics event and attempts an
+immediate handoff to the writer queue.
 
-**Blocking risk.** There is no await on the metrics writer queue. File latency
-cannot directly park the route-evaluation hot path.
-
-**Failure policy.** Full means `DropNewest` and a once-only warning; a closed
-writer disables metrics rather than pretending later rows were retained.
+**Why:** Diagnostic file I/O should not park route evaluation. If the
+metrics queue is full, the diagnostic event can be dropped and recorded
+as such; if the writer is closed, metrics are disabled explicitly rather
+than pretending later events were retained.
 
 **Code reference.** `RuntimeMetricsRecorder::send_runtime_event`.
 
-### 22.3 Writer thread drains and flushes after closure
+### 22.3 One writer owns blocking file I/O
 
 ```rust
 while let Some(line) = receiver.blocking_recv() {
@@ -1120,18 +1122,15 @@ if let Err(error) = file.flush() {
 }
 ```
 
-**Producer behavior.** Senders own no file handle; closing the last sender
-starts orderly writer completion.
+**What it does.** A dedicated writer thread drains the metrics queue,
+writes each line, and records whether the final flush succeeded.
 
-**Ownership / queue behavior.** One standard thread owns blocking file I/O and
-drains its Tokio receiver. Writer state records bytes, drops, close, and flush
-outcome.
+**Why:** Keeping the file handle and blocking writes behind one owner
+isolates storage latency from evaluation while still making telemetry
+loss and shutdown state observable.
 
-**Failure policy.** A write/flush failure disables the diagnostic writer and is
-observable. Evidence profiles decide separately whether a failure makes a
-retained package incomplete.
-
-**Code reference.** `runtime_metrics_writer_loop` and `RuntimeMetricsWriter::shutdown`.
+**Code reference.** `runtime_metrics_writer_loop` and
+`RuntimeMetricsWriter::shutdown`.
 
 ## 23. Conclusion
 
