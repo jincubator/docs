@@ -37,6 +37,11 @@ export default defineConfig({
         property: "og:url",
         content: canonicalUrl,
       }),
+      createElement("script", {
+        type: "module",
+        src: "https://static.cloudflareinsights.com/beacon.min.js",
+        "data-cf-beacon": '{"token": "355c3a36139347a5ae818e8a0e815a03"}',
+      }),
     );
   },
   vite: {
