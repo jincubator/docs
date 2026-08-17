@@ -7,7 +7,21 @@ description: "How Salus uses bounded queues, freshness controls, deterministic C
 
 # Async Concurrency in Rust for Low Latency Trading Systems
 
-*20 min read*
+*21 min read*
+
+## Overview
+
+This article looks at a fundamental challenge in modern trading systems: **markets change quickly, while the systems analysing them have a finite amount of time and computing capacity to decide what is still worth acting on**. The examples use Rust and decentralized finance (DeFi), but the principles apply much more broadly to trading platforms and distributed systems built in any language.
+
+The case study is **Salus**, a modular trading and solving infrastructure project I built for decentralized markets. Salus continuously processes changing market conditions, identifies potentially relevant trading routes, evaluates them, and determines which opportunities are still valid before passing them toward execution. The business challenge is not simply doing more work faster—it is **prioritising the right work, avoiding effort on opportunities that have already disappeared, and understanding where time is being spent when decisions are delayed**.
+
+This article goes into the engineering behind that solution in detail, including concurrency, queues, state management, simulation, performance, and observability. It is intentionally designed as a **reference document you can return to when tackling difficult performance and concurrency problems**, whether you are building trading infrastructure, financial systems, or other high-performance distributed applications.
+
+You do not need to be building a DeFi arbitrage system to use these patterns. The central question throughout the article is much more general:
+
+> **What work is still useful, who owns it, what happens when the system is saturated, and can we explain where the latency went?**
+
+Finally, I'd like to thank the DeFi community in general and the Tycho Build Community specifically. Salus is built on top of [Tycho](https://docs.propellerheads.xyz/tycho/about), which provided a foundational layer for much of the market-data ingestion, simulation, and execution infrastructure needed to build the system.
 
 ## Problem
 
@@ -22,7 +36,7 @@ The engineering problem is not simply **how to execute more work concurrently**.
 
 Unbounded task creation or queue growth can make headline throughput look better while increasing queue age, memory pressure, tail latency, and stale completion. In a trading runtime, overload policy is therefore part of the decision architecture rather than an implementation detail.
 
-## Salus Overview
+## Salus
 
 Salus is a Jincubator-owned research and engineering initiative and reference implementation. John Whitton designed and built its Rust-based modular trading and solving infrastructure to turn changing decentralized-market state into bounded, inspectable evaluation work and guarded execution decisions. The system separates durable topology from live state, maintains an in-memory catalogue of known routes, maps changed liquidity components directly to affected routes, evaluates those routes against block-scoped state, and preserves a distinct execution and evidence lifecycle.
 
@@ -30,7 +44,7 @@ The concurrency architecture follows the same separation of responsibilities. To
 
 <img src="/assets/work/salus/salus-runtime-architecture.png" alt="Salus runtime architecture: external market state enters a bounded runtime hot path, while persistence, execution, configuration, and observability retain separate ownership." />
 
-*Figure 1. Salus runtime architecture: external market state enters a bounded runtime hot path, while persistence, execution, configuration, and observability retain separate ownership.*
+_Figure 1. Salus runtime architecture: external market state enters a bounded runtime hot path, while persistence, execution, configuration, and observability retain separate ownership._
 
 At a high level:
 
@@ -76,16 +90,16 @@ Guarded Execution Handoff
 
 <img src="/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg" alt="Low-latency runtime pipeline: asynchronous state coordination narrows work before bounded CPU evaluation and guarded handoff." />
 
-*Figure 2. Salus separates asynchronous state coordination, bounded admission, CPU-heavy evaluation, freshness, and guarded execution into explicit runtime stages.*
+_Figure 2. Salus separates asynchronous state coordination, bounded admission, CPU-heavy evaluation, freshness, and guarded execution into explicit runtime stages._
 
 ## 2. Synchronization and Primitive Mapping
 
 In a high-throughput systems environment, synchronization must align directly with data semantics. Salus enforces a strict engineering hierarchy for memory coordination:
 
-* **Atomics (`AtomicU64`, `AtomicBool`):** Used exclusively for independent, monotonic facts (like the latest observed block number or worker cancellation flags) that require hot, lock-free status checks.
-* **Standard Mutex (`std::sync::Mutex`):** Confined to narrow, compound invariants (like work-queue metadata and state counters) requiring multi-field updates. Guards protect short critical sections and never span an `.await` boundary.
-* **Asynchronous Primitives (`Tokio Mutex / RwLock`):** Reserved for cross-await resource serialization and read-heavy price/gas cache surfaces.
-* **Bounded Channels (`Tokio MPSC`):** The primary mechanism for explicit ownership transfer across isolated runtime stages.
+- **Atomics (`AtomicU64`, `AtomicBool`):** Used exclusively for independent, monotonic facts (like the latest observed block number or worker cancellation flags) that require hot, lock-free status checks.
+- **Standard Mutex (`std::sync::Mutex`):** Confined to narrow, compound invariants (like work-queue metadata and state counters) requiring multi-field updates. Guards protect short critical sections and never span an `.await` boundary.
+- **Asynchronous Primitives (`Tokio Mutex / RwLock`):** Reserved for cross-await resource serialization and read-heavy price/gas cache surfaces.
+- **Bounded Channels (`Tokio MPSC`):** The primary mechanism for explicit ownership transfer across isolated runtime stages.
 
 ---
 
@@ -111,6 +125,7 @@ impl<T: Send> MonitoredSender<T> {
 ```
 
 ### Strategic Stage Inventory
+
 1. **`live_route_prep` (Capacity: 4):** Employs `DropNewest` during normal blocks. If ingestion outpaces compute, stale evaluation candidates are discarded before request materialization.
 2. **`live_route_evaluation` (Capacity: 4):** Employs `BlockProducer` upstream pressure. Once admitted, work is batched and executed deterministically on an OS thread pool rather than flooding an async executor.
 3. **`runtime_metrics_jsonl` (Capacity: 1024):** Employs non-blocking `DropNewest`. Diagnostic telemetry is shed under extreme writer pressure to protect the hot path from file I/O latency.
@@ -126,16 +141,17 @@ If the frame is found to be obsolete, workers signal a cooperative `AtomicBool` 
 ---
 
 {/* Figure 3 source asset: evaluation-to-execution lifecycle SVG */}
+
 <img src="/assets/writing/salus-low-latency-trading/03-freshness-and-cancellation.svg" alt="Freshness and stale-work cancellation: new state controls admission, pending replacement, running work cancellation, and final-result authority." />
 
-*Figure 3. New market state drives admission control, pending-work replacement, cooperative cancellation, and a final stale-result guard.*
+_Figure 3. New market state drives admission control, pending-work replacement, cooperative cancellation, and a final stale-result guard._
 
 ## 5. Authoritative Specifications & Reference Architecture
 
 The related public working documents provide the broader system and architecture context without exposing private implementation sources:
 
-* [**Salus Whitepaper — Draft**](/salus/whitepaper)
-* [**Salus Architecture — Draft**](/salus/architecture)
+- [**Salus Whitepaper — Draft**](/salus/whitepaper)
+- [**Salus Architecture — Draft**](/salus/architecture)
 
 ## 6. How Salus achieves low latency and high throughput
 
@@ -182,7 +198,7 @@ correctness and capacity concern.
 
 <img src="/assets/writing/salus-low-latency-trading/02-changed-component-to-evaluation.svg" alt="Changed component to evaluation: changed components resolve through an in-memory index before bounded admission and evaluation." />
 
-*Figure 4. Changed components resolve through the in-memory route index before bounded preparation, coverage validation, and evaluation.*
+_Figure 4. Changed components resolve through the in-memory route index before bounded preparation, coverage validation, and evaluation._
 
 ```text
 Tycho / blockchain stream
@@ -210,15 +226,15 @@ This is a guide to the actual owner boundaries, not a claim that every block
 takes every path. Empty blocks, unavailable state, admission caps, stale work,
 and configuration can stop work before evaluation.
 
-| Stage | Work | Concurrency boundary | Primary concern |
-| --- | --- | --- | --- |
-| Ingestion | Async I/O + state application | Bounded stream stages | Ordering and input bursts |
-| Graph / topology | In-memory mutation | Owner-local state → typed jobs | Avoid unnecessary rebuilds |
-| Route lookup | Indexed memory lookup | Bounded candidate scope | Prevent scope explosion |
-| Route preparation | Metadata + request construction | `live_route_prep` | Freshness and admission |
-| Evaluation | CPU-heavy simulation | `live_route_evaluation` → bounded workers | CPU saturation and stale work |
-| Execution | External I/O + lifecycle state | Bounded `execution_stage` | Dedupe, retry, external latency |
-| Metrics | Serialization + file I/O | Independent bounded writer | Never stall the hot path |
+| Stage             | Work                            | Concurrency boundary                      | Primary concern                 |
+| ----------------- | ------------------------------- | ----------------------------------------- | ------------------------------- |
+| Ingestion         | Async I/O + state application   | Bounded stream stages                     | Ordering and input bursts       |
+| Graph / topology  | In-memory mutation              | Owner-local state → typed jobs            | Avoid unnecessary rebuilds      |
+| Route lookup      | Indexed memory lookup           | Bounded candidate scope                   | Prevent scope explosion         |
+| Route preparation | Metadata + request construction | `live_route_prep`                         | Freshness and admission         |
+| Evaluation        | CPU-heavy simulation            | `live_route_evaluation` → bounded workers | CPU saturation and stale work   |
+| Execution         | External I/O + lifecycle state  | Bounded `execution_stage`                 | Dedupe, retry, external latency |
+| Metrics           | Serialization + file I/O        | Independent bounded writer                | Never stall the hot path        |
 
 **Source-draft implementation description (pending separately authorized implementation verification).** The concrete catalogue is described in Salus’s
 queue walkthrough
@@ -252,15 +268,15 @@ owns an asynchronous Diesel connection pool and runs pending migrations when it
 connects. PostgreSQL is the durable/recovery authority; the runtime does not ask
 it to decide which routes to evaluate for every block.
 
-| Durable data | Runtime purpose |
-| --- | --- |
-| Tokens — `tokens` / `TokenSeed` | Rebuild token views in the deterministic market snapshot. |
-| Protocol components — `protocol_components` / `ProtocolComponentSeed` | Rebuild component topology and live-state owners. |
-| Component-token order — `component_tokens` | Preserve token ordering while reconstructing a component. |
-| Route summaries — `route_summaries` / `RouteSeed` | Rebuild known route candidates. |
-| Ordered route legs — `route_legs` | Reconstruct route component membership and order. |
-| Topology metadata — `graph_metadata` / `GraphMetadataSeed` | Validate graph identity, source block, route count, and persisted cache data. |
-| Optional route-scope acceleration — `pool_route_scope_entries` | Seed validated hot-component memberships without replacing the runtime catalogue as authority. |
+| Durable data                                                          | Runtime purpose                                                                                |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Tokens — `tokens` / `TokenSeed`                                       | Rebuild token views in the deterministic market snapshot.                                      |
+| Protocol components — `protocol_components` / `ProtocolComponentSeed` | Rebuild component topology and live-state owners.                                              |
+| Component-token order — `component_tokens`                            | Preserve token ordering while reconstructing a component.                                      |
+| Route summaries — `route_summaries` / `RouteSeed`                     | Rebuild known route candidates.                                                                |
+| Ordered route legs — `route_legs`                                     | Reconstruct route component membership and order.                                              |
+| Topology metadata — `graph_metadata` / `GraphMetadataSeed`            | Validate graph identity, source block, route count, and persisted cache data.                  |
+| Optional route-scope acceleration — `pool_route_scope_entries`        | Seed validated hot-component memberships without replacing the runtime catalogue as authority. |
 
 The corresponding warm-start readers are `fetch_tokens`, `fetch_protocol_components`,
 `fetch_route_summaries`, `fetch_latest_graph_metadata`, and
@@ -297,16 +313,16 @@ optional persisted hot-cache validation and hydration
 runtime accepts stream blocks
 ```
 
-| Step | Runtime action | Purpose |
-| ---: | --- | --- |
-| 1 | `PostgresStorage::connect` | Establish the migrated durable store. |
-| 2 | `load_warm_start_topology` | Reconstruct tokens, components, and graph metadata. |
-| 3 | `load_warm_start_routes` | Load the persisted route universe once. |
-| 4 | `load_warm_start_state` | Hand topology and routes to runtime orchestration. |
-| 5 | `ArbitrageRuntime::new` | Build in-memory graph, component map, and live-state owners. |
-| 6 | `InMemoryRouteCatalog::from_persisted_routes` | Reconstitute validated route candidates. |
-| 7 | `RouteIndex::from_routes` | Build direct component-to-route membership lookup. |
-| 8 | `build_pool_route_scope_cache` | Validate and optionally hydrate hot-component acceleration. |
+| Step | Runtime action                                | Purpose                                                      |
+| ---: | --------------------------------------------- | ------------------------------------------------------------ |
+|    1 | `PostgresStorage::connect`                    | Establish the migrated durable store.                        |
+|    2 | `load_warm_start_topology`                    | Reconstruct tokens, components, and graph metadata.          |
+|    3 | `load_warm_start_routes`                      | Load the persisted route universe once.                      |
+|    4 | `load_warm_start_state`                       | Hand topology and routes to runtime orchestration.           |
+|    5 | `ArbitrageRuntime::new`                       | Build in-memory graph, component map, and live-state owners. |
+|    6 | `InMemoryRouteCatalog::from_persisted_routes` | Reconstitute validated route candidates.                     |
+|    7 | `RouteIndex::from_routes`                     | Build direct component-to-route membership lookup.           |
+|    8 | `build_pool_route_scope_cache`                | Validate and optionally hydrate hot-component acceleration.  |
 
 The warm-start reads are `async` and await Diesel-backed storage methods; they
 are not wrapped in `spawn_blocking`. The later route-refresh **discovery** path
@@ -592,11 +608,11 @@ and shutdown semantics where the business meaning requires them.
 
 ### Overflow-policy semantics
 
-| Policy | Current generic behavior | Appropriate when | Important caveat |
-| --- | --- | --- | --- |
-| `BlockProducer` | awaits channel capacity; records a blocked send once full | lost work would violate an ordered or durable stage contract | it propagates pressure upstream; it is not a licence to block an unrelated hot path forever |
-| `DropNewest` | `try_send`; full channel returns `DroppedByPolicy` and records a drop | a new item is safely disposable, such as best-effort diagnostics | the producer must make loss visible if the record is required for an evidence claim |
-| `LatestWins` | generic sender also uses nonblocking `try_send` | only as a labelled policy; app code supplies replacement semantics | it is **not** a generic drop-oldest implementation in `RuntimeQueue` |
+| Policy          | Current generic behavior                                              | Appropriate when                                                   | Important caveat                                                                            |
+| --------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `BlockProducer` | awaits channel capacity; records a blocked send once full             | lost work would violate an ordered or durable stage contract       | it propagates pressure upstream; it is not a licence to block an unrelated hot path forever |
+| `DropNewest`    | `try_send`; full channel returns `DroppedByPolicy` and records a drop | a new item is safely disposable, such as best-effort diagnostics   | the producer must make loss visible if the record is required for an evidence claim         |
+| `LatestWins`    | generic sender also uses nonblocking `try_send`                       | only as a labelled policy; app code supplies replacement semantics | it is **not** a generic drop-oldest implementation in `RuntimeQueue`                        |
 
 **Source-draft implementation description (pending separately authorized implementation verification).** True newest-pending replacement lives in
 `LiveRouteRefreshQueue::enqueue`: one pending job is replaced, while affected start tokens and changed
@@ -629,18 +645,18 @@ CPU completes commercially useless work
 
 The source draft records the following capacity and policy facts for the reviewed implementation. They remain pending separately authorized implementation verification. “Normal” means freshness-first current-block operation; replay or previous-block analysis can intentionally change the behavior.
 
-| Queue | Capacity / policy | Role | Freshness / lifecycle |
-| --- | --- | --- | --- |
-| `tycho_live_trigger_fan_in` | 128 · `BlockProducer` | Ordered trigger intake | Downstream owns canonical ordering |
-| `stream_graph_stage` | 512 · `BlockProducer` | Graph-stage handoff | FIFO stage adapter |
-| `stream_route_stage` | 512 · `BlockProducer` | Route-stage handoff | FIFO stage adapter |
-| `live_graph_persist` | 1 · `BlockProducer` | Graph persistence | Drains on close |
-| `live_route_refresh` | one pending slot · latest wins | Topology refresh | Replaces pending work and merges scope |
-| `live_route_persist` | 4 · `BlockProducer` | Route persistence | Drains on close |
-| `live_route_prep` | 4 normal · `DropNewest` | Candidate preparation | Coalesces/purges stale work |
-| `live_route_evaluation` | 4 normal · `BlockProducer` | Expensive evaluation | Latest-block checks prevent stale finalization |
-| `execution_stage` | 256 · `BlockProducer` | Execution handoff | Dedupe and retry state |
-| `runtime_metrics_jsonl` | 1024 default · `DropNewest` | Diagnostics | Drops rather than blocking evaluation |
+| Queue                       | Capacity / policy              | Role                   | Freshness / lifecycle                          |
+| --------------------------- | ------------------------------ | ---------------------- | ---------------------------------------------- |
+| `tycho_live_trigger_fan_in` | 128 · `BlockProducer`          | Ordered trigger intake | Downstream owns canonical ordering             |
+| `stream_graph_stage`        | 512 · `BlockProducer`          | Graph-stage handoff    | FIFO stage adapter                             |
+| `stream_route_stage`        | 512 · `BlockProducer`          | Route-stage handoff    | FIFO stage adapter                             |
+| `live_graph_persist`        | 1 · `BlockProducer`            | Graph persistence      | Drains on close                                |
+| `live_route_refresh`        | one pending slot · latest wins | Topology refresh       | Replaces pending work and merges scope         |
+| `live_route_persist`        | 4 · `BlockProducer`            | Route persistence      | Drains on close                                |
+| `live_route_prep`           | 4 normal · `DropNewest`        | Candidate preparation  | Coalesces/purges stale work                    |
+| `live_route_evaluation`     | 4 normal · `BlockProducer`     | Expensive evaluation   | Latest-block checks prevent stale finalization |
+| `execution_stage`           | 256 · `BlockProducer`          | Execution handoff      | Dedupe and retry state                         |
+| `runtime_metrics_jsonl`     | 1024 default · `DropNewest`    | Diagnostics            | Drops rather than blocking evaluation          |
 
 Source locations remain internal; the technical queue roles, policies, and lifecycle distinctions are retained here for review.
 
@@ -748,29 +764,29 @@ Salus does not infer performance from one average. It records distinct events
 and fields so an operator can separate admission, queueing, CPU, and external
 latency.
 
-| Signal | Current event / field examples | What it tells us | What it distinguishes |
-| --- | --- | --- | --- |
-| Queue depth and pressure | `queue_snapshot`: `current_depth`, `peak_depth`, `sent`, `dropped`, `blocked`, `closed` | whether a stage is accumulating or applying producer pressure | producer/consumer imbalance vs a slow external dependency |
-| Evaluation queue lifecycle | `route_evaluation_queue_lifecycle`: `queue_wait_ms`, `coalesced_*`, `purged_*`, capacity, peak | whether latest-block policy is doing useful work | normal compute vs avoidable historical backlog |
-| Route prep completion | `route_prep_queue_completion`: candidate/staged counts, hydration, request-build and handoff time | where work enters the expensive path | broad scope or metadata/hydration pressure vs evaluation CPU |
-| Evaluation service | `route_evaluation_service`: queue, compute, finalization, service time, routes, workers, utilisation | per-block route-evaluation decomposition | backlog vs CPU simulation vs finalization |
-| Chunk timing | `route_evaluation_chunk_timing`: chunk routes, pricing, input build, strategy, total | local hot-loop shape and chunk balance | pricing/quote work vs strategy/protocol-simulation work |
-| Search effort | `route_evaluation_search`: amount probes, gate savings, binary/doubling iterations, protocol calls | how route complexity changes cost | more routes vs more work per route |
-| Stages and selection | `route_evaluation_stages`: evaluated, profitable, selected, selection/execution time | conversion from compute to selected work | evaluator output vs selection/execution bottleneck |
-| Refresh | `route_refresh_queue_event`: queue wait, coalesced jobs, pending/in-flight blocks | whether topology refresh is falling behind | replaceable refresh pressure vs route evaluation pressure |
-| Execution timing | `live_execution_timing`: `eval_to_submit_ms`, `eval_to_broadcast_ms`, RPC and receipt timings | whether latency is internal or external | evaluation delay vs provider/relay/network delay |
+| Signal                     | Current event / field examples                                                                       | What it tells us                                              | What it distinguishes                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| Queue depth and pressure   | `queue_snapshot`: `current_depth`, `peak_depth`, `sent`, `dropped`, `blocked`, `closed`              | whether a stage is accumulating or applying producer pressure | producer/consumer imbalance vs a slow external dependency    |
+| Evaluation queue lifecycle | `route_evaluation_queue_lifecycle`: `queue_wait_ms`, `coalesced_*`, `purged_*`, capacity, peak       | whether latest-block policy is doing useful work              | normal compute vs avoidable historical backlog               |
+| Route prep completion      | `route_prep_queue_completion`: candidate/staged counts, hydration, request-build and handoff time    | where work enters the expensive path                          | broad scope or metadata/hydration pressure vs evaluation CPU |
+| Evaluation service         | `route_evaluation_service`: queue, compute, finalization, service time, routes, workers, utilisation | per-block route-evaluation decomposition                      | backlog vs CPU simulation vs finalization                    |
+| Chunk timing               | `route_evaluation_chunk_timing`: chunk routes, pricing, input build, strategy, total                 | local hot-loop shape and chunk balance                        | pricing/quote work vs strategy/protocol-simulation work      |
+| Search effort              | `route_evaluation_search`: amount probes, gate savings, binary/doubling iterations, protocol calls   | how route complexity changes cost                             | more routes vs more work per route                           |
+| Stages and selection       | `route_evaluation_stages`: evaluated, profitable, selected, selection/execution time                 | conversion from compute to selected work                      | evaluator output vs selection/execution bottleneck           |
+| Refresh                    | `route_refresh_queue_event`: queue wait, coalesced jobs, pending/in-flight blocks                    | whether topology refresh is falling behind                    | replaceable refresh pressure vs route evaluation pressure    |
+| Execution timing           | `live_execution_timing`: `eval_to_submit_ms`, `eval_to_broadcast_ms`, RPC and receipt timings        | whether latency is internal or external                       | evaluation delay vs provider/relay/network delay             |
 
 The source draft identifies these as distinct event boundaries. Private source-file locations are intentionally not rendered in this public projection.
 
 ### Diagnostic interpretations
 
-| Observed combination | Likely interpretation | Next reading / action |
-| --- | --- | --- |
-| Queue wait rises while service time is stable | admission, producer rate, or worker-capacity pressure | inspect prep/evaluation depth, caps, and worker utilisation |
-| Service time rises with high worker utilisation | CPU/evaluation bottleneck | inspect chunk timing, amount-search breadth, protocol simulation, allocations |
-| `eval_to_submit` stays low while submission RPC rises | external provider/network bottleneck | inspect execution timing and provider behavior; do not “optimise” evaluator code first |
-| Throughput rises but stale/purged completion rises too | capacity is being spent on superseded work | review latest-block policy, caps, freshness checks, and chunk granularity |
-| Metrics drops occur | observability is degraded, not proof that production work failed | record writer status; determine whether the evidence profile treats loss as incomplete |
+| Observed combination                                   | Likely interpretation                                            | Next reading / action                                                                  |
+| ------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Queue wait rises while service time is stable          | admission, producer rate, or worker-capacity pressure            | inspect prep/evaluation depth, caps, and worker utilisation                            |
+| Service time rises with high worker utilisation        | CPU/evaluation bottleneck                                        | inspect chunk timing, amount-search breadth, protocol simulation, allocations          |
+| `eval_to_submit` stays low while submission RPC rises  | external provider/network bottleneck                             | inspect execution timing and provider behavior; do not “optimise” evaluator code first |
+| Throughput rises but stale/purged completion rises too | capacity is being spent on superseded work                       | review latest-block policy, caps, freshness checks, and chunk granularity              |
+| Metrics drops occur                                    | observability is degraded, not proof that production work failed | record writer status; determine whether the evidence profile treats loss as incomplete |
 
 ## 15. How telemetry drove the architecture
 
@@ -802,13 +818,13 @@ The subsequent changes were targeted rather than a wholesale rewrite:
 
 Every number below is attached to its original retained workload. These are workload-specific engineering measurements, not production service-level objectives or universal Salus capacity claims.
 
-| Retained measurement | Workload / profile | What it supports | What it does **not** support |
-| --- | --- | --- | --- |
-| 2,401,108 persisted four-hop Ethereum routes; 3,415 graph tokens; 4,552 components | retained Ethereum topology snapshot | why full-universe scanning is the wrong steady-state operation | current live route count, heap usage, or universal graph size |
-| affected component-scope lookup: 12 ms p50, 42 ms p99 | retained Ethereum route review | indexed in-memory scope lookup stayed small beside numerical evaluation | an end-to-end latency guarantee or a database benchmark |
-| 1,690,260 routes, 100/100 completed evaluation blocks, 33,578.21 active routes/sec, 503.38 ms average evaluation-service time, zero stale/discarded evaluations | 2026-07-08 Ethereum no-throttle trace | workload-specific active evaluator throughput and health under that profile | universal capacity, block-cadence readiness, or all-chain behavior |
-| 4 ms evaluation-to-submit; 252 ms evaluation-to-broadcast; 246 ms submission RPC | retained forced-route trace | most observed broadcast delay in that trace was external submission RPC | general live trading latency or execution quality |
-| earlier one-batch pilot: combined p95 1,046.319 ms to 119.080 ms across different windows; later qualifying 42-batch collection: combined p95 22,270 us, 0.850974% of 2.617 s evaluator-service p95 | separate retained HL-CARB runs | the qualifying collection met its stated overhead gate | a directly comparable end-to-end reduction between those runs, production selection authority, or a universal ranking cost |
+| Retained measurement                                                                                                                                                                                | Workload / profile                    | What it supports                                                            | What it does **not** support                                                                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 2,401,108 persisted four-hop Ethereum routes; 3,415 graph tokens; 4,552 components                                                                                                                  | retained Ethereum topology snapshot   | why full-universe scanning is the wrong steady-state operation              | current live route count, heap usage, or universal graph size                                                              |
+| affected component-scope lookup: 12 ms p50, 42 ms p99                                                                                                                                               | retained Ethereum route review        | indexed in-memory scope lookup stayed small beside numerical evaluation     | an end-to-end latency guarantee or a database benchmark                                                                    |
+| 1,690,260 routes, 100/100 completed evaluation blocks, 33,578.21 active routes/sec, 503.38 ms average evaluation-service time, zero stale/discarded evaluations                                     | 2026-07-08 Ethereum no-throttle trace | workload-specific active evaluator throughput and health under that profile | universal capacity, block-cadence readiness, or all-chain behavior                                                         |
+| 4 ms evaluation-to-submit; 252 ms evaluation-to-broadcast; 246 ms submission RPC                                                                                                                    | retained forced-route trace           | most observed broadcast delay in that trace was external submission RPC     | general live trading latency or execution quality                                                                          |
+| earlier one-batch pilot: combined p95 1,046.319 ms to 119.080 ms across different windows; later qualifying 42-batch collection: combined p95 22,270 us, 0.850974% of 2.617 s evaluator-service p95 | separate retained HL-CARB runs        | the qualifying collection met its stated overhead gate                      | a directly comparable end-to-end reduction between those runs, production selection authority, or a universal ranking cost |
 
 Sources: Ethereum route review,
 performance hardening,
@@ -833,12 +849,12 @@ End-to-end decision latency
 queue time is time spent waiting to start; external wait belongs to a provider,
 network, or exchange/relay boundary. They need different remedies.
 
-| Case | Evidence | Likely issue | First response |
-| --- | --- | --- | --- |
-| A | queue wait ↑; evaluation service time stable | admission/backpressure/worker capacity | inspect stage caps, producer rate, and freshness policy |
-| B | evaluation service time ↑; CPU and worker utilisation ↑ | compute path | profile chunks, simulation, pricing, amount-search breadth, and allocation |
-| C | evaluation-to-submit low; submission RPC high | external network/provider | measure and improve the boundary, retry/reconcile safely; do not blame CPU workers |
-| D | throughput high; stale completion high | wrong workload scheduling policy | reduce obsolete work via admission, coalescing, and latest-state cancellation |
+| Case | Evidence                                                | Likely issue                           | First response                                                                     |
+| ---- | ------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------- |
+| A    | queue wait ↑; evaluation service time stable            | admission/backpressure/worker capacity | inspect stage caps, producer rate, and freshness policy                            |
+| B    | evaluation service time ↑; CPU and worker utilisation ↑ | compute path                           | profile chunks, simulation, pricing, amount-search breadth, and allocation         |
+| C    | evaluation-to-submit low; submission RPC high           | external network/provider              | measure and improve the boundary, retry/reconcile safely; do not blame CPU workers |
+| D    | throughput high; stale completion high                  | wrong workload scheduling policy       | reduce obsolete work via admission, coalescing, and latest-state cancellation      |
 
 ## 18. Throughput deep dive
 
@@ -889,19 +905,19 @@ heap peaks where retained evidence did not measure them.
 
 ## 20. Synchronization primitive map
 
-| Primitive | Current Salus use | Why it fits |
-| --- | --- | --- |
-| Tokio `mpsc` | typed bounded stage work, including prep/evaluation/execution | transfers ownership, expresses finite capacity, and supports async coordination |
-| `AtomicU64` | latest block publication and monotonic generations | a single independent fact is readable in hot stale checks without queue-state locking |
-| `AtomicBool` | cooperative cancellation and one-time lifecycle flags | cheaply shares a cancellation signal across chunks/tasks |
-| `AtomicUsize` | chunk allocation and processed/profitable counters | independent monotonically changing counters |
-| `std::sync::Mutex` | queue metrics, queued/in-flight metadata, writer state | maintains compound invariants with short non-`await` guards |
-| Tokio `Mutex` | asynchronous execution runtime and services crossing `.await` | serializes mutable async state safely where a guard spans async work |
-| Tokio `RwLock` | read-heavy price/gas/flash-balance cache surfaces | supports a read-heavy cache when its measured trade-off is justified |
-| `Arc` | shared metrics, queue state, liveness registry, immutable protocol handles | clear shared ownership/lifetime without deep-copying state |
-| Scoped OS worker thread | bounded CPU evaluation pool | prevents CPU fan-out from becoming unlimited Tokio task fan-out |
-| `spawn_blocking` | blocking route discovery and other blocking boundaries | moves bounded blocking work off Tokio executor workers |
-| `JoinHandle` | queue workers and writer lifecycle | gives owners an explicit shutdown/join result rather than detached work |
+| Primitive               | Current Salus use                                                          | Why it fits                                                                           |
+| ----------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Tokio `mpsc`            | typed bounded stage work, including prep/evaluation/execution              | transfers ownership, expresses finite capacity, and supports async coordination       |
+| `AtomicU64`             | latest block publication and monotonic generations                         | a single independent fact is readable in hot stale checks without queue-state locking |
+| `AtomicBool`            | cooperative cancellation and one-time lifecycle flags                      | cheaply shares a cancellation signal across chunks/tasks                              |
+| `AtomicUsize`           | chunk allocation and processed/profitable counters                         | independent monotonically changing counters                                           |
+| `std::sync::Mutex`      | queue metrics, queued/in-flight metadata, writer state                     | maintains compound invariants with short non-`await` guards                           |
+| Tokio `Mutex`           | asynchronous execution runtime and services crossing `.await`              | serializes mutable async state safely where a guard spans async work                  |
+| Tokio `RwLock`          | read-heavy price/gas/flash-balance cache surfaces                          | supports a read-heavy cache when its measured trade-off is justified                  |
+| `Arc`                   | shared metrics, queue state, liveness registry, immutable protocol handles | clear shared ownership/lifetime without deep-copying state                            |
+| Scoped OS worker thread | bounded CPU evaluation pool                                                | prevents CPU fan-out from becoming unlimited Tokio task fan-out                       |
+| `spawn_blocking`        | blocking route discovery and other blocking boundaries                     | moves bounded blocking work off Tokio executor workers                                |
+| `JoinHandle`            | queue workers and writer lifecycle                                         | gives owners an explicit shutdown/join result rather than detached work               |
 
 **Source-draft implementation note (pending separately authorized implementation verification).** The normal queue pipeline does not use a
 `Semaphore` or `broadcast` as its primary work-queue mechanism; route-refresh
@@ -1124,6 +1140,7 @@ Low-latency concurrency is an ownership problem before it is a task-count proble
 The most useful question is not **how many tasks can I run?** but **what work is still valid, who owns it, what happens under saturation, and can I prove where the latency went?**
 
 ### Further reading
+
 - [Salus overview](/salus)
 - [Salus whitepaper](/salus/whitepaper)
 - [Salus architecture](/salus/architecture)
