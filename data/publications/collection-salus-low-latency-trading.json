@@ -9,7 +9,7 @@
   "format": "vocs-mdx",
   "presentation": {
     "label": "Article",
-    "reading_time_minutes": 20
+    "reading_time_minutes": 21
   },
   "generator": {
     "name": "jincubator-publication",
@@ -19,7 +19,7 @@
     {
       "destination": "docs/pages/writing/salus-low-latency-trading.mdx",
       "media_type": "text/mdx",
-      "sha256": "2257bb117e2a11c0c42334d1140c0b3b7f74c5b7d8ede352a70cad06f954c991"
+      "sha256": "b0f5ce270d1b2bcb39d398c8054d67e9a1d783638556740fa69f10c511709205"
     },
     {
       "destination": "docs/public/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg",
