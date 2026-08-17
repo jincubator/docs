@@ -19,7 +19,7 @@
     {
       "destination": "docs/pages/writing/salus-low-latency-trading.mdx",
       "media_type": "text/mdx",
-      "sha256": "b0f5ce270d1b2bcb39d398c8054d67e9a1d783638556740fa69f10c511709205"
+      "sha256": "3981109655f6e761fd9c1a01caf800bb1981e4f7ab92e3ccf2d957d59ad3cdca"
     },
     {
       "destination": "docs/public/assets/writing/salus-low-latency-trading/01-low-latency-runtime-pipeline.svg",
